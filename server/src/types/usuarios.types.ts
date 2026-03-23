@@ -1,3 +1,4 @@
+// Types base de datos
 
 export interface Usuario {
     id_usuario: number;
@@ -14,6 +15,9 @@ export interface Usuarios_seguriadad {
     contrasena_hash: string;
 }
 
+
+// Types funciones
+
 export interface CreateUsuarioInput {
     usuario: string;
     rol: 'administrador' | 'operador';
@@ -27,3 +31,4 @@ export interface LoginUsuarioInput {
     usuario: string;
     contrasena: string;
 }
+

@@ -1,19 +1,19 @@
-import { UsuariosDBService } from '../interfaces/dbService';
+import { UsuarioRepository } from '../interfaces/usuarioRepository';
 import { CreateUsuarioInput, LoginUsuarioInput, Usuario } from '../types/usuarios.types';
 
 export class UsuariosController {
-    dbService: UsuariosDBService;
+    repository: UsuarioRepository;
 
-    constructor(dbService: UsuariosDBService) {
-        this.dbService = dbService;
+    constructor(repository: UsuarioRepository) {
+        this.repository = repository;
     }
 
     async createUsuario(user: CreateUsuarioInput): Promise<Usuario> {
-        return this.dbService.createUsuario(user);
+        return this.repository.createUsuario(user);
     }
 
     async loginUsuario(user: LoginUsuarioInput): Promise<Usuario> {
-        return this.dbService.loginUsuario(user);
+        return this.repository.loginUsuario(user);
     }
     
 }
