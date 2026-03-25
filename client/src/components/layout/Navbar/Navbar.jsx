@@ -14,7 +14,6 @@ function Navbar({
 
   return (
     <nav className={styles.navbar}>
-      {/* Logo */}
       <a className={styles.logo} href="/">
         <img src={logo} alt="Espina Bífida logo" className={styles.logoIcon} />
       </a>
