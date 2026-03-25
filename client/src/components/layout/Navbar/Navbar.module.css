@@ -22,7 +22,6 @@
   object-fit: contain;
 }
 
-/* ── Nav links ── */
 .links {
   display: flex;
   align-items: center;
