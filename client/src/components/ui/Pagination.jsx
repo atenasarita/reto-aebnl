@@ -1,4 +1,5 @@
 import styles from './styles/Pagination.module.css'
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 function Pagination({ currentPage, totalItems, itemsPerPage, onPageChange }) {
   const totalPages = Math.ceil(totalItems / itemsPerPage)
@@ -23,9 +24,7 @@ function Pagination({ currentPage, totalItems, itemsPerPage, onPageChange }) {
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
+          <FiChevronLeft />
         </button>
 
         {getPages().map((page, i) =>
@@ -47,9 +46,7 @@ function Pagination({ currentPage, totalItems, itemsPerPage, onPageChange }) {
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 18l6-6-6-6" />
-          </svg>
+          <FiChevronRight />
         </button>
       </div>
     </div>
