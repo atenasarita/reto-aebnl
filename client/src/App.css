@@ -40,3 +40,82 @@
 .read-the-docs {
   color: #888;
 }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f3f4f6;
+}
+
+.pagina {
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.contenedor {
+  max-width: 900px;
+  margin: 0 auto;
+  background: white;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+  margin-top: 0;
+  color: #1f2937;
+}
+
+h2 {
+  margin-top: 24px;
+  color: #111827;
+}
+
+.subtexto {
+  color: #6b7280;
+}
+
+.busqueda {
+  display: flex;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.busqueda input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.busqueda button {
+  padding: 12px 20px;
+  background-color: #2563eb;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.busqueda button:hover {
+  background-color: #1d4ed8;
+}
+
+.tarjeta {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background-color: #f9fafb;
+}
+
+.error {
+  color: #dc2626;
+  font-weight: bold;
+}
+
+.cargando {
+  color: #2563eb;
+  font-weight: bold;
+}
