@@ -1,4 +1,5 @@
 import './registro_beneficiario.css';
+import { FaCalendar, FaUser, FaBriefcaseMedical, FaHome, FaAddressCard, FaUpload } from 'react-icons/fa';
 
 function RegistroBeneficiario() {
     return(
@@ -16,10 +17,10 @@ function RegistroBeneficiario() {
                 <section className="layout">
                     <aside className="sidebar">
                         <ul className="steps">
-                            <li className="step active">Datos Personales</li>
-                            <li className="step">Información Médica</li>
-                            <li className="step">Domicilio</li>
-                            <li className="step">Membresía</li> 
+                            <li className="step active"><FaUser className="step-icon" /> Datos Personales</li>
+                            <li className="step"><FaBriefcaseMedical className="step-icon" /> Información Médica</li>
+                            <li className="step"><FaHome className="step-icon" /> Domicilio</li>
+                            <li className="step"><FaAddressCard className='step-icon'/> Membresía</li> 
                         </ul>
                     <div className="sidebar-buttons">
                         <button className="btn btn-secondary">Cancelar</button>
@@ -32,7 +33,7 @@ function RegistroBeneficiario() {
                            <div className="photo-box">
                                 <div className="photo-circle">Foto</div>
                                 <p>Foto de Perfil</p>
-                                <button className="link-button">Subir fotografía</button>
+                                <button className="link-button"><FaUpload className='step-icon' /> Subir fotografía</button>
                             </div> 
 
                             <div className="meta-fields">
@@ -44,7 +45,10 @@ function RegistroBeneficiario() {
 
                                 <div className="field-group">
                                     <label>FECHA DE REGISTRO</label>
-                                    <input type="text" placeholder="13 de Marzo, 2026" />
+                                    <div className="input-with-icon">
+                                        <input type="text" placeholder="13 de Marzo, 2026" />
+                                        <FaCalendar className="icon" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -75,7 +79,10 @@ function RegistroBeneficiario() {
                             <div className="row">
                             <div className="field-group">
                                 <label>Fecha de Nacimiento</label>
-                                <input type="text" placeholder="dd/mm/yyyy" />
+                                <div className="input-with-icon">
+                                    <input type="text" placeholder="dd/mm/yyyy" />
+                                    <FaCalendar className="icon" />
+                                </div>
                             </div>
 
 

@@ -34,7 +34,7 @@ body {
 .layout {
   display: grid;
   grid-template-columns: 280px 1fr;
-  gap: 28px;
+  gap: 20px;
   align-items: start;
 }
 
@@ -52,12 +52,19 @@ body {
 
 .step {
   color: #a0a9bb;
-  font-size: 28px;
+  font-size: 25px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .step.active {
   color: #28489f;
+}
+
+.step-icon {
+  font-size: 24px;
 }
 
 .sidebar-buttons {
@@ -130,7 +137,8 @@ body {
   border: none;
   color: #28489f;
   cursor: pointer;
-  margin-top: 8px;
+  margin-top: 4px;
+  font-size: 13px;
 }
 
 .meta-fields {
@@ -185,4 +193,24 @@ body {
   outline: none;
   background: white;
   color: #1f2a44;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon input,
+.input-with-icon select {
+  padding-right: 45px;
+  width: 100%;
+}
+
+.input-with-icon .icon {
+  position: absolute;
+  right: 14px;
+  color: #a0a9bb;
+  pointer-events: none;
+  font-size: 18px;
 }
