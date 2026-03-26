@@ -46,7 +46,7 @@ export const createIdentificadoresSchema = z.object({
 	estado_nacimiento: estadosMexicoSchema,
 	fotografia: z.string().trim().max(500).optional(),
 	telefono: z.string().trim().max(10).optional(),
-	email: z.string().trim().email('email invalido').max(100).optional(),
+	email: z.email('email invalido').max(100).optional(),
 });
 
 export const createDatosMedicosSchema = z.object({
