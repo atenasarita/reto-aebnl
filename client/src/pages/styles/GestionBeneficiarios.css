@@ -4,7 +4,7 @@
 }
 
 .content-container{
-    margin: 48px;
+    margin: 32px 64px;
 }
 
 .card {
@@ -25,4 +25,12 @@
     font-size: 16px;
     font-weight: 300;
     margin: 0;
+}
+
+.filter-bar{
+  display: flex;
+  flex-direction: row;
+  margin: 36px 0;
+  justify-content: space-between;
+  align-items: center;
 }

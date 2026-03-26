@@ -1,8 +1,28 @@
 import { useState } from 'react'
 import './styles/GestionBeneficiarios.css'
-import SearchBar  from '../components/ui/SearchBar'
+import SearchBar from '../components/ui/SearchBar'
+import Dropdown from '../components/ui/Dropdown'
+import Button from '../components/ui/Button'
+import BeneficiarioGrid from '../components/layout/beneficiarios/BeneficiarioGrid/BenecifiarioGrid'
+
+import { FiUserPlus, FiSearch } from 'react-icons/fi'
+
+
+
 
 function GestionBeneficiarios() {
+  const [query, setQuery] = useState('')
+
+  const handleSearch = (value) => {
+    setQuery(value)
+    // TODO: filter your beneficiaries list here, e.g.
+    // setFiltered( allBeneficiaries.filter(b => 
+    //   b.name.toLowerCase().includes(value.toLowerCase()) ||
+    //   b.folio.toLowerCase().includes(value.toLowerCase()) ||
+    //   b.curp.toLowerCase().includes(value.toLowerCase())
+    // ))
+  }
+
   return (
     <>
       <main>
@@ -13,11 +33,17 @@ function GestionBeneficiarios() {
           </div>
 
           <div className='filter-bar'>
-            < SearchBar/>
+            <SearchBar icon={<FiSearch/>} className='search-gestion' onSearch={handleSearch} debounceMs={250} />
+            <Button className='buscar-beneficiarios-btn' onClick={() => console.log('clicked')}> Buscar </Button>
+
+            <Dropdown className='dropdown-gestion' />
+            <Button className='nuevo-beneficiario-btn' iconLeft={<FiUserPlus style={{margin: '4px 0 0'}}/>} onClick={() => console.log('clicked')}> Nuevo Beneficiario </Button>
+          </div>
+
+          <div className='main-grid-beneficiarios'>
+            <BeneficiarioGrid />
           </div>
         </div>
-        
-
       </main>
     </>
   )
