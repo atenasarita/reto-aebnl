@@ -1,7 +1,9 @@
 import './App.css'
 import RegistroBeneficiario from './pages/registro_beneficiario';
+import Login from './pages/login';
 
 function App() {
+  return <Login />;
   return <RegistroBeneficiario />;
 }
 
