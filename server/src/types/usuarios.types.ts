@@ -32,3 +32,8 @@ export interface LoginUsuarioInput {
     contrasena: string;
 }
 
+export interface LoginResponse {
+    token: string;
+    usuario: Usuario;
+}
+

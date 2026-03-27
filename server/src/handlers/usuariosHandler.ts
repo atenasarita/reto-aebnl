@@ -17,8 +17,8 @@ export class UsuariosHandler {
     }
 
     async loginUsuario(req: Request, res: Response) {
-        const usuario = await this.usuariosController.loginUsuario(req.body);
-        res.status(200).json(usuario);
+        const loginResponse = await this.usuariosController.loginUsuario(req.body);
+        res.status(200).json(loginResponse);
     }
     
 }
