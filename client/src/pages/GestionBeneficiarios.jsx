@@ -7,9 +7,6 @@ import BeneficiarioGrid from '../components/layout/beneficiarios/BeneficiarioGri
 
 import { FiUserPlus, FiSearch } from 'react-icons/fi'
 
-
-
-
 function GestionBeneficiarios() {
   const [query, setQuery] = useState('')
 
@@ -34,15 +31,16 @@ function GestionBeneficiarios() {
 
           <div className='filter-bar'>
             <SearchBar icon={<FiSearch/>} className='search-gestion' onSearch={handleSearch} debounceMs={250} />
-            <Button className='buscar-beneficiarios-btn' onClick={() => console.log('clicked')}> Buscar </Button>
+            <Button className='buscar-beneficiarios-btn' onClick={() => console.log('clicked buscar')}> Buscar </Button>
 
             <Dropdown className='dropdown-gestion' />
-            <Button className='nuevo-beneficiario-btn' iconLeft={<FiUserPlus style={{margin: '4px 0 0'}}/>} onClick={() => console.log('clicked')}> Nuevo Beneficiario </Button>
+            <Button className='nuevo-beneficiario-btn' iconLeft={<FiUserPlus style={{margin: '4px 0 0'}}/>} onClick={() => console.log('clicked nuevo beneficiario')}> Nuevo Beneficiario </Button>
           </div>
 
           <div className='main-grid-beneficiarios'>
             <BeneficiarioGrid />
           </div>
+
         </div>
       </main>
     </>
