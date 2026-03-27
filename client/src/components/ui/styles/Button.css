@@ -1,0 +1,30 @@
+.nuevo-beneficiario-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #1E3B8A;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 20px;
+  width: 280px;
+  height: 46px;
+}
+
+.buscar-beneficiarios-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #5169ac;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 20px;
+  height: 46px;
+}
