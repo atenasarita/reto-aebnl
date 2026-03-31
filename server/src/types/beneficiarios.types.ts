@@ -1,11 +1,30 @@
+import { CreateMembresiaInput } from './membresias.types';
+import { Espina_bifida } from './espina.types';
+
+export type Genero = 'masculino' | 'femenino' | 'otro';
+export type TipoSanguineo = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
+export type Estado = 'activo' | 'inactivo';
+
 // Types base de datos
 export interface Beneficiario {
     id_beneficiario: number;
     folio: string;
     fecha_ingreso: Date;
-    genero: 'masculino' | 'femenino' | 'otro';
-    tipo_espina: number;
-    estado: 'activo' | 'inactivo';
+    genero: Genero;
+    tipo_espinas: number[];
+    estado: Estado;
+}
+
+export interface BeneficiarioDetalle {
+    id_beneficiario: number;
+    folio: string;
+    fecha_ingreso: string;
+    genero: Genero;
+    estado: Estado;
+    tipo_espina: Espina_bifida[];
+    identificadores: Identificadores;
+    datos_medicos: Datos_medicos;
+    direccion: Direccion;
 }
 
 export interface Datos_medicos {
@@ -15,7 +34,7 @@ export interface Datos_medicos {
     contacto_telefono: string;
     contacto_parentesco: string;
     alergias: string;
-    tipo_sanguineo: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
+    tipo_sanguineo: TipoSanguineo;
 }
 
 export interface Identificadores {
@@ -59,7 +78,7 @@ export interface CreateDatosMedicosInput {
     contacto_telefono: string;
     contacto_parentesco: string;
     alergias: string;
-    tipo_sanguineo: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
+    tipo_sanguineo: TipoSanguineo;
 }
 
 export interface CreateDireccionInput {
@@ -71,11 +90,11 @@ export interface CreateDireccionInput {
 
 export interface CreateBeneficiarioInput {
     fecha_ingreso: Date;
-    genero: 'masculino' | 'femenino' | 'otro';
-    tipo_espina: number;
+    genero: Genero;
+    tipo_espinas: number[];
     folio?: string;
-    estado?: 'activo' | 'inactivo';
     identificadores: CreateIdentificadoresInput;
     datos_medicos: CreateDatosMedicosInput;
     direccion: CreateDireccionInput;
+    membresia?: CreateMembresiaInput;
 }

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createMembresiaSchema } from './membresias.schemas';
 
 export const tipoSanguineoSchema = z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']);
 
@@ -67,10 +68,10 @@ export const createDireccionSchema = z.object({
 export const createBeneficiarioSchema = z.object({
 	fecha_ingreso: z.coerce.date(),
 	genero: z.enum(['masculino', 'femenino', 'otro']),
-	tipo_espina: z.number().int().positive(),
+	tipo_espinas: z.array(z.number().int().positive()).min(1, 'tipo_espinas debe tener al menos un id'),
 	folio: z.string().trim().max(11).optional(),
-	estado: z.enum(['activo', 'inactivo']).optional(),
 	identificadores: createIdentificadoresSchema,
 	datos_medicos: createDatosMedicosSchema,
 	direccion: createDireccionSchema,
+	membresia: createMembresiaSchema.optional(),
 });
