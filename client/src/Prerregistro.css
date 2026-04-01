@@ -140,6 +140,36 @@ html, body, #root {
 
 .step-label { font-size: 14px; font-weight: 500; }
 
+.step-clickable {
+  cursor: pointer;
+}
+.step-clickable:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+.step-edit-hint {
+  margin-left: auto;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.step-clickable:hover .step-edit-hint {
+  opacity: 1;
+}
+
+.submit-error {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: #dc2626;
+}
+
 .step-content {
   padding: 36px 40px;
   animation: fadeIn 0.25s ease;
