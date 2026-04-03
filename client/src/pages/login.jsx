@@ -33,7 +33,7 @@ function Login({ onLoginSuccess }) {
       localStorage.setItem('token', data.token);
       localStorage.setItem('usuario', JSON.stringify(data.usuario));
 
-    //   La pagina principal será el dashboard, pero por ahora se redirige a registro beneficiario
+    //   La pagina principal será el tablero, pero por ahora se redirige a registro beneficiario
       if (typeof onLoginSuccess === 'function') {
         onLoginSuccess();
       } else {
