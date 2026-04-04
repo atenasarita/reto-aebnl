@@ -26,3 +26,9 @@ export interface LoginUsuarioInput {
     usuario: string;
     contrasena: string;
 }
+
+export interface LoginResponse {
+    token: string;
+    usuario: Usuario;
+}
+

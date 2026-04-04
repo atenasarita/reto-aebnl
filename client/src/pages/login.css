@@ -1,0 +1,166 @@
+* {
+    box-sizing: border-box;
+}
+
+body{
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6fa;
+}
+
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    background: #f4f6fa;
+}
+
+.login-card {
+  width: 1240px;
+  max-width: 100%;
+  min-height: 640px;
+  display: grid;
+  grid-template-columns: 60% 40%;
+  background: #f7f8fb;
+  border: 1px solid #cfd7e6;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.login-left {
+  background: #f3f5f9;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  padding: 70px;
+}
+
+.logo-main {
+  width: 370px;
+  max-width: 100%;
+  margin-bottom: 60px;
+}
+
+.brand-text h1 {
+  margin: 0;
+  font-size: 110px;
+  line-height: 0.95;
+  font-weight: 800;
+  color: #000000;
+}
+
+.brand-text h2 {
+  margin: 0;
+  font-size: 72px;
+  line-height: 1;
+  font-weight: 700;
+  color: #25449c;
+}
+
+.login-right {
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 48px;
+}
+
+.login-form-box {
+  width: 100%;
+  max-width: 440px;
+}
+
+.login-title {
+  margin: 0 0 8px 0;
+  font-size: 42px;
+  font-weight: 800;
+  color: #000000;
+}
+
+.login-subtitle {
+  margin: 0 0 52px 0;
+  font-size: 16px;
+  color: #6d7a95;
+  letter-spacing: 0.5px;
+}
+
+.form-group {
+  margin-bottom: 34px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #62708d;
+}
+
+.input-box {
+  height: 40px;
+  border: 1px solid #d4dcea;
+  border-radius: 14px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+}
+
+.input-icon {
+  font-size: 22px;
+  color: #72809b;
+  width: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.input-box input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 18px;
+  color: #5a6783;
+  background: transparent;
+}
+
+.input-box input::placeholder {
+  color: #7a859b;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: -12px;
+  margin-bottom: 34px;
+}
+
+.checkbox-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  color: #ffffff;
+}
+
+.checkbox-label {
+  font-size: 16px;
+}
+
+.login-button {
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 14px;
+  background: #26469d;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.login-button:hover {
+  background: #1f3c8b;
+}
