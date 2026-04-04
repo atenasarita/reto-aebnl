@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import usuariosRoutes from "./src/routes/usuarios.routes";
+import beneficiariosRoutes from "./src/routes/beneficiarios.routes";
 import { errorMiddleware } from './src/middlewares/error.middleware.ts';
 
 const app = express();
@@ -15,6 +16,7 @@ app.get("/", (req, res) => {
 });
 
 app.use('/api', usuariosRoutes);
+app.use('/api', beneficiariosRoutes);
 
 app.use(errorMiddleware);
 

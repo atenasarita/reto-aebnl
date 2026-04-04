@@ -1,24 +1,40 @@
+import { NextFunction, Request, Response } from "express";
 import { UsuariosController } from "../controllers/usuarios.controller";
-import { Request, Response } from 'express';
 import { CreateUsuarioInput, LoginUsuarioInput } from "../types/usuarios.types";
+import { createAccessToken } from "../utils/jwt";
 
-export class UsuariosHandler {  
-    usuariosController: UsuariosController;
+export class UsuariosHandler {
+  usuariosController: UsuariosController;
 
-    constructor(usuariosController: UsuariosController) {
-        this.usuariosController = usuariosController;
-        this.createUsuario = this.createUsuario.bind(this);
-        this.loginUsuario = this.loginUsuario.bind(this);
+  constructor(usuariosController: UsuariosController) {
+    this.usuariosController = usuariosController;
+  }
+
+  createUsuario = async (req: Request, res: Response, next: NextFunction) => {
+    const payload = req.body as CreateUsuarioInput;
+    try {
+      const user = await this.usuariosController.createUsuario(payload);
+
+      return res.status(201).json(user);
+    } catch (error) {
+      return next(error);
     }
+  };
 
-    async createUsuario(req: Request, res: Response) {
-        const usuario = await this.usuariosController.createUsuario(req.body);
-        res.status(201).json(usuario);
-    }
+  loginUsuario = async (req: Request, res: Response, next: NextFunction) => {
+    const payload = req.body as LoginUsuarioInput;
+    try {
+      const user = await this.usuariosController.loginUsuario(payload);
 
-    async loginUsuario(req: Request, res: Response) {
-        const loginResponse = await this.usuariosController.loginUsuario(req.body);
-        res.status(200).json(loginResponse);
+      const token = createAccessToken({
+        id_usuario: user.id_usuario,
+        usuario: user.usuario,
+        rol: user.rol,
+      });
+
+      return res.status(200).json({ user, token });
+    } catch (error) {
+      return next(error);
     }
-    
+  };
 }
