@@ -4,6 +4,7 @@ import 'dotenv/config';
 import usuariosRoutes from "./src/routes/usuarios.routes";
 import beneficiariosRoutes from "./src/routes/beneficiarios.routes";
 import { errorMiddleware } from './src/middlewares/error.middleware.ts';
+import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job';
 
 const app = express();
 const PORT = 3000
@@ -19,6 +20,8 @@ app.use('/api', usuariosRoutes);
 app.use('/api', beneficiariosRoutes);
 
 app.use(errorMiddleware);
+
+startMembresiaExpirationJob();
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
