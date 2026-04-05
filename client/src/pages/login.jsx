@@ -2,13 +2,16 @@ import './login.css';
 import logo from '../assets/logo_aebnl.jpg';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-function Login({ onLoginSuccess }) {
+function Login({  }) {
   const [usuario, setUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -33,12 +36,8 @@ function Login({ onLoginSuccess }) {
       localStorage.setItem('token', data.token);
       localStorage.setItem('usuario', JSON.stringify(data.usuario));
 
-    //   La pagina principal será el tablero, pero por ahora se redirige a registro beneficiario
-      if (typeof onLoginSuccess === 'function') {
-        onLoginSuccess();
-      } else {
-        window.location.href = '/registro_beneficiario';
-      }
+      // Redirigir a la página de gestión de beneficiarios
+      navigate('/gestionbeneficiarios');
     } catch (error) {
       setError(error.message || 'Error de conexión');
     } finally {
