@@ -37,7 +37,7 @@ function Login({ onLoginSuccess }) {
       if (typeof onLoginSuccess === 'function') {
         onLoginSuccess();
       } else {
-        window.location.href = '/registro_beneficiario';
+        window.location.href = '/beneficiarios';
       }
     } catch (error) {
       setError(error.message || 'Error de conexión');
