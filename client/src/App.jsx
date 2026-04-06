@@ -6,6 +6,7 @@ import Login from './pages/login'
 import RegistroBeneficiario from './pages/registro_beneficiario'
 
 import './App.css'
+import Prerregistro from './Prerregistro.jsx'
 
 function App() {
   const [page, setPage] = useState('login');
