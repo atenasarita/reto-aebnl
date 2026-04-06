@@ -15,7 +15,7 @@ return (
 
         {/* Rutas con layout (navbar, etc.) */}
         <Route element={<MainLayout />}>
-          <Route path="/GestionBeneficiarios" element={<GestionBeneficiarios />} />
+          <Route path="/beneficiarios" element={<GestionBeneficiarios />} />
           <Route path="/registro_beneficiario" element={<RegistroBeneficiario />} />
         </Route>
       </Routes>

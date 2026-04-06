@@ -1,10 +1,10 @@
-import './login.css';
+import './styles/login.css';
 import logo from '../assets/logo_aebnl.jpg';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Login({  }) {
+function Login() {
   const [usuario, setUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -37,7 +37,7 @@ function Login({  }) {
       localStorage.setItem('usuario', JSON.stringify(data.usuario));
 
       // Redirigir a la página de gestión de beneficiarios
-      navigate('/gestionbeneficiarios');
+      navigate('/beneficiarios');
     } catch (error) {
       setError(error.message || 'Error de conexión');
     } finally {
