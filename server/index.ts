@@ -2,8 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import usuariosRoutes from "./src/routes/usuarios.routes";
-import { errorMiddleware } from './src/middlewares/error.middleware';
 import preregistrosRoutes from './src/routes/preregistros.routes';
+import beneficiariosRoutes from "./src/routes/beneficiarios.routes";
+import { errorMiddleware } from './src/middlewares/error.middleware.ts';
 
 const app = express();
 const PORT = 3000
@@ -16,6 +17,7 @@ app.get("/", (req, res) => {
 });
 
 app.use('/api', usuariosRoutes);
+app.use('/api', beneficiariosRoutes);
 
 app.use("/api/preregistros", preregistrosRoutes);
 

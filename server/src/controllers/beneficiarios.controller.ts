@@ -1,0 +1,48 @@
+import { BeneficiarioRepository } from "../interfaces/beneficiarioRepository";
+import {
+  Beneficiario,
+  BeneficiarioDetalle,
+  CreateBeneficiarioInput,
+  CreateDatosMedicosInput,
+  CreateDireccionInput,
+  CreateIdentificadoresInput,
+  Datos_medicos,
+  Direccion,
+  Identificadores,
+} from "../types/beneficiarios.types";
+
+export class BeneficiariosController {
+    repository: BeneficiarioRepository;
+
+    constructor(repository: BeneficiarioRepository) {
+        this.repository = repository;
+    }
+    
+    async getBeneficiarios(): Promise<BeneficiarioDetalle[]> {
+        return this.repository.getBeneficiarios();
+    }
+
+    async getBeneficiarioById(id_beneficiario: number): Promise<BeneficiarioDetalle> {
+        return this.repository.getBeneficiarioById(id_beneficiario);
+    }
+
+    async getBeneficiarioByFolio(folio: string): Promise<BeneficiarioDetalle> {
+        return this.repository.getBeneficiarioByFolio(folio);
+    }
+    
+    async createBeneficiario(input: CreateBeneficiarioInput): Promise<Beneficiario> {
+        return this.repository.createBeneficiario(input);
+    }
+
+    async createIdentificadores(id_beneficiario: number, input: CreateIdentificadoresInput): Promise<Identificadores> {
+        return this.repository.createIdentificadores(id_beneficiario, input);
+    }
+
+    async createDatosMedicos(id_beneficiario: number, input: CreateDatosMedicosInput): Promise<Datos_medicos> {
+        return this.repository.createDatosMedicos(id_beneficiario, input);
+    }
+    
+    async createDireccion(id_beneficiario: number, input: CreateDireccionInput): Promise<Direccion> {
+        return this.repository.createDireccion(id_beneficiario, input);
+    }
+}
