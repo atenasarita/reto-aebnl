@@ -5,6 +5,8 @@ import Dropdown from '../../components/ui/Dropdown'
 import Button from '../../components/ui/Button'
 import BeneficiarioGrid from '../../components/layout/beneficiarios/BeneficiarioGrid/BenecifiarioGrid'
 import { FiUserPlus, FiSearch } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
+
 
 // 1. Fix ESTATUS_OPTIONS — lowercase to match API
 const ESTATUS_OPTIONS = [
@@ -13,6 +15,8 @@ const ESTATUS_OPTIONS = [
   { label: 'Inactivo', value: 'inactivo' }, 
 ]
 
+
+
 function GestionBeneficiarios() {
   const [all, setAll]           = useState([])   // raw list from API
   const [filtered, setFiltered] = useState([])   // what the grid shows
@@ -20,6 +24,7 @@ function GestionBeneficiarios() {
   const [estatus, setEstatus]   = useState('')   // '' = show all
   const [loading, setLoading]   = useState(false)
   const [error, setError]       = useState('')
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchBeneficiarios()
@@ -132,7 +137,7 @@ function GestionBeneficiarios() {
           <Button
             className='nuevo-beneficiario-btn'
             iconLeft={<FiUserPlus style={{ margin: '4px 0 0' }} />}
-            onClick={() => console.log('open modal nuevo beneficiario')}
+            onClick={() => navigate('/registro_beneficiario')}
           >
             Nuevo Beneficiario
           </Button>

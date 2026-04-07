@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import MainLayout from './components/layout/MainLayout'
 import GestionBeneficiarios from './pages/GestionBeneficiarios/GestionBeneficiarios'
@@ -9,8 +8,6 @@ import './App.css'
 import Prerregistro from './pages/Prerregistro/Prerregistro'
 
 function App() {
-  const [page, setPage] = useState('login');
-
 return (
     <BrowserRouter>
       <Routes>
