@@ -52,7 +52,6 @@ function GestionBeneficiarios() {
     }
   }
 
-  // ── Filtering — runs whenever query or estatus changes ───────────────────────
   useEffect(() => {
     let result = all
 
@@ -60,21 +59,20 @@ function GestionBeneficiarios() {
       const q = query.toLowerCase()
       result = result.filter(b =>
         `${b.identificadores.nombres} ${b.identificadores.apellido_paterno}`.toLowerCase().includes(q) ||
-        b.folio.toLowerCase().includes(q)   // ← folio is top-level, this one is fine
+        b.folio.toLowerCase().includes(q)   
       )
     }
 
     if (estatus) {
-      result = result.filter(b => b.estado === estatus) // ← b.estado not b.estatus
+      result = result.filter(b => b.estado === estatus) 
     }
 
     setFiltered(result)
   }, [query, estatus, all])
 
-  // ── Server-side folio search (Buscar button) ─────────────────────────────────
   async function handleBuscar() {
     if (!query.trim()) {
-      fetchBeneficiarios() // empty query → reload all
+      fetchBeneficiarios() 
       return
     }
 
@@ -113,6 +111,13 @@ function GestionBeneficiarios() {
         </div>
 
         <div className='filter-bar'>
+          <Dropdown
+            className='dropdown-gestion'
+            options={ESTATUS_OPTIONS}
+            value={estatus}
+            onChange={(val) => setEstatus(val)}
+          />
+
           <SearchBar
             icon={<FiSearch />}
             className='search-gestion'
@@ -123,13 +128,7 @@ function GestionBeneficiarios() {
             Buscar
           </Button>
 
-          <Dropdown
-            className='dropdown-gestion'
-            options={ESTATUS_OPTIONS}
-            value={estatus}
-            onChange={(val) => setEstatus(val)}
-          />
-
+  
           <Button
             className='nuevo-beneficiario-btn'
             iconLeft={<FiUserPlus style={{ margin: '4px 0 0' }} />}
