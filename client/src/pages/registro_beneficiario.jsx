@@ -1,7 +1,10 @@
 import './styles/registro_beneficiario.css';
 import {useRef, useState} from 'react';
-import { FaCalendar, FaUser, FaBriefcaseMedical, FaHome, FaAddressCard, FaUpload } from 'react-icons/fa';
+import { FaCalendar, FaUpload } from 'react-icons/fa';
+import { TbSquareNumber1Filled,  TbSquareNumber2Filled, TbSquareNumber3Filled, TbSquareNumber4Filled,} from "react-icons/tb";
 import { useNavigate } from 'react-router-dom';
+import { soloLetras } from '../utils/validator';
+import FotoPerfilInput from '../components/layout/beneficiarios/FotoPerfilInput';
 
 const estadosMexico = [
     'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas', 'Chihuahua',
@@ -16,7 +19,7 @@ const espinaTypes = [
     { id: 2, nombre: 'Meningocele' },
     { id: 3, nombre: 'Mielomeningocele' },
     { id: 4, nombre: 'Lipomeningocele' },
-    // { id: 5, nombre: 'Otro' } Falta ver como esto de que otro se va a manejar.
+    // TODO { id: 5, nombre: 'Otro' } Falta ver como esto de que otro se va a manejar.
 ];
 
 function RegistroBeneficiario() {
@@ -48,18 +51,21 @@ function RegistroBeneficiario() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const fechaRegistroRef = useRef(null);
+    // const fechaRegistroRef = useRef(null);
     const fechaNacimientoRef = useRef(null);
 
     const steps = [
-        { icon: FaUser, label: 'Datos Personales' },
-        { icon: FaBriefcaseMedical, label: 'Información Médica' },
-        { icon: FaHome, label: 'Domicilio' },
-        { icon: FaAddressCard, label: 'Membresía' }
+        { icon: TbSquareNumber1Filled, label: 'Datos Personales' },
+        { icon: TbSquareNumber2Filled, label: 'Información Médica' },
+        { icon: TbSquareNumber3Filled, label: 'Domicilio' },
+        { icon: TbSquareNumber4Filled, label: 'Membresía' }
     ];
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        if(name === 'nombres' || name === 'apellido_paterno' || name === 'apellido_materno'){
+            if(!soloLetras(value)) return;
+        }
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
@@ -86,10 +92,28 @@ function RegistroBeneficiario() {
         }
     };
 
+    const handleFotoChange = (fotoBase64) => {
+        setFormData(prev => ({
+            ...prev,
+            fotografia: fotoBase64
+        }));
+        setError('');
+    };
+
+    const handleFotoError = (mensaje) => {
+        setError(mensaje);
+    };
+
     const handleSubmit = async () => {
         setLoading(true);
         setError('');
         try {
+            if(!formData.nombres.trim() || !formData.apellido_paterno.trim() || !formData.apellido_materno.trim() ) {
+                setError('El nombre y apellidos son obligaotrios es obligatorio');
+                setLoading(false);
+                return;
+            }
+
             const token = localStorage.getItem('token');
             const payload = {
                 fecha_ingreso: new Date(fechaRegistro),
@@ -134,7 +158,7 @@ function RegistroBeneficiario() {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Error al registrar beneficiario');
             }
-
+            
             const data = await response.json();
             alert('Beneficiario registrado exitosamente');
             // Redirect or reset form
@@ -154,7 +178,11 @@ function RegistroBeneficiario() {
                             <h2>Identidad</h2>
                             <div className="field-group full">
                                 <label>Nombres</label>
-                                <input type="text" name="nombres" value={formData.nombres} onChange={handleInputChange} />
+                                <input 
+                                type="text" 
+                                name="nombres" 
+                                value={formData.nombres} 
+                                onChange={handleInputChange} />
                             </div>
                             <div className="row">
                                 <div className="field-group">
@@ -245,11 +273,7 @@ function RegistroBeneficiario() {
                                 </select>
                             </div>
                         </div>
-                        <div className="field-group full">
-                            <label>Alergias</label>
-                            <textarea name="alergias" value={formData.alergias} onChange={handleInputChange} />
-                        </div>
-                        <div className="field-group full">
+                            <div className="field-group full">
                             <label>Tipo de Espina Bifida</label>
                             <div className="checkbox-group">
                                 {espinaTypes.map(type => (
@@ -265,6 +289,11 @@ function RegistroBeneficiario() {
                                 ))}
                             </div>
                         </div>
+                        <div className="field-group full">
+                            <label>Alergias</label>
+                            <textarea name="alergias" value={formData.alergias} onChange={handleInputChange} />
+                        </div>
+                        {/* TODO Agregar examenes medicos */}
                     </div>
                 );
             case 2:
@@ -337,11 +366,11 @@ function RegistroBeneficiario() {
 
                     <section className="form-card">
                         <div className="top-info">
-                           <div className="photo-box">
-                                <div className="photo-circle">Foto</div>
-                                <p>Foto de Perfil</p>
-                                <button className="link-button"><FaUpload className='step-icon' /> Subir fotografía</button>
-                            </div> 
+                            <FotoPerfilInput 
+                            value={formData.fotografia}
+                            onChange={handleFotoChange}
+                            onError={handleFotoError}
+                            />
 
                             <div className="meta-fields">
                                 <div className="field-group">
