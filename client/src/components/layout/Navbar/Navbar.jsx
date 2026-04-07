@@ -3,7 +3,12 @@ import styles from "./Navbar.module.css";
 import logo from "../../../assets/logo.png";
 
 const NAV_LINKS = [
-  { label: "Beneficiarios", href: "/beneficiarios" }
+  { label: "Tablero", to: "/tablero" },
+  { label: "Beneficiarios", href: "/beneficiarios" },
+  { label: "Servicios", to: "/servicios" },
+  { label: "Inventario", to: "/inventario" },
+  { label: "Citas", to: "/citas" },
+  { label: "Reportes", to: "/reportes" },
 ];
 
 function Navbar({

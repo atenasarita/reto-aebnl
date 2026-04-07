@@ -1,6 +1,6 @@
 import { UsuarioRepository } from '../interfaces/usuarioRepository';
-import { CreateUsuarioInput, LoginUsuarioInput, LoginResponse, Usuario } from '../types/usuarios.types';
-import { createAccessToken } from '../utils/jwt';
+import { CreateUsuarioInput, LoginUsuarioInput, Usuario } from '../types/usuarios.types';
+
 
 export class UsuariosController {
     repository: UsuarioRepository;
@@ -13,16 +13,8 @@ export class UsuariosController {
         return this.repository.createUsuario(user);
     }
 
-    async loginUsuario(user: LoginUsuarioInput): Promise<LoginResponse> {
-        const usuario = await this.repository.loginUsuario(user);
-
-        const token = createAccessToken({
-            id_usuario: usuario.id_usuario,
-            usuario: usuario.usuario,
-            rol: usuario.rol,
-        });
-
-        return { token, usuario };
+    async loginUsuario(user: LoginUsuarioInput): Promise<Usuario> {
+        return this.repository.loginUsuario(user);
     }
     
 }

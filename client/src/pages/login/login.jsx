@@ -1,5 +1,5 @@
-import './styles/login.css';
-import logo from '../assets/logo_aebnl.jpg';
+import '../styles/login.css';
+import logo from '../../assets/espina.png';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -36,8 +36,12 @@ function Login() {
       localStorage.setItem('token', data.token);
       localStorage.setItem('usuario', JSON.stringify(data.usuario));
 
-      // Redirigir a la página de gestión de beneficiarios
-      navigate('/beneficiarios');
+    //   La pagina principal será el tablero, pero por ahora se redirige a registro beneficiario
+      if (typeof onLoginSuccess === 'function') {
+        onLoginSuccess();
+      } else {
+        window.location.href = '/beneficiarios';
+      }
     } catch (error) {
       setError(error.message || 'Error de conexión');
     } finally {
@@ -49,7 +53,11 @@ function Login() {
     <div className='login-page'>
       <div className='login-card'>
         <div className='login-left'>
-          <img src={logo} alt='Asociación de Espina Bifida' className='logo-main' />
+          <img
+            src={logo}
+            alt='Asociación de Espina Bífida de Nuevo León, A.B.P.'
+            className='logo-main'
+          />
           <div className='brand-text'>
             <h1>ASEB</h1>
             <h2>Administración</h2>

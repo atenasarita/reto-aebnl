@@ -1,10 +1,10 @@
-import './styles/registro_beneficiario.css';
+import '../styles/registro_beneficiario.css';
 import {useRef, useState, useEffect} from 'react';
 import { FaCalendar, FaUpload } from 'react-icons/fa';
 import { TbSquareNumber1Filled,  TbSquareNumber2Filled, TbSquareNumber3Filled, TbSquareNumber4Filled,} from "react-icons/tb";
 import { useNavigate } from 'react-router-dom';
-import { soloLetras } from '../utils/validator';
-import FotoPerfilInput from '../components/layout/beneficiarios/FotoPerfilInput';
+import { soloLetras } from '../../utils/validator';
+import FotoPerfilInput from '../../components/layout/beneficiarios/FotoPerfilInput';
 
 const estadosMexico = [
     'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas', 'Chihuahua',
