@@ -1,4 +1,4 @@
-import './login.css';
+import './styles/login.css';
 import logo from '../assets/logo_aebnl.jpg';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { useState } from 'react';
