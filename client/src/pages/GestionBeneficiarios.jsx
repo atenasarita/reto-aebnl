@@ -1,49 +1,151 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './styles/GestionBeneficiarios.css'
 import SearchBar from '../components/ui/SearchBar'
 import Dropdown from '../components/ui/Dropdown'
 import Button from '../components/ui/Button'
 import BeneficiarioGrid from '../components/layout/beneficiarios/BeneficiarioGrid/BenecifiarioGrid'
-
 import { FiUserPlus, FiSearch } from 'react-icons/fi'
 
-function GestionBeneficiarios() {
-  const [query, setQuery] = useState('')
+// 1. Fix ESTATUS_OPTIONS — lowercase to match API
+const ESTATUS_OPTIONS = [
+  { label: 'Todos',    value: ''         },
+  { label: 'Activo',   value: 'activo'   }, 
+  { label: 'Inactivo', value: 'inactivo' }, 
+]
 
-  const handleSearch = (value) => {
-    setQuery(value)
-    // TODO: filter your beneficiaries list here, e.g.
-    // setFiltered( allBeneficiaries.filter(b => 
-    //   b.name.toLowerCase().includes(value.toLowerCase()) ||
-    //   b.folio.toLowerCase().includes(value.toLowerCase()) ||
-    //   b.curp.toLowerCase().includes(value.toLowerCase())
-    // ))
+function GestionBeneficiarios() {
+  const [all, setAll]           = useState([])   // raw list from API
+  const [filtered, setFiltered] = useState([])   // what the grid shows
+  const [query, setQuery]       = useState('')
+  const [estatus, setEstatus]   = useState('')   // '' = show all
+  const [loading, setLoading]   = useState(false)
+  const [error, setError]       = useState('')
+
+  useEffect(() => {
+    fetchBeneficiarios()
+  }, [])
+
+  async function fetchBeneficiarios() {
+    setLoading(true)
+    setError('')
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch('http://localhost:3000/api/beneficiarios', {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Error al cargar beneficiarios')
+      }
+
+      setAll(data)
+      setFiltered(data)
+    } catch (err) {
+      setError(err.message || 'Error de conexión')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // ── Filtering — runs whenever query or estatus changes ───────────────────────
+  useEffect(() => {
+    let result = all
+
+    if (query.trim()) {
+      const q = query.toLowerCase()
+      result = result.filter(b =>
+        `${b.identificadores.nombres} ${b.identificadores.apellido_paterno}`.toLowerCase().includes(q) ||
+        b.folio.toLowerCase().includes(q)   // ← folio is top-level, this one is fine
+      )
+    }
+
+    if (estatus) {
+      result = result.filter(b => b.estado === estatus) // ← b.estado not b.estatus
+    }
+
+    setFiltered(result)
+  }, [query, estatus, all])
+
+  // ── Server-side folio search (Buscar button) ─────────────────────────────────
+  async function handleBuscar() {
+    if (!query.trim()) {
+      fetchBeneficiarios() // empty query → reload all
+      return
+    }
+
+    setLoading(true)
+    setError('')
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch(`http://localhost:3000/api/beneficiarios/folio/${query.trim()}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'No se encontró el beneficiario')
+      }
+
+      // endpoint returns a single object, wrap in array for the grid
+      setFiltered(Array.isArray(data) ? data : [data])
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <>
-      <main>
-        <div className='content-container'> 
-          <div className='description'> 
-            <h1 className='title'>Gestion de Beneficiarios</h1>
-            <h2 className='subtitle'>Administra los beneficiarios, estatus y diagnostico</h2>
-          </div>
-
-          <div className='filter-bar'>
-            <SearchBar icon={<FiSearch/>} className='search-gestion' onSearch={handleSearch} debounceMs={250} />
-            <Button className='buscar-beneficiarios-btn' onClick={() => console.log('clicked buscar')}> Buscar </Button>
-
-            <Dropdown className='dropdown-gestion' />
-            <Button className='nuevo-beneficiario-btn' iconLeft={<FiUserPlus style={{margin: '4px 0 0'}}/>} onClick={() => console.log('clicked nuevo beneficiario')}> Nuevo Beneficiario </Button>
-          </div>
-
-          <div className='main-grid-beneficiarios'>
-            <BeneficiarioGrid />
-          </div>
-
+    <main>
+      <div className='content-container'>
+        <div className='description'>
+          <h1 className='title'>Gestion de Beneficiarios</h1>
+          <h2 className='subtitle'>Administra los beneficiarios, estatus y diagnostico</h2>
         </div>
-      </main>
-    </>
+
+        <div className='filter-bar'>
+          <SearchBar
+            icon={<FiSearch />}
+            className='search-gestion'
+            onSearch={setQuery}          // just update query, useEffect does the rest
+            debounceMs={250}
+          />
+          <Button className='buscar-beneficiarios-btn' onClick={handleBuscar}>
+            Buscar
+          </Button>
+
+          <Dropdown
+            className='dropdown-gestion'
+            options={ESTATUS_OPTIONS}
+            value={estatus}
+            onChange={(val) => setEstatus(val)}
+          />
+
+          <Button
+            className='nuevo-beneficiario-btn'
+            iconLeft={<FiUserPlus style={{ margin: '4px 0 0' }} />}
+            onClick={() => console.log('open modal nuevo beneficiario')}
+          >
+            Nuevo Beneficiario
+          </Button>
+        </div>
+
+        {error && <p className='error-msg'>{error}</p>}
+
+        <div className='main-grid-beneficiarios'>
+          <BeneficiarioGrid data={filtered} loading={loading} />
+        </div>
+      </div>
+    </main>
   )
 }
 
