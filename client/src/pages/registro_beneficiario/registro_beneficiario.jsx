@@ -1,4 +1,4 @@
-import './styles/registro_beneficiario.css';
+import '../styles/registro_beneficiario.css';
 import { FaCalendar, FaUser, FaBriefcaseMedical, FaHome, FaAddressCard, FaUpload } from 'react-icons/fa';
 
 function RegistroBeneficiario() {

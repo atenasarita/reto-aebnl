@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import './styles/GestionBeneficiarios.css'
-import SearchBar from '../components/ui/SearchBar'
-import Dropdown from '../components/ui/Dropdown'
-import Button from '../components/ui/Button'
-import BeneficiarioGrid from '../components/layout/beneficiarios/BeneficiarioGrid/BenecifiarioGrid'
+import '../styles/GestionBeneficiarios.css'
+import SearchBar from '../../components/ui/SearchBar'
+import Dropdown from '../../components/ui/Dropdown'
+import Button from '../../components/ui/Button'
+import BeneficiarioGrid from '../../components/layout/beneficiarios/BeneficiarioGrid/BenecifiarioGrid'
 import { FiUserPlus, FiSearch } from 'react-icons/fi'
 
 // 1. Fix ESTATUS_OPTIONS — lowercase to match API
