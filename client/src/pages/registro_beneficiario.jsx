@@ -1,5 +1,5 @@
 import './styles/registro_beneficiario.css';
-import {useRef, useState} from 'react';
+import {useRef, useState, useEffect} from 'react';
 import { FaCalendar, FaUpload } from 'react-icons/fa';
 import { TbSquareNumber1Filled,  TbSquareNumber2Filled, TbSquareNumber3Filled, TbSquareNumber4Filled,} from "react-icons/tb";
 import { useNavigate } from 'react-router-dom';
@@ -15,16 +15,21 @@ const estadosMexico = [
 ];
 
 const espinaTypes = [
-    { id: 1, nombre: 'Espina bifida oculta' },
-    { id: 2, nombre: 'Meningocele' },
-    { id: 3, nombre: 'Mielomeningocele' },
-    { id: 4, nombre: 'Lipomeningocele' },
-    // TODO { id: 5, nombre: 'Otro' } Falta ver como esto de que otro se va a manejar.
+  { id: 1, nombre: "Encefalocele" },
+  { id: 2, nombre: "Espina Bífida Oculta" },
+  { id: 3, nombre: "Hidrocefalia Congénita" },
+  { id: 4, nombre: "Lipo-Mielomeningocele" },
+  { id: 5, nombre: "Lipocele" },
+  { id: 6, nombre: "Médula Anclada" },
+  { id: 7, nombre: "Meningocele" },
+  { id: 8, nombre: "Mielomeningocele" },
+//   TODO { id: 9, nombre: "Otros" },  falta como se va a gestionar la parte de otros
 ];
 
 function RegistroBeneficiario() {
     const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState(0);
+    const [folio, setFolio] = useState('');
     const [fechaRegistro, setFechaRegistro] = useState(new Date().toISOString().split('T')[0]);
     const [fechaNacimiento, setFechaNacimiento] = useState("");
     const [formData, setFormData] = useState({
@@ -60,6 +65,31 @@ function RegistroBeneficiario() {
         { icon: TbSquareNumber3Filled, label: 'Domicilio' },
         { icon: TbSquareNumber4Filled, label: 'Membresía' }
     ];
+
+    // TODO hacer El endpoint para obtener el siguiente numero de folio
+    // useEffect(() => {
+    //     const fetchSiguienteFolio = async () => {
+    //         try {
+    //             const token = localStorage.getItem('token');
+    //             const response = await fetch('http://localhost:3000/api/beneficiarios/siguiente-folio', {
+    //                 headers: {
+    //                     Authorization: `Bearer ${token}`
+    //                 }
+    //             });
+
+    //             if (!response.ok) {
+    //                 throw new Error('No se pudo obtener el folio');
+    //             }
+
+    //             const data = await response.json();
+    //             setFolio(data.folio);
+    //         } catch (error) {
+    //             console.error(error);
+    //         }
+    //     };
+
+    //     fetchSiguienteFolio();
+    // }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -275,7 +305,7 @@ function RegistroBeneficiario() {
                         </div>
                             <div className="field-group full">
                             <label>Tipo de Espina Bifida</label>
-                            <div className="checkbox-group">
+                            <div className="checkbox-group" >
                                 {espinaTypes.map(type => (
                                     <label key={type.id} className="checkbox-card">
                                         <input 
@@ -349,7 +379,7 @@ function RegistroBeneficiario() {
                             ))}
                         </ul>
                         <div className="sidebar-buttons">
-                            <button className='btn btn-secondary'
+                            <button className='btn btn-danger'
                             onClick={() => {if (confirm("Seguro que quieres cancelar?")){navigate('/beneficiarios')}
                             }}>Cancelar</button>
 
@@ -375,7 +405,7 @@ function RegistroBeneficiario() {
                             <div className="meta-fields">
                                 <div className="field-group">
                                     <label>FOLIO (AUTOMATICO)</label>
-                                    <input type="text" readOnly />
+                                    <input type="text" value={folio} readOnly />
                                 </div>
                                 <div className="field-group">
                                     <label>FECHA DE REGISTRO</label>
