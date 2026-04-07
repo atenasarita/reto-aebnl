@@ -1,6 +1,7 @@
 import './styles/registro_beneficiario.css';
 import {useRef, useState} from 'react';
 import { FaCalendar, FaUser, FaBriefcaseMedical, FaHome, FaAddressCard, FaUpload } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const estadosMexico = [
     'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas', 'Chihuahua',
@@ -19,6 +20,7 @@ const espinaTypes = [
 ];
 
 function RegistroBeneficiario() {
+    const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState(0);
     const [fechaRegistro, setFechaRegistro] = useState(new Date().toISOString().split('T')[0]);
     const [fechaNacimiento, setFechaNacimiento] = useState("");
@@ -318,6 +320,10 @@ function RegistroBeneficiario() {
                             ))}
                         </ul>
                         <div className="sidebar-buttons">
+                            <button className='btn btn-secondary'
+                            onClick={() => {if (confirm("Seguro que quieres cancelar?")){navigate('/beneficiarios')}
+                            }}>Cancelar</button>
+
                             {currentStep > 0 && <button className="btn btn-secondary" onClick={handlePrev}>Anterior</button>}
                             {currentStep < steps.length - 1 ? (
                                 <button className="btn btn-primary" onClick={handleNext}>Continuar</button>

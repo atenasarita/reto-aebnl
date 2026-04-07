@@ -6,9 +6,11 @@ import Button from '../components/ui/Button'
 import BeneficiarioGrid from '../components/layout/beneficiarios/BeneficiarioGrid/BenecifiarioGrid'
 
 import { FiUserPlus, FiSearch } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
 
 function GestionBeneficiarios() {
   const [query, setQuery] = useState('')
+  const navigate = useNavigate()
 
   const handleSearch = (value) => {
     setQuery(value)
@@ -34,7 +36,10 @@ function GestionBeneficiarios() {
             <Button className='buscar-beneficiarios-btn' onClick={() => console.log('clicked buscar')}> Buscar </Button>
 
             <Dropdown className='dropdown-gestion' />
-            <Button className='nuevo-beneficiario-btn' iconLeft={<FiUserPlus style={{margin: '4px 0 0'}}/>} onClick={() => console.log('clicked nuevo beneficiario')}> Nuevo Beneficiario </Button>
+            <Button className='nuevo-beneficiario-btn' 
+            iconLeft={<FiUserPlus style={{margin: '4px 0 0'}}/>} 
+            onClick={() => navigate('/registro_beneficiario')}> 
+            Nuevo Beneficiario </Button>
           </div>
 
           <div className='main-grid-beneficiarios'>
