@@ -1,10 +1,15 @@
-import './registro_beneficiario.css';
+import './styles/registro_beneficiario.css';
+import {useRef, useState} from 'react';
 import { FaCalendar, FaUser, FaBriefcaseMedical, FaHome, FaAddressCard, FaUpload } from 'react-icons/fa';
 
 function RegistroBeneficiario() {
+    const [fechaRegistro, setFechaRegistro] = useState("");
+    const [fechaNacimiento, setFechaNacimiento] = useState("");
+
+    const fechaRegistroRef = useRef(null);
+    const fechaNacimientoRef = useRef(null);
     return(
         <div className="page">
-            {/* Navbar y top */}
             <main className="content">
                 <section className="page-header">
                     <h1>Registro de Nuevo Beneficiario</h1>
@@ -46,8 +51,14 @@ function RegistroBeneficiario() {
                                 <div className="field-group">
                                     <label>FECHA DE REGISTRO</label>
                                     <div className="input-with-icon">
-                                        <input type="text" placeholder="13 de Marzo, 2026" />
-                                        <FaCalendar className="icon" />
+                                        <input 
+                                        type="date" 
+                                        value={fechaRegistro}
+                                        onChange={(e) => setFechaRegistro(e.target.value)}
+                                         />
+                                        <FaCalendar 
+                                        className="icon" 
+                                        onClick={() => fechaRegistroRef.current?.showPicker()}/>
                                     </div>
                                 </div>
                             </div>
@@ -80,8 +91,13 @@ function RegistroBeneficiario() {
                             <div className="field-group">
                                 <label>Fecha de Nacimiento</label>
                                 <div className="input-with-icon">
-                                    <input type="text" placeholder="dd/mm/yyyy" />
-                                    <FaCalendar className="icon" />
+                                    <input type="date" 
+                                    value={fechaNacimiento}
+                                    onChange={(e) => setFechaNacimiento(e.target.value)}
+                                     />
+                                    <FaCalendar 
+                                    className="icon" 
+                                    onClick={() => fechaNacimientoRef.current?.showPicker()}/>
                                 </div>
                             </div>
 

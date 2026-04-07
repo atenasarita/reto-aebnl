@@ -201,16 +201,26 @@ body {
   align-items: center;
 }
 
-.input-with-icon input,
-.input-with-icon select {
-  padding-right: 45px;
+.input-with-icon input[type="date"] {
   width: 100%;
+  padding-right: 45px;
 }
 
 .input-with-icon .icon {
   position: absolute;
   right: 14px;
   color: #a0a9bb;
-  pointer-events: none;
   font-size: 18px;
+  z-index: 3;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 }
