@@ -231,10 +231,10 @@
   margin-top: 2px;
 }
 
-input[type="text"],
-input[type="date"],
-select,
-textarea {
+.prerregistro-container input[type="text"],
+.prerregistro-container input[type="date"],
+.prerregistro-container select,
+.prerregistro-container textarea {
   padding: 10px 14px;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
@@ -246,19 +246,16 @@ textarea {
   width: 100%;
 }
 
-input[type="text"]:focus,
-input[type="date"]:focus,
-select:focus,
-textarea:focus {
+.prerregistro-container input[type="text"]:focus,
+.prerregistro-container input[type="date"]:focus,
+.prerregistro-container select:focus,
+.prerregistro-container textarea:focus {
   outline: none;
   border-color: var(--border-focus);
   box-shadow: 0 0 0 3px rgba(63, 94, 194, 0.12);
 }
 
-textarea {
-  resize: vertical;
-  min-height: 80px;
-}
+.prerregistro-container textarea { resize: vertical; min-height: 80px; }
 
 .row-2 {
   display: grid;
