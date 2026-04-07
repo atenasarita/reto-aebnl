@@ -6,7 +6,7 @@ import Login from './pages/login'
 import RegistroBeneficiario from './pages/registro_beneficiario'
 
 import './App.css'
-import Prerregistro from './Prerregistro.jsx'
+import Prerregistro from './pages/Prerregistro.jsx'
 
 function App() {
   const [page, setPage] = useState('login');
@@ -16,6 +16,7 @@ return (
       <Routes>
         {/* Login primero */}
         <Route path="/" element={<Login />} />
+        <Route path="/prerregistro" element={<Prerregistro />} />
 
         {/* Rutas con layout (navbar, etc.) */}
         <Route element={<MainLayout />}>

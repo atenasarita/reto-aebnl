@@ -1,14 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
-html, body, #root {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  background-color: #1e2d5a;
-}
-
-*, *::before, *::after {
+.prerregistro-container *,
+.prerregistro-container *::before,
+.prerregistro-container *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
