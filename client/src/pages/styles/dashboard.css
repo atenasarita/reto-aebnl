@@ -458,3 +458,16 @@
     align-items: flex-start;
   }
 }
+
+.action-card-success {
+  background: #1f9d55;
+  color: white;
+}
+
+.action-card-icon-success {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.action-card-full {
+  grid-column: 1 / -1;
+}

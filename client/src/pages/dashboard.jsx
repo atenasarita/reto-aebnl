@@ -7,6 +7,7 @@ import {
     Cog,
     Info,
     Plus,
+    Receipt,
     User,
     UserPlus,
     X,
@@ -31,6 +32,13 @@ import {
       subtitle: "Gestionar horario médico",
       icon: CalendarDays,
       variant: "accent",
+    },
+    {
+      title: "Recibos",
+      subtitle: "Consultar y registrar pagos",
+      icon: Receipt,
+      variant: "success",
+      fullRow: true,
     },
   ];
   
@@ -72,9 +80,9 @@ import {
     },
   ];
   
-  function ActionCard({ title, subtitle, icon: Icon, variant }) {
+  function ActionCard({ title, subtitle, icon: Icon, variant, fullRow }) {
     return (
-      <button className={`action-card action-card-${variant}`}>
+      <button className={`action-card action-card-${variant} ${fullRow ? "action-card-full" : ""}`}>
         <div className={`action-card-icon action-card-icon-${variant}`}>
           <Icon size={30} />
         </div>
@@ -90,7 +98,6 @@ import {
       </button>
     );
   }
-  
   function AgendaCard() {
     return (
       <section className="agenda-panel">
