@@ -10,20 +10,18 @@ async function getConnection(): Promise<oracledb.Connection> {
 }
 
 export class PreregistroRepository implements IPreregistroRepository {
-
   // Crear nuevo preregistro
   async crear(data: CrearPreregistroBody): Promise<PreregistroRow> {
     const conn = await getConnection();
 
     try {
-      const result = await conn.execute<{ id_preregistro: number }>(
+      const result = await conn.execute(
         `INSERT INTO PREREGISTRO (
             NOMBRES,
             APELLIDO_PATERNO,
             APELLIDO_MATERNO,
             FECHA_NACIMIENTO,
             GENERO,
-            ID_ESPINA,
             CURP,
             ESTADO
          ) VALUES (
@@ -32,26 +30,41 @@ export class PreregistroRepository implements IPreregistroRepository {
             :apellido_materno,
             TO_DATE(:fecha_nacimiento, 'YYYY-MM-DD'),
             :genero,
-            :id_espina,
             :curp,
             'pendiente'
          ) RETURNING ID_PREREGISTRO INTO :id_preregistro`,
         {
-          nombres:           data.nombres,
-          apellido_paterno:  data.apellido_paterno,
-          apellido_materno:  data.apellido_materno,
-          fecha_nacimiento:  data.fecha_nacimiento,
-          genero:            data.genero    ?? null,
-          id_espina:         data.id_espina ?? null,
-          curp:              data.curp,
-          id_preregistro:    { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
+          nombres: data.nombres,
+          apellido_paterno: data.apellido_paterno,
+          apellido_materno: data.apellido_materno,
+          fecha_nacimiento: data.fecha_nacimiento,
+          genero: data.genero ?? null,
+          curp: data.curp,
+          id_preregistro: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
         },
-        { autoCommit: true }
       );
 
       const newId = (result.outBinds as any).id_preregistro[0];
+
+      for (const id of data.espinaBifida) {
+        await conn.execute(
+          `INSERT INTO PREREGISTRO_ESPINA 
+         (ID_PREREGISTRO, ID_ESPINA, OTROS)
+         VALUES (:id_preregistro, :id_espina, :otro)`,
+          {
+            id_preregistro: newId,
+            id_espina: id,
+            otro: id === 9 ? data.diagnostico_otro : null,
+          }
+        );
+      }
+      await conn.commit();
+
       return this.obtenerPorId(newId) as Promise<PreregistroRow>;
 
+    } catch (err) {
+      await conn.rollback();
+      throw err;
     } finally {
       await conn.close();
     }
@@ -70,7 +83,6 @@ export class PreregistroRepository implements IPreregistroRepository {
             APELLIDO_MATERNO,
             FECHA_NACIMIENTO,
             GENERO,
-            ID_ESPINA,
             CURP,
             ID_BENEFICIARIO,
             ESTADO
@@ -100,7 +112,6 @@ export class PreregistroRepository implements IPreregistroRepository {
             APELLIDO_MATERNO,
             FECHA_NACIMIENTO,
             GENERO,
-            ID_ESPINA,
             CURP,
             ID_BENEFICIARIO,
             ESTADO
