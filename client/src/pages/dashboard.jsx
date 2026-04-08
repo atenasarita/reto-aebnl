@@ -165,7 +165,7 @@ function AgendaCard({ agendaItems }) {
   );
 }
 
-function PreregistroCard({ preregistroItems }) {
+function PreregistroCard({ preregistroItems, onUpdateEstado }) {
   return (
     <section className="preregistro-panel">
       <div className="preregistro-header">
@@ -195,10 +195,16 @@ function PreregistroCard({ preregistroItems }) {
               </div>
 
               <div className="preregistro-actions">
-                <button className="mini-btn approve">
+                <button
+                  className="mini-btn approve"
+                  onClick={() => onUpdateEstado(item.id_preregistro, "aceptado")}
+                >
                   <Check size={28} />
                 </button>
-                <button className="mini-btn reject">
+                <button
+                  className="mini-btn reject"
+                  onClick={() => onUpdateEstado(item.id_preregistro, "rechazado")}
+                >
                   <X size={28} />
                 </button>
               </div>
@@ -216,49 +222,79 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
+  const loadDashboard = async () => {
     const token = localStorage.getItem("token");
 
-    const loadDashboard = async () => {
-      try {
-        setLoading(true);
-        setError("");
+    try {
+      setLoading(true);
+      setError("");
 
-        const [agendaRes, preregistroRes] = await Promise.all([
-          fetch(`${API_URL}/dashboard/agenda-hoy`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-          fetch(`${API_URL}/dashboard/preregistro-pendientes`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-        ]);
+      const [agendaRes, preregistroRes] = await Promise.all([
+        fetch(`${API_URL}/dashboard/agenda-hoy`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }),
+        fetch(`${API_URL}/dashboard/preregistro-pendientes`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }),
+      ]);
 
-        const agendaData = await agendaRes.json();
-        const preregistroData = await preregistroRes.json();
+      const agendaData = await agendaRes.json();
+      const preregistroData = await preregistroRes.json();
 
-        if (!agendaRes.ok) {
-          throw new Error(agendaData.message || "No se pudo cargar la agenda");
-        }
-
-        if (!preregistroRes.ok) {
-          throw new Error(preregistroData.message || "No se pudo cargar el pre-registro");
-        }
-
-        setAgendaItems(Array.isArray(agendaData) ? agendaData : []);
-        setPreregistroItems(Array.isArray(preregistroData) ? preregistroData : []);
-      } catch (err) {
-        setError(err.message || "Error al cargar dashboard");
-      } finally {
-        setLoading(false);
+      if (!agendaRes.ok) {
+        throw new Error(agendaData.message || "No se pudo cargar la agenda");
       }
-    };
 
+      if (!preregistroRes.ok) {
+        throw new Error(preregistroData.message || "No se pudo cargar el pre-registro");
+      }
+
+      setAgendaItems(Array.isArray(agendaData) ? agendaData : []);
+      setPreregistroItems(Array.isArray(preregistroData) ? preregistroData : []);
+    } catch (err) {
+      setError(err.message || "Error al cargar dashboard");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadDashboard();
   }, []);
+
+  const updatePreregistroEstado = async (idPreregistro, nuevoEstado) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(
+        `${API_URL}/dashboard/preregistro/${idPreregistro}/estado`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ estado: nuevoEstado }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "No se pudo actualizar el estado");
+      }
+
+      setPreregistroItems((prev) =>
+        prev.filter((item) => item.id_preregistro !== idPreregistro)
+      );
+    } catch (err) {
+      alert(err.message || "Error al actualizar preregistro");
+    }
+  };
 
   if (loading) {
     return (
@@ -291,7 +327,10 @@ export default function Dashboard() {
 
         <section className="dashboard-lower-grid">
           <AgendaCard agendaItems={agendaItems} />
-          <PreregistroCard preregistroItems={preregistroItems} />
+          <PreregistroCard
+            preregistroItems={preregistroItems}
+            onUpdateEstado={updatePreregistroEstado}
+          />
         </section>
       </main>
     </div>

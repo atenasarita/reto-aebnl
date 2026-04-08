@@ -3,6 +3,7 @@ import { OracleConnection } from '../db/oracle';
 import {
   SELECT_AGENDA_HOY,
   SELECT_PREREGISTRO_PENDIENTE,
+  UPDATE_PREREGISTRO_ESTADO,
 } from './dashboard.queries';
 
 type AgendaRow = {
@@ -111,6 +112,33 @@ export class DashboardRepository {
         estado: row.ESTADO ?? '',
         id_beneficiario: row.ID_BENEFICIARIO,
       }));
+    } finally {
+      if (connection) {
+        await connection.close();
+      }
+    }
+  }
+
+  async updatePreregistroEstado(idPreregistro: number, estado: string) {
+    let connection: oracledb.Connection | undefined;
+
+    try {
+      connection = await this.oracleConnection.getConnection();
+
+      const result = await connection.execute(
+        UPDATE_PREREGISTRO_ESTADO,
+        {
+          estado,
+          id_preregistro: idPreregistro,
+        },
+        {
+          autoCommit: true,
+        }
+      );
+
+      return {
+        updated: (result.rowsAffected ?? 0) > 0,
+      };
     } finally {
       if (connection) {
         await connection.close();

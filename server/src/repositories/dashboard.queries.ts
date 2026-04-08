@@ -43,3 +43,9 @@ export const SELECT_PREREGISTRO_PENDIENTE = `
   WHERE UPPER(TRIM(p.estado)) = 'PENDIENTE'
   ORDER BY p.id_preregistro DESC
 `.trim();
+
+export const UPDATE_PREREGISTRO_ESTADO = `
+  UPDATE PREREGISTRO
+  SET ESTADO = :estado
+  WHERE ID_PREREGISTRO = :id_preregistro
+`.trim();

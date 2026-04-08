@@ -22,4 +22,10 @@ router.get(
   handler.getPreregistroPendiente
 );
 
+router.patch(
+  '/dashboard/preregistro/:id/estado',
+  authenticateJWT,
+  handler.updatePreregistroEstado
+);
+
 export default router;
