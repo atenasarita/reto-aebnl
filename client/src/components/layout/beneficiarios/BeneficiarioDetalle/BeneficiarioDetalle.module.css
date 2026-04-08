@@ -1,0 +1,151 @@
+/* BeneficiarioDetalle.module.css */
+* { box-sizing: border-box; }
+
+.topSection {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.topInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+}
+
+.modal {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1rem 2rem;
+  width: 100%;
+  max-width: 1000px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.tabs {
+  display: flex;
+  gap: 2rem;
+}
+
+.tab {
+  font-size: 14px;
+  color: #6b7280;
+  cursor: pointer;
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+}
+
+.tab.active {
+  color: #111827;
+  font-weight: 500;
+  border-bottom: 2px solid #111827;
+}
+
+.closeBtn {
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.modalBody {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+}
+
+.col {
+  padding: 1.25rem;
+}
+
+.dividerV {
+  background: #f3f4f6;
+  width: 1px;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #e5e7eb;  
+}
+
+.sectionLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1E3B8A;
+  margin: 1rem 0 0.5rem;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 80px;
+}
+
+.wide { flex: 2; }
+.full { flex: 1 1 100%; }
+
+.fieldLabel {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.fieldValue {
+  font-size: 13px;
+  color: #111827;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 8px;
+  padding: 5px 8px;
+  min-height: 28px;
+}
+
+.placeholder {
+  color: #d1d5db;
+}
