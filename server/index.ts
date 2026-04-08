@@ -4,6 +4,8 @@ import 'dotenv/config';
 import usuariosRoutes from "./src/routes/usuarios.routes";
 import beneficiariosRoutes from "./src/routes/beneficiarios.routes";
 import { errorMiddleware } from './src/middlewares/error.middleware.ts';
+import dashboardRoutes from "./src/routes/dashboard.routes";
+
 
 const app = express();
 const PORT = 3000
@@ -17,6 +19,7 @@ app.get("/", (req, res) => {
 
 app.use('/api', usuariosRoutes);
 app.use('/api', beneficiariosRoutes);
+app.use('/api', dashboardRoutes);
 
 app.use(errorMiddleware);
 

@@ -31,13 +31,12 @@ function Login({ onLoginSuccess }) {
       }
 
       localStorage.setItem('token', data.token);
-      localStorage.setItem('usuario', JSON.stringify(data.usuario));
+      localStorage.setItem('usuario', JSON.stringify(data.user));
 
-    //   La pagina principal será el tablero, pero por ahora se redirige a registro beneficiario
       if (typeof onLoginSuccess === 'function') {
         onLoginSuccess();
       } else {
-        window.location.href = '/registro_beneficiario';
+        window.location.href = '/dashboard';
       }
     } catch (error) {
       setError(error.message || 'Error de conexión');

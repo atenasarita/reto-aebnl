@@ -28,6 +28,10 @@
   text-align: left;
 }
 
+.action-card-full {
+  grid-column: 1 / -1;
+}
+
 .action-card-primary {
   background: #2847a8;
   color: white;
@@ -41,6 +45,11 @@
 
 .action-card-accent {
   background: #f4a300;
+  color: white;
+}
+
+.action-card-success {
+  background: #1f9d55;
   color: white;
 }
 
@@ -64,6 +73,10 @@
 }
 
 .action-card-icon-accent {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.action-card-icon-success {
   background: rgba(0, 0, 0, 0.08);
 }
 
@@ -91,7 +104,8 @@
   color: #6c7a90;
 }
 
-.action-card-accent .action-card-text p {
+.action-card-accent .action-card-text p,
+.action-card-success .action-card-text p {
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -218,6 +232,13 @@
   background: #f3f4f6;
 }
 
+.agenda-avatar.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+}
+
 .agenda-profile-text h3 {
   margin: 10px 0 8px 0;
   font-size: 28px;
@@ -271,7 +292,7 @@
 
 .agenda-btn.muted {
   background: #eef3fa;
-  color: #b0baca;
+  color: #75839a;
 }
 
 .agenda-btn.secondary {
@@ -307,11 +328,6 @@
   color: #f4a300;
   font-size: 14px;
   font-weight: 700;
-}
-
-.priority-asterisk {
-  font-size: 26px;
-  line-height: 1;
 }
 
 .preregistro-panel {
@@ -419,9 +435,46 @@
   color: #eb4b4b;
 }
 
+.loading-state,
+.error-state,
+.empty-panel-state,
+.empty-side-state {
+  background: white;
+  border: 1px solid #dbe3ee;
+  border-radius: 24px;
+  padding: 40px;
+  text-align: center;
+}
+
+.empty-panel-state,
+.empty-side-state {
+  margin-top: 16px;
+}
+
+.empty-panel-state svg,
+.empty-side-state svg {
+  color: #94a3b8;
+  margin-bottom: 12px;
+}
+
+.empty-panel-state h3,
+.empty-side-state h3 {
+  margin: 0 0 8px 0;
+}
+
+.empty-panel-state p,
+.empty-side-state p {
+  margin: 0;
+  color: #64748b;
+}
+
 @media (max-width: 1200px) {
   .dashboard-actions {
     grid-template-columns: 1fr;
+  }
+
+  .action-card-full {
+    grid-column: auto;
   }
 
   .dashboard-lower-grid {
@@ -459,15 +512,35 @@
   }
 }
 
-.action-card-success {
-  background: #1f9d55;
-  color: white;
+.agenda-tag {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 700;
 }
 
-.action-card-icon-success {
-  background: rgba(0, 0, 0, 0.08);
+.agenda-tag.blue {
+  background: #dce7ff;
+  color: #2f5bd3;
 }
 
-.action-card-full {
-  grid-column: 1 / -1;
+.agenda-tag.purple {
+  background: #eddcff;
+  color: #9349d8;
+}
+
+.agenda-tag.green {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.agenda-tag.orange {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+.agenda-tag.red {
+  background: #fee2e2;
+  color: #dc2626;
 }
