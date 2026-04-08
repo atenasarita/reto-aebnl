@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import GestionBeneficiarios from './pages/GestionBeneficiarios.jsx'
 import App from './App.jsx'
-import Prerregistro from './Prerregistro.jsx'
+import Prerregistro from './pages/Prerregistro.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

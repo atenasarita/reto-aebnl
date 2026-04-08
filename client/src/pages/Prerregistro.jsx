@@ -331,7 +331,7 @@ export default function Prerregistro() {
       fecha_nacimiento: demografia.fecha,
       genero: demografia.genero,
       curp: demografia.curp,
-      id_espina: diagnostico.espinaBifida?.length ? Number(diagnostico.espinaBifida[0]) : null,
+      espinaBifida: diagnostico.espinaBifida,
       diagnostico_otro: diagnostico.otrosTexto || null,
     };
 

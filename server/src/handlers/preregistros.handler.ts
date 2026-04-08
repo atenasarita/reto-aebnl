@@ -29,6 +29,11 @@ export async function crearPreregistro(req: Request, res: Response): Promise<voi
     return;
   }
 
+  if (!body.espinaBifida || body.espinaBifida.length === 0) {
+    res.status(400).json({ message: "Debe seleccionar al menos un diagnóstico." });
+    return;
+  }
+
   try {
     const nuevo = await repo.crear(body);
     res.status(201).json({
