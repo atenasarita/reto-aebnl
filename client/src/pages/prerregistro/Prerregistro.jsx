@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./Prerregistro.css";
+import "../styles/Prerregistro.css";
 
 const espinaBifidaOptions = [
   { value: 1, label: "Encefalocele" },
