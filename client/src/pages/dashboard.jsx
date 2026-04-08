@@ -74,6 +74,35 @@ function ActionCard({ title, subtitle, icon: Icon, variant, fullRow }) {
   );
 }
 
+function formatHora12(hora) {
+  if (!hora) return "";
+
+  const [rawHours, rawMinutes] = hora.split(":");
+  const hours = Number(rawHours);
+  const minutes = rawMinutes ?? "00";
+
+  if (Number.isNaN(hours)) return hora;
+
+  const suffix = hours >= 12 ? "PM" : "AM";
+  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+
+  return `${String(hour12).padStart(2, "0")}:${minutes} ${suffix}`;
+}
+
+function getTimelineStatusClass(item) {
+  if (!item?.fecha || !item?.hora) return "future";
+
+  const citaDate = new Date(`${item.fecha}T${item.hora}:00`);
+  const now = new Date();
+  const diffMs = citaDate.getTime() - now.getTime();
+  const diffHours = diffMs / (1000 * 60 * 60);
+
+  if (diffHours < 0) return "past";
+  if (diffHours <= 2) return "soon";
+
+  return "future";
+}
+
 function AgendaCard({ agendaItems }) {
   if (!agendaItems.length) {
     return (
@@ -89,6 +118,8 @@ function AgendaCard({ agendaItems }) {
           <p>No hay registros de agenda para la fecha actual.</p>
         </div>
       </section>
+
+      
     );
   }
 
@@ -100,67 +131,67 @@ function AgendaCard({ agendaItems }) {
       </div>
 
       <div className="agenda-timeline">
-        {agendaItems.map((item, index) => (
-          <div className="agenda-row" key={item.id_cita}>
-            <div className={`timeline-line ${index === 0 ? "active" : ""}`}>
-              <div className={`timeline-dot ${index === 0 ? "active" : ""}`}></div>
-            </div>
+  {agendaItems.map((item) => (
+    <div className="agenda-row" key={item.id_cita}>
+      <div className={`timeline-line ${getTimelineStatusClass(item)}`}>
+        <div className={`timeline-dot ${getTimelineStatusClass(item)}`}></div>
+      </div>
 
-            <div className="agenda-item-card">
-              <div className="agenda-item-top">
-                <div className="agenda-profile">
-                  {item.fotografia ? (
-                    <img
-                      src={item.fotografia}
-                      alt={item.nombre_completo}
-                      className="agenda-avatar"
-                    />
-                  ) : (
-                    <div className="agenda-avatar placeholder">
-                      <User size={34} />
-                    </div>
-                  )}
+      <div className="agenda-item-card">
+        <div className="agenda-item-top">
+          <div className="agenda-profile">
+            {item.fotografia ? (
+              <img
+                src={item.fotografia}
+                alt={item.nombre_completo}
+                className="agenda-avatar"
+              />
+            ) : (
+              <div className="agenda-avatar placeholder">
+                <User size={34} />
+              </div>
+            )}
 
-                  <div className="agenda-profile-text">
-                    <div className={`agenda-tag ${getAgendaTagClass(item)}`}>
-                      {item.hora} • {item.servicio_nombre || "Servicio"}
-                    </div>
-
-                    <h3>{item.nombre_completo || "Beneficiario sin nombre"}</h3>
-                    <p>
-                      {item.especialista_nombre || "Especialista"} • {item.folio || "Sin folio"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="agenda-actions">
-                  <button className={`agenda-btn ${index === 0 ? "primary" : "muted"}`}>
-                    {item.estatus || "Pendiente"}
-                  </button>
-                  <button className="agenda-btn secondary">Ver Historial</button>
-                </div>
+            <div className="agenda-profile-text">
+              <div className={`agenda-tag ${getAgendaTagClass(item)}`}>
+                {formatHora12(item.hora)} • {item.servicio_nombre || "Servicio"}
               </div>
 
-              <div className="agenda-item-bottom">
-                <div className="agenda-note-left">
-                  {item.motivo ? (
-                    <>
-                      <Info size={16} />
-                      <span>{item.motivo}</span>
-                    </>
-                  ) : (
-                    <span>Sin motivo registrado</span>
-                  )}
-                </div>
-
-                <div className="agenda-note-right">
-                  {item.notas ? <span>{item.notas}</span> : <span>Sin notas</span>}
-                </div>
-              </div>
+              <h3>{item.nombre_completo || "Beneficiario sin nombre"}</h3>
+              <p>
+                {item.especialista_nombre || "Especialista"} • {item.folio || "Sin folio"}
+              </p>
             </div>
           </div>
-        ))}
+
+          <div className="agenda-actions">
+            <button className={`agenda-btn ${getTimelineStatusClass(item) === "past" ? "muted" : "primary"}`}>
+              {item.estatus || "Pendiente"}
+            </button>
+            <button className="agenda-btn secondary">Ver Historial</button>
+          </div>
+        </div>
+
+        <div className="agenda-item-bottom">
+          <div className="agenda-note-left">
+            {item.motivo ? (
+              <>
+                <Info size={16} />
+                <span>{item.motivo}</span>
+              </>
+            ) : (
+              <span>Sin motivo registrado</span>
+            )}
+          </div>
+
+          <div className="agenda-note-right">
+            {item.notas ? <span>{item.notas}</span> : <span>Sin notas</span>}
+          </div>
+        </div>
       </div>
+    </div>
+  ))}
+</div>
     </section>
   );
 }
