@@ -54,6 +54,15 @@ export class BeneficiariosHandler {
     }
   };
 
+  getBeneficiariosWithMembresiaEndingSoon = async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const beneficiarios = await this.beneficiariosController.getBeneficiariosWithMembresiaEndingSoon();
+      return res.status(200).json(beneficiarios);
+    } catch (error) {
+      return next(error);
+    }
+  };
+
   createBeneficiario = async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body as CreateBeneficiarioInput;
 

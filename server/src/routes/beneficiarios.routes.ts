@@ -19,9 +19,11 @@ const beneficiariosHandler = new BeneficiariosHandler(beneficiariosController);
 
 router.get('/beneficiarios', authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getBeneficiarios);
 
+router.get('/beneficiarios/proximas-a-vencer/membresias', authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getBeneficiariosWithMembresiaEndingSoon);
+
 router.get('/beneficiarios/folio/:folio', authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getBeneficiarioByFolio);
 
-router.get('/beneficiarios/:id_beneficiario',authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getBeneficiarioById);
+router.get('/beneficiarios/:id_beneficiario', authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getBeneficiarioById);
 
 router.post('/beneficiarios', authenticateJWT, authorizeRoles('administrador', 'operador'), validateBody(createBeneficiarioSchema), beneficiariosHandler.createBeneficiario);
 
