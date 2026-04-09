@@ -60,7 +60,7 @@ body {
 }
 
 .step.active {
-  color: #28489f;
+  color: #ffffff;
 }
 
 .step-icon {
@@ -77,7 +77,7 @@ body {
   height: 58px;
   border-radius: 14px;
   border: none;
-  font-size: 18px;
+  font-size: 15px;
   cursor: pointer;
 }
 
@@ -307,10 +307,42 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .checkbox-card input[type="checkbox"] {
+  display: none;
+}
+
+.checkbox-card-mark {
   width: 18px;
   height: 18px;
-  accent-color: #28489f;
-  cursor: pointer;
+  border-radius: 4px;
+  border: 2px solid #d3dbe7;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  background: white;
+  position: relative;
+}
+
+.checkbox-card.checked {
+  border-color: #28489f;
+  background: #e8f0ff;
+  color: #28489f;
+}
+
+.checkbox-card.checked .checkbox-card-mark {
+  background: #28489f;
+  border-color: #28489f;
+}
+
+.checkbox-card.checked .checkbox-card-mark::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 6px;
+  height: 10px;
+  border: 2px solid white;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
 }
 
 .checkbox-card span {

@@ -1,10 +1,12 @@
 import '../styles/registro_beneficiario.css';
 import {useRef, useState, useEffect} from 'react';
-import { FaCalendar, FaUpload } from 'react-icons/fa';
+import { FaCalendar } from 'react-icons/fa';
 import { TbSquareNumber1Filled,  TbSquareNumber2Filled, TbSquareNumber3Filled, TbSquareNumber4Filled,} from "react-icons/tb";
 import { useNavigate } from 'react-router-dom';
-import { soloLetras } from '../../utils/validator';
+import { espinaBifidaOptions } from '../../utils/espinaBifidaTypes';
+import { soloLetras, limpiarSoloLetras } from '../../utils/validator';
 import FotoPerfilInput from '../../components/layout/beneficiarios/FotoPerfilInput';
+
 
 const estadosMexico = [
     'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas', 'Chihuahua',
@@ -14,17 +16,17 @@ const estadosMexico = [
     'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala', 'Veracruz', 'Yucatan', 'Zacatecas'
 ];
 
-const espinaTypes = [
-  { id: 1, nombre: "Encefalocele" },
-  { id: 2, nombre: "Espina Bífida Oculta" },
-  { id: 3, nombre: "Hidrocefalia Congénita" },
-  { id: 4, nombre: "Lipo-Mielomeningocele" },
-  { id: 5, nombre: "Lipocele" },
-  { id: 6, nombre: "Médula Anclada" },
-  { id: 7, nombre: "Meningocele" },
-  { id: 8, nombre: "Mielomeningocele" },
-//   TODO { id: 9, nombre: "Otros" },  falta como se va a gestionar la parte de otros
-];
+// const espinaTypes = [
+//   { id: 1, nombre: "Encefalocele" },
+//   { id: 2, nombre: "Espina Bífida Oculta" },
+//   { id: 3, nombre: "Hidrocefalia Congénita" },
+//   { id: 4, nombre: "Lipo-Mielomeningocele" },
+//   { id: 5, nombre: "Lipocele" },
+//   { id: 6, nombre: "Médula Anclada" },
+//   { id: 7, nombre: "Meningocele" },
+//   { id: 8, nombre: "Mielomeningocele" },
+// //   TODO { id: 9, nombre: "Otros" },  falta como se va a gestionar la parte de otros
+// ];
 
 function RegistroBeneficiario() {
     const navigate = useNavigate();
@@ -93,15 +95,34 @@ function RegistroBeneficiario() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        if(name === 'nombres' || name === 'apellido_paterno' || name === 'apellido_materno'){
-            if(!soloLetras(value)) return;
+
+        // Campos solo letras
+        if (
+            name === 'nombres' ||
+            name === 'apellido_paterno' ||
+            name === 'apellido_materno'
+        ) {
+            const limpio = limpiarSoloLetras(value);
+
+            setFormData(prev => ({
+                ...prev,
+                [name]: limpio
+            }));
+            return;
         }
-        setFormData(prev => ({ ...prev, [name]: value }));
+
+        // Otros campos
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
     const handleTipoEspinasChange = (e) => {
         const { value, checked } = e.target;
         const id = parseInt(value);
+        // console.log("clicked", id, checked);
+
         setFormData(prev => ({
             ...prev,
             tipo_espinas: checked 
@@ -138,8 +159,13 @@ function RegistroBeneficiario() {
         setLoading(true);
         setError('');
         try {
-            if(!formData.nombres.trim() || !formData.apellido_paterno.trim() || !formData.apellido_materno.trim() ) {
-                setError('El nombre y apellidos son obligaotrios es obligatorio');
+            // Validacion del input
+            if(
+                !soloLetras(formData.nombres) ||
+                !soloLetras(formData.apellido_paterno)||
+                !soloLetras(formData.apellido_materno)
+            ) {
+                setError('El nombre y apellidos son campos obligatorios');
                 setLoading(false);
                 return;
             }
@@ -306,15 +332,16 @@ function RegistroBeneficiario() {
                             <div className="field-group full">
                             <label>Tipo de Espina Bifida</label>
                             <div className="checkbox-group" >
-                                {espinaTypes.map(type => (
-                                    <label key={type.id} className="checkbox-card">
+                                {espinaBifidaOptions.map(type => (
+                                    <label key={type.value} className={`checkbox-card ${formData.tipo_espinas.includes(type.value) ? 'checked' : ''}`}>
                                         <input 
                                             type="checkbox" 
-                                            value={type.id} 
-                                            checked={formData.tipo_espinas.includes(type.id)}
+                                            value={type.value} 
+                                            checked={formData.tipo_espinas.includes(type.value)}
                                             onChange={handleTipoEspinasChange}
                                         />
-                                        <span>{type.nombre}</span>
+                                        <div className="checkbox-card-mark"></div>
+                                        <span>{type.label}</span>
                                     </label>
                                 ))}
                             </div>
@@ -404,7 +431,7 @@ function RegistroBeneficiario() {
 
                             <div className="meta-fields">
                                 <div className="field-group">
-                                    <label>FOLIO (AUTOMATICO)</label>
+                                    <label>FOLIO DE BENEFICIARIO</label>
                                     <input type="text" value={folio} readOnly />
                                 </div>
                                 <div className="field-group">
@@ -415,7 +442,7 @@ function RegistroBeneficiario() {
                                             value={fechaRegistro}
                                             readOnly
                                         />
-                                        <FaCalendar className="icon" />
+                                        
                                     </div>
                                 </div>
                             </div>
