@@ -192,9 +192,23 @@ function BeneficiarioDetalle({ beneficiario, onClose }) {
             <div className={styles.row}>
               <div className={`${styles.field} ${styles.full}`}>
                 <span className={styles.fieldLabel}>Notas</span>
-                <span className={`${styles.fieldValue} ${styles.placeholder}`} style={{minHeight:'52px'}}>—</span>
+                <span className={`${styles.fieldValue} ${styles.placeholder}`} style={{minHeight:'32px'}}>—</span>
               </div>
             </div>
+
+              <p className={styles.sectionLabel}>Vigencia de Membresía</p>
+
+              <div className={styles.row}>
+              <div className={`${styles.field} ${styles.wide}`}>
+                <span className={styles.fieldLabel}>Desde</span>
+                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
+              </div>
+              <div className={`${styles.field} ${styles.wide}`}>
+                <span className={styles.fieldLabel}>Hasta</span>
+                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
+              </div>
+            </div>
+
 
           </div>
         </div>
