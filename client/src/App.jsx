@@ -7,6 +7,7 @@ import RegistroBeneficiario from './pages/registro_beneficiario/registro_benefic
 
 import './App.css'
 import Prerregistro from './pages/Prerregistro/Prerregistro'
+import Inventario from './pages/inventario/inventario'
 
 function App() {
   const [page, setPage] = useState('login');
@@ -22,6 +23,7 @@ return (
         <Route element={<MainLayout />}>
           <Route path="/beneficiarios" element={<GestionBeneficiarios />} />
           <Route path="/registro_beneficiario" element={<RegistroBeneficiario />} />
+          <Route path="/inventario" element={<Inventario />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -1,0 +1,67 @@
+.pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  background: #ffffff;
+  border-top: 0.5px solid #e2e8f0;
+}
+
+.resumen {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.controles {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btnNav,
+.btnPagina {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.5px solid #bac4d2;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #64748b;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btnNav:hover:not(:disabled),
+.btnPagina:hover:not(:disabled) {
+  background: #f8fafc;
+}
+
+.btnNav:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btnPaginaActiva {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #334155;
+  font-weight: 600;
+}
+
+.ellipsis {
+  min-width: 28px;
+  text-align: center;
+  font-size: 15px;
+  color: #64748b;
+  user-select: none;
+}

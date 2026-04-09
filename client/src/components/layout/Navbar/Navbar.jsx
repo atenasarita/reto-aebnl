@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import logo from "../../../assets/logo.png";
 
 const NAV_LINKS = [
   { label: "Tablero", to: "/tablero" },
-  { label: "Beneficiarios", href: "/beneficiarios" },
+  { label: "Beneficiarios", to: "/beneficiarios" },
   { label: "Servicios", to: "/servicios" },
   { label: "Inventario", to: "/inventario" },
   { label: "Citas", to: "/citas" },
@@ -15,7 +16,12 @@ function Navbar({
   activeLink = "Beneficiarios",
   user = { name: "USUARIO DEMO", role: "Administrador", avatar: null },
 }) {
+  const navigate = useNavigate();
   const [active, setActive] = useState(activeLink);
+
+  useEffect(() => {
+    setActive(activeLink);
+  }, [activeLink]);
 
   return (
     <nav className={styles.navbar}>
@@ -28,8 +34,14 @@ function Navbar({
         {NAV_LINKS.map((link) => (
           <button
             key={link.label}
+            type="button"
             className={`${styles.link} ${active === link.label ? styles.linkActive : ""}`}
-            onClick={() => setActive(link.label)}
+            onClick={() => {
+              setActive(link.label);
+              if (link.to) {
+                navigate(link.to);
+              }
+            }}
           >
             {link.label}
           </button>
