@@ -3,6 +3,7 @@ import {
   ArrowRight,
   CalendarDays,
   Check,
+  ChevronDown,
   ClipboardPlus,
   Info,
   Plus,
@@ -197,6 +198,12 @@ function AgendaCard({ agendaItems }) {
 }
 
 function PreregistroCard({ preregistroItems, onUpdateEstado }) {
+  const [openId, setOpenId] = useState(null);
+
+  const toggleItem = (id) => {
+    setOpenId((prev) => (prev === id ? null : id));
+  };
+
   return (
     <section className="preregistro-panel">
       <div className="preregistro-header">
@@ -212,35 +219,110 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
             <p>No hay personas en pre-registro por ahora.</p>
           </div>
         ) : (
-          preregistroItems.map((item) => (
-            <div className="preregistro-item" key={item.id_preregistro}>
-              <div className="preregistro-left">
-                <div className="preregistro-avatar">
-                  <User size={24} />
+          preregistroItems.map((item) => {
+            const isOpen = openId === item.id_preregistro;
+
+            return (
+              <div
+                className={`preregistro-card-wrapper ${isOpen ? "open" : ""}`}
+                key={item.id_preregistro}
+              >
+                <div
+                  className="preregistro-item"
+                  onClick={() => toggleItem(item.id_preregistro)}
+                >
+                  <div className="preregistro-left">
+                    <div className="preregistro-avatar">
+                      <User size={24} />
+                    </div>
+
+                    <div className="preregistro-text">
+                      <h3>{item.nombre_completo || "Sin nombre"}</h3>
+                      <p>{item.estado || "pendiente"}</p>
+                    </div>
+                  </div>
+
+                  <div
+                    className="preregistro-right"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="preregistro-actions">
+                      <button
+                        className="mini-btn approve"
+                        onClick={() => onUpdateEstado(item.id_preregistro, "aceptado")}
+                      >
+                        <Check size={26} />
+                      </button>
+                      <button
+                        className="mini-btn reject"
+                        onClick={() => onUpdateEstado(item.id_preregistro, "rechazado")}
+                      >
+                        <X size={26} />
+                      </button>
+                    </div>
+
+                    <button
+                      className={`expand-btn ${isOpen ? "open" : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleItem(item.id_preregistro);
+                      }}
+                    >
+                      ▼
+                    </button>
+                  </div>
                 </div>
 
-                <div className="preregistro-text">
-                  <h3>{item.nombre_completo || "Sin nombre"}</h3>
-                  <p>{item.estado || "pendiente"}</p>
-                </div>
-              </div>
+                {isOpen && (
+                  <div className="preregistro-details">
+                    <div className="preregistro-detail-grid">
+                      <div className="detail-box">
+                        <span className="detail-label">Nombre completo</span>
+                        <span className="detail-value">
+                          {item.nombre_completo || "No disponible"}
+                        </span>
+                      </div>
 
-              <div className="preregistro-actions">
-                <button
-                  className="mini-btn approve"
-                  onClick={() => onUpdateEstado(item.id_preregistro, "aceptado")}
-                >
-                  <Check size={28} />
-                </button>
-                <button
-                  className="mini-btn reject"
-                  onClick={() => onUpdateEstado(item.id_preregistro, "rechazado")}
-                >
-                  <X size={28} />
-                </button>
+                      <div className="detail-box">
+                        <span className="detail-label">CURP</span>
+                        <span className="detail-value">
+                          {item.curp || "No disponible"}
+                        </span>
+                      </div>
+
+                      <div className="detail-box">
+                        <span className="detail-label">Género</span>
+                        <span className="detail-value">
+                          {item.genero || "No disponible"}
+                        </span>
+                      </div>
+
+                      <div className="detail-box">
+                        <span className="detail-label">Fecha de nacimiento</span>
+                        <span className="detail-value">
+                          {item.fecha_nacimiento || "No disponible"}
+                        </span>
+                      </div>
+
+                      <div className="detail-box">
+                        <span className="detail-label">Estado</span>
+                        <span className="detail-value">
+                          {item.estado || "No disponible"}
+                        </span>
+                      </div>
+
+                      <div className="detail-box">
+                        <span className="detail-label">ID beneficiario</span>
+                        <span className="detail-value">
+                          {item.id_beneficiario ?? "Sin asignar"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </section>
