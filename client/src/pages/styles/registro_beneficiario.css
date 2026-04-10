@@ -60,7 +60,7 @@ body {
 }
 
 .step.active {
-  color: #ffffff;
+  color: #28489f;
 }
 
 .step-icon {
@@ -75,32 +75,53 @@ body {
 
 .btn {
   height: 58px;
-  border-radius: 14px;
+  border-radius: 16px;
   border: none;
-  font-size: 15px;
+  font-size: 18px;
   cursor: pointer;
+  width: 100%;
+  transition: 0.2s ease;
+  font-weight: 500;
 }
 
-.btn-secondary {
-  background: white;
-  border: 1px solid #cfd8e6;
-  color: #66748b;
-}
-
+/* CONTINUAR */
 .btn-primary {
-  background: #28489f;
+  background: #3b5ccc;
+  color: #ffffff;
+} 
+
+/* ANTERIOR */
+/* .btn-secondary {
+  background: #6f86a6;
+  color: #ffffff;
+} */
+
+/* CANCELAR */
+.btn-danger {
+  background: #a1bdd9;
   color: white;
+  padding: 10px 22px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
 }
 
-.btn-danger {
-    background: #a1bdd9;
-    color: #000000;
-    border: 1px solid #7b9ee6;
+/* HOVER */
+.btn-primary:hover {
+  background: #2f4bb0;
+}
+
+.btn-secondary:hover {
+  background: #5e7491;
 }
 
 .btn-danger:hover {
-    background: #b3c8f3;
-}
+  background: #8ea9c4;
+}  
 
 .form-card {
   background: white;
@@ -307,42 +328,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .checkbox-card input[type="checkbox"] {
-  display: none;
-}
-
-.checkbox-card-mark {
   width: 18px;
   height: 18px;
-  border-radius: 4px;
-  border: 2px solid #d3dbe7;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-  background: white;
-  position: relative;
-}
-
-.checkbox-card.checked {
-  border-color: #28489f;
-  background: #e8f0ff;
-  color: #28489f;
-}
-
-.checkbox-card.checked .checkbox-card-mark {
-  background: #28489f;
-  border-color: #28489f;
-}
-
-.checkbox-card.checked .checkbox-card-mark::after {
-  content: '';
-  position: absolute;
-  left: 4px;
-  top: 1px;
-  width: 6px;
-  height: 10px;
-  border: 2px solid white;
-  border-top: none;
-  border-left: none;
-  transform: rotate(45deg);
+  accent-color: #28489f;
+  cursor: pointer;
 }
 
 .checkbox-card span {

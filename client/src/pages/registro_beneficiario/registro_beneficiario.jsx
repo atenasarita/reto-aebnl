@@ -406,13 +406,13 @@ function RegistroBeneficiario() {
                             ))}
                         </ul>
                         <div className="sidebar-buttons">
-                            <button className='btn btn-danger'
+                            <button className="btn btn-danger"
                             onClick={() => {if (confirm("Seguro que quieres cancelar?")){navigate('/beneficiarios')}
                             }}>Cancelar</button>
-
                             {currentStep > 0 && <button className="btn btn-secondary" onClick={handlePrev}>Anterior</button>}
                             {currentStep < steps.length - 1 ? (
                                 <button className="btn btn-primary" onClick={handleNext}>Continuar</button>
+                                
                             ) : (
                                 <button className="btn btn-primary" onClick={handleSubmit} disabled={loading}>
                                     {loading ? 'Registrando...' : 'Registrar'}
