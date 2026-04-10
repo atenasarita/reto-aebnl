@@ -17,9 +17,10 @@ const beneficiarioRepository = new OracleBeneficiarioRepository();
 const beneficiariosController = new BeneficiariosController(beneficiarioRepository);
 const beneficiariosHandler = new BeneficiariosHandler(beneficiariosController);
 
-router.get('/beneficiarios', authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getBeneficiarios);
 
-router.get('/beneficiarios/proximas-a-vencer/membresias', authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getBeneficiariosWithMembresiaEndingSoon);
+router.get('/beneficiarios/proximas-a-vencer/membresias', beneficiariosHandler.getBeneficiariosWithMembresiaEndingSoon);
+
+router.get('/beneficiarios', authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getBeneficiarios);
 
 router.get('/beneficiarios/folio/:folio', authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getBeneficiarioByFolio);
 
