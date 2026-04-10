@@ -1,10 +1,10 @@
 import '../styles/registro_beneficiario.css';
 import {useRef, useState, useEffect} from 'react';
-import { FaCalendar } from 'react-icons/fa';
+import { FaCalendar, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import { TbSquareNumber1Filled,  TbSquareNumber2Filled, TbSquareNumber3Filled, TbSquareNumber4Filled,} from "react-icons/tb";
 import { useNavigate } from 'react-router-dom';
 import { espinaBifidaOptions } from '../../utils/espinaBifidaTypes';
-import { soloLetras, limpiarSoloLetras } from '../../utils/validator';
+import { soloLetras, limpiarSoloLetras, validarCURP } from '../../utils/validator';
 import FotoPerfilInput from '../../components/layout/beneficiarios/FotoPerfilInput';
 
 
@@ -32,8 +32,11 @@ function RegistroBeneficiario() {
     const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState(0);
     const [folio, setFolio] = useState('');
+    // Sirve para que el "checkpoint" de cada step aparezca despues de darle clic a CONTINUAR
+    const [touchedSteps, setTouchedSteps] = useState([]);
     const [fechaRegistro, setFechaRegistro] = useState(new Date().toISOString().split('T')[0]);
     const [fechaNacimiento, setFechaNacimiento] = useState("");
+    
     const [formData, setFormData] = useState({
         nombres: '',
         apellido_paterno: '',
@@ -41,13 +44,13 @@ function RegistroBeneficiario() {
         CURP: '',
         genero: '',
         estado_nacimiento: '',
-        fotografia: '',
+        fotografia: null,
         telefono: '',
         email: '',
         contacto_nombre: '',
         contacto_telefono: '',
         contacto_parentesco: '',
-        alergias: '',
+        alergias: 'Ninguna',
         tipo_sanguineo: '',
         domicilio_calle: '',
         domicilio_cp: '',
@@ -67,6 +70,7 @@ function RegistroBeneficiario() {
         { icon: TbSquareNumber3Filled, label: 'Domicilio' },
         { icon: TbSquareNumber4Filled, label: 'Membresía' }
     ];
+
 
     // TODO hacer El endpoint para obtener el siguiente numero de folio
     // useEffect(() => {
@@ -132,6 +136,9 @@ function RegistroBeneficiario() {
     };
 
     const handleNext = () => {
+        // Marcar step actual como "done"
+        setTouchedSteps(prev => [...new Set([...prev, currentStep])]);
+
         if (currentStep < steps.length - 1) {
             setCurrentStep(currentStep + 1);
         }
@@ -159,7 +166,23 @@ function RegistroBeneficiario() {
         setLoading(true);
         setError('');
         try {
+            const incompleteSteps = steps.map((_, index) => ({
+                index,
+                isComplete: validateStep(index)
+            }))
+            .filter(step => !step.isComplete);
+
+            if (incompleteSteps.length > 0){
+                setError('Debes completar todos los apartados antes de registrar al beneficiario');
+                setLoading(false);
+                return;
+            }
             // Validacion del input
+            // CURP
+            if (formData.CURP && !validarCURP(formData.CURP)) {
+                setError('El CURP debe tener un formato válido de 18 caracteres');
+            }
+            // Nombres y Apellidos
             if(
                 !soloLetras(formData.nombres) ||
                 !soloLetras(formData.apellido_paterno)||
@@ -182,7 +205,7 @@ function RegistroBeneficiario() {
                     apellido_materno: formData.apellido_materno,
                     fecha_nacimiento: new Date(fechaNacimiento),
                     estado_nacimiento: formData.estado_nacimiento,
-                    fotografia: formData.fotografia,
+                    // fotografia: formData.fotografia, // Omitido por ahora
                     telefono: formData.telefono,
                     email: formData.email
                 },
@@ -212,7 +235,8 @@ function RegistroBeneficiario() {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Error al registrar beneficiario');
+                console.error('Error details:', errorData.details); // Para ver en consola
+                throw new Error(errorData.details?.fieldErrors ? JSON.stringify(errorData.details.fieldErrors) : errorData.message || 'Error al registrar beneficiario');
             }
             
             const data = await response.json();
@@ -233,6 +257,15 @@ function RegistroBeneficiario() {
                         <div className="section-block">
                             <h2>Identidad</h2>
                             <div className="field-group full">
+                                <div className='field-group full'>
+                                <label>Correo Electronico</label>
+                                <input 
+                                type="email" 
+                                name='email'
+                                value={formData.email}
+                                onChange={handleInputChange}/>
+                            </div>
+
                                 <label>Nombres</label>
                                 <input 
                                 type="text" 
@@ -271,7 +304,10 @@ function RegistroBeneficiario() {
                                 </div>
                                 <div className="field-group">
                                     <label>CURP</label>
-                                    <input type="text" name="CURP" value={formData.CURP} onChange={handleInputChange} placeholder="XXXX000000XXXXXX00" />
+                                    <input type="text" name="CURP" value={formData.CURP} 
+                                    maxLength={18} 
+                                    onChange={handleInputChange} 
+                                    placeholder="XXXX000000XXXXXX00" />
                                 </div>
                             </div>
                             <div className="row">
@@ -370,6 +406,20 @@ function RegistroBeneficiario() {
                                 <label>Ciudad</label>
                                 <input type="text" name="domicilio_ciudad" value={formData.domicilio_ciudad} onChange={handleInputChange} />
                             </div>
+
+                            <div className='field-group'>
+                                <label>Estado</label>
+                                <select name="domicilio_estado"
+                                value={formData.domicilio_estado}
+                                onChange={handleInputChange}>
+                                    <option value="">Seleccionar estado...</option>
+                                    {estadosMexico.map((estado) => (
+                                        <option key={estado} value={estado}>
+                                            {estado}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
                     </div>
                 );
@@ -385,6 +435,48 @@ function RegistroBeneficiario() {
         }
     };
 
+    const validateStep = (stepIndex) => {
+        switch (stepIndex) {
+            case 0: //Datos Personales
+                return (
+                    formData.nombres &&
+                    formData.apellido_paterno &&
+                    formData.apellido_materno &&
+                    validarCURP(formData.CURP) &&
+                    formData.genero &&
+                    formData.estado_nacimiento &&
+                    fechaNacimiento
+                );
+            
+            case 1: //Informacion Medica
+                return (
+                    formData.contacto_nombre &&
+                    formData.contacto_telefono &&
+                    formData.contacto_parentesco &&
+                    formData.tipo_sanguineo &&
+                    formData.tipo_espinas &&
+                    formData.tipo_espinas.length > 0 &&
+                    formData.alergias
+                );
+            
+            case 2: //Domicilio
+                return (
+                    formData.domicilio_calle &&
+                    formData.domicilio_cp &&
+                    formData.domicilio_ciudad &&
+                    formData.domicilio_estado
+                );
+            
+            case 3: //Membresia
+                return true; //Por ahora
+            default:
+                return false;
+        }
+    };
+
+    // Validar que todos los datos esten completos para que el nuevo beneficiario se pueda registrar
+    const areAllStepsComplete = steps.every((_, index) => validateStep(index));
+
     return(
         <div className="page">
             <main className="content">
@@ -399,11 +491,38 @@ function RegistroBeneficiario() {
                 <section className="layout">
                     <aside className="sidebar">
                         <ul className="steps">
-                            {steps.map((step, index) => (
-                                <li key={index} className={`step ${index === currentStep ? 'active' : index < currentStep ? 'completed' : ''}`}>
-                                    <step.icon className="step-icon" /> {step.label}
-                                </li>
-                            ))}
+                            {steps.map((step, index) => {
+                                const isComplete = validateStep(index);
+                                const isTouched = touchedSteps.includes(index);
+
+                                return (
+                                    <li
+                                    key={index}
+                                    className={`step ${
+                                        index === currentStep
+                                        ? 'active'
+                                        :index < currentStep
+                                        ? 'completed'
+                                        :''
+                                    }`}
+                                    >
+                                        {/* ICONOS */}
+                                        {isTouched ? (
+                                            isComplete ? (
+                                                <FaCheckCircle className='step-icon success'></FaCheckCircle>
+                                            ) : (
+                                                <FaExclamationCircle className='step-icon warning'></FaExclamationCircle>
+                                            )
+                                        ) : (
+                                            <step.icon className='step-icon'></step.icon>
+                                        )}
+                                        {step.label}
+                                    </li>
+                                );
+                                
+                            }
+                        )}
+ 
                         </ul>
                         <div className="sidebar-buttons">
                             <button className="btn btn-danger"
@@ -414,7 +533,7 @@ function RegistroBeneficiario() {
                                 <button className="btn btn-primary" onClick={handleNext}>Continuar</button>
                                 
                             ) : (
-                                <button className="btn btn-primary" onClick={handleSubmit} disabled={loading}>
+                                <button className="btn btn-primary" onClick={handleSubmit} disabled={loading || !areAllStepsComplete}>
                                     {loading ? 'Registrando...' : 'Registrar'}
                                 </button>
                             )}
@@ -423,11 +542,11 @@ function RegistroBeneficiario() {
 
                     <section className="form-card">
                         <div className="top-info">
-                            <FotoPerfilInput 
+                            {/* <FotoPerfilInput 
                             value={formData.fotografia}
                             onChange={handleFotoChange}
                             onError={handleFotoError}
-                            />
+                            /> */}
 
                             <div className="meta-fields">
                                 <div className="field-group">

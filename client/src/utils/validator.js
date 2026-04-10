@@ -7,3 +7,8 @@ export const soloLetras = (value) => {
 export const limpiarSoloLetras = (value) => {
     return value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, "");
 }
+
+export const validarCURP = (curp) => {
+    const regex = /^[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[0-9A-Z]{2}$/;
+    return regex.test(curp);
+};
