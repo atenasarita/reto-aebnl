@@ -4,6 +4,7 @@ import 'dotenv/config';
 import usuariosRoutes from "./src/routes/usuarios.routes";
 import preregistrosRoutes from './src/routes/preregistros.routes';
 import beneficiariosRoutes from "./src/routes/beneficiarios.routes";
+import inventarioRoutes from "./src/routes/inventario.routes";
 import { errorMiddleware } from './src/middlewares/error.middleware.ts';
 
 const app = express();
@@ -18,6 +19,7 @@ app.get("/", (req, res) => {
 
 app.use('/api', usuariosRoutes);
 app.use('/api', beneficiariosRoutes);
+app.use('/api', inventarioRoutes);
 
 app.use("/api/preregistros", preregistrosRoutes);
 
