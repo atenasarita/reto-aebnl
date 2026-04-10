@@ -1,4 +1,4 @@
-export const SELECT_BENEFICIARIOS_WITH_MEMBRESIAS_ENDING_SOON = `
+export const SELECT_BENEFICIARIO_DETALLE_BASE = `
   SELECT b.id_beneficiario,
          b.folio,
          TO_CHAR(b.fecha_ingreso, 'YYYY-MM-DD') AS fecha_ingreso,
@@ -30,12 +30,15 @@ export const SELECT_BENEFICIARIOS_WITH_MEMBRESIAS_ENDING_SOON = `
          m.metodo_pago,
          TRUNC(m.fecha_fin - SYSDATE) AS dias_para_vencer
   FROM Beneficiario b
-  INNER JOIN Membresias m ON m.id_beneficiario = b.id_beneficiario AND m.estado = 'activa'
-    AND m.fecha_fin BETWEEN SYSDATE AND SYSDATE + 7
+  LEFT JOIN Membresias m ON m.id_beneficiario = b.id_beneficiario
   LEFT JOIN Identificadores i ON i.id_beneficiario = b.id_beneficiario
   LEFT JOIN Datos_medicos dm ON dm.id_beneficiario = b.id_beneficiario
   LEFT JOIN Direccion d ON d.id_beneficiario = b.id_beneficiario
 `.trim();
+
+export const SELECT_BENEFICIARIOS_WITH_MEMBRESIAS_ENDING_SOON = `${SELECT_BENEFICIARIO_DETALLE_BASE}
+WHERE m.estado = 'activa'
+  AND m.fecha_fin BETWEEN SYSDATE AND SYSDATE + 7`;
 
 export const SELECT_BENEFICIARIOS = `${SELECT_BENEFICIARIO_DETALLE_BASE}
 ORDER BY b.id_beneficiario ASC`;
