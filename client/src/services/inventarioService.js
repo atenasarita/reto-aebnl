@@ -1,6 +1,4 @@
-const BASE_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) ||
-  'http://localhost:3000'
+const BASE_URL = 'http://localhost:3000'
 
 /* GET /api/inventario */
 export async function getInventario() {
