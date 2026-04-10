@@ -1,10 +1,19 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import Navbar from './Navbar/Navbar'
 
+const RUTA_A_ENLACE_ACTIVO = {
+  '/beneficiarios': 'Beneficiarios',
+  '/registro_beneficiario': 'Beneficiarios',
+  '/inventario': 'Inventario',
+}
+
 function MainLayout() {
+  const { pathname } = useLocation()
+  const activeLink = RUTA_A_ENLACE_ACTIVO[pathname] ?? 'Beneficiarios'
+
   return (
     <>
-      <Navbar activeLink="Beneficiarios" />
+      <Navbar activeLink={activeLink} />
       <main>
         <Outlet />
       </main>

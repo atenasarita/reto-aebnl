@@ -4,6 +4,8 @@ import './styles/SearchBar.css'
 function SearchBar({ placeholder = "Buscar por nombre, folio o CURP...", onSearch, className = '', debounceMs = 300, icon }) {
   const [search, setSearch] = useState('')
   const timerRef = useRef(null)
+  const onSearchRef = useRef(onSearch)
+  onSearchRef.current = onSearch
 
   const handleChange = (e) => {
     setSearch(e.target.value)
@@ -14,14 +16,16 @@ function SearchBar({ placeholder = "Buscar por nombre, folio o CURP...", onSearc
 
     if (debounceMs > 0) {
       timerRef.current = setTimeout(() => {
-        if (onSearch) onSearch(search)
+        const fn = onSearchRef.current
+        if (fn) fn(search)
       }, debounceMs)
 
       return () => clearTimeout(timerRef.current)
     }
 
-    if (onSearch) onSearch(search)
-  }, [search, onSearch, debounceMs])
+    const fn = onSearchRef.current
+    if (fn) fn(search)
+  }, [search, debounceMs])
 
   return (
     <div className={`searchbar-wrapper ${className}`}>

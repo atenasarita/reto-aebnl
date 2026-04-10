@@ -1,0 +1,77 @@
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.busqueda {
+  flex: 1 1 200px;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+}
+
+.barra .busqueda input {
+  width: 100%;
+  max-width: none;
+  height: 47px;
+  box-sizing: border-box;
+}
+
+.filtroCategoria {
+  flex: 0 0 auto;
+}
+
+.barra .filtroCategoria select {
+  min-width: 220px;
+  width: 260px;
+  max-width: min(260px, 100%);
+  height: 47px;
+  box-sizing: border-box;
+  padding-right: 40px;
+}
+
+.btnSecundario,
+.btnPrimario {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 47px;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 0.5px solid transparent;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.btnSecundario {
+  background: #ffffff;
+  border-color: #64748b;
+  color: #64748b;
+}
+
+.btnSecundario:hover {
+  background: #f8fafc;
+}
+
+.btnPrimario {
+  background: #1e3b8a;
+  border-color: #1e3b8a;
+  color: #ffffff;
+}
+
+.btnPrimario:hover {
+  background: #172e6e;
+}
