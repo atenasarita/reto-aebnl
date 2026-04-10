@@ -55,7 +55,7 @@ export function selectTipoEspinasByBeneficiarioIds(placeholders: string): string
            be.id_espina,
            eb.nombre
     FROM Beneficiario_espina be
-    INNER JOIN Espina_bidifa eb ON eb.id_espina = be.id_espina
+    INNER JOIN Espina_bifida eb ON eb.id_espina = be.id_espina
     WHERE be.id_beneficiario IN (${placeholders})
     ORDER BY be.id_beneficiario, be.id_espina
   `.trim();
