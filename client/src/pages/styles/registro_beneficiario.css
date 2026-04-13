@@ -84,6 +84,8 @@ body {
 .sidebar-buttons {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   gap: 16px;
 }
 
@@ -105,10 +107,10 @@ body {
 } 
 
 /* ANTERIOR */
-/* .btn-secondary {
+.btn-secondary {
   background: #6f86a6;
   color: #ffffff;
-} */
+}
 
 /* CANCELAR */
 .btn-danger {
@@ -350,4 +352,11 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .checkbox-card span {
   line-height: 1.2;
+}
+
+.field-error {
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
 }
