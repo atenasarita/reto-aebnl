@@ -1,14 +1,17 @@
-import './login.css';
-import logo from '../assets/logo_aebnl.jpg';
+import '../styles/login.css';
+import logo from '../../assets/espina.png';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-function Login({ onLoginSuccess }) {
+function Login() {
   const [usuario, setUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -37,7 +40,7 @@ function Login({ onLoginSuccess }) {
       if (typeof onLoginSuccess === 'function') {
         onLoginSuccess();
       } else {
-        window.location.href = '/registro_beneficiario';
+        window.location.href = '/beneficiarios';
       }
     } catch (error) {
       setError(error.message || 'Error de conexión');
@@ -50,7 +53,11 @@ function Login({ onLoginSuccess }) {
     <div className='login-page'>
       <div className='login-card'>
         <div className='login-left'>
-          <img src={logo} alt='Asociación de Espina Bifida' className='logo-main' />
+          <img
+            src={logo}
+            alt='Asociación de Espina Bífida de Nuevo León, A.B.P.'
+            className='logo-main'
+          />
           <div className='brand-text'>
             <h1>ASEB</h1>
             <h2>Administración</h2>
