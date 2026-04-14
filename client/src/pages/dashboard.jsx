@@ -56,7 +56,9 @@ function getAgendaTagClass(item) {
   return "blue";
 }
 
-function ActionCard({ title, subtitle, icon: Icon, variant, fullRow }) {
+function ActionCard({ title, subtitle, icon, variant, fullRow }) {
+  const Icon = icon;
+
   return (
     <button className={`action-card action-card-${variant} ${fullRow ? "action-card-full" : ""}`}>
       <div className={`action-card-icon action-card-icon-${variant}`}>
@@ -119,8 +121,6 @@ function AgendaCard({ agendaItems }) {
           <p>No hay registros de agenda para la fecha actual.</p>
         </div>
       </section>
-
-      
     );
   }
 
