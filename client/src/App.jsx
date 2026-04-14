@@ -1,30 +1,34 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import MainLayout from './components/layout/MainLayout'
-import GestionBeneficiarios from './pages/GestionBeneficiarios/GestionBeneficiarios'
-import Login from './pages/login/login'
-import RegistroBeneficiario from './pages/registro_beneficiario/registro_beneficiario'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import './App.css'
-import Prerregistro from './pages/Prerregistro/Prerregistro'
-import Inventario from './pages/inventario/inventario'
+import MainLayout from "./components/layout/MainLayout";
 
-function App() {
-return (
+import Login from "./pages/login/login";
+import Dashboard from "./pages/dashboard";
+
+import GestionBeneficiarios from "./pages/GestionBeneficiarios/GestionBeneficiarios";
+import RegistroBeneficiario from "./pages/registro_beneficiario/registro_beneficiario";
+
+import Prerregistro from "./pages/prerregistro/Prerregistro";
+import Inventario from "./pages/inventario/Inventario";
+
+import "./App.css";
+
+export default function App() {
+  return (
     <BrowserRouter>
       <Routes>
-        {/* Login primero */}
+        {/* Login */}
         <Route path="/" element={<Login />} />
-        <Route path="/prerregistro" element={<Prerregistro />} />
 
-        {/* Rutas con layout (navbar, etc.) */}
+        {/* App con Layout */}
         <Route element={<MainLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/beneficiarios" element={<GestionBeneficiarios />} />
           <Route path="/registro_beneficiario" element={<RegistroBeneficiario />} />
+          <Route path="/prerregistro" element={<Prerregistro />} />
           <Route path="/inventario" element={<Inventario />} />
         </Route>
       </Routes>
     </BrowserRouter>
   );
 }
-
-export default App;
