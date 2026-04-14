@@ -19,6 +19,8 @@ const beneficiariosHandler = new BeneficiariosHandler(beneficiariosController);
 
 router.get('/beneficiarios', authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getBeneficiarios);
 
+router.get('/beneficiarios/siguiente-folio', authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getSiguienteFolio);
+
 router.get('/beneficiarios/folio/:folio', authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getBeneficiarioByFolio);
 
 router.get('/beneficiarios/:id_beneficiario',authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getBeneficiarioById);
@@ -30,5 +32,6 @@ router.post('/beneficiarios/:id_beneficiario/identificadores', authenticateJWT, 
 router.post('/beneficiarios/:id_beneficiario/datos-medicos', authenticateJWT, authorizeRoles('administrador', 'operador'), validateBody(createDatosMedicosSchema), beneficiariosHandler.createDatosMedicos);
 
 router.post('/beneficiarios/:id_beneficiario/direccion', authenticateJWT, authorizeRoles('administrador', 'operador'), validateBody(createDireccionSchema), beneficiariosHandler.createDireccion);
+
 
 export default router;

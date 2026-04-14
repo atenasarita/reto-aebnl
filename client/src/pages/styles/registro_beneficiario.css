@@ -244,7 +244,7 @@ body {
 }
 
 .top-info .field-group input{
-  background: #f3f6fb; /* gris suave */
+  background: #f3f6fb; 
   border: 1px solid #98b6e2;
   border-radius: 16px;
   padding: 12px 16px;
@@ -359,4 +359,16 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   font-size: 12px;
   margin-top: 4px;
   display: block;
+}
+
+.readonly-field {
+  background: #eef2f7;
+  color: #7b8794;
+  border: 2px solid #d3dbe7;
+  font-weight: 500;
+  pointer-events: none; /* evita interacción */
+}
+
+.readonly-field:focus {
+  outline: none;
 }

@@ -66,29 +66,34 @@ function RegistroBeneficiario() {
 
 
     // TODO hacer El endpoint para obtener el siguiente numero de folio
-    // useEffect(() => {
-    //     const fetchSiguienteFolio = async () => {
-    //         try {
-    //             const token = localStorage.getItem('token');
-    //             const response = await fetch('http://localhost:3000/api/beneficiarios/siguiente-folio', {
-    //                 headers: {
-    //                     Authorization: `Bearer ${token}`
-    //                 }
-    //             });
+    useEffect(() => {
+        const fetchSiguienteFolio = async () => {
+            try {
+                const token = localStorage.getItem('token');
 
-    //             if (!response.ok) {
-    //                 throw new Error('No se pudo obtener el folio');
-    //             }
+                const response = await fetch('http://localhost:3000/api/beneficiarios/siguiente-folio', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
 
-    //             const data = await response.json();
-    //             setFolio(data.folio);
-    //         } catch (error) {
-    //             console.error(error);
-    //         }
-    //     };
+                const data = await response.json();
+                console.log('status:', response.status);
+                console.log('respuesta backend:', data);
 
-    //     fetchSiguienteFolio();
-    // }, []);
+                if (!response.ok) {
+                    throw new Error(data.message || JSON.stringify(data));
+                }
+
+                setFolio(data.folio);
+            } catch (error) {
+                console.error('Error real:', error);
+                setError(String(error.message || error));
+            }
+        };
+
+        fetchSiguienteFolio();
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -755,16 +760,19 @@ function RegistroBeneficiario() {
 
                     <section className="form-card">
                         <div className="top-info">
-                            {/* <FotoPerfilInput 
+                            <FotoPerfilInput 
                             value={formData.fotografia}
                             onChange={handleFotoChange}
                             onError={handleFotoError}
-                            /> */}
+                            />
 
                             <div className="meta-fields">
                                 <div className="field-group">
                                     <label>FOLIO DE BENEFICIARIO</label>
-                                    <input type="text" value={folio} readOnly />
+                                    <input type="text" 
+                                    value={folio} 
+                                    readOnly
+                                    className='readonly-field' />
                                 </div>
                                 <div className="field-group">
                                     <label>FECHA DE REGISTRO</label>
@@ -773,6 +781,7 @@ function RegistroBeneficiario() {
                                             type="date" 
                                             value={fechaRegistro}
                                             readOnly
+                                            className='readonly-field'
                                         />
                                         
                                     </div>

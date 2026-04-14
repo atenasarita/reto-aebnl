@@ -609,4 +609,17 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
             );
         }
     }
+
+    async getSiguienteFolio(): Promise<string> {
+        let connection: oracledb.Connection | undefined;
+
+        try {
+            connection = await this.oracleConnection.getConnection();
+            return await generateNextBeneficiarioFolio(connection);
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
+        }
+    }
 }
