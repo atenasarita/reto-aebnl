@@ -259,6 +259,13 @@ function RegistroBeneficiario() {
                     domicilio_cp: formData.domicilio_cp,
                     domicilio_ciudad: formData.domicilio_ciudad,
                     domicilio_estado: formData.domicilio_estado
+                },
+
+                membresia: {
+                    fecha_inicio: new Date(formData.fecha_inicio_membresia),
+                    meses: Number(formData.meses_membresia),
+                    precio_mensual: 0,
+                    metodo_pago: 'donacion'
                 }
             };
 

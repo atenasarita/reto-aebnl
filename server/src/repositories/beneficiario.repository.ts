@@ -527,7 +527,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         id_beneficiario: number,
         input: CreateMembresiaInput,
     ): Promise<Beneficiario['estado']> {
-        const meses = 6; // Duración fija de 6 meses para la membresía, se puede ajustar según sea necesario
+        const meses = input.meses; // La duracion de la membresia se puede ajustar según sea necesario
         const fechaInicio = startOfDay(input.fecha_inicio ?? new Date());
         const fechaFin = addDays(addMonthsKeepingCalendar(fechaInicio, meses), -1);
         const precioTotal = Number((input.precio_mensual * input.meses).toFixed(2));
