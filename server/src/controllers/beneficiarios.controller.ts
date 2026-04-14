@@ -30,10 +30,6 @@ export class BeneficiariosController {
     async getBeneficiarioByFolio(folio: string): Promise<BeneficiarioDetalle> {
         return this.repository.getBeneficiarioByFolio(folio);
     }
-
-    async getBeneficiariosWithMembresiaEndingSoon(): Promise<BeneficiarioConMembresiaProxVencer[]> {
-        return this.repository.getBeneficiariosWithMembresiaEndingSoon();
-    }
     
     async createBeneficiario(input: CreateBeneficiarioInput): Promise<Beneficiario> {
         return this.repository.createBeneficiario(input);

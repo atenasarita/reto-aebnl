@@ -54,15 +54,6 @@ export class BeneficiariosHandler {
     }
   };
 
-  public getBeneficiariosWithMembresiaEndingSoon = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const beneficiarios = await this.beneficiariosController.getBeneficiariosWithMembresiaEndingSoon();
-      res.status(200).json(beneficiarios);
-    } catch (error) {
-      next(error);
-    }
-  };
-
   createBeneficiario = async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body as CreateBeneficiarioInput;
 

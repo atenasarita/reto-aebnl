@@ -18,8 +18,6 @@ const beneficiariosController = new BeneficiariosController(beneficiarioReposito
 const beneficiariosHandler = new BeneficiariosHandler(beneficiariosController);
 
 
-router.get('/beneficiarios/membresias/proximas-a-vencer', beneficiariosHandler.getBeneficiariosWithMembresiaEndingSoon);
-
 router.get('/beneficiarios', authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getBeneficiarios);
 
 router.get('/beneficiarios/folio/:folio', authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getBeneficiarioByFolio);
