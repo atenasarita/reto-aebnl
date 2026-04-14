@@ -1,5 +1,7 @@
 export type Tipo_movimiento_inventario = 'entrada' | 'salida';
 export type InventarioActivo = 0 | 1;
+/** Valor que envía el API / formulario (coincide con Zod `inventarioActivoSchema`). */
+export type InventarioActivoInput = '0' | '1';
 
 export interface Objeto_categoria {
     id_categoria: number;
@@ -53,7 +55,7 @@ export interface CreateInventarioInput {
     unidad_medida: string;
     precio: number;
     cantidad?: number;
-    activo?: InventarioActivo;
+    activo?: InventarioActivoInput;
 }
 
 export interface CreateVenta_inventarioInput {
@@ -64,6 +66,7 @@ export interface CreateVenta_inventarioInput {
     subtotal: number;
 }
 
+/** Input para registrar un movimiento de inventario. */
 export interface RegistrarMovimientoInventarioInput {
     id_inventario: number;
     tipo_movimiento: Tipo_movimiento_inventario;
