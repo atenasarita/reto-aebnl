@@ -1,15 +1,21 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import MainLayout from "./components/layout/MainLayout";
 
+// Auth / públicas
 import Login from "./pages/login/login";
-import Dashboard from "./pages/dashboard";
 
+// Páginas internas (main)
 import GestionBeneficiarios from "./pages/GestionBeneficiarios/GestionBeneficiarios";
-import RegistroBeneficiario from "./pages/registro_beneficiario/registro_beneficiario";
-
 import Prerregistro from "./pages/prerregistro/Prerregistro";
 import Inventario from "./pages/inventario/Inventario";
+
+// ✅ Dashboard del tablero (elige UNA línea según tu estructura)
+// Si tu dashboard está en: client/src/pages/dashboard.jsx
+import Dashboard from "./pages/dashboard";
+
+// Si lo moviste a: client/src/pages/dashboard/Dashboard.jsx
+// import Dashboard from "./pages/dashboard/Dashboard";
 
 import "./App.css";
 
@@ -17,17 +23,29 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Login */}
-        <Route path="/" element={<Login />} />
+        {/* Pública */}
+        <Route path="/login" element={<Login />} />
 
-        {/* App con Layout */}
+        {/* Privadas dentro del layout (Navbar + etc) */}
         <Route element={<MainLayout />}>
+          {/* ✅ Este es el cambio clave: /dashboard usa TU tablero */}
           <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* Beneficiarios */}
           <Route path="/beneficiarios" element={<GestionBeneficiarios />} />
-          <Route path="/registro_beneficiario" element={<RegistroBeneficiario />} />
-          <Route path="/prerregistro" element={<Prerregistro />} />
+
+          {/* Prerregistro */}
+          <Route path="/preregistro" element={<Prerregistro />} />
+
+          {/* Inventario */}
           <Route path="/inventario" element={<Inventario />} />
+
+          {/* Default */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Route>
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
   );

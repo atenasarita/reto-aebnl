@@ -29,3 +29,10 @@ client/node_modules/
 .env
 dist/
 build/
+
+Wallet_*/
+*.sso
+*.p12
+*.pem
+*.jks
+*.ora
