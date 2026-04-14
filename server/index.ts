@@ -6,6 +6,7 @@ import preregistrosRoutes from './src/routes/preregistros.routes';
 import beneficiariosRoutes from "./src/routes/beneficiarios.routes";
 import inventarioRoutes from "./src/routes/inventario.routes";
 import { errorMiddleware } from './src/middlewares/error.middleware.ts';
+import dashboardRoutes from "./src/routes/dashboard.routes";
 
 const app = express();
 const PORT = 3000
@@ -28,3 +29,8 @@ app.use(errorMiddleware);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+app.use("/api", usuariosRoutes);
+app.use("/api", inventarioRoutes);
+app.use("/api", preregistrosRoutes);
+app.use("/api", dashboardRoutes);

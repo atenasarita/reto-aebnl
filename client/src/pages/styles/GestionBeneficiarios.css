@@ -27,10 +27,80 @@
     margin: 0;
 }
 
+.agenda-item-card {
+  flex: 1;
+}
+
 .filter-bar{
   display: flex;
   flex-direction: row;
   margin: 36px 0;
   justify-content: space-between;
   align-items: center;
+}
+
+.agenda-row {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+}
+
+.timeline-line {
+  position: relative;
+  width: 20px;
+  flex: 0 0 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.timeline-dot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  background: #dbe4f0;
+  z-index: 2;
+}
+
+.timeline-line::after {
+  content: "";
+  position: absolute;
+  top: 22px;
+  bottom: 0;
+  left: 50%;
+  width: 4px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #dbe4f0;
+}
+
+.timeline-line.past::after {
+  background: #2f5bd3;
+}
+
+.timeline-dot.past {
+  background: #2f5bd3;
+}
+
+.timeline-line.soon::after {
+  background: #3cab5a;
+}
+
+.timeline-dot.soon {
+  background: #3cab5a;
+}
+
+.timeline-line.future::after {
+  background: #ddd6fe;
+}
+
+.timeline-dot.future {
+  background: #c4b5fd;
+}
+
+.agenda-item-card {
+  flex: 1;
 }
