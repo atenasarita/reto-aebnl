@@ -64,16 +64,13 @@ export interface CreateVenta_inventarioInput {
     subtotal: number;
 }
 
-export interface CreateMovimientos_inventarioInput {
-    id_inventario: number;  
+export interface RegistrarMovimientoInventarioInput {
+    id_inventario: number;
     tipo_movimiento: Tipo_movimiento_inventario;
     cantidad: number;
-    fecha: Date;
-    cant_anterior: number;
-    cant_nueva: number;
-    id_servicio_otorgado: number | null;
-    id_usuario: number;
     motivo: string;
+    fecha?: Date;
+    id_servicio_otorgado?: number | null;
 }
 
 export interface GetInventarioResponse {
