@@ -23,14 +23,10 @@ app.use('/api', beneficiariosRoutes);
 app.use('/api', inventarioRoutes);
 
 app.use("/api/preregistros", preregistrosRoutes);
+app.use("/api", dashboardRoutes);
 
 app.use(errorMiddleware);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-app.use("/api", usuariosRoutes);
-app.use("/api", inventarioRoutes);
-app.use("/api", preregistrosRoutes);
-app.use("/api", dashboardRoutes);

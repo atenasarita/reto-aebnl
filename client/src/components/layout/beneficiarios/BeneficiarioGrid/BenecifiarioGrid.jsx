@@ -20,6 +20,7 @@ function BeneficiarioGrid({ data, loading }) {
     nombre:          `${b.identificadores.nombres} ${b.identificadores.apellido_paterno} ${b.identificadores.apellido_materno ?? ''}`.trim(),
     diagnostico:     b.tipo_espina?.[0]?.tipo ?? 'Sin diagnóstico',
     estatus:         b.estado === 'activo' ? 'Activo' : 'Inactivo',
+    dias_para_vencer: b.dias_para_vencer,
   }))
 
   const paginated = normalized.slice(

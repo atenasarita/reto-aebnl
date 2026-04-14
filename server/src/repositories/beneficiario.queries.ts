@@ -21,12 +21,24 @@ export const SELECT_BENEFICIARIO_DETALLE_BASE = `
          d.domicilio_calle,
          d.domicilio_cp,
          d.domicilio_ciudad,
-         d.domicilio_estado
+         d.domicilio_estado,
+         m.id_membresia,
+         m.precio,
+         TO_CHAR(m.fecha_inicio, 'YYYY-MM-DD') AS fecha_inicio,
+         TO_CHAR(m.fecha_fin, 'YYYY-MM-DD') AS fecha_fin,
+         m.estado AS membresia_estado,
+         m.metodo_pago,
+         TRUNC(m.fecha_fin - SYSDATE) AS dias_para_vencer
   FROM Beneficiario b
+  LEFT JOIN Membresias m ON m.id_beneficiario = b.id_beneficiario
   LEFT JOIN Identificadores i ON i.id_beneficiario = b.id_beneficiario
   LEFT JOIN Datos_medicos dm ON dm.id_beneficiario = b.id_beneficiario
   LEFT JOIN Direccion d ON d.id_beneficiario = b.id_beneficiario
 `.trim();
+
+export const SELECT_BENEFICIARIOS_WITH_MEMBRESIAS_ENDING_SOON = `${SELECT_BENEFICIARIO_DETALLE_BASE}
+WHERE m.estado = 'activa'
+  AND m.fecha_fin BETWEEN SYSDATE AND SYSDATE + 7`;
 
 export const SELECT_BENEFICIARIOS = `${SELECT_BENEFICIARIO_DETALLE_BASE}
 ORDER BY b.id_beneficiario ASC`;

@@ -15,11 +15,13 @@ import {
     SELECT_BENEFICIARIO_BY_FOLIO,
     SELECT_BENEFICIARIO_BY_ID,
     SELECT_BENEFICIARIOS,
+    SELECT_BENEFICIARIOS_WITH_MEMBRESIAS_ENDING_SOON,
     UPDATE_BENEFICIARIO_ESTADO,
     selectTipoEspinasByBeneficiarioIds,
 } from './beneficiario.queries';
 import {
     BeneficiarioDetalle,
+    BeneficiarioConMembresiaProxVencer,
     CreateBeneficiarioInput,
     CreateDireccionInput,
     CreateIdentificadoresInput,
@@ -55,6 +57,16 @@ type BeneficiarioDetalleRow = {
     DOMICILIO_CP: string | null;
     DOMICILIO_CIUDAD: string | null;
     DOMICILIO_ESTADO: string | null;
+    DIAS_PARA_VENCER: number | null;
+};
+
+type BeneficiarioConMembresiaRow = BeneficiarioDetalleRow & {
+    ID_MEMBRESIA: number;
+    MEMBRESIA_PRECIO: number;
+    MEMBRESIA_FECHA_INICIO: string;
+    MEMBRESIA_FECHA_FIN: string;
+    MEMBRESIA_ESTADO: string;
+    MEMBRESIA_METODO_PAGO: string;
 };
 
 function mapOracleConflictError(error: unknown, fallbackMessage: string): never {
@@ -155,6 +167,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                 domicilio_ciudad: domicilioCiudad,
                 domicilio_estado: domicilioEstado,
             },
+            dias_para_vencer: row.DIAS_PARA_VENCER,
         };
     }
 
@@ -278,6 +291,72 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
 
             const beneficiarios = await this.hydrateBeneficiariosWithEspinas(connection, rows);
             return beneficiarios[0];
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
+        }
+    }
+
+    async getBeneficiariosWithMembresiaEndingSoon(): Promise<BeneficiarioConMembresiaProxVencer[]> {
+        let connection: oracledb.Connection | undefined;
+
+        try {
+            connection = await this.oracleConnection.getConnection();
+
+            const result = await connection.execute(
+                SELECT_BENEFICIARIOS_WITH_MEMBRESIAS_ENDING_SOON,
+                {},
+                { outFormat: oracledb.OUT_FORMAT_OBJECT },
+            );
+
+            const rows = (result.rows ?? []) as BeneficiarioConMembresiaRow[];
+
+            if (rows.length === 0) {
+                return [];
+            }
+
+            const beneficiarios = await this.hydrateBeneficiariosWithEspinas(
+                connection,
+                rows.map((row) => ({
+                    ID_BENEFICIARIO: row.ID_BENEFICIARIO,
+                    FOLIO: row.FOLIO,
+                    FECHA_INGRESO: row.FECHA_INGRESO,
+                    GENERO: row.GENERO,
+                    ESTADO: row.ESTADO,
+                    CURP: row.CURP,
+                    NOMBRES: row.NOMBRES,
+                    APELLIDO_PATERNO: row.APELLIDO_PATERNO,
+                    APELLIDO_MATERNO: row.APELLIDO_MATERNO,
+                    FECHA_NACIMIENTO: row.FECHA_NACIMIENTO,
+                    ESTADO_NACIMIENTO: row.ESTADO_NACIMIENTO,
+                    FOTOGRAFIA: row.FOTOGRAFIA,
+                    TELEFONO: row.TELEFONO,
+                    EMAIL: row.EMAIL,
+                    CONTACTO_NOMBRE: row.CONTACTO_NOMBRE,
+                    CONTACTO_TELEFONO: row.CONTACTO_TELEFONO,
+                    CONTACTO_PARENTESCO: row.CONTACTO_PARENTESCO,
+                    ALERGIAS: row.ALERGIAS,
+                    TIPO_SANGUINEO: row.TIPO_SANGUINEO,
+                    DOMICILIO_CALLE: row.DOMICILIO_CALLE,
+                    DOMICILIO_CP: row.DOMICILIO_CP,
+                    DOMICILIO_CIUDAD: row.DOMICILIO_CIUDAD,
+                    DOMICILIO_ESTADO: row.DOMICILIO_ESTADO,
+                    DIAS_PARA_VENCER: row.DIAS_PARA_VENCER,
+                })),
+            );
+
+            return beneficiarios.map((beneficiario, index) => ({
+                ...beneficiario,
+                membresia: {
+                    id_membresia: rows[index].ID_MEMBRESIA,
+                    precio: rows[index].MEMBRESIA_PRECIO,
+                    fecha_inicio: rows[index].MEMBRESIA_FECHA_INICIO,
+                    fecha_fin: rows[index].MEMBRESIA_FECHA_FIN,
+                    estado: rows[index].MEMBRESIA_ESTADO,
+                    metodo_pago: rows[index].MEMBRESIA_METODO_PAGO,
+                },
+            }));
         } finally {
             if (connection) {
                 await connection.close();
