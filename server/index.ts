@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import cors from 'cors';
 import 'dotenv/config';
 import usuariosRoutes from "./src/routes/usuarios.routes";
@@ -13,6 +14,9 @@ const PORT = 3000
 app.use(cors());
 app.use(express.json());
 
+// Carpeta publica para imágenes subidas 
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
 app.get("/", (req, res) => {
   res.send("Backend is running");
 });
@@ -21,6 +25,7 @@ app.use('/api', usuariosRoutes);
 app.use('/api', beneficiariosRoutes);
 
 app.use("/api/preregistros", preregistrosRoutes);
+
 
 app.use(errorMiddleware);
 

@@ -34,7 +34,8 @@ function RegistroBeneficiario() {
         CURP: '',
         genero: '',
         estado_nacimiento: '',
-        fotografia: null,
+        // Fotografía (a ver si funciona)
+        fotografia: '',
         telefono: '',
         email: '',
         contacto_nombre: '',
@@ -78,8 +79,8 @@ function RegistroBeneficiario() {
                 });
 
                 const data = await response.json();
-                console.log('status:', response.status);
-                console.log('respuesta backend:', data);
+                // console.log('status:', response.status);
+                // console.log('respuesta backend:', data);
 
                 if (!response.ok) {
                     throw new Error(data.message || JSON.stringify(data));
@@ -87,11 +88,10 @@ function RegistroBeneficiario() {
 
                 setFolio(data.folio);
             } catch (error) {
-                console.error('Error real:', error);
+                // console.error('Error real:', error);
                 setError(String(error.message || error));
             }
         };
-
         fetchSiguienteFolio();
     }, []);
 
@@ -172,6 +172,9 @@ function RegistroBeneficiario() {
     };
 
     const handleFotoChange = (fotoBase64) => {
+        // console.log('foto recibida:', fotoBase64);
+        // console.log('longitud foto recibida:', fotoBase64?.length);
+
         setFormData(prev => ({
             ...prev,
             fotografia: fotoBase64
@@ -248,7 +251,7 @@ function RegistroBeneficiario() {
                     apellido_materno: formData.apellido_materno,
                     fecha_nacimiento: new Date(fechaNacimiento),
                     estado_nacimiento: formData.estado_nacimiento,
-                    // fotografia: formData.fotografia, // Omitido por ahora
+                    fotografia: formData.fotografia, // Omitido por ahora
                     telefono: formData.telefono,
                     email: formData.email
                 },
@@ -285,7 +288,9 @@ function RegistroBeneficiario() {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                // console.error('Error details:', errorData.details); // Para ver en consola
+                console.log('STATUS ERROR:', response.status);
+                console.log('ERROR BACKEND:', errorData);
+                console.error('Error details:', errorData.details); // Para ver en consola
                 throw new Error(errorData.details?.fieldErrors ? JSON.stringify(errorData.details.fieldErrors) : errorData.message || 'Error al registrar beneficiario');
             }
             

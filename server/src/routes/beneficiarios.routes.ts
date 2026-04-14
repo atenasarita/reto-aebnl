@@ -11,6 +11,8 @@ import {
   createIdentificadoresSchema,
 } from '../schemas/beneficiarios.schemas';
 
+import { uploadFoto } from '../middlewares/upload.middleware';
+
 const router = Router();
 
 const beneficiarioRepository = new OracleBeneficiarioRepository();
@@ -33,5 +35,19 @@ router.post('/beneficiarios/:id_beneficiario/datos-medicos', authenticateJWT, au
 
 router.post('/beneficiarios/:id_beneficiario/direccion', authenticateJWT, authorizeRoles('administrador', 'operador'), validateBody(createDireccionSchema), beneficiariosHandler.createDireccion);
 
+router.post('/beneficiarios/upload-foto',
+  authenticateJWT,
+  authorizeRoles('administrador', 'operador'),
+  uploadFoto.single('fotografia'),
+  (req, res) => {
+    if(!req.file){
+      return res.status(400).json({message: 'No se recibio ninguna foto'});
+    }
+    return res.status(200).json({
+      ruta: `/uploads/fotos/${req.file.filename}`,
+      nombre: req.file.filename,
+    });
+  }
+);
 
 export default router;
