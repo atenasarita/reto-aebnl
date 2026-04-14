@@ -6,7 +6,7 @@ import logo from "../../../assets/logo.png";
 const NAV_LINKS = [
   { label: "Tablero", to: "/tablero" },
   { label: "Beneficiarios", to: "/beneficiarios" },
-  { label: "Servicios", to: "/servicios" },
+  { label: "Servicios", to: "/registro_servicios" },
   { label: "Inventario", to: "/inventario" },
   { label: "Citas", to: "/citas" },
   { label: "Reportes", to: "/reportes" },

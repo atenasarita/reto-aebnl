@@ -1,0 +1,50 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-size: 12px;
+  color: #1e3a8a;
+}
+
+.inputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.prefix {
+  position: absolute;
+  left: 10px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.input:focus {
+  border-color: #2563eb;
+}
+
+.withPrefix {
+  padding-left: 28px;
+}
+
+.errorInput {
+  border-color: #dc2626;
+}
+
+.error {
+  font-size: 11px;
+  color: #dc2626;
+}

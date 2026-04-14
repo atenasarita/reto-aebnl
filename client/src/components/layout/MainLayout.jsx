@@ -5,6 +5,7 @@ const RUTA_A_ENLACE_ACTIVO = {
   '/beneficiarios': 'Beneficiarios',
   '/registro_beneficiario': 'Beneficiarios',
   '/inventario': 'Inventario',
+  '/registro_servicios': 'Servicios'
 }
 
 function MainLayout() {

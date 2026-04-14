@@ -7,6 +7,7 @@ import Dashboard from "./pages/dashboard";
 
 import GestionBeneficiarios from "./pages/GestionBeneficiarios/GestionBeneficiarios";
 import RegistroBeneficiario from "./pages/registro_beneficiario/registro_beneficiario";
+import RegistroServicios from "./pages/RegistroServicios/RegistroServicios";
 
 import Prerregistro from "./pages/prerregistro/Prerregistro";
 import Inventario from "./pages/inventario/Inventario";
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="/registro_beneficiario" element={<RegistroBeneficiario />} />
           <Route path="/prerregistro" element={<Prerregistro />} />
           <Route path="/inventario" element={<Inventario />} />
+          <Route path="/registro_servicios" element={<RegistroServicios />} />
         </Route>
       </Routes>
     </BrowserRouter>
