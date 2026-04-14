@@ -4,7 +4,7 @@ import styles from "./Navbar.module.css";
 import logo from "../../../assets/logo.png";
 
 const NAV_LINKS = [
-  { label: "Tablero", to: "/tablero" },
+  { label: "Tablero", to: "/dashboard" },
   { label: "Beneficiarios", to: "/beneficiarios" },
   { label: "Servicios", to: "/servicios" },
   { label: "Inventario", to: "/inventario" },
