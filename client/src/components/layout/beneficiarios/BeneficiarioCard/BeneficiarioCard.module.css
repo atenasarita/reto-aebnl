@@ -103,9 +103,21 @@
 .actions {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 4px;
   border-top: 1px solid #f3f4f6;
   padding-top: 12px;
+}
+
+.venceBadge {
+  margin-right: auto;
+  background-color: rgba(245, 158, 11, 0.5);
+  color: #92400e;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(223, 147, 23, 0.5);
 }
 
 .actionBtn {

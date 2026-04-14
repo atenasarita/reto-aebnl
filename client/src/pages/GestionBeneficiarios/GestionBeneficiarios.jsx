@@ -10,9 +10,10 @@ import { useNavigate } from 'react-router-dom'
 
 // 1. Fix ESTATUS_OPTIONS — lowercase to match API
 const ESTATUS_OPTIONS = [
-  { label: 'Todos',    value: ''         },
-  { label: 'Activo',   value: 'activo'   }, 
-  { label: 'Inactivo', value: 'inactivo' }, 
+  { label: 'Todos',         value: ''               },
+  { label: 'Activo',        value: 'activo'         }, 
+  { label: 'Inactivo',      value: 'inactivo'       }, 
+  { label: 'Por vencer',    value: 'por-vencer'     },
 ]
 
 
@@ -69,7 +70,11 @@ function GestionBeneficiarios() {
     }
 
     if (estatus) {
-      result = result.filter(b => b.estado === estatus) 
+      if (estatus === 'por-vencer') {
+        result = result.filter(b => b.dias_para_vencer !== undefined && b.dias_para_vencer !== null && b.dias_para_vencer >= 0 && b.dias_para_vencer <= 7)
+      } else {
+        result = result.filter(b => b.estado === estatus) 
+      }
     }
 
     setFiltered(result)
