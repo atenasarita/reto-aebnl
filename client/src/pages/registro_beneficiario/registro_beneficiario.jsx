@@ -297,7 +297,8 @@ function RegistroBeneficiario() {
             const data = await response.json();
             alert('Beneficiario registrado exitosamente');
             navigate('/beneficiarios');
-            // Redirect or reset form
+
+        // Redirect or reset form
         } catch (error) {
             setError(error.message);
         } finally {

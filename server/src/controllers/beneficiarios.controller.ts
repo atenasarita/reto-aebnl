@@ -2,6 +2,7 @@ import { BeneficiarioRepository } from "../interfaces/beneficiarioRepository";
 import {
   Beneficiario,
   BeneficiarioDetalle,
+  BeneficiarioConMembresiaProxVencer,
   CreateBeneficiarioInput,
   CreateDatosMedicosInput,
   CreateDireccionInput,

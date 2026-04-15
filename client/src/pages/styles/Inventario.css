@@ -1,0 +1,29 @@
+.inventario-pagina {
+  min-height: 100%;
+  background: #f8fafc;
+}
+
+.inventario-pagina .content-container {
+  margin: 32px 64px 48px;
+}
+
+.inventario-encabezado {
+  text-align: left;
+  margin-bottom: 28px;
+}
+
+.inventario-encabezado__titulo {
+  margin: 0 0 8px;
+  font-size: 36px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.inventario-encabezado__subtitulo {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  color: #64748b;
+  line-height: 1.4;
+}
