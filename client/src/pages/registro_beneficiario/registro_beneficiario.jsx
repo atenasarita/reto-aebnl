@@ -288,14 +288,15 @@ function RegistroBeneficiario() {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.log('STATUS ERROR:', response.status);
-                console.log('ERROR BACKEND:', errorData);
-                console.error('Error details:', errorData.details); // Para ver en consola
+                // console.log('STATUS ERROR:', response.status);
+                // console.log('ERROR BACKEND:', errorData);
+                // console.error('Error details:', errorData.details); // Para ver en consola
                 throw new Error(errorData.details?.fieldErrors ? JSON.stringify(errorData.details.fieldErrors) : errorData.message || 'Error al registrar beneficiario');
             }
             
             const data = await response.json();
             alert('Beneficiario registrado exitosamente');
+            navigate('/beneficiarios');
             // Redirect or reset form
         } catch (error) {
             setError(error.message);
