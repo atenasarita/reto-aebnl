@@ -143,6 +143,24 @@ export const INSERT_MEMBRESIA = `
   VALUES (:id_beneficiario, :precio, :fecha_inicio, :fecha_fin, :estado, :metodo_pago)
 `.trim();
 
+export const UPDATE_MEMBRESIA_ESTADO = `
+  UPDATE Membresias
+  SET estado = 'vencida'
+  WHERE estado = 'activa'
+    AND fecha_fin < TRUNC(SYSDATE)
+`.trim();
+
+export const UPDATE_BENEFICIARIO_ESTADO_EXPIRED_MEMBRESIAS = `
+  UPDATE Beneficiario b
+  SET estado = 'inactivo'
+  WHERE b.estado = 'activo'
+    AND EXISTS (
+      SELECT 1 FROM Membresias m
+      WHERE m.id_beneficiario = b.id_beneficiario
+        AND m.estado = 'vencida'
+    )
+`.trim();
+
 export const UPDATE_BENEFICIARIO_ESTADO = `
   UPDATE Beneficiario
   SET estado = :estado

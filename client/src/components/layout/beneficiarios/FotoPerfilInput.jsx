@@ -6,10 +6,15 @@ function FotoPerfilInput({
 }){
     const fileInputRef = useRef(null);
     const[preview, setPreview] = useState('');
+    const[subiendo, setSubiendo] = useState(false);
 
     useEffect(() => {
         if(value && typeof value === 'string'){
-            setPreview(value);
+            if(value.startsWith('/uploads/')){
+                setPreview(`http://localhost:3000${value}`);
+            } else {
+                setPreview(value);
+            }
         } else {
             setPreview('');
         }
@@ -19,7 +24,7 @@ function FotoPerfilInput({
         fileInputRef.current?.click();
     };
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
         const file = e.target.files?.[0];
         if(!file) return;
 
@@ -28,14 +33,43 @@ function FotoPerfilInput({
             return;
         }
         onError?.('');
+        setSubiendo(true);
 
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const resultado = reader.result;
-            setPreview(resultado);
-            onChange?.(resultado);
-        };
-        reader.readAsDataURL(file);
+        try {
+            // Preview local
+            const localPreview = URL.createObjectURL(file);
+            setPreview(localPreview);
+
+            const token = localStorage.getItem('token');
+            const formData = new FormData();
+            formData.append('fotografia', file);
+
+            const response = await fetch('http://localhost:3000/api/beneficiarios/upload-foto', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+            console.log('ruta devuelta:', data.ruta);
+            console.log('url completa:', `http://localhost:3000${data.ruta}`);
+
+            if(!response.ok){
+                throw new Error(data.message || 'Error al subir la fotografia');
+            }
+
+            // Guardar en el formaulario solo la ruta
+            onChange?.(data.ruta);
+
+        } catch(error) {
+            console.error('Error subiendo foto: ', error);
+            onError?.(error.message || 'No se pudo subir la fotografia');
+            setPreview('');
+        } finally {
+            setSubiendo(false);
+        }
     };
 
     return(

@@ -46,4 +46,8 @@ export class BeneficiariosController {
     async createDireccion(id_beneficiario: number, input: CreateDireccionInput): Promise<Direccion> {
         return this.repository.createDireccion(id_beneficiario, input);
     }
+
+    async getSiguienteFolio(): Promise<string> {
+        return this.repository.getSiguienteFolio();
+    }
 }

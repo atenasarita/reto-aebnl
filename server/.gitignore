@@ -11,3 +11,5 @@ Wallet_*/
 *.pem
 *.jks
 *.ora
+/uploads
+.DS_Store

@@ -21,4 +21,5 @@ export interface BeneficiarioRepository
     createIdentificadores(id_beneficiario: number, input: CreateIdentificadoresInput): Promise<Identificadores>;
     createDatosMedicos(id_beneficiario: number, input: CreateDatosMedicosInput): Promise<Datos_medicos>;
     createDireccion(id_beneficiario: number, input: CreateDireccionInput): Promise<Direccion>;
+    getSiguienteFolio(): Promise<string>;
 }

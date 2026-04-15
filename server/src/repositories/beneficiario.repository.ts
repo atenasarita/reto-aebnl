@@ -17,6 +17,8 @@ import {
     SELECT_BENEFICIARIOS,
     SELECT_BENEFICIARIOS_WITH_MEMBRESIAS_ENDING_SOON,
     UPDATE_BENEFICIARIO_ESTADO,
+    UPDATE_MEMBRESIA_ESTADO,
+    UPDATE_BENEFICIARIO_ESTADO_EXPIRED_MEMBRESIAS,
     selectTipoEspinasByBeneficiarioIds,
 } from './beneficiario.queries';
 import {
@@ -243,6 +245,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
 
         try {
             connection = await this.oracleConnection.getConnection();
+            await this.refreshExpiredMembresiasWithConnection(connection);
             const rows = await this.queryBeneficiarioDetalleRows(connection, SELECT_BENEFICIARIOS);
             return this.hydrateBeneficiariosWithEspinas(connection, rows);
         } finally {
@@ -257,6 +260,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
 
         try {
             connection = await this.oracleConnection.getConnection();
+            await this.refreshExpiredMembresiasWithConnection(connection);
 
             const rows = await this.queryBeneficiarioDetalleRows(
                 connection,
@@ -282,6 +286,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
 
         try {
             connection = await this.oracleConnection.getConnection();
+            await this.refreshExpiredMembresiasWithConnection(connection);
 
             const rows = await this.queryBeneficiarioDetalleRows(connection, SELECT_BENEFICIARIO_BY_FOLIO, { folio });
 
@@ -601,8 +606,9 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         id_beneficiario: number,
         input: CreateMembresiaInput,
     ): Promise<Beneficiario['estado']> {
+        const meses = input.meses; // La duracion de la membresia se puede ajustar según sea necesario
         const fechaInicio = startOfDay(input.fecha_inicio ?? new Date());
-        const fechaFin = addDays(addMonthsKeepingCalendar(fechaInicio, input.meses), -1);
+        const fechaFin = addDays(addMonthsKeepingCalendar(fechaInicio, meses), -1);
         const precioTotal = Number((input.precio_mensual * input.meses).toFixed(2));
         const estadoMembresia = fechaFin >= startOfDay(new Date()) ? 'activa' : 'vencida';
 
@@ -637,6 +643,35 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         );
     }
 
+    private async refreshExpiredMembresiasWithConnection(connection: oracledb.Connection): Promise<void> {
+        await connection.execute(
+            UPDATE_MEMBRESIA_ESTADO,
+            {},
+            { autoCommit: false },
+        );
+
+        await connection.execute(
+            UPDATE_BENEFICIARIO_ESTADO_EXPIRED_MEMBRESIAS,
+            {},
+            { autoCommit: false },
+        );
+
+        await connection.commit();
+    }
+
+    public async refreshExpiredMembresias(): Promise<void> {
+        let connection: oracledb.Connection | undefined;
+
+        try {
+            connection = await this.oracleConnection.getConnection();
+            await this.refreshExpiredMembresiasWithConnection(connection);
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
+        }
+    }
+
     private async insertTipoEspinas(
         connection: oracledb.Connection,
         id_beneficiario: number,
@@ -651,6 +686,19 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                 },
                 { autoCommit: false },
             );
+        }
+    }
+
+    async getSiguienteFolio(): Promise<string> {
+        let connection: oracledb.Connection | undefined;
+
+        try {
+            connection = await this.oracleConnection.getConnection();
+            return await generateNextBeneficiarioFolio(connection);
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
         }
     }
 }
