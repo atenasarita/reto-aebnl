@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import BeneficiarioCard from '../BeneficiarioCard/BeneficiarioCard'
 import styles from './BeneficiarioGrid.module.css'
 import Pagination from '../../../ui/Pagination'
+import { espinaBifidaOptions } from '../../../../utils/espinaBifidaTypes'
 
 const ITEMS_PER_PAGE = 8
 
@@ -13,15 +14,21 @@ function BeneficiarioGrid({ data, loading }) {
     setCurrentPage(1)
   }, [data])
 
-  // normalizar API
-  const normalized = data.map((b) => ({
-    id_beneficiario: b.id_beneficiario,
-    folio:           b.folio,
-    nombre:          `${b.identificadores.nombres} ${b.identificadores.apellido_paterno} ${b.identificadores.apellido_materno ?? ''}`.trim(),
-    diagnostico:     b.tipo_espina?.[0]?.tipo ?? 'Sin diagnóstico',
-    estatus:         b.estado === 'activo' ? 'Activo' : 'Inactivo',
-    dias_para_vencer: b.dias_para_vencer,
-  }))
+  const normalized = data.map((b) => {
+    const diagnosticoTexto =
+      b.tipo_espina && b.tipo_espina.length > 0
+        ? b.tipo_espina.map(tipo => tipo.nombre).join(', ')
+        : 'Sin diagnóstico'
+
+    return {
+      id_beneficiario: b.id_beneficiario,
+      folio: b.folio,
+      nombre: `${b.identificadores.nombres} ${b.identificadores.apellido_paterno} ${b.identificadores.apellido_materno ?? ''}`.trim(),
+      diagnostico: diagnosticoTexto,
+      estatus: b.estado === 'activo' ? 'Activo' : 'Inactivo',
+      dias_para_vencer: b.dias_para_vencer,
+    }
+  })
 
   const paginated = normalized.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
