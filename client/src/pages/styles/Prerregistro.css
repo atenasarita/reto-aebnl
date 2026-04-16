@@ -246,8 +246,11 @@
   width: 100%;
 }
 
+
+
 .prerregistro-container input[type="text"]:focus,
 .prerregistro-container input[type="date"]:focus,
+
 .prerregistro-container select:focus,
 .prerregistro-container textarea:focus {
   outline: none;
@@ -261,6 +264,11 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
+}
+
+input[type="date"] {
+  position: relative;
+  z-index: 10;
 }
 
 /* Checkboxes */
