@@ -3,6 +3,7 @@ import MainLayout from './components/layout/MainLayout'
 import GestionBeneficiarios from './pages/GestionBeneficiarios/GestionBeneficiarios'
 import Login from './pages/login/login'
 import RegistroBeneficiario from './pages/registro_beneficiario/registro_beneficiario'
+import Recibos from './pages/Recibos/Recibos' 
 
 import './App.css'
 import Prerregistro from './pages/Prerregistro/Prerregistro'
@@ -21,6 +22,7 @@ return (
           <Route path="/beneficiarios" element={<GestionBeneficiarios />} />
           <Route path="/registro_beneficiario" element={<RegistroBeneficiario />} />
           <Route path="/inventario" element={<Inventario />} />
+          <Route path="/recibos" element={<Recibos />} />
         </Route>
       </Routes>
     </BrowserRouter>

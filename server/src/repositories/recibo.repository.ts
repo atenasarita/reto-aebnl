@@ -1,0 +1,148 @@
+import oracledb from "oracledb";
+import { IReciboRepository } from "../interfaces/reciboRepository.js";
+import { ReciboCompleto, ItemInventarioRecibo, FinancieroRecibo } from "../types/recibos.types.js";
+
+async function getConnection(): Promise<oracledb.Connection> {
+  return oracledb.getConnection();
+}
+
+// Servicios del día con datos del beneficiario 
+const SQL_SERVICIOS_POR_FECHA = `
+  SELECT
+    so.ID_SERVICIO_OTORGADO,
+    b.NOMBRES || ' ' || b.APELLIDO_PATERNO  AS BENEFICIARIO,
+    cs.NOMBRE                               AS SERVICIO,
+    TO_CHAR(so.FECHA, 'YYYY-MM-DD')         AS FECHA,
+    so.HORA,
+    sf.ID_SERVICIO_FINANCIERO,
+    sf.MONTO_SERVICIO,
+    sf.MONTO_INVENTARIO,
+    sf.DESCUENTO,
+    sf.CUOTA_TOTAL,
+    sf.MONTO_PAGADO,
+    sf.METODO_PAGO
+  FROM SERVICIOS_OTORGADOS so
+  JOIN BENEFICIARIO         b  ON b.ID_BENEFICIARIO       = so.ID_BENEFICIARIO
+  JOIN CATALOGO_SERVICIOS   cs ON cs.ID_CATALOGO_SERVICIO = so.ID_CATALOGO_SERVICIO
+  LEFT JOIN SERVICIOS_FINANCIEROS sf ON sf.ID_SERVICIO_OTORGADO = so.ID_SERVICIO_OTORGADO
+  WHERE TRUNC(so.FECHA) = TO_DATE(:fecha, 'YYYY-MM-DD')
+  ORDER BY so.FECHA DESC, so.HORA DESC
+`;
+
+// Items de inventario de un servicio
+const SQL_ITEMS_INVENTARIO = `
+  SELECT
+    vi.ID_VENTA_INVENTARIO,
+    vi.ID_INVENTARIO,
+    i.NOMBRE                AS NOMBRE_ARTICULO,
+    vi.CANTIDAD,
+    vi.PRECIO_UNITARIO,
+    vi.SUBTOTAL
+  FROM VENTA_INVENTARIO vi
+  JOIN INVENTARIO i ON i.ID_INVENTARIO = vi.ID_INVENTARIO
+  WHERE vi.ID_SERVICIO_OTORGADO = :id
+`;
+
+// Ayudas de mapeo de filas a objetos
+function rowToFinanciero(row: Record<string, unknown>): FinancieroRecibo | null {
+  if (!row["ID_SERVICIO_FINANCIERO"]) return null;
+  return {
+    id_servicio_financiero: Number(row["ID_SERVICIO_FINANCIERO"]),
+    monto_servicio:         Number(row["MONTO_SERVICIO"]   ?? 0),
+    monto_inventario:       Number(row["MONTO_INVENTARIO"] ?? 0),
+    descuento:              Number(row["DESCUENTO"]        ?? 0),
+    cuota_total:            Number(row["CUOTA_TOTAL"]      ?? 0),
+    monto_pagado:           Number(row["MONTO_PAGADO"]     ?? 0),
+    metodo_pago:            (row["METODO_PAGO"] as FinancieroRecibo["metodo_pago"]),
+  };
+}
+
+async function fetchItems(
+  conn: oracledb.Connection,
+  idServicio: number
+): Promise<ItemInventarioRecibo[]> {
+  const result = await conn.execute(
+    SQL_ITEMS_INVENTARIO,
+    { id: idServicio },
+    { outFormat: oracledb.OUT_FORMAT_OBJECT }
+  );
+  return ((result.rows ?? []) as Record<string, unknown>[]).map((r) => ({
+    id_venta_inventario: Number(r["ID_VENTA_INVENTARIO"]),
+    id_inventario:       Number(r["ID_INVENTARIO"]),
+    nombre_articulo:     String(r["NOMBRE_ARTICULO"] ?? ""),
+    cantidad:            Number(r["CANTIDAD"]),
+    precio_unitario:     Number(r["PRECIO_UNITARIO"]),
+    subtotal:            Number(r["SUBTOTAL"]),
+  }));
+}
+
+// Repositorio
+export class ReciboRepository implements IReciboRepository {
+
+  async listarPorFecha(fecha: string): Promise<ReciboCompleto[]> {
+    const conn = await getConnection();
+    try {
+      const result = await conn.execute(
+        SQL_SERVICIOS_POR_FECHA,
+        { fecha },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+
+      const rows = (result.rows ?? []) as Record<string, unknown>[];
+
+      // Traer items de inventario en paralelo
+      const recibos = await Promise.all(
+        rows.map(async (row): Promise<ReciboCompleto> => {
+          const id = Number(row["ID_SERVICIO_OTORGADO"]);
+          const items = await fetchItems(conn, id);
+          return {
+            id_servicio_otorgado: id,
+            beneficiario:         String(row["BENEFICIARIO"] ?? ""),
+            servicio:             String(row["SERVICIO"]     ?? ""),
+            fecha:                String(row["FECHA"]        ?? ""),
+            hora:                 String(row["HORA"]         ?? ""),
+            items_inventario:     items,
+            financiero:           rowToFinanciero(row),
+          };
+        })
+      );
+
+      return recibos;
+    } finally {
+      await conn.close();
+    }
+  }
+
+  async obtenerPorId(idServicioOtorgado: number): Promise<ReciboCompleto | null> {
+    const conn = await getConnection();
+    try {
+      const result = await conn.execute(
+        `${SQL_SERVICIOS_POR_FECHA.replace(
+          "TRUNC(so.FECHA) = TO_DATE(:fecha, 'YYYY-MM-DD')",
+          "so.ID_SERVICIO_OTORGADO = :fecha"
+        )}`,
+        { fecha: idServicioOtorgado },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+
+      const rows = (result.rows ?? []) as Record<string, unknown>[];
+      if (rows.length === 0) return null;
+
+      const row   = rows[0];
+      const id    = Number(row["ID_SERVICIO_OTORGADO"]);
+      const items = await fetchItems(conn, id);
+
+      return {
+        id_servicio_otorgado: id,
+        beneficiario:         String(row["BENEFICIARIO"] ?? ""),
+        servicio:             String(row["SERVICIO"]     ?? ""),
+        fecha:                String(row["FECHA"]        ?? ""),
+        hora:                 String(row["HORA"]         ?? ""),
+        items_inventario:     items,
+        financiero:           rowToFinanciero(row),
+      };
+    } finally {
+      await conn.close();
+    }
+  }
+}
