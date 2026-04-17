@@ -43,6 +43,7 @@ function RegistroBeneficiario() {
         contacto_parentesco: '',
         alergias: 'Ninguna',
         tipo_sanguineo: '',
+        valvula: false,
         domicilio_calle: '',
         domicilio_cp: '',
         domicilio_ciudad: '',

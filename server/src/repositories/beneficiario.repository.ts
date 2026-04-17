@@ -55,6 +55,7 @@ type BeneficiarioDetalleRow = {
     CONTACTO_PARENTESCO: string | null;
     ALERGIAS: string | null;
     TIPO_SANGUINEO: string | null;
+    VALVULA: number | null;
     DOMICILIO_CALLE: string | null;
     DOMICILIO_CP: string | null;
     DOMICILIO_CIUDAD: string | null;
@@ -127,6 +128,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         const contactoParentesco = this.toRequiredString(row.CONTACTO_PARENTESCO);
         const alergias = this.toRequiredString(row.ALERGIAS);
         const tipoSanguineo = this.toBloodType(row.TIPO_SANGUINEO);
+        const valvula = row.VALVULA === 1;
         const domicilioCalle = this.toRequiredString(row.DOMICILIO_CALLE);
         const domicilioCp = this.toRequiredString(row.DOMICILIO_CP);
         const domicilioCiudad = this.toRequiredString(row.DOMICILIO_CIUDAD);
@@ -160,6 +162,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                 contacto_parentesco: contactoParentesco,
                 alergias,
                 tipo_sanguineo: tipoSanguineo,
+                valvula: valvula
             },
             direccion: {
                 id_direccion: 0,
@@ -343,6 +346,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                     CONTACTO_PARENTESCO: row.CONTACTO_PARENTESCO,
                     ALERGIAS: row.ALERGIAS,
                     TIPO_SANGUINEO: row.TIPO_SANGUINEO,
+                    VALVULA: row.VALVULA,
                     DOMICILIO_CALLE: row.DOMICILIO_CALLE,
                     DOMICILIO_CP: row.DOMICILIO_CP,
                     DOMICILIO_CIUDAD: row.DOMICILIO_CIUDAD,
@@ -551,6 +555,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                 contacto_parentesco: input.contacto_parentesco,
                 alergias: input.alergias,
                 tipo_sanguineo: input.tipo_sanguineo,
+                valvula: input.valvula ? 1 : 0,
                 id_datos_medicos: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
             },
             { autoCommit: false },
@@ -567,6 +572,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
             contacto_parentesco: input.contacto_parentesco,
             alergias: input.alergias,
             tipo_sanguineo: input.tipo_sanguineo,
+            valvula: input.valvula
         };
     }
 

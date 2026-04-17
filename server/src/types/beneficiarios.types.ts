@@ -36,6 +36,7 @@ export interface Datos_medicos {
     contacto_parentesco: string;
     alergias: string;
     tipo_sanguineo: TipoSanguineo;
+    valvula: boolean;
 }
 
 export interface Identificadores {
@@ -80,6 +81,7 @@ export interface CreateDatosMedicosInput {
     contacto_parentesco: string;
     alergias: string;
     tipo_sanguineo: TipoSanguineo;
+    valvula: boolean;
 }
 
 export interface CreateDireccionInput {
