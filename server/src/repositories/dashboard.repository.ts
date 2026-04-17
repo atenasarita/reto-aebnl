@@ -30,8 +30,13 @@ export class DashboardRepository {
         hora: row.HORA,
         estatus: row.ESTATUS,
         id_beneficiario: row.ID_BENEFICIARIO,
+        id_especialista: row.ID_ESPECIALISTA,
         nombre_completo: row.NOMBRE_COMPLETO,
         folio: row.FOLIO,
+        especialista_nombre: row.ESPECIALISTA_NOMBRE,
+        servicio_nombre: row.SERVICIO_NOMBRE,
+        motivo: row.MOTIVO,
+        notas: row.NOTAS,
       }));
     } finally {
       if (conn) await conn.close();
