@@ -7,6 +7,7 @@ import {
   CreateDireccionInput,
   CreateIdentificadoresInput,
 } from '../types/beneficiarios.types';
+import OracleDB from 'oracledb';
 
 export class BeneficiariosHandler {
      beneficiariosController: BeneficiariosController;
@@ -112,4 +113,13 @@ export class BeneficiariosHandler {
       return next(error);
     }
   };
+
+  getSiguienteFolio = async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const folio = await this.beneficiariosController.getSiguienteFolio();
+    return res.status(200).json({ folio });
+  } catch (error) {
+    return next(error);
+  }
+};
 }

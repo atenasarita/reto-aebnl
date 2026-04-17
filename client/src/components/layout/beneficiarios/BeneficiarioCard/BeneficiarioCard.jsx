@@ -13,7 +13,9 @@ function getInitials(name) {
 }
 
 function BeneficiarioCard({ beneficiario, onView, onEdit, onCard }) {
-  const { nombre, folio, diagnostico, estatus } = beneficiario
+  const { nombre, folio, diagnostico, estatus, dias_para_vencer } = beneficiario
+
+  const showVenceBadge = dias_para_vencer !== undefined && dias_para_vencer !== null && dias_para_vencer >= 0 && dias_para_vencer <= 7;
 
   return (
     <div className={styles.card}>
@@ -37,6 +39,11 @@ function BeneficiarioCard({ beneficiario, onView, onEdit, onCard }) {
 
       {/* Actions */}
       <div className={styles.actions}>
+        {showVenceBadge && (
+          <span className={styles.venceBadge}>
+            {dias_para_vencer === 0 ? 'Vence hoy' : `Vence en ${dias_para_vencer} día${dias_para_vencer === 1 ? '' : 's'}`}
+          </span>
+        )}
         <button className={styles.actionBtn} onClick={onCard} title="Ver credencial">
           <BsCardText />
         </button>

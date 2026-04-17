@@ -1,4 +1,4 @@
-import { CreateMembresiaInput } from './membresias.types';
+import { CreateMembresiaInput, Membresia } from './membresias.types';
 import { Espina_bifida } from './espina.types';
 
 export type Genero = 'masculino' | 'femenino' | 'otro';
@@ -25,6 +25,7 @@ export interface BeneficiarioDetalle {
     identificadores: Identificadores;
     datos_medicos: Datos_medicos;
     direccion: Direccion;
+    dias_para_vencer?: number | null;
 }
 
 export interface Datos_medicos {
@@ -97,4 +98,15 @@ export interface CreateBeneficiarioInput {
     datos_medicos: CreateDatosMedicosInput;
     direccion: CreateDireccionInput;
     membresia?: CreateMembresiaInput;
+}
+
+export interface BeneficiarioConMembresiaProxVencer extends BeneficiarioDetalle {
+    membresia: {
+        id_membresia: number;
+        precio: number;
+        fecha_inicio: string;
+        fecha_fin: string;
+        estado: string;
+        metodo_pago: string;
+    };
 }

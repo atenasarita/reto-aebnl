@@ -65,42 +65,79 @@ body {
 
 .step-icon {
   font-size: 24px;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-icon.success {
+  color: #22c55e; /* verde */
+}
+
+.step-icon.warning {
+  color: #f59e0b; /* naranja */
 }
 
 .sidebar-buttons {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   gap: 16px;
 }
 
 .btn {
   height: 58px;
-  border-radius: 14px;
+  border-radius: 16px;
   border: none;
   font-size: 18px;
   cursor: pointer;
+  width: 100%;
+  transition: 0.2s ease;
+  font-weight: 500;
 }
 
+/* CONTINUAR */
+/* .btn-primary {
+  background: #3b5ccc;
+  color: #ffffff;
+}  */
+
+/* ANTERIOR */
 .btn-secondary {
-  background: white;
-  border: 1px solid #cfd8e6;
-  color: #66748b;
+  background: #6f86a6;
+  color: #ffffff;
 }
 
-.btn-primary {
-  background: #28489f;
+/* CANCELAR */
+/* .btn-danger {
+  background: #a1bdd9;
   color: white;
+  padding: 10px 22px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+} */
+
+/* HOVER */
+.btn-primary:hover {
+  background: #2f4bb0;
 }
 
-.btn-danger {
-    background: #a1bdd9;
-    color: #000000;
-    border: 1px solid #7b9ee6;
+.btn-secondary:hover {
+  background: #5e7491;
 }
 
 .btn-danger:hover {
-    background: #b3c8f3;
-}
+  background: #8ea9c4;
+}  
 
 .form-card {
   background: white;
@@ -207,7 +244,7 @@ body {
 }
 
 .top-info .field-group input{
-  background: #f3f6fb; /* gris suave */
+  background: #f3f6fb; 
   border: 1px solid #98b6e2;
   border-radius: 16px;
   padding: 12px 16px;
@@ -315,4 +352,23 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .checkbox-card span {
   line-height: 1.2;
+}
+
+.field-error {
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.readonly-field {
+  background: #eef2f7;
+  color: #7b8794;
+  border: 2px solid #d3dbe7;
+  font-weight: 500;
+  pointer-events: none; /* evita interacción */
+}
+
+.readonly-field:focus {
+  outline: none;
 }
