@@ -1,18 +1,18 @@
 export const dashboardQueries = {
   getAgendaHoy: `
-    SELECT
-      c.id_cita,
-      TO_CHAR(c.fecha, 'YYYY-MM-DD') AS fecha,
-      TO_CHAR(c.hora, 'HH24:MI') AS hora,
-      c.estatus,
-      c.id_beneficiario,
-      i.nombres || ' ' || i.apellido_paterno || ' ' || i.apellido_materno AS nombre_completo,
-      b.folio
+  SELECT
+    c.id_cita,
+    TO_CHAR(c.fecha, 'YYYY-MM-DD') AS fecha,
+    c.hora AS hora,
+    c.estatus,
+    c.id_beneficiario,
+    i.nombres || ' ' || i.apellido_paterno || ' ' || i.apellido_materno AS nombre_completo,
+    b.folio
     FROM CITAS c
     JOIN BENEFICIARIO b ON b.id_beneficiario = c.id_beneficiario
     JOIN IDENTIFICADORES i ON i.id_beneficiario = b.id_beneficiario
     WHERE TRUNC(c.fecha) = TRUNC(SYSDATE)
-    ORDER BY c.fecha ASC, c.hora ASC
+    ORDER BY c.hora
   `,
 
   getPreregistroPendientes: `
