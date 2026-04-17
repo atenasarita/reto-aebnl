@@ -6,14 +6,25 @@ export const dashboardQueries = {
     c.hora AS hora,
     c.estatus,
     c.id_beneficiario,
+    c.id_especialista,
+    c.motivo,
+    c.notas,
     i.nombres || ' ' || i.apellido_paterno || ' ' || i.apellido_materno AS nombre_completo,
-    b.folio
-    FROM CITAS c
-    JOIN BENEFICIARIO b ON b.id_beneficiario = c.id_beneficiario
-    JOIN IDENTIFICADORES i ON i.id_beneficiario = b.id_beneficiario
-    WHERE TRUNC(c.fecha) = TRUNC(SYSDATE)
-    ORDER BY c.hora
-  `,
+    b.folio,
+    e.nombre_completo AS especialista_nombre,
+    cs.nombre AS servicio_nombre
+  FROM CITAS c
+  JOIN BENEFICIARIO b
+    ON b.id_beneficiario = c.id_beneficiario
+  JOIN IDENTIFICADORES i
+    ON i.id_beneficiario = b.id_beneficiario
+  LEFT JOIN ESPECIALISTAS e
+    ON e.id_especialista = c.id_especialista
+  LEFT JOIN CATALOGO_SERVICIOS cs
+    ON cs.id_catalogo_servicio = c.id_catalogo_servicio
+  WHERE TRUNC(c.fecha) = TRUNC(SYSDATE)
+  ORDER BY c.hora
+`,
 
   getPreregistroPendientes: `
     SELECT
