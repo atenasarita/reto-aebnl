@@ -123,6 +123,10 @@ export default function BusquedaBeneficiarioVista() {
 
   return (
     <div className={styles.page}>
+        <div className={styles.description}>
+          <h1 className={styles.title}>Registrar Nuevo Servicio</h1>
+          <h2 className={styles.subtitle}>Complete los datos para dar de alta un nuevo servicio medico.</h2>
+        </div>
       <div className={styles.inner}>
 
         {/* Tabs */}
@@ -210,7 +214,7 @@ export default function BusquedaBeneficiarioVista() {
                 <button
                   className={styles.btnPrimary}
                   style={{
-                    opacity: puedeAvanzar() ? 1 : 0.5,
+                    opacity: puedeAvanzar() ? 1 : 0.2,
                   }}
                   onClick={() => puedeAvanzar() && setPasoActual(pasoActual + 1)}
                 >

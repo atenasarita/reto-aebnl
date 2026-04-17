@@ -1,5 +1,10 @@
 import { Calendar, User, Stethoscope } from "lucide-react";
 import styles from "../styles/BusquedaBeneficiarioVista.module.css";
+import "../styles/BusquedaBeneficiarioVista.css";
+
+import Dropdown from '../../components/ui/Dropdown'
+
+
 
 const TIPOS_SERVICIO = [
   "Consulta general",
@@ -22,13 +27,17 @@ export default function StepDetalles({
   medico,
   setMedico,
 }) {
+
+  const tiposOptions = TIPOS_SERVICIO.map(t => ({ label: t, value: t }))
+  const medicosOptions = MEDICOS.map(m => ({ label: m, value: m }))
+
   return (
     <div className={styles.panel}>
-      <div className={styles.formGrid3}>
+      <div className='formGrid3'>
         
         {/* Fecha */}
-        <div className={styles.field}>
-          <label htmlFor="fecha" className={styles.fieldLabel}>
+        <div className='field1'>
+          <label htmlFor="fecha" className='fieldLabel1'>
             <Calendar size={14} style={{ marginRight: 6 }} />
             Fecha
           </label>
@@ -48,7 +57,7 @@ export default function StepDetalles({
 
         {/* Tipo servicio */}
         <div className={styles.field}>
-          <label className={styles.fieldLabel}>
+          <label className='fieldLabel1'>
             <Stethoscope size={14} style={{ marginRight: 6 }} />
             Servicio
           </label>
@@ -66,7 +75,7 @@ export default function StepDetalles({
 
         {/* Médico */}
         <div className={styles.field}>
-          <label className={styles.fieldLabel}>
+          <label className='fieldLabel1'>
             <User size={14} style={{ marginRight: 6 }} />
             Médico
           </label>

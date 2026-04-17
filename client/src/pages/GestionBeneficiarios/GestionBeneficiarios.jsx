@@ -124,9 +124,10 @@ function GestionBeneficiarios() {
           />
 
           <SearchBar
+            placeholder='Buscar por nombre, folio o CURP...'
             icon={<FiSearch />}
             className='search-gestion'
-            onSearch={setQuery}          // just update query, useEffect does the rest
+            onSearch={setQuery}          
             debounceMs={250}
           />
           <Button className='buscar-beneficiarios-btn' onClick={handleBuscar}>

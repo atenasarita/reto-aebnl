@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import './styles/SearchBar.css'
 
-function SearchBar({ placeholder = "Buscar por nombre, folio o CURP...", onSearch, className = '', debounceMs = 300, icon }) {
+function SearchBar({ placeholder = " ", onSearch, className = '', debounceMs = 300, icon }) {
   const [search, setSearch] = useState('')
   const timerRef = useRef(null)
   const onSearchRef = useRef(onSearch)

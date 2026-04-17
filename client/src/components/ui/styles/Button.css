@@ -26,3 +26,23 @@
   width: 200px;
   border-radius: 12px;
 }
+
+.segBtn2 {
+  border: 1px solid #64748b;
+  border-radius: 12px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 20px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.segBtnActive2 {
+  background-color: #1e3b8a;
+  color: #fff;
+}
