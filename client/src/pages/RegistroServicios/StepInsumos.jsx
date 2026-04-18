@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
-import styles from "../styles/BusquedaBeneficiarioVista.module.css";
 
 import Dropdown from "../../components/ui/Dropdown";  
 import Button from "../../components/ui/Button";

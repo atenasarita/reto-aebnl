@@ -12,7 +12,8 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-import styles from "../styles/BusquedaBeneficiarioVista.module.css"
+import "../styles/BusquedaBeneficiarioVista.css";
+
 
 import StepBusqueda from "./StepBusqueda";
 import StepDetalles from "./StepDetalles";
@@ -20,22 +21,11 @@ import StepInsumos from "./StepInsumos";
 import StepFinanzas from "./StepFinanzas";
 
 
-
 const PASOS = [
   { id: 1, tab: "Búsqueda", Icon: Search },
   { id: 2, tab: "Detalles", Icon: ClipboardList },
   { id: 3, tab: "Insumos", Icon: Package },
   { id: 4, tab: "Finanzas", Icon: Wallet },
-];
-
-const METODOS_PAGO = ["Efectivo", "Transferencia", "Tarjeta débito", "Tarjeta crédito", "Cheque"];
-
-const PRODUCTOS_MOCK = [
-  { id: 1, nombre: "Sonda vesical Fr14", precio: 85 },
-  { id: 2, nombre: "Catéter intermitente", precio: 120 },
-  { id: 3, nombre: "Bolsa colectora 2L", precio: 45 },
-  { id: 4, nombre: "Gasas estériles x10", precio: 30 },
-  { id: 5, nombre: "Guantes látex M x100", precio: 90 },
 ];
 
 const BENEFICIARIOS_MOCK = [
@@ -59,8 +49,6 @@ export default function BusquedaBeneficiarioVista() {
   const [medico, setMedico] = useState("");
 
   const [insumos, setInsumos] = useState([]);
-  const [productoSelec, setProductoSelec] = useState("");
-  const [cantidadProducto, setCantidadProducto] = useState(1);
 
   const [metodoPago, setMetodoPago] = useState("");
   const [montoPagado, setMontoPagado] = useState("");
@@ -83,21 +71,6 @@ export default function BusquedaBeneficiarioVista() {
     )
   : [];
 
-  const agregarInsumo = () => {
-    if (!productoSelec) return;
-    const prod = PRODUCTOS_MOCK.find((p) => p.id === parseInt(productoSelec));
-    if (!prod) return;
-
-    const existe = insumos.find((i) => i.id === prod.id);
-    if (existe) {
-      setInsumos(insumos.map((i) =>
-        i.id === prod.id ? { ...i, cantidad: i.cantidad + cantidadProducto } : i
-      ));
-    } else {
-      setInsumos([...insumos, { ...prod, cantidad: cantidadProducto }]);
-    }
-  };
-
   const puedeAvanzar = () => {
     if (pasoActual === 1) return !!(beneficiarioSeleccionado || citaSeleccionada);
     if (pasoActual === 2) return !!(fecha && tipoServicio && medico);
@@ -107,12 +80,12 @@ export default function BusquedaBeneficiarioVista() {
 
   if (guardado) {
     return (
-      <div className={styles.page}>
-        <div className={styles.inner}>
-          <div className={styles.main}>
+      <div className='page'>
+        <div className='inner'>
+          <div className='main'>
             <CheckCircle2 size={64} color="#0f766e" />
             <h2>Servicio registrado</h2>
-            <button className={styles.btnPrimary} onClick={() => setGuardado(false)}>
+            <button className='btnPrimary' onClick={() => setGuardado(false)}>
               Nuevo servicio
             </button>
           </div>
@@ -122,15 +95,15 @@ export default function BusquedaBeneficiarioVista() {
   }
 
   return (
-    <div className={styles.page}>
-        <div className={styles.description}>
-          <h1 className={styles.title}>Registrar Nuevo Servicio</h1>
-          <h2 className={styles.subtitle}>Complete los datos para dar de alta un nuevo servicio medico.</h2>
+    <div className='page'>
+        <div className='description'>
+          <h1 className='title'>Registrar Nuevo Servicio</h1>
+          <h2 className='subtitle'>Complete los datos para dar de alta un nuevo servicio medico.</h2>
         </div>
-      <div className={styles.inner}>
+      <div className='inner'>
 
         {/* Tabs */}
-        <nav className={styles.tabsWrap}>
+        <nav className='tabsWrap'>
           {PASOS.map((paso) => {
             const activo = pasoActual === paso.id;
             const completado = pasoActual > paso.id;
@@ -139,7 +112,7 @@ export default function BusquedaBeneficiarioVista() {
             return (
               <div
                 key={paso.id}
-                className={`${styles.tab} ${activo ? styles.tabActive : ""} ${completado ? styles.tabDone : ""}`}
+                className={`tab ${activo ? "tabActive" : ""} ${completado ? "tabDone" : ""}`}
               >
                 <Icon size={16} />
                 <span>{paso.tab}</span>
@@ -148,10 +121,10 @@ export default function BusquedaBeneficiarioVista() {
           })}
         </nav>
 
-        <div className={styles.grid}>
+        <div className='grid'>
 
           {/* MAIN */}
-          <main className={styles.main}>
+          <main className='main'>
 
           {/* MAIN */}
 
@@ -198,10 +171,10 @@ export default function BusquedaBeneficiarioVista() {
             )}
 
             {/* NAV */}
-            <div className={styles.navRow}>
+            <div className='navRow'>
               {pasoActual > 1 && (
                 <button
-                  className={styles.btnSecondary}
+                  className='btnSecondary'
                   onClick={() => setPasoActual(pasoActual - 1)}
                 >
                   <ChevronLeft size={16} /> Anterior
@@ -212,7 +185,7 @@ export default function BusquedaBeneficiarioVista() {
 
               {pasoActual < totalPasos ? (
                 <button
-                  className={styles.btnPrimary}
+                  className='btnPrimary'
                   style={{
                     opacity: puedeAvanzar() ? 1 : 0.2,
                   }}
@@ -222,7 +195,7 @@ export default function BusquedaBeneficiarioVista() {
                 </button>
               ) : (
                 <button
-                  className={styles.btnPrimary}
+                  className='btnPrimary'
                   onClick={() => setGuardado(true)}
                 >
                   Guardar <CheckCircle2 size={16} />
@@ -233,10 +206,10 @@ export default function BusquedaBeneficiarioVista() {
           </main>
 
           {/* ASIDE */}
-          <aside className={styles.aside}>
-            <div className={styles.track}>
+          <aside className='aside'>
+            <div className='track'>
               <div
-                className={styles.fill}
+                className='fill'
                 style={{ width: `${progresoPct}%` }}
               />
             </div>
