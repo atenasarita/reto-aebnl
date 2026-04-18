@@ -74,13 +74,13 @@
 }
 
 /* Forms */
-.field1 {
+.field {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.fieldLabel1 {
+.fieldLabel {
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
@@ -96,12 +96,13 @@
   min-height: 48px;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  background: #f8fafc;
   padding: 0 16px;
   font-size: 15px;
   box-sizing: border-box;
   font-family: inherit;
   outline: none;
+  font-weight: 600;
+  color: #64748B;
 }
 
 .input:focus,
@@ -118,13 +119,17 @@
   min-height: 44px;
   border-radius: 12px;
   padding: 0 28px;
-  background: #7c8dbb;
+  background: #1e3b8a;
   color: white;
   font-weight: 700;
   border: none;
   cursor: pointer;
   font-family: inherit;
   font-size: 15px;
+}
+
+.btnPrimary:disabled{
+  opacity: 0.5;
 }
 
 .btnSecondary {

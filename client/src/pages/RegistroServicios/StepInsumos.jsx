@@ -2,6 +2,12 @@ import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import styles from "../styles/BusquedaBeneficiarioVista.module.css";
 
+import Dropdown from "../../components/ui/Dropdown";  
+import Button from "../../components/ui/Button";
+
+import "../styles/BusquedaBeneficiarioVista.css";
+
+
 const PRODUCTOS_MOCK = [
   { id: 1, nombre: "Sonda vesical Fr14", precio: 85 },
   { id: 2, nombre: "Catéter intermitente", precio: 120 },
@@ -47,42 +53,39 @@ export default function StepInsumos({ insumos, setInsumos }) {
 
   const subtotal = insumos.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
 
+  const productoOptions = PRODUCTOS_MOCK.map(p => ({ label: p.nombre, value: String(p.id) }))
+
+
   return (
-    <div className={styles.panel}>
-      {/* Fila de agregar producto */}
-      <div className={styles.insumoAddRow}>
-        <div className={styles.field} style={{ flex: 2 }}>
-          <label className={styles.fieldLabel}>Producto</label>
-          <select
-            className={styles.select}
+    <div className='panel'>
+
+      <div className='insumoAddRow'>
+        <div className='field' style={{ flex: 2 }}>
+          <label className='fieldLabel'>Producto</label>
+          <Dropdown
+            className='dropdown-servicios'
+            options={[{ label: "Seleccionar...", value: "" }, ...productoOptions]}
             value={productoSelec}
-            onChange={(e) => setProductoSelec(e.target.value)}
-          >
-            <option value="">Seleccionar...</option>
-            {PRODUCTOS_MOCK.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nombre}
-              </option>
-            ))}
-          </select>
+            onChange={setProductoSelec}
+          />
         </div>
 
-        <div className={styles.field} style={{ flex: 1 }}>
-          <label className={styles.fieldLabel}>Cantidad</label>
+        <div className='field' style={{ flex: 1 }}>
+          <label className='fieldLabel'>Cantidad</label>
           <input
             type="number"
-            className={styles.input}
+            className='input'
             min={1}
             value={cantidad}
             onChange={(e) => setCantidad(parseInt(e.target.value) || 1)}
           />
         </div>
 
-        <div className={styles.field} style={{ flex: 1 }}>
-          <label className={styles.fieldLabel}>Precio unitario</label>
+        <div className='field' style={{ flex: 1 }}>
+          <label className='fieldLabel'>Precio unitario</label>
           <input
             type="text"
-            className={styles.input}
+            className='input'
             readOnly
             value={
               productoSelec
@@ -93,18 +96,18 @@ export default function StepInsumos({ insumos, setInsumos }) {
           />
         </div>
 
-        <button
-          className={styles.btnPrimary}
-          style={{ alignSelf: "flex-end" }}
+        <Button
+          className='btnPrimary'
+          iconLeft={<Plus size={16} style={{ margin: '4px 0 0' }} />}
           onClick={agregarInsumo}
           disabled={!productoSelec}
         >
-          <Plus size={16} /> Agregar
-        </button>
+          Agregar
+        </Button>
       </div>
 
       {/* Tabla de insumos */}
-      <table className={styles.insumoTable}>
+      <table className='insumoTable'>
         <thead>
           <tr>
             <th>Producto</th>
@@ -117,7 +120,7 @@ export default function StepInsumos({ insumos, setInsumos }) {
         <tbody>
           {insumos.length === 0 ? (
             <tr>
-              <td colSpan={5} className={styles.insumoEmpty}>
+              <td colSpan={5} className='insumoEmpty'>
                 Sin productos agregados
               </td>
             </tr>
@@ -128,7 +131,7 @@ export default function StepInsumos({ insumos, setInsumos }) {
                 <td>
                   <input
                     type="number"
-                    className={styles.inputQty}
+                    className='inputQty'
                     min={1}
                     value={i.cantidad}
                     onChange={(e) =>
@@ -140,7 +143,7 @@ export default function StepInsumos({ insumos, setInsumos }) {
                 <td>${(i.precio * i.cantidad).toFixed(2)}</td>
                 <td>
                   <button
-                    className={styles.btnDanger}
+                    className='btnDanger'
                     onClick={() => eliminarInsumo(i.id)}
                   >
                     <Trash2 size={14} />

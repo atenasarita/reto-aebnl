@@ -19,3 +19,26 @@
     background-repeat: no-repeat;
     background-position: right 12px center; 
 }
+
+
+.dropdown-servicios select{
+    height: 46px;
+    width: 100%;
+    border-radius: 12px;
+    border: solid;
+    padding: 0 20px 0 20px;
+    border-color: #BAC4D2;
+    border-width: 0.5px;
+    font-weight: 600;
+    align-self: center;
+    font-size: 16px;
+    color: #64748B;
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23647A8D' stroke-width='2' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center; 
+}

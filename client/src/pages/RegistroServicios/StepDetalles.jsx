@@ -1,5 +1,4 @@
 import { Calendar, User, Stethoscope } from "lucide-react";
-import styles from "../styles/BusquedaBeneficiarioVista.module.css";
 import "../styles/BusquedaBeneficiarioVista.css";
 
 import Dropdown from '../../components/ui/Dropdown'
@@ -32,19 +31,19 @@ export default function StepDetalles({
   const medicosOptions = MEDICOS.map(m => ({ label: m, value: m }))
 
   return (
-    <div className={styles.panel}>
+    <div className='panel'>
       <div className='formGrid3'>
         
         {/* Fecha */}
-        <div className='field1'>
-          <label htmlFor="fecha" className='fieldLabel1'>
+        <div className='field'>
+          <label htmlFor="fecha" className='fieldLabel'>
             <Calendar size={14} style={{ marginRight: 6 }} />
             Fecha
           </label>
           <input
             id="fecha"
             type="date"
-            className={styles.input}
+            className='input'
             value={fecha}
             onChange={(e) => {
               console.log("onChange fecha:", e.target.value);
@@ -56,39 +55,31 @@ export default function StepDetalles({
         </div>
 
         {/* Tipo servicio */}
-        <div className={styles.field}>
-          <label className='fieldLabel1'>
+        <div className='field'>
+          <label className='fieldLabel'>
             <Stethoscope size={14} style={{ marginRight: 6 }} />
             Servicio
           </label>
-          <select
-            className={styles.select}
+          <Dropdown
+            options={[{ label: 'Seleccionar', value: '' }, ...tiposOptions]}
             value={tipoServicio}
-            onChange={(e) => setTipoServicio(e.target.value)}
-          >
-            <option value="">Seleccionar</option>
-            {TIPOS_SERVICIO.map((t) => (
-              <option key={t}>{t}</option>
-            ))}
-          </select>
+            onChange={setTipoServicio}
+            className='dropdown-servicios'
+          />
         </div>
 
         {/* Médico */}
-        <div className={styles.field}>
-          <label className='fieldLabel1'>
+        <div className='field'>
+          <label className='fieldLabel'>
             <User size={14} style={{ marginRight: 6 }} />
             Médico
           </label>
-          <select
-            className={styles.select}
+          <Dropdown
+            options={[{ label: 'Seleccionar', value: '' }, ...medicosOptions]}
             value={medico}
-            onChange={(e) => setMedico(e.target.value)}
-          >
-            <option value="">Seleccionar</option>
-            {MEDICOS.map((m) => (
-              <option key={m}>{m}</option>
-            ))}
-          </select>
+            onChange={setMedico}
+            className='dropdown-servicios'
+          />
         </div>
 
       </div>

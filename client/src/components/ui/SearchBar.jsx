@@ -1,14 +1,31 @@
 import { useState, useEffect, useRef } from 'react'
 import './styles/SearchBar.css'
 
-function SearchBar({ placeholder = " ", onSearch, className = '', debounceMs = 300, icon }) {
-  const [search, setSearch] = useState('')
+function SearchBar({ 
+  placeholder = " ", 
+  onSearch, 
+  onChange, 
+  value = '', 
+  className = '', 
+  debounceMs = 300, 
+  icon,
+  ...props }) {
+  const [search, setSearch] = useState(value ?? '')
   const timerRef = useRef(null)
   const onSearchRef = useRef(onSearch)
   onSearchRef.current = onSearch
 
+  useEffect(() => {
+    if (value !== undefined && value !== search) {
+      setSearch(value ?? '')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value])
+
   const handleChange = (e) => {
-    setSearch(e.target.value)
+    const val = e.target.value
+    setSearch(val)
+    if (onChange) onChange(val)
   }
 
   useEffect(() => {
@@ -36,6 +53,7 @@ function SearchBar({ placeholder = " ", onSearch, className = '', debounceMs = 3
         onChange={handleChange}
         placeholder={placeholder}
         className={`search-input ${icon ? 'search-input--with-icon' : ''}`}
+        {...props}
       />
     </div>
   )
