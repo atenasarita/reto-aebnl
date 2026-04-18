@@ -71,6 +71,12 @@ export default function BusquedaBeneficiarioVista() {
     )
   : [];
 
+  const beneficiarioFinal = beneficiarioSeleccionado
+  ? BENEFICIARIOS_MOCK.find((b) => b.folio === beneficiarioSeleccionado)
+  : citaSeleccionada
+  ? { nombre: CITAS_HOY.find((c) => c.id === citaSeleccionada)?.beneficiario }
+  : null;
+
   const puedeAvanzar = () => {
     if (pasoActual === 1) return !!(beneficiarioSeleccionado || citaSeleccionada);
     if (pasoActual === 2) return !!(fecha && tipoServicio && medico);
@@ -208,17 +214,64 @@ export default function BusquedaBeneficiarioVista() {
 
           {/* ASIDE */}
           <aside className='aside'>
-            <div className='track'>
-              <div
-                className='fill'
-                style={{ width: `${progresoPct}%` }}
-              />
+            
+            {/* Header */}
+            <div className='asideHeader'>
+              <div className='asideIconWrap'>
+                <ClipboardList size={20} color="#1e3b8a" />
+              </div>
+              <h3 className='asideTitle'>Resumen del Registro</h3>
             </div>
 
-            <p>Total: ${totalConDescuento.toFixed(2)}</p>
-            <p>Saldo: ${saldoRestante.toFixed(2)}</p>
-          </aside>
+            {/* Progreso */}
+            <div className='procesoBadge'>
+              <p className='procesoLabel'>ESTADO DEL PROCESO</p>
+              <p className='procesoStep'>Paso {pasoActual} de {totalPasos}</p>
+              <div className='track'>
+                <div className='fill' style={{ width: `${progresoPct}%` }} />
+              </div>
+            </div>
 
+            {/* Datos */}
+            <dl className='dl'>
+              <div className='dlRow'>
+                <dt>Beneficiario:</dt>
+                <dd>{beneficiarioFinal?.nombre || "—"}</dd>
+              </div>
+              <div className='dlRow'>
+                <dt>Fecha:</dt>
+                <dd>{fecha || "—"}</dd>
+              </div>
+              <div className='dlRow'>
+                <dt>Servicio:</dt>
+                <dd>{tipoServicio || "—"}</dd>
+              </div>
+              <div className='dlRow'>
+                <dt>Médico:</dt>
+                <dd>{medico || "—"}</dd>
+              </div>
+            </dl>
+
+            {/* Totales */}
+            <div className='totales'>
+              <div className='totalesRow'>
+                <span>Total:</span>
+                <strong className='totalesTotal'>${totalConDescuento.toFixed(2)}</strong>
+              </div>
+              <div className='totalesRow'>
+                <span>Saldo Restante:</span>
+                <strong className='totalesSaldo' style={{ color: saldoRestante > 0 ? "#dc2626" : "#0f766e" }}>
+                  ${saldoRestante.toFixed(2)}
+                </strong>
+              </div>
+              <p className='totalesExtra'>Inventario: ${subtotalInsumos.toFixed(2)}</p>
+              <p className='totalesExtra'>Descuento: ${descuento.toFixed(2)}</p>
+              <p className='totalesExtra'>Cita: {citaSeleccionada ?? "Sin cita"}</p>
+              <p className='totalesExtra'>Método: {metodoPago || "Pendiente"}</p>
+              <p className='totalesExtra'>Pagado: ${(parseFloat(montoPagado) || 0).toFixed(2)}</p>
+            </div>
+
+          </aside>
         </div>
       </div>
     </div>
