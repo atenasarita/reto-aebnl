@@ -74,6 +74,7 @@ export default function BusquedaBeneficiarioVista() {
   const puedeAvanzar = () => {
     if (pasoActual === 1) return !!(beneficiarioSeleccionado || citaSeleccionada);
     if (pasoActual === 2) return !!(fecha && tipoServicio && medico);
+    if (pasoActual === 3) return insumos.length > 0;
     if (pasoActual === 4) return !!(metodoPago && montoPagado);
     return true;
   };
