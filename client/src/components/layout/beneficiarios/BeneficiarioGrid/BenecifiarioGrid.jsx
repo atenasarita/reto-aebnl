@@ -1,8 +1,8 @@
-// BeneficiarioGrid.jsx
 import { useState, useEffect } from 'react'
 import BeneficiarioCard from '../BeneficiarioCard/BeneficiarioCard'
 import styles from './BeneficiarioGrid.module.css'
 import Pagination from '../../../ui/Pagination'
+import BeneficiarioDetalle from '../BeneficiarioDetalle/BeneficiarioDetalle'
 import { espinaBifidaOptions } from '../../../../utils/espinaBifidaTypes'
 
 const ITEMS_PER_PAGE = 8
@@ -13,6 +13,17 @@ function BeneficiarioGrid({ data, loading }) {
   useEffect(() => {
     setCurrentPage(1)
   }, [data])
+
+  const [selected, setSelected] = useState(null)
+
+  async function handleView(id) {
+    const token = localStorage.getItem('token')
+    const res = await fetch(`http://localhost:3000/api/beneficiarios/${id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    const data = await res.json()
+    setSelected(data)
+  }
 
   const normalized = data.map((b) => {
     const diagnosticoTexto =
@@ -54,7 +65,7 @@ function BeneficiarioGrid({ data, loading }) {
           <BeneficiarioCard
             key={b.id_beneficiario}
             beneficiario={b}
-            onView={() => console.log('ver', b.id_beneficiario)}
+            onView={() => handleView(b.id_beneficiario)} // ← fixed
             onEdit={() => console.log('editar', b.id_beneficiario)}
             onCard={() => console.log('credencial', b.id_beneficiario)}
           />
@@ -67,6 +78,13 @@ function BeneficiarioGrid({ data, loading }) {
         itemsPerPage={ITEMS_PER_PAGE}
         onPageChange={setCurrentPage}
       />
+
+      {selected && (
+        <BeneficiarioDetalle
+          beneficiario={selected}
+          onClose={() => setSelected(null)}
+        />
+      )}
     </>
   )
 }

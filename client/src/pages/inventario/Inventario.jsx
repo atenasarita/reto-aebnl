@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
 import InventarioBarraAcciones from '../../components/layout/inventario/InventarioBarraAcciones/InventarioBarraAcciones'
+import InventarioMovimientoModal from '../../components/layout/inventario/InventarioMovimientoModal/InventarioMovimientoModal'
+import InventarioNuevoProductoModal from '../../components/layout/inventario/InventarioNuevoProductoModal/InventarioNuevoProductoModal'
 import InventarioTabla from '../../components/layout/inventario/InventarioTabla/InventarioTabla'
 import { useInventario } from '../../hooks/useInventario'
 import {
@@ -12,10 +14,12 @@ import '../styles/Inventario.css'
 const ITEMS_POR_PAGINA = 5
 
 export default function Inventario() {
-  const { items, loading, error } = useInventario()
+  const { items, loading, error, fetchInventario } = useInventario()
   const [consulta, setConsulta] = useState('')
   const [categoria, setCategoria] = useState('')
   const [pagina, setPagina] = useState(1)
+  const [modalNuevoProducto, setModalNuevoProducto] = useState(false)
+  const [modalMovimiento, setModalMovimiento] = useState(false)
 
   const productosUi = useMemo(
     () => items.map(mapInventarioApiRowToTableRow),
@@ -59,6 +63,10 @@ export default function Inventario() {
     setPagina(Math.min(Math.max(1, nueva), totalPaginas))
   }
 
+  const handleTrasGuardar = () => {
+    void fetchInventario()
+  }
+
   return (
     <div className="inventario-pagina">
       <div className="content-container">
@@ -73,8 +81,8 @@ export default function Inventario() {
           categoria={categoria}
           opcionesCategoria={opcionesCategoria}
           onCategoriaChange={handleCategoria}
-          onNuevoProducto={() => {}}
-          onRegistrarMovimiento={() => {}}
+          onNuevoProducto={() => setModalNuevoProducto(true)}
+          onRegistrarMovimiento={() => setModalMovimiento(true)}
         />
         {loading && (
           <p className="inventario-estado" role="status">
@@ -96,6 +104,20 @@ export default function Inventario() {
           />
         )}
       </div>
+
+      <InventarioNuevoProductoModal
+        open={modalNuevoProducto}
+        onClose={() => setModalNuevoProducto(false)}
+        onExito={handleTrasGuardar}
+      />
+      <InventarioMovimientoModal
+        open={modalMovimiento}
+        onClose={() => setModalMovimiento(false)}
+        onExito={handleTrasGuardar}
+        items={items}
+        loading={loading}
+        loadError={error}
+      />
     </div>
   )
 }

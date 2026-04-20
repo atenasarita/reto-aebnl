@@ -1,14 +1,11 @@
 import { InventarioRepository } from '../interfaces/inventarioRepository';
-import { 
+import {
+    CreateInventarioInput,
     GetInventarioResponse,
-    CreateObjeto_categoriaInput, 
-    CreateInventarioInput, 
-    CreateVenta_inventarioInput, 
-    CreateMovimientos_inventarioInput, 
-    Inventario, 
-    Venta_inventario, 
-    Movimientos_inventario, 
-    Objeto_categoria 
+    Inventario,
+    Movimientos_inventario,
+    Objeto_categoria,
+    RegistrarMovimientoInventarioInput,
 } from '../types/inventario.types';
 
 
@@ -21,5 +18,19 @@ export class InventarioController {
 
     async getInventario(): Promise<GetInventarioResponse> {
         return this.repository.getInventario();
+    }
+
+
+    async listObjetoCategorias(): Promise<Objeto_categoria[]> {
+        return this.repository.listObjetoCategorias();
+    }
+
+    async createInventario(input: CreateInventarioInput): Promise<Inventario> {
+        return this.repository.createInventario(input);
+    }
+
+
+    async registrarMovimientoInventario(input: RegistrarMovimientoInventarioInput, idUsuario: number,): Promise<Movimientos_inventario> {
+        return this.repository.registrarMovimientoInventario(input, idUsuario);
     }
 }
