@@ -31,7 +31,7 @@ export async function listarRecibos(req: Request, res: Response): Promise<void> 
   }
 }
 
-// GET /api/recibos/:id ──────────────────────────────────────────
+// GET /api/recibos/:id
 export async function obtenerRecibo(req: Request, res: Response): Promise<void> {
   const id = Number(req.params.id);
 
