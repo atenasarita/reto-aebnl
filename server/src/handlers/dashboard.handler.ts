@@ -1,57 +1,46 @@
-import { NextFunction, Request, Response } from 'express';
-import { DashboardController } from '../controllers/dashboard.controller';
+import { Request, Response } from "express";
+import DashboardController from "../controllers/dashboard.controller";
 
 export class DashboardHandler {
-  private readonly controller: DashboardController;
+  constructor(private controller: DashboardController) {}
 
-  constructor(controller: DashboardController) {
-    this.controller = controller;
-  }
-
-  getAgendaHoy = async (_req: Request, res: Response, next: NextFunction) => {
+  getAgendaHoy = async (_req: Request, res: Response) => {
     try {
-      const agenda = await this.controller.getAgendaHoy();
-      return res.status(200).json(agenda);
-    } catch (error) {
-      return next(error);
+      const data = await this.controller.getAgendaHoy();
+      return res.json(data);
+    } catch (err: any) {
+      return res.status(500).json({ message: err?.message ?? "Error en servidor" });
     }
   };
 
-  getPreregistroPendiente = async (_req: Request, res: Response, next: NextFunction) => {
+  getPreregistroPendientes = async (_req: Request, res: Response) => {
     try {
-      const preregistro = await this.controller.getPreregistroPendiente();
-      return res.status(200).json(preregistro);
-    } catch (error) {
-      return next(error);
+      const data = await this.controller.getPreregistroPendientes();
+      return res.json(data);
+    } catch (err: any) {
+      return res.status(500).json({ message: err?.message ?? "Error en servidor" });
     }
   };
 
-  updatePreregistroEstado = async (req: Request, res: Response, next: NextFunction) => {
+  updatePreregistroEstado = async (req: Request, res: Response) => {
     try {
       const idPreregistro = Number(req.params.id);
-      const estado = String(req.body.estado || '').toLowerCase().trim();
+      const { estado } = req.body;
 
-      if (!idPreregistro || !estado) {
-        return res.status(400).json({ message: 'Datos incompletos' });
+      if (!idPreregistro || Number.isNaN(idPreregistro)) {
+        return res.status(400).json({ message: "ID inválido" });
       }
 
-      const estadosValidos = ['aceptado', 'rechazado'];
+      const result = await this.controller.updatePreregistroEstado(
+        idPreregistro,
+        estado
+      );
 
-      if (!estadosValidos.includes(estado)) {
-        return res.status(400).json({ message: 'Estado no válido' });
-      }
-
-      const result = await this.controller.updatePreregistroEstado(idPreregistro, estado);
-
-      if (!result.updated) {
-        return res.status(404).json({ message: 'Preregistro no encontrado' });
-      }
-
-      return res.status(200).json({
-        message: 'Estado actualizado correctamente',
-      });
-    } catch (error) {
-      return next(error);
+      return res.json(result);
+    } catch (err: any) {
+      return res.status(500).json({ message: err?.message ?? "Error en servidor" });
     }
   };
 }
+
+export default DashboardHandler;

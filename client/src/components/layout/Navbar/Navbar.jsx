@@ -10,6 +10,8 @@ const NAV_LINKS = [
   { label: "Inventario", to: "/inventario" },
   { label: "Citas", to: "/citas" },
   { label: "Reportes", to: "/reportes" },
+  { label: "Prerregistro", to: "/prerregistro" },
+
 ];
 
 function Navbar({

@@ -1,4 +1,4 @@
-import { DashboardRepository } from '../repositories/dashboard.repository';
+import { DashboardRepository } from "../repositories/dashboard.repository";
 
 export class DashboardController {
   private readonly repository: DashboardRepository;
@@ -11,11 +11,19 @@ export class DashboardController {
     return this.repository.getAgendaHoy();
   }
 
-  async getPreregistroPendiente() {
-    return this.repository.getPreregistroPendiente();
+  async getPreregistroPendientes() {
+    return this.repository.getPreregistroPendientes();
   }
 
-  async updatePreregistroEstado(idPreregistro: number, estado: string) {
-    return this.repository.updatePreregistroEstado(idPreregistro, estado);
+  async updatePreregistroEstado(
+    idPreregistro: number,
+    estado: "pendiente" | "aceptado" | "rechazado"
+  ) {
+    return this.repository.updatePreregistroEstado({
+      id_preregistro: idPreregistro,
+      estado,
+    });
   }
 }
+
+export default DashboardController;

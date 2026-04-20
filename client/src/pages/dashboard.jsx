@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
   ArrowRight,
   CalendarDays,
@@ -28,6 +30,7 @@ const actions = [
     subtitle: "Alta manual de beneficiario",
     icon: UserPlus,
     variant: "light",
+    to: "/registro_beneficiario",
   },
   {
     title: "Agendar Cita",
@@ -56,11 +59,23 @@ function getAgendaTagClass(item) {
   return "blue";
 }
 
-function ActionCard({ title, subtitle, icon, variant, fullRow }) {
+function ActionCard({ title, subtitle, icon, variant, fullRow, to }) {
   const Icon = icon;
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (to) {
+      navigate(to);
+    }
+  };
 
   return (
-    <button className={`action-card action-card-${variant} ${fullRow ? "action-card-full" : ""}`}>
+    <button
+      type="button"
+      onClick={handleClick}
+      className={`action-card action-card-${variant} ${fullRow ? "action-card-full" : ""}`}
+      style={{ cursor: to ? "pointer" : "default" }}
+    >
       <div className={`action-card-icon action-card-icon-${variant}`}>
         <Icon size={30} />
       </div>
@@ -132,67 +147,72 @@ function AgendaCard({ agendaItems }) {
       </div>
 
       <div className="agenda-timeline">
-  {agendaItems.map((item) => (
-    <div className="agenda-row" key={item.id_cita}>
-      <div className={`timeline-line ${getTimelineStatusClass(item)}`}>
-        <div className={`timeline-dot ${getTimelineStatusClass(item)}`}></div>
-      </div>
+        {agendaItems.map((item) => (
+          <div className="agenda-row" key={item.id_cita}>
+            <div className={`timeline-line ${getTimelineStatusClass(item)}`}>
+              <div className={`timeline-dot ${getTimelineStatusClass(item)}`}></div>
+            </div>
 
-      <div className="agenda-item-card">
-        <div className="agenda-item-top">
-          <div className="agenda-profile">
-            {item.fotografia ? (
-              <img
-                src={item.fotografia}
-                alt={item.nombre_completo}
-                className="agenda-avatar"
-              />
-            ) : (
-              <div className="agenda-avatar placeholder">
-                <User size={34} />
+            <div className="agenda-item-card">
+              <div className="agenda-item-top">
+                <div className="agenda-profile">
+                  {item.fotografia ? (
+                    <img
+                      src={item.fotografia}
+                      alt={item.nombre_completo}
+                      className="agenda-avatar"
+                    />
+                  ) : (
+                    <div className="agenda-avatar placeholder">
+                      <User size={34} />
+                    </div>
+                  )}
+
+                  <div className="agenda-profile-text">
+                    <div className={`agenda-tag ${getAgendaTagClass(item)}`}>
+                      {formatHora12(item.hora)} • {item.servicio_nombre || "Servicio"}
+                    </div>
+
+                    <h3>{item.nombre_completo || "Beneficiario sin nombre"}</h3>
+                    <p>
+                      {item.especialista_nombre || "Especialista"} • {item.folio || "Sin folio"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="agenda-actions">
+                  <button
+                    type="button"
+                    className={`agenda-btn ${getTimelineStatusClass(item) === "past" ? "muted" : "primary"}`}
+                  >
+                    {item.estatus || "Pendiente"}
+                  </button>
+                  <button type="button" className="agenda-btn secondary">
+                    Ver Historial
+                  </button>
+                </div>
               </div>
-            )}
 
-            <div className="agenda-profile-text">
-              <div className={`agenda-tag ${getAgendaTagClass(item)}`}>
-                {formatHora12(item.hora)} • {item.servicio_nombre || "Servicio"}
+              <div className="agenda-item-bottom">
+                <div className="agenda-note-left">
+                  {item.motivo ? (
+                    <>
+                      <Info size={16} />
+                      <span>{item.motivo}</span>
+                    </>
+                  ) : (
+                    <span>Sin motivo registrado</span>
+                  )}
+                </div>
+
+                <div className="agenda-note-right">
+                  {item.notas ? <span>{item.notas}</span> : <span>Sin notas</span>}
+                </div>
               </div>
-
-              <h3>{item.nombre_completo || "Beneficiario sin nombre"}</h3>
-              <p>
-                {item.especialista_nombre || "Especialista"} • {item.folio || "Sin folio"}
-              </p>
             </div>
           </div>
-
-          <div className="agenda-actions">
-            <button className={`agenda-btn ${getTimelineStatusClass(item) === "past" ? "muted" : "primary"}`}>
-              {item.estatus || "Pendiente"}
-            </button>
-            <button className="agenda-btn secondary">Ver Historial</button>
-          </div>
-        </div>
-
-        <div className="agenda-item-bottom">
-          <div className="agenda-note-left">
-            {item.motivo ? (
-              <>
-                <Info size={16} />
-                <span>{item.motivo}</span>
-              </>
-            ) : (
-              <span>Sin motivo registrado</span>
-            )}
-          </div>
-
-          <div className="agenda-note-right">
-            {item.notas ? <span>{item.notas}</span> : <span>Sin notas</span>}
-          </div>
-        </div>
+        ))}
       </div>
-    </div>
-  ))}
-</div>
     </section>
   );
 }
@@ -238,85 +258,51 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
 
                     <div className="preregistro-text">
                       <h3>{item.nombre_completo || "Sin nombre"}</h3>
-                      <p>{item.estado || "pendiente"}</p>
+                      <p>{item.estado || "Pendiente"}</p>
                     </div>
                   </div>
 
                   <div
-                    className="preregistro-right"
+                    className="preregistro-actions"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="preregistro-actions">
-                      <button
-                        className="mini-btn approve"
-                        onClick={() => onUpdateEstado(item.id_preregistro, "aceptado")}
-                      >
-                        <Check size={26} />
-                      </button>
-                      <button
-                        className="mini-btn reject"
-                        onClick={() => onUpdateEstado(item.id_preregistro, "rechazado")}
-                      >
-                        <X size={26} />
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      className="icon-btn accept"
+                      onClick={() => onUpdateEstado(item.id_preregistro, "aceptado")}
+                    >
+                      <Check size={24} />
+                    </button>
 
                     <button
-                      className={`expand-btn ${isOpen ? "open" : ""}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleItem(item.id_preregistro);
-                      }}
+                      type="button"
+                      className="icon-btn reject"
+                      onClick={() => onUpdateEstado(item.id_preregistro, "rechazado")}
                     >
-                      ▼
+                      <X size={24} />
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`icon-btn expand ${isOpen ? "open" : ""}`}
+                      onClick={() => toggleItem(item.id_preregistro)}
+                    >
+                      <ChevronDown size={24} />
                     </button>
                   </div>
                 </div>
 
                 {isOpen && (
                   <div className="preregistro-details">
-                    <div className="preregistro-detail-grid">
-                      <div className="detail-box">
-                        <span className="detail-label">Nombre completo</span>
-                        <span className="detail-value">
-                          {item.nombre_completo || "No disponible"}
-                        </span>
-                      </div>
-
-                      <div className="detail-box">
-                        <span className="detail-label">CURP</span>
-                        <span className="detail-value">
-                          {item.curp || "No disponible"}
-                        </span>
-                      </div>
-
-                      <div className="detail-box">
-                        <span className="detail-label">Género</span>
-                        <span className="detail-value">
-                          {item.genero || "No disponible"}
-                        </span>
-                      </div>
-
-                      <div className="detail-box">
-                        <span className="detail-label">Fecha de nacimiento</span>
-                        <span className="detail-value">
-                          {item.fecha_nacimiento || "No disponible"}
-                        </span>
-                      </div>
-
-                      <div className="detail-box">
-                        <span className="detail-label">Estado</span>
-                        <span className="detail-value">
-                          {item.estado || "No disponible"}
-                        </span>
-                      </div>
-
-                      <div className="detail-box">
-                        <span className="detail-label">ID beneficiario</span>
-                        <span className="detail-value">
-                          {item.id_beneficiario ?? "Sin asignar"}
-                        </span>
-                      </div>
+                    <div>
+                      <strong>CURP:</strong> {item.curp || "No registrada"}
+                    </div>
+                    <div>
+                      <strong>Género:</strong> {item.genero || "No registrado"}
+                    </div>
+                    <div>
+                      <strong>Fecha de nacimiento:</strong>{" "}
+                      {item.fecha_nacimiento || "No registrada"}
                     </div>
                   </div>
                 )}
@@ -332,102 +318,77 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
 export default function Dashboard() {
   const [agendaItems, setAgendaItems] = useState([]);
   const [preregistroItems, setPreregistroItems] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const loadDashboard = async () => {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
+  const fetchAgenda = async () => {
+    const res = await fetch(`${API_URL}/dashboard/agenda-hoy`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Error al cargar agenda");
+    }
+
+    setAgendaItems(data);
+  };
+
+  const fetchPreregistros = async () => {
+    const res = await fetch(`${API_URL}/dashboard/preregistro-pendientes`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Error al cargar preregistros");
+    }
+
+    setPreregistroItems(data);
+  };
+
+  const onUpdateEstado = async (id, estado) => {
     try {
-      setLoading(true);
-      setError("");
+      const res = await fetch(`${API_URL}/dashboard/preregistro/${id}/estado`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ estado }),
+      });
 
-      const [agendaRes, preregistroRes] = await Promise.all([
-        fetch(`${API_URL}/dashboard/agenda-hoy`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
-        fetch(`${API_URL}/dashboard/preregistro-pendientes`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
-      ]);
+      const data = await res.json();
 
-      const agendaData = await agendaRes.json();
-      const preregistroData = await preregistroRes.json();
-
-      if (!agendaRes.ok) {
-        throw new Error(agendaData.message || "No se pudo cargar la agenda");
+      if (!res.ok) {
+        throw new Error(data.message || "Error al actualizar preregistro");
       }
 
-      if (!preregistroRes.ok) {
-        throw new Error(preregistroData.message || "No se pudo cargar el pre-registro");
-      }
-
-      setAgendaItems(Array.isArray(agendaData) ? agendaData : []);
-      setPreregistroItems(Array.isArray(preregistroData) ? preregistroData : []);
+      await fetchPreregistros();
     } catch (err) {
-      setError(err.message || "Error al cargar dashboard");
-    } finally {
-      setLoading(false);
+      alert(err.message);
     }
   };
 
   useEffect(() => {
-    loadDashboard();
-  }, []);
-
-  const updatePreregistroEstado = async (idPreregistro, nuevoEstado) => {
-    const token = localStorage.getItem("token");
-
-    try {
-      const response = await fetch(
-        `${API_URL}/dashboard/preregistro/${idPreregistro}/estado`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ estado: nuevoEstado }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "No se pudo actualizar el estado");
+    const loadData = async () => {
+      try {
+        setError("");
+        await Promise.all([fetchAgenda(), fetchPreregistros()]);
+      } catch (err) {
+        setError(err.message || "Error al cargar dashboard");
       }
+    };
 
-      setPreregistroItems((prev) =>
-        prev.filter((item) => item.id_preregistro !== idPreregistro)
-      );
-    } catch (err) {
-      alert(err.message || "Error al actualizar preregistro");
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="dashboard-page">
-        <main className="dashboard-main">
-          <div className="loading-state">Cargando dashboard...</div>
-        </main>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="dashboard-page">
-        <main className="dashboard-main">
-          <div className="error-state">{error}</div>
-        </main>
-      </div>
-    );
-  }
+    loadData();
+  }, []);
 
   return (
     <div className="dashboard-page">
@@ -439,11 +400,21 @@ export default function Dashboard() {
         </section>
 
         <section className="dashboard-lower-grid">
-          <AgendaCard agendaItems={agendaItems} />
-          <PreregistroCard
-            preregistroItems={preregistroItems}
-            onUpdateEstado={updatePreregistroEstado}
-          />
+          {error ? (
+            <section className="agenda-panel">
+              <div className="empty-panel-state">
+                <p>{error}</p>
+              </div>
+            </section>
+          ) : (
+            <>
+              <AgendaCard agendaItems={agendaItems} />
+              <PreregistroCard
+                preregistroItems={preregistroItems}
+                onUpdateEstado={onUpdateEstado}
+              />
+            </>
+          )}
         </section>
       </main>
     </div>

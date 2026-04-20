@@ -27,3 +27,152 @@
   color: #64748b;
   line-height: 1.4;
 }
+
+.inventario-estado {
+  margin: 16px 0;
+  font-size: 15px;
+  color: #64748b;
+}
+
+.inventario-estado--error {
+  color: #b91c1c;
+}
+
+.inventario-form__volver {
+  margin-bottom: 20px;
+}
+
+.inventario-form__volver a {
+  color: #1e3b8a;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.inventario-form__volver a:hover {
+  text-decoration: underline;
+}
+
+.inventario-form {
+  max-width: 720px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px 32px 32px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.inventario-form--modal {
+  max-width: none;
+  box-shadow: none;
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+.inventario-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 24px;
+}
+
+@media (max-width: 640px) {
+  .inventario-form__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.inventario-form__field--span2 {
+  grid-column: 1 / -1;
+}
+
+.inventario-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inventario-form__field span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.inventario-form__field input,
+.inventario-form__field select {
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  font-size: 15px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.inventario-form__field input:focus,
+.inventario-form__field select:focus {
+  outline: 2px solid #1e3b8a33;
+  border-color: #1e3b8a;
+}
+
+.inventario-form__check {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.inventario-form__check input {
+  width: auto;
+  height: auto;
+}
+
+.inventario-form__hint {
+  margin: 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.inventario-form__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+  justify-content: flex-end;
+}
+
+.inventario-form__btnSec,
+.inventario-form__btnPri {
+  min-height: 44px;
+  padding: 0 22px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  border: 1px solid transparent;
+}
+
+.inventario-form__btnSec {
+  background: #ffffff;
+  border-color: #64748b;
+  color: #64748b;
+}
+
+.inventario-form__btnSec:hover {
+  background: #f8fafc;
+}
+
+.inventario-form__btnPri {
+  background: #1e3b8a;
+  border-color: #1e3b8a;
+  color: #ffffff;
+}
+
+.inventario-form__btnPri:hover:not(:disabled) {
+  background: #172e6e;
+}
+
+.inventario-form__btnPri:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

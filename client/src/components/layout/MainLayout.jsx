@@ -3,25 +3,23 @@ import Navbar from "./Navbar/Navbar";
 
 const RUTA_A_ENLACE_ACTIVO = {
   "/dashboard": "Tablero",
-  "/tablero": "Tablero",
-
   "/beneficiarios": "Beneficiarios",
   "/registro_beneficiario": "Beneficiarios",
-  "/registro_beneficiario/registro_beneficiario": "Beneficiarios",
-
+  "/prerregistro": "Prerregistro",
+  "/servicios": "Servicios",
   "/inventario": "Inventario",
-  "/preregistro": "Preregistro",
-  "/prerregistro": "Preregistro",
+  "/citas": "Citas",
+  "/reportes": "Reportes",
 };
 
 function MainLayout() {
   const { pathname } = useLocation();
-  const activeLink = RUTA_A_ENLACE_ACTIVO[pathname] ?? "Beneficiarios";
+  const activeLink = RUTA_A_ENLACE_ACTIVO[pathname] ?? "Tablero";
 
   return (
     <>
       <Navbar activeLink={activeLink} />
-      <main className="page-container">
+      <main>
         <Outlet />
       </main>
     </>
