@@ -1,8 +1,8 @@
-import Dropdown from '../../components/ui/Dropdown'
-import SearchBar from '../../components/ui/SearchBar' 
+import Dropdown from '../../ui/Dropdown'
+import SearchBar from '../../ui/SearchBar' 
 
 
-import "../styles/BusquedaBeneficiarioVista.css";
+import "../../../pages/styles/BusquedaBeneficiarioVista.css"
 
 const METODOS_PAGO = [
   "Efectivo",

@@ -14,11 +14,10 @@ import {
 
 import "../styles/BusquedaBeneficiarioVista.css";
 
-
-import StepBusqueda from "./StepBusqueda";
-import StepDetalles from "./StepDetalles";
-import StepInsumos from "./StepInsumos";
-import StepFinanzas from "./StepFinanzas";
+import StepBusqueda from "../../components/layout/registroServicios/StepBusqueda";
+import StepDetalles from "../../components/layout/registroServicios/StepDetalles";
+import StepInsumos from "../../components/layout/registroServicios/StepInsumos";
+import StepFinanzas from "../../components/layout/registroServicios/StepFinanzas";
 
 
 const PASOS = [

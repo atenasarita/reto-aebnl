@@ -1,7 +1,7 @@
 import { Calendar, User, Stethoscope } from "lucide-react";
-import "../styles/BusquedaBeneficiarioVista.css";
+import "../../../pages/styles/BusquedaBeneficiarioVista.css"
 
-import Dropdown from '../../components/ui/Dropdown'
+import Dropdown from '../../ui/Dropdown'
 
 
 

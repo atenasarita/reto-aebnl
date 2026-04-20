@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 
-import Dropdown from "../../components/ui/Dropdown";  
-import Button from "../../components/ui/Button";
+import Dropdown from "../../ui/Dropdown";  
+import Button from "../../ui/Button";
 
-import "../styles/BusquedaBeneficiarioVista.css";
+import "../../../pages/styles/BusquedaBeneficiarioVista.css"
 
 
 const PRODUCTOS_MOCK = [
