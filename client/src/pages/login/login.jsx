@@ -28,20 +28,16 @@ function Login() {
       });
 
       const data = await response.json();
+      console.log('LOGIN RESPONSE JSON:', JSON.stringify(data, null, 2));
 
       if (!response.ok) {
         throw new Error(data.message || 'Usuario o contraseña incorrectos');
       }
 
       localStorage.setItem('token', data.token);
-      localStorage.setItem('usuario', JSON.stringify(data.usuario));
+      localStorage.setItem('user', JSON.stringify(data.user));
 
-    //   La pagina principal será el tablero, pero por ahora se redirige a registro beneficiario
-      if (typeof onLoginSuccess === 'function') {
-        onLoginSuccess();
-      } else {
-        window.location.href = '/beneficiarios';
-      }
+      navigate('/beneficiarios');
     } catch (error) {
       setError(error.message || 'Error de conexión');
     } finally {

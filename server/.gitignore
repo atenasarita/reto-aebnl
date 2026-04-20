@@ -12,4 +12,6 @@ Wallet_*/
 *.jks
 *.ora
 /uploads
+server/wallet/ojdbc.properties
+README
 .DS_Store
