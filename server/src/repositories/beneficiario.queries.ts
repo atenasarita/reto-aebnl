@@ -19,6 +19,7 @@ export const SELECT_BENEFICIARIO_DETALLE_BASE = `
          dm.alergias,
          dm.tipo_sanguineo,
          dm.valvula,
+         dm.hospital,
          d.domicilio_calle,
          d.domicilio_cp,
          d.domicilio_ciudad,
@@ -108,8 +109,10 @@ export const INSERT_DATOS_MEDICOS_RETURNING = `
       contacto_telefono,
       contacto_parentesco,
       alergias,
-      tipo_sanguineo
-      valvula
+      tipo_sanguineo,
+      valvula,
+      hospital
+
   )
   VALUES (
       :id_beneficiario,
@@ -117,8 +120,10 @@ export const INSERT_DATOS_MEDICOS_RETURNING = `
       :contacto_telefono,
       :contacto_parentesco,
       :alergias,
-      :tipo_sanguineo
-      :valvula
+      :tipo_sanguineo,
+      :valvula,
+      :hospital
+
   )
   RETURNING id_datos_medicos INTO :id_datos_medicos
 `.trim();

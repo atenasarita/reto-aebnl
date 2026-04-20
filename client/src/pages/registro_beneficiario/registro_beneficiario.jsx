@@ -44,6 +44,7 @@ function RegistroBeneficiario() {
         alergias: 'Ninguna',
         tipo_sanguineo: '',
         valvula: false,
+        hospital: '',
         domicilio_calle: '',
         domicilio_cp: '',
         domicilio_ciudad: '',
@@ -211,34 +212,6 @@ function RegistroBeneficiario() {
                 setLoading(false);
                 return;
             }
-            // Validacion del input
-            // CURP
-            // if (formData.CURP && !validarCURP(formData.CURP)) {
-            //     setError('El CURP debe tener un formato válido de 18 caracteres');
-            // }
-            // // Codigo Postal
-            // if(formData.domicilio_cp && !cpValido(formData.domicilio_cp)){
-            //     setError('El codigo postal debe tener 5 digitos numericos');
-            //     setLoading(false);
-            //     return;
-            // }
-            // // Nombres y Apellidos
-            // if(
-            //     !soloLetras(formData.nombres) ||
-            //     !soloLetras(formData.apellido_paterno)||
-            //     !soloLetras(formData.apellido_materno)
-            // ) {
-            //     setError('El nombre y apellidos son campos obligatorios');
-            //     setLoading(false);
-            //     return;
-            // }
-
-            // // Telefono de Contacto
-            // if (formData.contacto_telefono && !telefonoValido(formData.contacto_telefono)){
-            //     setError('El telefono debe tener 10 digitos numericos');
-            //     setLoading(false);
-            //     return;
-            // }
 
             const token = localStorage.getItem('token');
             const payload = {
@@ -252,7 +225,7 @@ function RegistroBeneficiario() {
                     apellido_materno: formData.apellido_materno,
                     fecha_nacimiento: new Date(fechaNacimiento),
                     estado_nacimiento: formData.estado_nacimiento,
-                    fotografia: formData.fotografia, // Omitido por ahora
+                    fotografia: formData.fotografia, 
                     telefono: formData.telefono,
                     email: formData.email
                 },
@@ -261,7 +234,9 @@ function RegistroBeneficiario() {
                     contacto_telefono: formData.contacto_telefono,
                     contacto_parentesco: formData.contacto_parentesco,
                     alergias: formData.alergias,
-                    tipo_sanguineo: formData.tipo_sanguineo
+                    tipo_sanguineo: formData.tipo_sanguineo,
+                    valvula: formData.valvula,
+                    hospital: formData.hospital
                 },
                 direccion: {
                     domicilio_calle: formData.domicilio_calle,
@@ -504,6 +479,26 @@ function RegistroBeneficiario() {
                                     </label>
                                 ))}
                             </div>
+                        </div>
+                        <div className='row'>
+                        <div className='field-group full'>
+                            <label>Valvula</label>
+                            <select name="valvula" 
+                                value={formData.valvula} 
+                                onChange={handleInputChange}>
+                                    <option value="">valvula</option>
+                                    <option value="true">Si</option>
+                                    <option value="false">No</option>
+                            </select>
+                        </div>
+
+                        <div className='field-group full'>
+                            <label>Hospital</label>
+                            <input type="text"
+                             name="hospital" 
+                             value={formData.hospital} 
+                             onChange={handleInputChange} />
+                        </div>
                         </div>
                         <div className="field-group full">
                             <label>Alergias</label>
