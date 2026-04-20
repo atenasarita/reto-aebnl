@@ -1,5 +1,5 @@
 import { FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
-import { registroSteps } from '../../../utils/beneficiarioConstants';
+import { registroSteps } from '../../../../utils/beneficiarioConstants';
 
 function RegistroSidebar({
   currentStep,

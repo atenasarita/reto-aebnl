@@ -1,4 +1,4 @@
-import FotoPerfilInput from '../../../components/layout/beneficiarios/FotoPerfilInput';
+import FotoPerfilInput from '../../beneficiarios/FotoPerfilInput';
 
 function RegistroTopInfo({ folio, fechaRegistro, fotografia, onFotoChange, onFotoError }) {
   return (

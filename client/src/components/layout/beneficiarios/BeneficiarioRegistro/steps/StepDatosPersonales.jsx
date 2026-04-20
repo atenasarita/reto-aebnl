@@ -1,5 +1,5 @@
 import { FaCalendar } from 'react-icons/fa';
-import { estadosMexico } from '../../../../utils/beneficiarioConstants';
+import { estadosMexico } from '../../../../../utils/beneficiarioConstants';
 
 function StepDatosPersonales({
   formData,

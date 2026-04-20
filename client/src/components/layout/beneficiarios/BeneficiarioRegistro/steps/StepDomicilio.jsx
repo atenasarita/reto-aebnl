@@ -1,4 +1,4 @@
-import { estadosMexico } from '../../../../utils/beneficiarioConstants';
+import { estadosMexico } from '../../../../../utils/beneficiarioConstants';
 
 function StepDomicilio({ formData, fieldErrors, handleInputChange, handleBlur }) {
   return (

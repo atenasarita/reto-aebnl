@@ -15,6 +15,11 @@ export function validateField(name, value) {
         error = 'No es un codigo postal valido';
       }
       break;
+    
+    case 'CURP':
+        if(value && !validarCURP(value)){
+            error = 'No es una CURP válida';
+        }
 
     case 'nombres':
     case 'apellido_paterno':
