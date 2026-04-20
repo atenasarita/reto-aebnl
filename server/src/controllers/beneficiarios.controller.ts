@@ -2,6 +2,7 @@ import { BeneficiarioRepository } from "../interfaces/beneficiarioRepository";
 import {
   Beneficiario,
   BeneficiarioDetalle,
+  BeneficiarioConMembresiaProxVencer,
   CreateBeneficiarioInput,
   CreateDatosMedicosInput,
   CreateDireccionInput,
@@ -44,5 +45,9 @@ export class BeneficiariosController {
     
     async createDireccion(id_beneficiario: number, input: CreateDireccionInput): Promise<Direccion> {
         return this.repository.createDireccion(id_beneficiario, input);
+    }
+
+    async getSiguienteFolio(): Promise<string> {
+        return this.repository.getSiguienteFolio();
     }
 }

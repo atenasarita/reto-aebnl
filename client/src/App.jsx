@@ -1,32 +1,59 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import MainLayout from './components/layout/MainLayout'
-import GestionBeneficiarios from './pages/GestionBeneficiarios/GestionBeneficiarios'
-import Login from './pages/login/login'
-import RegistroBeneficiario from './pages/registro_beneficiario/registro_beneficiario'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+import MainLayout from "./components/layout/MainLayout";
+
+// Auth / públicas
+import Login from "./pages/login/login";
+
+// Páginas internas (main)
+import GestionBeneficiarios from "./pages/GestionBeneficiarios/GestionBeneficiarios";
+import Prerregistro from "./pages/prerregistro/Prerregistro";
+import Inventario from "./pages/inventario/Inventario";
+import RegistroBeneficiario from "./pages/registro_beneficiario/registro_beneficiario";
 import Recibos from './pages/Recibos/Recibos' 
 
-import './App.css'
-import Prerregistro from './pages/Prerregistro/Prerregistro'
-import Inventario from './pages/inventario/inventario'
+// Dashboard del tablero (elige UNA línea según tu estructura)
+// Si tu dashboard está en: client/src/pages/dashboard.jsx
+import Dashboard from "./pages/dashboard";
 
-function App() {
-return (
+// Si lo moviste a: client/src/pages/dashboard/Dashboard.jsx
+// import Dashboard from "./pages/dashboard/Dashboard";
+
+import "./App.css";
+
+export default function App() {
+  return (
     <BrowserRouter>
       <Routes>
-        {/* Login primero */}
-        <Route path="/" element={<Login />} />
-        <Route path="/prerregistro" element={<Prerregistro />} />
+        {/* Pública */}
+        <Route path="/login" element={<Login />} />
 
-        {/* Rutas con layout (navbar, etc.) */}
+        {/* Privadas dentro del layout (Navbar + etc) */}
         <Route element={<MainLayout />}>
+          {/* ✅ Este es el cambio clave: /dashboard usa TU tablero */}
+          <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* Beneficiarios */}
           <Route path="/beneficiarios" element={<GestionBeneficiarios />} />
-          <Route path="/registro_beneficiario" element={<RegistroBeneficiario />} />
+
+          {/* Registro de Nuevo Beneficiario */}
+          <Route path="/registro_beneficiario" element={<RegistroBeneficiario /> }/>
+
+          {/* Prerregistro */}
+          <Route path="/prerregistro" element={<Prerregistro />} />
+
+          {/* Inventario */}
           <Route path="/inventario" element={<Inventario />} />
+            
           <Route path="/recibos" element={<Recibos />} />
+
+          {/* Default */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
         </Route>
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );
 }
-
-export default App;

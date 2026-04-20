@@ -1,3 +1,15 @@
-/node_modules
+node_modules/
+client/node_modules/
+server/node_modules/
+dist/
+build/
 .env
-/Wallet_clasedb
+Wallet_*/
+**/Wallet_*/
+*.sso
+*.p12
+*.pem
+*.jks
+*.ora
+/uploads
+.DS_Store

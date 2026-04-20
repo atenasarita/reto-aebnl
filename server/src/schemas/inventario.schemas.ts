@@ -26,15 +26,12 @@ export const createVenta_inventarioSchema = z.object({
   subtotal: z.number().nonnegative(),
 });
 
-export const createMovimientos_inventarioSchema = z.object({
+export const registrarMovimientoInventarioApiSchema = z.object({
   id_inventario: z.number().int().positive(),
   tipo_movimiento: tipoMovimientoInventarioSchema,
   cantidad: z.number().int().positive(),
-  fecha: z.coerce.date(),
-  cant_anterior: z.number().int().nonnegative(),
-  cant_nueva: z.number().int().nonnegative(),
-  id_servicio_otorgado: z.number().int().positive().nullable(),
-  id_usuario: z.number().int().positive(),
-  motivo: z.string().trim().min(1, 'motivo es requerido').max(200),
+  motivo: z.string().trim().min(1, 'motivo es requerido').max(20),
+  fecha: z.coerce.date().optional(),
+  id_servicio_otorgado: z.number().int().positive().nullable().optional(),
 });
 

@@ -1,15 +1,20 @@
-import { Outlet, useLocation } from 'react-router-dom'
-import Navbar from './Navbar/Navbar'
+import { Outlet, useLocation } from "react-router-dom";
+import Navbar from "./Navbar/Navbar";
 
 const RUTA_A_ENLACE_ACTIVO = {
-  '/beneficiarios': 'Beneficiarios',
-  '/registro_beneficiario': 'Beneficiarios',
-  '/inventario': 'Inventario',
-}
+  "/dashboard": "Tablero",
+  "/beneficiarios": "Beneficiarios",
+  "/registro_beneficiario": "Beneficiarios",
+  "/prerregistro": "Prerregistro",
+  "/servicios": "Servicios",
+  "/inventario": "Inventario",
+  "/citas": "Citas",
+  "/reportes": "Reportes",
+};
 
 function MainLayout() {
-  const { pathname } = useLocation()
-  const activeLink = RUTA_A_ENLACE_ACTIVO[pathname] ?? 'Beneficiarios'
+  const { pathname } = useLocation();
+  const activeLink = RUTA_A_ENLACE_ACTIVO[pathname] ?? "Tablero";
 
   return (
     <>
@@ -18,7 +23,7 @@ function MainLayout() {
         <Outlet />
       </main>
     </>
-  )
+  );
 }
 
-export default MainLayout
+export default MainLayout;
