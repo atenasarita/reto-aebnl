@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -322,6 +322,20 @@ export default function Dashboard() {
 
   const token = localStorage.getItem("token");
 
+  let storedUser = null;
+  try {
+    storedUser = JSON.parse(localStorage.getItem("user") || "null");
+  } catch (error) {
+    storedUser = null;
+  }
+
+  const isAdministrador = storedUser?.rol === "administrador";
+
+  const visibleActions = useMemo(() => {
+    if (isAdministrador) return actions;
+    return actions.filter((action) => action.title !== "Recibos");
+  }, [isAdministrador]);
+
   const fetchAgenda = async () => {
     const res = await fetch(`${API_URL}/dashboard/agenda-hoy`, {
       headers: {
@@ -394,7 +408,7 @@ export default function Dashboard() {
     <div className="dashboard-page">
       <main className="dashboard-main">
         <section className="dashboard-actions">
-          {actions.map((action) => (
+          {visibleActions.map((action) => (
             <ActionCard key={action.title} {...action} />
           ))}
         </section>
