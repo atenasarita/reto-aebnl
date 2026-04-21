@@ -1,27 +1,21 @@
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 
+import { useProductos } from "../../../hooks/useProductos";
+
 import Dropdown from "../../ui/Dropdown";  
 import Button from "../../ui/Button";
 
 import "../../../pages/styles/BusquedaBeneficiarioVista.css"
 
-
-const PRODUCTOS_MOCK = [
-  { id: 1, nombre: "Sonda vesical Fr14", precio: 85 },
-  { id: 2, nombre: "Catéter intermitente", precio: 120 },
-  { id: 3, nombre: "Bolsa colectora 2L", precio: 45 },
-  { id: 4, nombre: "Gasas estériles x10", precio: 30 },
-  { id: 5, nombre: "Guantes látex M x100", precio: 90 },
-];
-
 export default function StepInsumos({ insumos, setInsumos }) {
+  const { productos, loading, error } = useProductos();
   const [productoSelec, setProductoSelec] = useState("");
   const [cantidad, setCantidad] = useState(1);
 
   const agregarInsumo = () => {
     if (!productoSelec) return;
-    const prod = PRODUCTOS_MOCK.find((p) => p.id === parseInt(productoSelec));
+    const prod = productos.find((p) => p.id === parseInt(productoSelec));
     if (!prod) return;
 
     const existe = insumos.find((i) => i.id === prod.id);
@@ -52,9 +46,11 @@ export default function StepInsumos({ insumos, setInsumos }) {
 
   const subtotal = insumos.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
 
-  const productoOptions = PRODUCTOS_MOCK.map(p => ({ label: p.nombre, value: String(p.id) }))
+  const productoOptions = productos.map(p => ({ label: p.nombre, value: String(p.id) }))
 
-
+  if (loading) return <p>Cargando productos…</p>;
+  if (error)   return <p>Error al cargar productos.</p>;
+  
   return (
     <div className='panel'>
 
@@ -64,7 +60,7 @@ export default function StepInsumos({ insumos, setInsumos }) {
           <Dropdown
             className='dropdown-servicios'
             options={[{ label: "Seleccionar...", value: "" }, ...productoOptions]}
-            value={productoSelec}
+            value={productoSelec}  
             onChange={setProductoSelec}
           />
         </div>
@@ -88,7 +84,7 @@ export default function StepInsumos({ insumos, setInsumos }) {
             readOnly
             value={
               productoSelec
-                ? `$${PRODUCTOS_MOCK.find((p) => p.id === parseInt(productoSelec))?.precio ?? ""}`
+                ? `$${productos.find((p) => p.id === parseInt(productoSelec))?.precio ?? ""}`  
                 : ""
             }
             placeholder="—"
@@ -105,7 +101,7 @@ export default function StepInsumos({ insumos, setInsumos }) {
         </Button>
       </div>
 
-      {/* Tabla de insumos */}
+      {/* Tabla de insumos — sin cambios */}
       <table className='insumoTable'>
         <thead>
           <tr>

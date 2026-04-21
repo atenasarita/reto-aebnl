@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 
 import "../styles/BusquedaBeneficiarioVista.css";
+import { useProductos } from "../../hooks/useProductos";
+
 
 import StepBusqueda from "../../components/layout/registroServicios/StepBusqueda";
 import StepDetalles from "../../components/layout/registroServicios/StepDetalles";
@@ -48,6 +50,8 @@ export default function BusquedaBeneficiarioVista() {
   const [medico, setMedico] = useState("");
 
   const [insumos, setInsumos] = useState([]);
+  const { productos, loading: loadingProductos, error: errorProductos } = useProductos()
+
 
   const [metodoPago, setMetodoPago] = useState("");
   const [montoPagado, setMontoPagado] = useState("");
@@ -83,6 +87,7 @@ export default function BusquedaBeneficiarioVista() {
     if (pasoActual === 4) return !!(metodoPago && montoPagado);
     return true;
   };
+
 
   if (guardado) {
     return (
@@ -160,9 +165,18 @@ export default function BusquedaBeneficiarioVista() {
               />
             )}  
 
+
             {pasoActual === 3 && (
-              <StepInsumos insumos={insumos} setInsumos={setInsumos} />
+              <StepInsumos
+                insumos={insumos}
+                setInsumos={setInsumos}
+                productos={productos}
+                loadingProductos={loadingProductos}
+                errorProductos={errorProductos}
+              />
             )}
+
+            
 
             {pasoActual === 4 && (
               <StepFinanzas

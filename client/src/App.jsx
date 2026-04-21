@@ -10,7 +10,7 @@ import RegistroBeneficiario from "./pages/registro_beneficiario/registro_benefic
 
 import Prerregistro from "./pages/prerregistro/Prerregistro";
 import Inventario from "./pages/inventario/Inventario";
-import RegistroServicios from "./pages/RegistroServicios/BusquedaBeneficiarioVista";
+import BusquedaBeneficiarioVista from "./pages/RegistroServicios/BusquedaBeneficiarioVista";
 
 import "./App.css";
 
@@ -28,7 +28,7 @@ export default function App() {
           <Route path="/registro_beneficiario" element={<RegistroBeneficiario />} />
           <Route path="/prerregistro" element={<Prerregistro />} />
           <Route path="/inventario" element={<Inventario />} />
-          <Route path="/registro_servicios" element={<RegistroServicios />} />
+          <Route path="/registro_servicios" element={<BusquedaBeneficiarioVista />} />
         </Route>
       </Routes>
     </BrowserRouter>
