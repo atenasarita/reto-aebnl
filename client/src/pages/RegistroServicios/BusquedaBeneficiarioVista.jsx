@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   ClipboardList,
@@ -6,14 +6,13 @@ import {
   Wallet,
   ChevronRight,
   ChevronLeft,
-  Plus,
-  Trash2,
-  CreditCard,
   CheckCircle2,
 } from "lucide-react";
 
 import "../styles/BusquedaBeneficiarioVista.css";
+
 import { useProductos } from "../../hooks/useProductos";
+import useBeneficiarios from "../../hooks/useBeneficiarios"
 
 
 import StepBusqueda from "../../components/layout/registroServicios/StepBusqueda";
@@ -42,8 +41,11 @@ const CITAS_HOY = [
 export default function BusquedaBeneficiarioVista() {
   const [pasoActual, setPasoActual] = useState(1);
   const [query, setQuery] = useState("");
+
+
   const [beneficiarioSeleccionado, setBeneficiarioSeleccionado] = useState(null);
   const [citaSeleccionada, setCitaSeleccionada] = useState(null);
+  const { data, loading, error, fetchBeneficiarios } = useBeneficiarios()
 
   const [fecha, setFecha] = useState("");
   const [tipoServicio, setTipoServicio] = useState("");
@@ -65,14 +67,35 @@ export default function BusquedaBeneficiarioVista() {
   const totalConDescuento = subtotalInsumos - descuento;
   const saldoRestante = totalConDescuento - (parseFloat(montoPagado) || 0);
 
+  useEffect(() => {
+    if (query.length >= 2) {
+      fetchBeneficiarios(query)
+    }
+  }, [query])
+
   const resultados = query.length >= 2
-  ? BENEFICIARIOS_MOCK.filter(
-      (b) =>
-        b.nombre.toLowerCase().includes(query.toLowerCase()) ||
-        b.folio.toLowerCase().includes(query.toLowerCase()) ||
-        b.curp.toLowerCase().includes(query.toLowerCase())
-    )
-  : [];
+    ? data
+        .filter((b) => {
+          const nombre = `${b.identificadores?.nombres ?? ''} ${b.identificadores?.apellido_paterno ?? ''}`.toLowerCase()
+          const folio = b.folio?.toLowerCase() ?? ''
+          const curp = b.identificadores?.curp?.toLowerCase() ?? ''
+
+          const q = query.toLowerCase()
+
+          return (
+            nombre.includes(q) ||
+            folio.includes(q) ||
+            curp.includes(q)
+          )
+        })
+        .map((b) => ({
+          folio: b.folio,
+          nombre: `${b.identificadores?.nombres ?? ''} ${b.identificadores?.apellido_paterno ?? ''}`.trim(),
+          curp: b.identificadores?.curp ?? '',
+          membresia: b.estado === 'activo' ? 'Activa' : 'Inactiva',
+        }))
+  : []
+
 
   const beneficiarioFinal = beneficiarioSeleccionado
   ? BENEFICIARIOS_MOCK.find((b) => b.folio === beneficiarioSeleccionado)
@@ -144,6 +167,7 @@ export default function BusquedaBeneficiarioVista() {
               query={query}
               setQuery={setQuery}
               resultados={resultados}
+              loading={loading}   // 👈 ESTO
               beneficiarioSeleccionado={beneficiarioSeleccionado}
               setBeneficiarioSeleccionado={setBeneficiarioSeleccionado}
               citaSeleccionada={citaSeleccionada}

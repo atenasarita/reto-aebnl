@@ -1,110 +1,34 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import '../styles/GestionBeneficiarios.css'
+import useBeneficiarios from '../../hooks/useBeneficiarios'
 import SearchBar from '../../components/ui/SearchBar'
 import Dropdown from '../../components/ui/Dropdown'
 import Button from '../../components/ui/Button'
-import BeneficiarioGrid from '../../components/layout/beneficiarios/BeneficiarioGrid/BenecifiarioGrid'
+import BeneficiarioGrid from '../../components/layout/beneficiarios/BeneficiarioGrid/BeneficiarioGrid'
+
+
 import { FiUserPlus, FiSearch } from 'react-icons/fi'
-import { useNavigate } from 'react-router-dom'
 
 
-// 1. Fix ESTATUS_OPTIONS — lowercase to match API
 const ESTATUS_OPTIONS = [
   { label: 'Todos',    value: ''         },
   { label: 'Activo',   value: 'activo'   }, 
   { label: 'Inactivo', value: 'inactivo' }, 
 ]
 
-
-
 function GestionBeneficiarios() {
-  const [all, setAll]           = useState([])   // raw list from API
-  const [filtered, setFiltered] = useState([])   // what the grid shows
-  const [query, setQuery]       = useState('')
-  const [estatus, setEstatus]   = useState('')   // '' = show all
-  const [loading, setLoading]   = useState(false)
-  const [error, setError]       = useState('')
-  const navigate = useNavigate();
+  const { data, loading, error, buscarPorFolio } = useBeneficiarios()
 
-  useEffect(() => {
-    fetchBeneficiarios()
-  }, [])
+  const [query, setQuery] = useState('')
+  const [estatus, setEstatus] = useState('')
 
-  async function fetchBeneficiarios() {
-    setLoading(true)
-    setError('')
-    try {
-      const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:3000/api/beneficiarios', {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      })
+  const filtered = useMemo(() => {
+    if (!estatus) return data
+    return data.filter(b => b.estado === estatus)
+  }, [data, estatus])
 
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Error al cargar beneficiarios')
-      }
-
-      setAll(data)
-      setFiltered(data)
-    } catch (err) {
-      setError(err.message || 'Error de conexión')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    let result = all
-
-    if (query.trim()) {
-      const q = query.toLowerCase()
-      result = result.filter(b =>
-        `${b.identificadores.nombres} ${b.identificadores.apellido_paterno}`.toLowerCase().includes(q) ||
-        b.folio.toLowerCase().includes(q)   
-      )
-    }
-
-    if (estatus) {
-      result = result.filter(b => b.estado === estatus) 
-    }
-
-    setFiltered(result)
-  }, [query, estatus, all])
-
-  async function handleBuscar() {
-    if (!query.trim()) {
-      fetchBeneficiarios() 
-      return
-    }
-
-    setLoading(true)
-    setError('')
-    try {
-      const token = localStorage.getItem('token')
-      const response = await fetch(`http://localhost:3000/api/beneficiarios/folio/${query.trim()}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'No se encontró el beneficiario')
-      }
-
-      // endpoint returns a single object, wrap in array for the grid
-      setFiltered(Array.isArray(data) ? data : [data])
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
+  function handleBuscar() {
+    buscarPorFolio(query)
   }
 
   return (

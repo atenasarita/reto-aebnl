@@ -1,4 +1,3 @@
-// BeneficiarioGrid.jsx
 import { useState, useEffect } from 'react'
 import BeneficiarioCard from '../BeneficiarioCard/BeneficiarioCard'
 import styles from './BeneficiarioGrid.module.css'
@@ -16,10 +15,13 @@ function BeneficiarioGrid({ data, loading }) {
   // normalizar API
   const normalized = data.map((b) => ({
     id_beneficiario: b.id_beneficiario,
-    folio:           b.folio,
-    nombre:          `${b.identificadores.nombres} ${b.identificadores.apellido_paterno} ${b.identificadores.apellido_materno ?? ''}`.trim(),
-    diagnostico:     b.tipo_espina?.[0]?.tipo ?? 'Sin diagnóstico',
-    estatus:         b.estado === 'activo' ? 'Activo' : 'Inactivo',
+    folio: b.folio,
+
+    nombre: `${b.identificadores?.nombres ?? ''} ${b.identificadores?.apellido_paterno ?? ''} ${b.identificadores?.apellido_materno ?? ''}`.trim() || 'Sin nombre',
+
+    diagnostico: b.tipo_espina?.[0]?.tipo ?? 'Sin diagnóstico',
+
+    estatus: b.estado === 'activo' ? 'Activo' : 'Inactivo',
   }))
 
   const paginated = normalized.slice(
@@ -43,6 +45,7 @@ function BeneficiarioGrid({ data, loading }) {
     <>
       <div className={styles.grid}>
         {paginated.map((b) => (
+
           <BeneficiarioCard
             key={b.id_beneficiario}
             beneficiario={b}

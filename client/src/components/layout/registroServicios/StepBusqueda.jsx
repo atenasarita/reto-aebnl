@@ -5,14 +5,14 @@ import SearchBar from '../../ui/SearchBar'
 import { FiSearch } from 'react-icons/fi'
 
 
-
-
+import Dropdown from "../../ui/Dropdown"
 import Button from "../../ui/Button"
 
 export default function StepBusqueda({
   query,
   setQuery,
   resultados = [],
+  loading,
   beneficiarioSeleccionado,
   setBeneficiarioSeleccionado,
   citaSeleccionada,
@@ -52,8 +52,10 @@ export default function StepBusqueda({
                 onSearch={setQuery}
               />
 
-          <div className='resultList'>
-            {resultados.length === 0 ? (
+          <div className='resultList'>  
+            {loading ? (
+              <p className='empty'>Buscando...</p>
+            ) : resultados.length === 0 ? (
               <p className='empty'>Sin resultados</p>
             ) : (
               resultados.map((b) => {
