@@ -13,6 +13,7 @@ import "../styles/BusquedaBeneficiarioVista.css";
 
 import { useProductos } from "../../hooks/useProductos";
 import useBeneficiarios from "../../hooks/useBeneficiarios"
+import useCitasHoy from "../../hooks/useCitasHoy";
 
 
 import StepBusqueda from "../../components/layout/registroServicios/StepBusqueda";
@@ -20,22 +21,11 @@ import StepDetalles from "../../components/layout/registroServicios/StepDetalles
 import StepInsumos from "../../components/layout/registroServicios/StepInsumos";
 import StepFinanzas from "../../components/layout/registroServicios/StepFinanzas";
 
-
 const PASOS = [
   { id: 1, tab: "Búsqueda", Icon: Search },
   { id: 2, tab: "Detalles", Icon: ClipboardList },
   { id: 3, tab: "Insumos", Icon: Package },
   { id: 4, tab: "Finanzas", Icon: Wallet },
-];
-
-const BENEFICIARIOS_MOCK = [
-  { folio: "BEN-001", nombre: "Ana Martínez Flores", curp: "MAFA001012MNLRLN01", membresia: "Activa" },
-  { folio: "BEN-002", nombre: "Carlos Ruiz Sánchez", curp: "RUSC990305HNLLRR02", membresia: "Activa" },
-];
-
-const CITAS_HOY = [
-  { id: "CITA-041", beneficiario: "Ana Martínez Flores", hora: "09:00", tipo: "Fisioterapia", medico: "Dr. García" },
-  { id: "CITA-042", beneficiario: "Carlos Ruiz Sánchez", hora: "10:30", tipo: "Neurología", medico: "Dra. López" },
 ];
 
 export default function BusquedaBeneficiarioVista() {
@@ -45,7 +35,9 @@ export default function BusquedaBeneficiarioVista() {
 
   const [beneficiarioSeleccionado, setBeneficiarioSeleccionado] = useState(null);
   const [citaSeleccionada, setCitaSeleccionada] = useState(null);
+
   const { data, loading, error, fetchBeneficiarios } = useBeneficiarios()
+  const { citas, loading: loadingCitas } = useCitasHoy();
 
   const [fecha, setFecha] = useState("");
   const [tipoServicio, setTipoServicio] = useState("");
@@ -96,11 +88,19 @@ export default function BusquedaBeneficiarioVista() {
         }))
   : []
 
+  const citasFormateadas = (citas || []).map((c) => ({
+    id: c.id_cita,
+    beneficiario: c.nombre_completo,
+    hora: c.hora,
+    tipo: c.servicio_nombre,
+    medico: c.especialista_nombre,
+  }));
+
 
   const beneficiarioFinal = beneficiarioSeleccionado
-  ? BENEFICIARIOS_MOCK.find((b) => b.folio === beneficiarioSeleccionado)
+  ? resultados.find((b) => b.folio === beneficiarioSeleccionado)
   : citaSeleccionada
-  ? { nombre: CITAS_HOY.find((c) => c.id === citaSeleccionada)?.beneficiario }
+  ? citasFormateadas.find((c) => c.id === citaSeleccionada)
   : null;
 
   const puedeAvanzar = () => {
@@ -110,7 +110,6 @@ export default function BusquedaBeneficiarioVista() {
     if (pasoActual === 4) return !!(metodoPago && montoPagado);
     return true;
   };
-
 
   if (guardado) {
     return (
@@ -164,19 +163,18 @@ export default function BusquedaBeneficiarioVista() {
 
           {pasoActual === 1 && (
             <StepBusqueda
-              query={query}
               setQuery={setQuery}
               resultados={resultados}
-              loading={loading}   // 👈 ESTO
+              loading={loading}
+              loadingCitas={loadingCitas}
               beneficiarioSeleccionado={beneficiarioSeleccionado}
               setBeneficiarioSeleccionado={setBeneficiarioSeleccionado}
               citaSeleccionada={citaSeleccionada}
               setCitaSeleccionada={setCitaSeleccionada}
-              CITAS_HOY={CITAS_HOY}
+              CITAS_HOY={citasFormateadas}   // 👈 YA NO MOCK
             />
           )}
             
-
             {pasoActual === 2 && (
               <StepDetalles
                 key="step-detalles" 

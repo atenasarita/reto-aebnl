@@ -5,14 +5,13 @@ import SearchBar from '../../ui/SearchBar'
 import { FiSearch } from 'react-icons/fi'
 
 
-import Dropdown from "../../ui/Dropdown"
 import Button from "../../ui/Button"
 
 export default function StepBusqueda({
-  query,
   setQuery,
   resultados = [],
   loading,
+  loadingCitas,
   beneficiarioSeleccionado,
   setBeneficiarioSeleccionado,
   citaSeleccionada,
@@ -49,7 +48,7 @@ export default function StepBusqueda({
                 icon={<FiSearch />}
                 placeholder="Nombre, folio o CURP..."
                 className='search-beneficiario-servicio'    
-                onSearch={setQuery}
+                onChange={(value) => setQuery(value)}
               />
 
           <div className='resultList'>  
@@ -92,8 +91,10 @@ export default function StepBusqueda({
 
       {busquedaTab === "citas" && (
         <div className='resultList'>
-
-          {CITAS_HOY.map((cita) => (
+          {loadingCitas ? (
+            <p className='empty'>Cargando citas...</p>
+          ) : (
+            CITAS_HOY.map((cita) => (
             <div
               key={cita.id}
               onClick={() => setCitaSeleccionada(cita.id)}
@@ -117,7 +118,8 @@ export default function StepBusqueda({
                 {cita.id}
               </span>
             </div>
-          ))}
+          ))
+          )}
         </div>
       )}
     </div>
