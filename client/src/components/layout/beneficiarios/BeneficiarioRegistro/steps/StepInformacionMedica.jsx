@@ -13,7 +13,7 @@ function StepInformacionMedica({
 
       <div className="row">
         <div className="field-group">
-          <label>Nombre de Contacto o Tutor</label>
+          <label>Nombre de Contacto de Emergencia</label>
           <input
             type="text"
             name="contacto_nombre"
@@ -26,16 +26,16 @@ function StepInformacionMedica({
         </div>
 
         <div className="field-group">
-          <label>Teléfono de Contacto o Tutor</label>
+          <label>Teléfono de Contacto de Emergencia</label>
           <input
             type="text"
             name="contacto_telefono"
             value={formData.contacto_telefono}
             onBlur={handleBlur}
-            maxLength={10}
             onChange={handleInputChange}
+            maxLength={10}
           />
-          {fieldErrors.contacto_telefono && (
+          {fieldErrors?.contacto_telefono && (
             <small className="field-error">{fieldErrors.contacto_telefono}</small>
           )}
         </div>

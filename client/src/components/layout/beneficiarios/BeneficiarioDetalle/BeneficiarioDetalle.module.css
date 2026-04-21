@@ -1,6 +1,12 @@
 /* BeneficiarioDetalle.module.css */
 * { box-sizing: border-box; }
 
+.tabs {
+  display: flex;
+  gap: 36px;
+  align-items: center;
+}
+
 .topSection {
   display: flex;
   align-items: flex-start;
@@ -51,17 +57,24 @@
 }
 
 .tab {
+  padding: 8px 16px;
+  border-radius: 8px;
   font-size: 14px;
-  color: #6b7280;
+  font-weight: 500;
+  font-family: 'Montserrat', sans-serif;
+  color: #374151;
+  text-decoration: none;
   cursor: pointer;
-  padding-bottom: 4px;
-  border-bottom: 2px solid transparent;
+  border: none;
+  background: transparent;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
 }
 
 .tab.active {
-  color: #111827;
-  font-weight: 500;
-  border-bottom: 2px solid #111827;
+  background: #e0e7ff;
+  color: #1e3a8a;
+  font-weight: 600;
 }
 
 .closeBtn {

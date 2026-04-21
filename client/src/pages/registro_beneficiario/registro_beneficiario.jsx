@@ -49,6 +49,8 @@ function RegistroBeneficiario() {
             fechaNacimientoRef={fechaNacimientoRef}
             setFechaNacimiento={setFechaNacimiento}
             handleInputChange={handleInputChange}
+            handleBlur={handleBlur}
+
           />
         );
 

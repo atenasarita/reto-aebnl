@@ -7,7 +7,8 @@ function StepDatosPersonales({
   fechaNacimiento,
   fechaNacimientoRef,
   setFechaNacimiento,
-  handleInputChange
+  handleInputChange,
+  handleBlur
 }) {
   return (
     <>
@@ -25,6 +26,21 @@ function StepDatosPersonales({
             />
             {fieldErrors.email && <small className="field-error">{fieldErrors.email}</small>}
           </div>
+
+          <div className="field-group">
+            <label>Numero de Télefono</label>
+            <input
+              type="text"
+              name="telefono"
+              value={formData.telefono}
+              onBlur={handleBlur}
+              onChange={handleInputChange}
+              maxLength={10}
+            />
+            {fieldErrors?.telefono && (
+              <small className="field-error">{fieldErrors.telefono}</small>
+            )}
+        </div>
 
           <div className="field-group full">
             <label>Nombres</label>

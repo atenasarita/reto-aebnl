@@ -48,10 +48,12 @@ export function useRegistroBeneficiario(navigate) {
       return;
     }
 
-    if (name === 'contacto_telefono') {
-      const limpio = value.replace(/\D/g, '').slice(0, 10);
-      setFormData(prev => ({ ...prev, [name]: limpio }));
+    if (name === 'contacto_telefono' || name === 'telefono') {
+    const limpio = value.replace(/\D/g, '').slice(0, 10);
+    setFormData(prev => ({ ...prev, [name]: limpio }));
 
+    // Solo actualizar el error si el campo ya fue tocado (hubo blur previo)
+    if (fieldErrors[name] !== undefined && fieldErrors[name] !== null) {
       if (limpio && !telefonoValido(limpio)) {
         setFieldErrors(prev => ({
           ...prev,
@@ -63,8 +65,9 @@ export function useRegistroBeneficiario(navigate) {
           contacto_telefono: ''
         }));
       }
-      return;
     }
+    return;
+  }
 
     if (name === 'valvula') {
       setFormData(prev => ({

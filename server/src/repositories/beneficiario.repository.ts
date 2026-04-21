@@ -62,6 +62,12 @@ type BeneficiarioDetalleRow = {
     DOMICILIO_CIUDAD: string | null;
     DOMICILIO_ESTADO: string | null;
     DIAS_PARA_VENCER: number | null;
+    ID_MEMBRESIA: number | null;
+    PRECIO: number | null;
+    FECHA_INICIO: string | null;
+    FECHA_FIN: string | null;
+    MEMBRESIA_ESTADO: string | null;
+    METODO_PAGO: string | null;
 };
 
 type BeneficiarioConMembresiaRow = BeneficiarioDetalleRow & {
@@ -176,6 +182,14 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                 domicilio_estado: domicilioEstado,
             },
             dias_para_vencer: row.DIAS_PARA_VENCER,
+            membresia: row.ID_MEMBRESIA ? {
+            id_membresia: row.ID_MEMBRESIA,
+            precio: row.PRECIO!,
+            fecha_inicio: row.FECHA_INICIO!,
+            fecha_fin: row.FECHA_FIN!,
+            estado: row.MEMBRESIA_ESTADO!,
+            metodo_pago: row.METODO_PAGO!,
+        } : null,
         };
     }
 
@@ -356,6 +370,12 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                     DOMICILIO_CIUDAD: row.DOMICILIO_CIUDAD,
                     DOMICILIO_ESTADO: row.DOMICILIO_ESTADO,
                     DIAS_PARA_VENCER: row.DIAS_PARA_VENCER,
+                    ID_MEMBRESIA: row.ID_MEMBRESIA,
+                    PRECIO: row.PRECIO,
+                    FECHA_INICIO: row.FECHA_INICIO,
+                    FECHA_FIN: row.FECHA_FIN,
+                    MEMBRESIA_ESTADO: row.MEMBRESIA_ESTADO,
+                    METODO_PAGO: row.METODO_PAGO,
                 })),
             );
 

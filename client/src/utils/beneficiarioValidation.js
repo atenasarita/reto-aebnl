@@ -10,17 +10,18 @@ export function validateField(name, value) {
       }
       break;
 
+      case 'telefono':
+      if (value && !telefonoValido(value)) {
+        error = 'No es un numero de telefono valido';
+      }
+      break;
+
     case 'domicilio_cp':
       if (value && !cpValido(value)) {
         error = 'No es un codigo postal valido';
       }
       break;
     
-    case 'CURP':
-        if(value && !validarCURP(value)){
-            error = 'No es una CURP válida';
-        }
-
     case 'nombres':
     case 'apellido_paterno':
     case 'apellido_materno':

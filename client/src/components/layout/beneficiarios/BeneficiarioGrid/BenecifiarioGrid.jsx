@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import BeneficiarioCard from '../BeneficiarioCard/BeneficiarioCard'
 import styles from './BeneficiarioGrid.module.css'
 import Pagination from '../../../ui/Pagination'
-import BeneficiarioDetalle from '../BeneficiarioDetalle/BeneficiarioDetalle'
+// import BeneficiarioDetalle from '../BeneficiarioDetalle/BeneficiarioDetalle'
+import BeneficiarioModal from '../BeneficiarioDetalle/BeneficiarioModal'
 import { espinaBifidaOptions } from '../../../../utils/espinaBifidaTypes'
 
 const ITEMS_PER_PAGE = 8
@@ -80,7 +81,7 @@ function BeneficiarioGrid({ data, loading }) {
       />
 
       {selected && (
-        <BeneficiarioDetalle
+        <BeneficiarioModal
           beneficiario={selected}
           onClose={() => setSelected(null)}
         />

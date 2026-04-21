@@ -25,8 +25,19 @@ export interface BeneficiarioDetalle {
     identificadores: Identificadores;
     datos_medicos: Datos_medicos;
     direccion: Direccion;
+    membresia: MembresiaResumen | null;
     dias_para_vencer?: number | null;
 }
+
+export interface MembresiaResumen {
+  id_membresia: number;
+  precio: number;
+  fecha_inicio: string;
+  fecha_fin: string;
+  estado: string;
+  metodo_pago: string;
+}
+
 
 export interface Datos_medicos {
     id_datos_medicos: number;
