@@ -10,6 +10,7 @@ import GestionBeneficiarios from "./pages/GestionBeneficiarios/GestionBeneficiar
 import Prerregistro from "./pages/prerregistro/Prerregistro";
 import Inventario from "./pages/inventario/Inventario";
 import RegistroBeneficiario from "./pages/registro_beneficiario/registro_beneficiario";
+import Recibos from './pages/Recibos/Recibos' 
 
 // Dashboard del tablero (elige UNA línea según tu estructura)
 // Si tu dashboard está en: client/src/pages/dashboard.jsx
@@ -43,6 +44,8 @@ export default function App() {
 
           {/* Inventario */}
           <Route path="/inventario" element={<Inventario />} />
+            
+          <Route path="/recibos" element={<Recibos />} />
 
           {/* Default */}
           <Route path="/" element={<Navigate to="/login" replace />} />
