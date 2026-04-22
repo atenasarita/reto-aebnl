@@ -77,12 +77,12 @@ function HistorialAsociado({ beneficiario }) {
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>Fecha</span>
                 <span className={styles.fieldValue}>
-                  {/* {fecha_ultimos_estudios ? formatDate(fecha_ultimos_estudios) : '—'} */}
+                  <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
                 </span>
               </div>
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>Control urológico</span>
-                {/* <span className={styles.fieldValue}>{booleanText(control_urologico) ?? '-'}</span> */}
+                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
               </div>
             </div>
 
@@ -90,6 +90,7 @@ function HistorialAsociado({ beneficiario }) {
               <div className={`${styles.field} ${styles.full}`}>
                 <span className={styles.fieldLabel}>Lugar control urológico</span>
                 {/* <span className={styles.fieldValue}>{lugar_control_urologico ?? '—'}</span> */}
+                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
               </div>
             </div>
 
@@ -97,10 +98,12 @@ function HistorialAsociado({ beneficiario }) {
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>Gral. Orina</span>
                 {/* <span className={styles.fieldValue}>{gral_orina ?? '—'}</span> */}
+                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
               </div>
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>Urocultivo</span>
                 {/* <span className={styles.fieldValue}>{urocultivo ?? '—'}</span> */}
+                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
               </div>
             </div>
 
@@ -108,10 +111,12 @@ function HistorialAsociado({ beneficiario }) {
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>Eco Renal</span>
                 {/* <span className={styles.fieldValue}>{eco_renal ?? '—'}</span> */}
+                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
               </div>
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>UroTAC</span>
                 {/* <span className={styles.fieldValue}>{uro_tac ?? '—'}</span> */}
+                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
               </div>
             </div>
 
@@ -119,10 +124,12 @@ function HistorialAsociado({ beneficiario }) {
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>Est. Urodinámico</span>
                 {/* <span className={styles.fieldValue}>{estudio_urodinamico ?? '—'}</span> */}
+                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
               </div>
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>Últ. Est. Uro</span>
                 {/* <span className={styles.fieldValue}>{ultimo_estudio_uro ?? '—'}</span> */}
+                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
               </div>
             </div>
 
@@ -130,10 +137,12 @@ function HistorialAsociado({ beneficiario }) {
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>TAC Cerebro</span>
                 {/* <span className={styles.fieldValue}>{tac_cerebro ?? '—'}</span> */}
+                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
               </div>
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>Otros</span>
                 {/* <span className={styles.fieldValue}>{otros ?? '—'}</span> */}
+                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
               </div>
             </div>
           </div>
