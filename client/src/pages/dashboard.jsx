@@ -44,7 +44,6 @@ const actions = [
     icon: Receipt,
     variant: "success",
     fullRow: true,
-    to: "/recibos",
   },
 ];
 

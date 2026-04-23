@@ -17,6 +17,7 @@ import {
     SELECT_CANTIDAD_INVENTARIO_FOR_UPDATE,
     SELECT_INVENTARIO,
     SELECT_OBJETO_CATEGORIAS,
+    SELECT_PRODUCTOS_ESCASOS,
     UPDATE_INVENTARIO_CANTIDAD,
 } from './inventario.queries';
 import { getOutBindNumber } from '../utils/oracle.utils';
@@ -43,6 +44,26 @@ export class OracleInventarioRepository implements InventarioRepository {
             return result.rows as unknown as GetInventarioResponse;
         } catch (error) {
             throw new Error('Error al obtener el inventario');
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
+        }
+    }
+
+    async getProductosEscasos(): Promise<GetInventarioResponse> {
+        let connection: oracledb.Connection | undefined;
+
+        try {
+            connection = await this.oracleConnection.getConnection();
+            const result = await connection.execute(
+                SELECT_PRODUCTOS_ESCASOS,
+                [],
+                { outFormat: oracledb.OUT_FORMAT_OBJECT },
+            );
+            return result.rows as unknown as GetInventarioResponse;
+        } catch (error) {
+            throw new Error('Error al obtener productos escasos');
         } finally {
             if (connection) {
                 await connection.close();
