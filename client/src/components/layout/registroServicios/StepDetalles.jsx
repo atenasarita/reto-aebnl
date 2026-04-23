@@ -1,14 +1,10 @@
 import { Calendar, User, Stethoscope } from "lucide-react";
 import "../../../pages/styles/BusquedaBeneficiarioVista.css"
+import { useEffect } from "react";
 
 import Dropdown from '../../ui/Dropdown'
 
 
-const MEDICOS = [
-  "Dr. García",
-  "Dra. López",
-  "Dr. Ramírez",
-];
 
 export default function StepDetalles({
   fecha,
@@ -19,9 +15,15 @@ export default function StepDetalles({
   setMedico,
   tiposOptions = [],
   loadingServicios,
+  medicosOptions = [],
+  loadingMedicos,
 }) {
 
-  const medicosOptions = MEDICOS.map(m => ({ label: m, value: m }))
+      useEffect(() => {
+        if (tipoServicio) {
+          setMedico('');
+        }
+      }, [tipoServicio]);
 
   return (
     
@@ -76,11 +78,23 @@ export default function StepDetalles({
             Médico
           </label>
           <Dropdown
-            options={[{ label: 'Seleccionar', value: '' }, ...medicosOptions]}
-            value={medico}
-            onChange={setMedico}
-            className='dropdown-servicios'
-          />
+              options={[
+                {
+                  label: loadingMedicos
+                    ? "Cargando médicos..."
+                    : tipoServicio
+                    ? "Seleccionar"
+                    : "Selecciona un servicio",
+                  value: "",
+                },
+                ...medicosOptions
+              ]}
+              value={medico}
+              onChange={setMedico}
+              disabled={!tipoServicio}
+              className='dropdown-servicios'
+
+            />
         </div>
 
       </div>

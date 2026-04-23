@@ -15,6 +15,7 @@ import { useProductos } from "../../hooks/useProductos";
 import useBeneficiarios from "../../hooks/useBeneficiarios"
 import useCitasHoy from "../../hooks/useCitasHoy";
 import useServicios from "../../hooks/useServicios";
+import { useEspecialistas } from "../../hooks/useEspecialistas";
 
 import StepBusqueda from "../../components/layout/registroServicios/StepBusqueda";
 import StepDetalles from "../../components/layout/registroServicios/StepDetalles";
@@ -38,6 +39,7 @@ export default function BusquedaBeneficiarioVista() {
 
   const { data, loading, fetchBeneficiarios } = useBeneficiarios()
   const { citas, loading: loadingCitas } = useCitasHoy();
+  
 
   const [fecha, setFecha] = useState("");
   const [tipoServicio, setTipoServicio] = useState("");
@@ -46,6 +48,7 @@ export default function BusquedaBeneficiarioVista() {
 
   const [insumos, setInsumos] = useState([]);
   const { productos, loading: loadingProductos, error: errorProductos } = useProductos()
+  const { especialistas, loading: loadingMedicos } = useEspecialistas(tipoServicio);
 
 
   const [metodoPago, setMetodoPago] = useState("");
@@ -62,8 +65,15 @@ export default function BusquedaBeneficiarioVista() {
 
   const tiposOptions = (tipos || []).map((t) => ({
     label: t.nombre,
-    value: t.nombre,
+    value: t.id, 
   }));
+
+  const medicosOptions = especialistas.map((m) => ({
+    label: m.nombre,
+    value: m.id,
+  }));
+
+  const servicioLabel = tiposOptions.find(t => t.value === tipoServicio)?.label;
 
   useEffect(() => {
     if (query.length >= 2) {
@@ -190,8 +200,10 @@ export default function BusquedaBeneficiarioVista() {
                 setMedico={setMedico}
                 tiposOptions={tiposOptions}
                 loadingServicios={loadingServicios}
+                medicosOptions={medicosOptions}
+                loadingMedicos={loadingMedicos}   
               />
-            )}  
+            )}
 
 
             {pasoActual === 3 && (
@@ -285,7 +297,7 @@ export default function BusquedaBeneficiarioVista() {
               </div>
               <div className='dlRow'>
                 <dt>Servicio:</dt>
-                <dd>{tipoServicio || "—"}</dd>
+                <dd>{servicioLabel || "—"}</dd>
               </div>
               <div className='dlRow'>
                 <dt>Médico:</dt>
