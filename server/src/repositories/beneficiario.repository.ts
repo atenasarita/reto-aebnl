@@ -55,11 +55,19 @@ type BeneficiarioDetalleRow = {
     CONTACTO_PARENTESCO: string | null;
     ALERGIAS: string | null;
     TIPO_SANGUINEO: string | null;
+    VALVULA: number | null;
+    HOSPITAL: string | null;
     DOMICILIO_CALLE: string | null;
     DOMICILIO_CP: string | null;
     DOMICILIO_CIUDAD: string | null;
     DOMICILIO_ESTADO: string | null;
     DIAS_PARA_VENCER: number | null;
+    ID_MEMBRESIA: number | null;
+    PRECIO: number | null;
+    FECHA_INICIO: string | null;
+    FECHA_FIN: string | null;
+    MEMBRESIA_ESTADO: string | null;
+    METODO_PAGO: string | null;
 };
 
 type BeneficiarioConMembresiaRow = BeneficiarioDetalleRow & {
@@ -127,6 +135,8 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         const contactoParentesco = this.toRequiredString(row.CONTACTO_PARENTESCO);
         const alergias = this.toRequiredString(row.ALERGIAS);
         const tipoSanguineo = this.toBloodType(row.TIPO_SANGUINEO);
+        const valvula = row.VALVULA === 1;
+        const hospital = this.toRequiredString(row.HOSPITAL);
         const domicilioCalle = this.toRequiredString(row.DOMICILIO_CALLE);
         const domicilioCp = this.toRequiredString(row.DOMICILIO_CP);
         const domicilioCiudad = this.toRequiredString(row.DOMICILIO_CIUDAD);
@@ -160,6 +170,8 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                 contacto_parentesco: contactoParentesco,
                 alergias,
                 tipo_sanguineo: tipoSanguineo,
+                valvula: valvula,
+                hospital: hospital,
             },
             direccion: {
                 id_direccion: 0,
@@ -170,6 +182,14 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                 domicilio_estado: domicilioEstado,
             },
             dias_para_vencer: row.DIAS_PARA_VENCER,
+            membresia: row.ID_MEMBRESIA ? {
+            id_membresia: row.ID_MEMBRESIA,
+            precio: row.PRECIO!,
+            fecha_inicio: row.FECHA_INICIO!,
+            fecha_fin: row.FECHA_FIN!,
+            estado: row.MEMBRESIA_ESTADO!,
+            metodo_pago: row.METODO_PAGO!,
+        } : null,
         };
     }
 
@@ -343,11 +363,19 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                     CONTACTO_PARENTESCO: row.CONTACTO_PARENTESCO,
                     ALERGIAS: row.ALERGIAS,
                     TIPO_SANGUINEO: row.TIPO_SANGUINEO,
+                    VALVULA: row.VALVULA,
+                    HOSPITAL: row.HOSPITAL,
                     DOMICILIO_CALLE: row.DOMICILIO_CALLE,
                     DOMICILIO_CP: row.DOMICILIO_CP,
                     DOMICILIO_CIUDAD: row.DOMICILIO_CIUDAD,
                     DOMICILIO_ESTADO: row.DOMICILIO_ESTADO,
                     DIAS_PARA_VENCER: row.DIAS_PARA_VENCER,
+                    ID_MEMBRESIA: row.ID_MEMBRESIA,
+                    PRECIO: row.PRECIO,
+                    FECHA_INICIO: row.FECHA_INICIO,
+                    FECHA_FIN: row.FECHA_FIN,
+                    MEMBRESIA_ESTADO: row.MEMBRESIA_ESTADO,
+                    METODO_PAGO: row.METODO_PAGO,
                 })),
             );
 
@@ -551,6 +579,8 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                 contacto_parentesco: input.contacto_parentesco,
                 alergias: input.alergias,
                 tipo_sanguineo: input.tipo_sanguineo,
+                valvula: input.valvula ? 1 : 0,
+                hospital: input.hospital ?? null,
                 id_datos_medicos: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
             },
             { autoCommit: false },
@@ -567,6 +597,8 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
             contacto_parentesco: input.contacto_parentesco,
             alergias: input.alergias,
             tipo_sanguineo: input.tipo_sanguineo,
+            valvula: input.valvula,
+            hospital: input.hospital ?? '',
         };
     }
 

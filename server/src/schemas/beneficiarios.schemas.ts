@@ -56,6 +56,8 @@ export const createDatosMedicosSchema = z.object({
 	contacto_parentesco: z.string().trim().min(1, 'contacto_parentesco es requerido').max(20),
 	alergias: z.string().trim().min(1, 'alergias es requerido').max(100),
 	tipo_sanguineo: tipoSanguineoSchema,
+	valvula: z.coerce.boolean().default(false),
+	hospital: z.string().trim().max(255),
 });
 
 export const createDireccionSchema = z.object({

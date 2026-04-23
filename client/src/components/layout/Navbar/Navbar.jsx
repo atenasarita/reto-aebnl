@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import logo from "../../../assets/logo.png";
@@ -6,6 +6,7 @@ import logo from "../../../assets/logo.png";
 const NAV_LINKS = [
   { label: "Tablero", to: "/dashboard" },
   { label: "Beneficiarios", to: "/beneficiarios" },
+  { label: "Prerregistro", to: "/prerregistro" },
   { label: "Servicios", to: "/servicios" },
   { label: "Inventario", to: "/inventario" },
   { label: "Citas", to: "/citas" },
@@ -25,24 +26,30 @@ function Navbar({
     setActive(activeLink);
   }, [activeLink]);
 
+  const normalizedRole = String(user?.role || "").toLowerCase().trim();
+
+  const visibleLinks = useMemo(() => {
+    if (normalizedRole === "operador") {
+      return NAV_LINKS.filter((link) => link.label !== "Reportes");
+    }
+    return NAV_LINKS;
+  }, [normalizedRole]);
+
   return (
     <nav className={styles.navbar}>
       <a className={styles.logo} href="/">
         <img src={logo} alt="Espina Bífida logo" className={styles.logoIcon} />
       </a>
 
-      {/* Nav links */}
       <div className={styles.links}>
-        {NAV_LINKS.map((link) => (
+        {visibleLinks.map((link) => (
           <button
             key={link.label}
             type="button"
             className={`${styles.link} ${active === link.label ? styles.linkActive : ""}`}
             onClick={() => {
               setActive(link.label);
-              if (link.to) {
-                navigate(link.to);
-              }
+              navigate(link.to);
             }}
           >
             {link.label}
@@ -50,7 +57,6 @@ function Navbar({
         ))}
       </div>
 
-      {/* Right side */}
       <div className={styles.right}>
         <button className={styles.settingsBtn} title="Configuración">
           <svg
@@ -74,11 +80,7 @@ function Navbar({
             <div className={styles.userRole}>{user.role}</div>
           </div>
           <div className={styles.avatar}>
-            {user.avatar ? (
-              <img src={user.avatar} alt={user.name} />
-            ) : (
-              user.name.charAt(0)
-            )}
+            {user.avatar ? <img src={user.avatar} alt={user.name} /> : user.name.charAt(0)}
           </div>
         </div>
       </div>
