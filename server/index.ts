@@ -7,6 +7,7 @@ import beneficiariosRoutes from "./src/routes/beneficiarios.routes";
 import inventarioRoutes from "./src/routes/inventario.routes";
 import { errorMiddleware } from './src/middlewares/error.middleware.ts';
 import dashboardRoutes from "./src/routes/dashboard.routes";
+import serviciosRoutes from "./src/routes/servicios.routes.ts";
 
 const app = express();
 const PORT = 3000
@@ -34,3 +35,4 @@ app.use("/api", usuariosRoutes);
 app.use("/api", inventarioRoutes);
 app.use("/api", preregistrosRoutes);
 app.use("/api", dashboardRoutes);
+app.use("/api", serviciosRoutes);

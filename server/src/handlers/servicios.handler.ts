@@ -1,24 +1,30 @@
 import { Request, Response } from 'express';
-import { TiposServicioController } from '../controllers/servicios.controller';
-import { TiposServicioRepository } from '../repositories/servicios.repository';
+import { ServiciosController } from '../controllers/servicios.controller';
 
-const controller = new TiposServicioController(new TiposServicioRepository());
 
-export const getTiposServicioHandler = async (req: Request, res: Response) => {
-  try {
-    const data = await controller.getTiposServicio();
+export class ServiciosHandler{
+    serviciosController: ServiciosController;
+  
+    constructor(serviciosController: ServiciosController) {
+      this.serviciosController = serviciosController;
+    }
 
-    res.status(200).json({
-      ok: true,
-      data,
-    });
+    getTiposServicio = async (req: Request, res: Response) => {
+      try {
+        const data = await this.serviciosController.getTiposServicio();
 
-  } catch (error) {
-    console.error('Error en getTiposServicio:', error);
+        res.status(200).json({
+          ok: true,
+          data,
+        });
 
-    res.status(500).json({
-      ok: false,
-      message: 'Error obteniendo tipos de servicio',
-    });
-  }
-};
+      } catch (error) {
+        console.error('Error en getTiposServicio:', error);
+
+        res.status(500).json({
+          ok: false,
+          message: 'Error obteniendo tipos de servicio',
+        });
+      }
+    };
+}

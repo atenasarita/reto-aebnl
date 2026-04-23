@@ -4,14 +4,6 @@ import "../../../pages/styles/BusquedaBeneficiarioVista.css"
 import Dropdown from '../../ui/Dropdown'
 
 
-
-const TIPOS_SERVICIO = [
-  "Consulta general",
-  "Fisioterapia",
-  "Neurología",
-  "Ortopedia",
-];
-
 const MEDICOS = [
   "Dr. García",
   "Dra. López",
@@ -25,12 +17,14 @@ export default function StepDetalles({
   setTipoServicio,
   medico,
   setMedico,
+  tiposOptions = [],
+  loadingServicios,
 }) {
 
-  const tiposOptions = TIPOS_SERVICIO.map(t => ({ label: t, value: t }))
   const medicosOptions = MEDICOS.map(m => ({ label: m, value: m }))
 
   return (
+    
     <div className='panel'>
       <div className='formGrid3'>
         
@@ -54,6 +48,7 @@ export default function StepDetalles({
           />
         </div>
 
+
         {/* Tipo servicio */}
         <div className='field'>
           <label className='fieldLabel'>
@@ -61,12 +56,18 @@ export default function StepDetalles({
             Servicio
           </label>
           <Dropdown
-            options={[{ label: 'Seleccionar', value: '' }, ...tiposOptions]}
+            options={[
+              { label: loadingServicios ? "Cargando..." : "Seleccionar", value: "" },
+              ...tiposOptions
+            ]}
             value={tipoServicio}
             onChange={setTipoServicio}
             className='dropdown-servicios'
+            
           />
         </div>
+
+        
 
         {/* Médico */}
         <div className='field'>

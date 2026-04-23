@@ -14,7 +14,7 @@ import "../styles/BusquedaBeneficiarioVista.css";
 import { useProductos } from "../../hooks/useProductos";
 import useBeneficiarios from "../../hooks/useBeneficiarios"
 import useCitasHoy from "../../hooks/useCitasHoy";
-
+import useServicios from "../../hooks/useServicios";
 
 import StepBusqueda from "../../components/layout/registroServicios/StepBusqueda";
 import StepDetalles from "../../components/layout/registroServicios/StepDetalles";
@@ -36,12 +36,13 @@ export default function BusquedaBeneficiarioVista() {
   const [beneficiarioSeleccionado, setBeneficiarioSeleccionado] = useState(null);
   const [citaSeleccionada, setCitaSeleccionada] = useState(null);
 
-  const { data, loading, error, fetchBeneficiarios } = useBeneficiarios()
+  const { data, loading, fetchBeneficiarios } = useBeneficiarios()
   const { citas, loading: loadingCitas } = useCitasHoy();
 
   const [fecha, setFecha] = useState("");
   const [tipoServicio, setTipoServicio] = useState("");
   const [medico, setMedico] = useState("");
+  const { tipos, loading: loadingServicios } = useServicios();
 
   const [insumos, setInsumos] = useState([]);
   const { productos, loading: loadingProductos, error: errorProductos } = useProductos()
@@ -58,6 +59,11 @@ export default function BusquedaBeneficiarioVista() {
   const subtotalInsumos = insumos.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
   const totalConDescuento = subtotalInsumos - descuento;
   const saldoRestante = totalConDescuento - (parseFloat(montoPagado) || 0);
+
+  const tiposOptions = (tipos || []).map((t) => ({
+    label: t.nombre,
+    value: t.nombre,
+  }));
 
   useEffect(() => {
     if (query.length >= 2) {
@@ -128,6 +134,7 @@ export default function BusquedaBeneficiarioVista() {
   }
 
   return (
+    
     <div className='page'>
         <div className='description'>
           <h1 className='title'>Registrar Nuevo Servicio</h1>
@@ -159,8 +166,6 @@ export default function BusquedaBeneficiarioVista() {
           {/* MAIN */}
           <main className='main'>
 
-          {/* MAIN */}
-
           {pasoActual === 1 && (
             <StepBusqueda
               setQuery={setQuery}
@@ -171,19 +176,20 @@ export default function BusquedaBeneficiarioVista() {
               setBeneficiarioSeleccionado={setBeneficiarioSeleccionado}
               citaSeleccionada={citaSeleccionada}
               setCitaSeleccionada={setCitaSeleccionada}
-              CITAS_HOY={citasFormateadas}   // 👈 YA NO MOCK
+              CITAS_HOY={citasFormateadas}  
             />
           )}
             
             {pasoActual === 2 && (
               <StepDetalles
-                key="step-detalles" 
                 fecha={fecha}
                 setFecha={setFecha}
                 tipoServicio={tipoServicio}
                 setTipoServicio={setTipoServicio}
                 medico={medico}
                 setMedico={setMedico}
+                tiposOptions={tiposOptions}
+                loadingServicios={loadingServicios}
               />
             )}  
 

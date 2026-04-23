@@ -1,6 +1,7 @@
 import { TiposServicioRepository } from '../repositories/servicios.repository';
 
-export class TiposServicioController {
+export class ServiciosController {
+  
   private readonly repository: TiposServicioRepository;
 
   constructor(repository: TiposServicioRepository) {

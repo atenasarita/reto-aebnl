@@ -7,7 +7,7 @@ type TipoServicioRow = {
   NOMBRE: string;
 };
 
-export class TiposServicioRepository {
+export class ServicioRepository {
   private readonly oracleConnection: OracleConnection;
 
   constructor(oracleConnection: OracleConnection = new OracleConnection()) {
