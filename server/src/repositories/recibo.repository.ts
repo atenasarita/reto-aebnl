@@ -9,9 +9,8 @@ async function getConnection(): Promise<oracledb.Connection> {
   return oracle.getConnection();
 }
 
-// Servicios del día con datos del beneficiario
-const SQL_SERVICIOS_POR_FECHA = `
-  SELECT
+// Columnas comunes para las consultas de recibos
+const SELECT_COLS = `
     so.ID_SERVICIO_OTORGADO,
     id_.NOMBRES || ' ' || id_.APELLIDO_PATERNO  AS BENEFICIARIO,
     cs.NOMBRE                                   AS SERVICIO,
@@ -23,36 +22,35 @@ const SQL_SERVICIOS_POR_FECHA = `
     sf.DESCUENTO,
     sf.CUOTA_TOTAL,
     sf.MONTO_PAGADO,
-    sf.METODO_PAGO
+    sf.METODO_PAGO`;
+
+const FROM_JOINS = `
   FROM SERVICIOS_OTORGADOS so
-  JOIN BENEFICIARIO              b   ON b.ID_BENEFICIARIO       = so.ID_BENEFICIARIO
-  JOIN IDENTIFICADORES           id_ ON id_.ID_BENEFICIARIO     = b.ID_BENEFICIARIO
-  JOIN CATALOGO_SERVICIOS        cs  ON cs.ID_CATALOGO_SERVICIO = so.ID_CATALOGO_SERVICIO
-  LEFT JOIN SERVICIOS_FINANCIEROS sf ON sf.ID_SERVICIO_OTORGADO  = so.ID_SERVICIO_OTORGADO
+  JOIN BENEFICIARIO               b   ON b.ID_BENEFICIARIO       = so.ID_BENEFICIARIO
+  JOIN IDENTIFICADORES            id_ ON id_.ID_BENEFICIARIO     = b.ID_BENEFICIARIO
+  JOIN CATALOGO_SERVICIOS         cs  ON cs.ID_CATALOGO_SERVICIO = so.ID_CATALOGO_SERVICIO
+  LEFT JOIN SERVICIOS_FINANCIEROS sf  ON sf.ID_SERVICIO_OTORGADO = so.ID_SERVICIO_OTORGADO`;
+
+// Recibos por dia
+const SQL_SERVICIOS_POR_FECHA = `
+  SELECT ${SELECT_COLS}
+  ${FROM_JOINS}
   WHERE TRUNC(so.FECHA) = TO_DATE(:fecha, 'YYYY-MM-DD')
   ORDER BY so.HORA ASC
 `;
 
-// Buscar servicio por ID con datos del beneficiario
+// Recibos por mes
+const SQL_SERVICIOS_POR_MES = `
+  SELECT ${SELECT_COLS}
+  ${FROM_JOINS}
+  WHERE TRUNC(so.FECHA, 'MM') = TRUNC(TO_DATE(:fecha, 'YYYY-MM'), 'MM')
+  ORDER BY so.FECHA ASC, so.HORA ASC
+`;
+
+// Buscar servicio por ID
 const SQL_SERVICIO_POR_ID = `
-  SELECT
-    so.ID_SERVICIO_OTORGADO,
-    id_.NOMBRES || ' ' || id_.APELLIDO_PATERNO  AS BENEFICIARIO,
-    cs.NOMBRE                                   AS SERVICIO,
-    TO_CHAR(so.FECHA, 'YYYY-MM-DD')             AS FECHA,
-    so.HORA,
-    sf.ID_SERVICIO_FINANCIERO,
-    sf.MONTO_SERVICIO,
-    sf.MONTO_INVENTARIO,
-    sf.DESCUENTO,
-    sf.CUOTA_TOTAL,
-    sf.MONTO_PAGADO,
-    sf.METODO_PAGO
-  FROM SERVICIOS_OTORGADOS so
-  JOIN BENEFICIARIO              b   ON b.ID_BENEFICIARIO       = so.ID_BENEFICIARIO
-  JOIN IDENTIFICADORES           id_ ON id_.ID_BENEFICIARIO     = b.ID_BENEFICIARIO
-  JOIN CATALOGO_SERVICIOS        cs  ON cs.ID_CATALOGO_SERVICIO = so.ID_CATALOGO_SERVICIO
-  LEFT JOIN SERVICIOS_FINANCIEROS sf ON sf.ID_SERVICIO_OTORGADO  = so.ID_SERVICIO_OTORGADO
+  SELECT ${SELECT_COLS}
+  ${FROM_JOINS}
   WHERE so.ID_SERVICIO_OTORGADO = :id
 `;
 
@@ -118,34 +116,40 @@ async function fetchItems(
   }));
 }
 
+async function ejecutarConsulta(
+  sql: string,
+  binds: oracledb.BindParameters
+): Promise<ReciboCompleto[]> {
+  const conn = await getConnection();
+  try {
+    const result = await conn.execute(sql, binds, { outFormat: oracledb.OUT_FORMAT_OBJECT });
+    const rows   = (result.rows ?? []) as Record<string, unknown>[];
+    return Promise.all(
+      rows.map(async (row): Promise<ReciboCompleto> => {
+        const id    = Number(row["ID_SERVICIO_OTORGADO"]);
+        const items = await fetchItems(conn, id);
+        return rowToReciboCompleto(row, items);
+      })
+    );
+  } finally {
+    await conn.close();
+  }
+}
+
 // Repositorio
 export class ReciboRepository implements IReciboRepository {
 
+  /** Recibos de un día */
   async listarPorFecha(fecha: string): Promise<ReciboCompleto[]> {
-    const conn = await getConnection();
-    try {
-      const result = await conn.execute(
-        SQL_SERVICIOS_POR_FECHA,
-        { fecha },
-        { outFormat: oracledb.OUT_FORMAT_OBJECT }
-      );
-
-      const rows = (result.rows ?? []) as Record<string, unknown>[];
-
-      const recibos = await Promise.all(
-        rows.map(async (row): Promise<ReciboCompleto> => {
-          const id    = Number(row["ID_SERVICIO_OTORGADO"]);
-          const items = await fetchItems(conn, id);
-          return rowToReciboCompleto(row, items);
-        })
-      );
-
-      return recibos;
-    } finally {
-      await conn.close();
-    }
+    return ejecutarConsulta(SQL_SERVICIOS_POR_FECHA, { fecha });
   }
 
+  /**Recibos del mes */
+  async listarPorMes(fecha: string): Promise<ReciboCompleto[]> {
+    return ejecutarConsulta(SQL_SERVICIOS_POR_MES, { fecha });
+  }
+
+  /** Recibo individual por ID de servicio otorgado */
   async obtenerPorId(idServicioOtorgado: number): Promise<ReciboCompleto | null> {
     const conn = await getConnection();
     try {
@@ -154,14 +158,11 @@ export class ReciboRepository implements IReciboRepository {
         { id: idServicioOtorgado },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
-
       const rows = (result.rows ?? []) as Record<string, unknown>[];
       if (rows.length === 0) return null;
-
       const row   = rows[0];
       const id    = Number(row["ID_SERVICIO_OTORGADO"]);
       const items = await fetchItems(conn, id);
-
       return rowToReciboCompleto(row, items);
     } finally {
       await conn.close();

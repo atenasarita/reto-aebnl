@@ -3,22 +3,27 @@ import { ReciboRepository } from "../repositories/recibo.repository.js";
 
 const repo = new ReciboRepository();
 
-/** Fecha de hoy */
+/** Fecha de hoy en formato YYYY-MM-DD (zona local del servidor) */
 function fechaHoy(): string {
   return new Date().toISOString().split("T")[0];
 }
 
-/** Valida que un string sea una fecha con formato YYYY-MM-DD */
+/* Valida que un string sea una fecha con formato YYYY-MM-DD */
 function esFechaValida(s: string): boolean {
   return /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(Date.parse(s));
 }
 
-// GET /api/recibos?fecha=YYYY-MM-DD 
+/* Valida que un string sea un mes con formato YYYY-MM */
+function esMesValido(s: string): boolean {
+  return /^\d{4}-\d{2}$/.test(s);
+}
+
+// GET /api/recibos?fecha=YYYY-MM-DD
 export async function listarRecibos(req: Request, res: Response): Promise<void> {
   const fecha = (req.query.fecha as string) || fechaHoy();
 
   if (!esFechaValida(fecha)) {
-    res.status(400).json({ message: "Formato de fecha inválido. Use YYYY-MM-DD." });
+    res.status(400).json({ message: "Formato de fecha inválido. Usa YYYY-MM-DD." });
     return;
   }
 
@@ -27,6 +32,24 @@ export async function listarRecibos(req: Request, res: Response): Promise<void> 
     res.json(recibos);
   } catch (err) {
     console.error("[recibos] Error al listar:", err);
+    res.status(500).json({ message: "Error interno del servidor." });
+  }
+}
+
+// GET /api/recibos/mes?fecha=YYYY-MM
+export async function listarRecibosMes(req: Request, res: Response): Promise<void> {
+  const fecha = (req.query.fecha as string);
+
+  if (!fecha || !esMesValido(fecha)) {
+    res.status(400).json({ message: "Formato de fecha inválido. Usa YYYY-MM." });
+    return;
+  }
+
+  try {
+    const recibos = await repo.listarPorMes(fecha);
+    res.json(recibos);
+  } catch (err) {
+    console.error("[recibos] Error al listar mes:", err);
     res.status(500).json({ message: "Error interno del servidor." });
   }
 }

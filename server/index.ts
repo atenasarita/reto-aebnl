@@ -4,7 +4,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import usuariosRoutes from "./src/routes/usuarios.routes";
 import preregistrosRoutes from './src/routes/preregistros.routes';
-import recibosRoutes from './src/routes/recibos.routes.js';
+import recibosRoutes from './src/routes/recibos.routes';
 import beneficiariosRoutes from "./src/routes/beneficiarios.routes";
 import inventarioRoutes from "./src/routes/inventario.routes";
 import { errorMiddleware } from './src/middlewares/error.middleware.ts';
