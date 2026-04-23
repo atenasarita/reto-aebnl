@@ -48,6 +48,21 @@ ORDER BY b.id_beneficiario ASC`;
 export const SELECT_BENEFICIARIO_BY_ID = `${SELECT_BENEFICIARIO_DETALLE_BASE}
 WHERE b.id_beneficiario = :id_beneficiario`;
 
+export const SELECT_PADRES_BY_BENEFICIARIO_ID = `
+  SELECT p.id_padre, 
+         p.id_datos_medicos, 
+         p.tipo_padre, 
+         p.nombre_completo,
+         TO_CHAR(p.fecha_nacimiento, 'YYYY-MM-DD') AS fecha_nacimiento,
+         p.email, 
+         p.telefono, 
+         p.telefono_casa, 
+         p.telefono_trabajo
+  FROM Padres p
+  INNER JOIN Datos_medicos dm ON dm.id_datos_medicos = p.id_datos_medicos
+  WHERE dm.id_beneficiario = :id_beneficiario
+`.trim();
+
 export const SELECT_BENEFICIARIO_BY_FOLIO = `${SELECT_BENEFICIARIO_DETALLE_BASE}
 WHERE b.folio = :folio`;
 
@@ -126,6 +141,28 @@ export const INSERT_DATOS_MEDICOS_RETURNING = `
 
   )
   RETURNING id_datos_medicos INTO :id_datos_medicos
+`.trim();
+
+export const INSERT_PADRE = `
+  INSERT INTO Padres (
+      id_datos_medicos,
+      tipo_padre,
+      nombre_completo,
+      fecha_nacimiento,
+      email,
+      telefono,
+      telefono_casa,
+      telefono_trabajo
+  ) VALUES (
+      :id_datos_medicos,
+      :tipo_padre,
+      :nombre_completo,
+      :fecha_nacimiento,
+      :email,
+      :telefono,
+      :telefono_casa,
+      :telefono_trabajo
+  )
 `.trim();
 
 export const INSERT_DIRECCION_RETURNING = `

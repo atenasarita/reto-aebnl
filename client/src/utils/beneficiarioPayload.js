@@ -21,7 +21,27 @@ export function buildBeneficiarioPayload(formData, fechaRegistro, fechaNacimient
       alergias: formData.alergias,
       tipo_sanguineo: formData.tipo_sanguineo,
       valvula: formData.valvula === true || formData.valvula === 'true',
-      hospital: formData.hospital
+      hospital: formData.hospital,
+      padres: [
+        {
+          tipo_padre: 'padre',
+          nombre_completo: formData.padre_nombre || null,
+          fecha_nacimiento: formData.padre_fecha_nacimiento || null,
+          email: formData.padre_email || null,
+          telefono: formData.padre_telefono || null,
+          telefono_casa: formData.padre_telefono_casa || null,
+          telefono_trabajo: formData.padre_telefono_trabajo || null,
+        },
+        {
+          tipo_padre: 'madre',
+          nombre_completo: formData.madre_nombre || null,
+          fecha_nacimiento: formData.madre_fecha_nacimiento || null,
+          email: formData.madre_email || null,
+          telefono: formData.madre_telefono || null,
+          telefono_casa: formData.madre_telefono_casa || null,
+          telefono_trabajo: formData.madre_telefono_trabajo || null,
+        }
+      ]
     },
     direccion: {
       domicilio_calle: formData.domicilio_calle,

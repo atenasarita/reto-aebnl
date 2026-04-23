@@ -28,6 +28,8 @@ router.get('/beneficiarios/folio/:folio', authenticateJWT, authorizeRoles('admin
 
 router.get('/beneficiarios/:id_beneficiario', authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getBeneficiarioById);
 
+router.get('/beneficiarios/:id_beneficiario/padres', authenticateJWT, authorizeRoles('administrador', 'operador'), beneficiariosHandler.getPadresByBeneficiarioId);
+
 router.post('/beneficiarios', authenticateJWT, authorizeRoles('administrador', 'operador'), validateBody(createBeneficiarioSchema), beneficiariosHandler.createBeneficiario);
 
 router.post('/beneficiarios/:id_beneficiario/identificadores', authenticateJWT, authorizeRoles('administrador', 'operador'), validateBody(createIdentificadoresSchema), beneficiariosHandler.createIdentificadores);

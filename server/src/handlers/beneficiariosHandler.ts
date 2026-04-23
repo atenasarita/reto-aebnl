@@ -122,4 +122,19 @@ export class BeneficiariosHandler {
     return next(error);
   }
 };
+
+  getPadresByBeneficiarioId = async (req: Request, res: Response, next: NextFunction) => {
+    const id_beneficiario = Number(req.params.id_beneficiario);
+
+    if (!Number.isInteger(id_beneficiario) || id_beneficiario <= 0) {
+      return next(new ValidationError('id_beneficiario invalido'));
+    }
+
+    try {
+      const padres = await this.beneficiariosController.getPadresByBeneficiarioId(id_beneficiario);
+      return res.status(200).json(padres);
+    } catch (error) {
+      return next(error);
+    }
+  };
 }

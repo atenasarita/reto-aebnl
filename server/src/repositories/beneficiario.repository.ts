@@ -12,6 +12,7 @@ import {
     INSERT_DIRECCION_RETURNING,
     INSERT_IDENTIFICADORES_RETURNING,
     INSERT_MEMBRESIA,
+    INSERT_PADRE,
     SELECT_BENEFICIARIO_BY_FOLIO,
     SELECT_BENEFICIARIO_BY_ID,
     SELECT_BENEFICIARIOS,
@@ -20,6 +21,7 @@ import {
     UPDATE_MEMBRESIA_ESTADO,
     UPDATE_BENEFICIARIO_ESTADO_EXPIRED_MEMBRESIAS,
     selectTipoEspinasByBeneficiarioIds,
+    SELECT_PADRES_BY_BENEFICIARIO_ID
 } from './beneficiario.queries';
 import {
     BeneficiarioDetalle,
@@ -32,6 +34,7 @@ import {
     Datos_medicos,
     Direccion,
     Beneficiario,
+    Padre
 } from '../types/beneficiarios.types';
 import { CreateMembresiaInput } from '../types/membresias.types';
 
@@ -589,6 +592,25 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         const outBinds = result.outBinds as { id_datos_medicos: number[] | number };
         const idDatosMedicos = getOutBindNumber(outBinds.id_datos_medicos);
 
+        if (input.padres && input.padres.length > 0) {
+            for (const padre of input.padres) {
+                await connection.execute(
+                    INSERT_PADRE,
+                    {
+                        id_datos_medicos: idDatosMedicos,
+                        tipo_padre: padre.tipo_padre,
+                        nombre_completo: padre.nombre_completo ?? null,
+                        fecha_nacimiento: padre.fecha_nacimiento ? new Date(padre.fecha_nacimiento) : null,
+                        email: padre.email ?? null,
+                        telefono: padre.telefono ?? null,
+                        telefono_casa: padre.telefono_casa ?? null,
+                        telefono_trabajo: padre.telefono_trabajo ?? null,
+                    },
+                    { autoCommit: false }
+                );
+            }
+        }
+
         return {
             id_datos_medicos: idDatosMedicos,
             id_beneficiario,
@@ -718,6 +740,53 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                 },
                 { autoCommit: false },
             );
+        }
+    }
+
+    async getPadresByBeneficiarioId(id_beneficiario: number): Promise<Padre[]> {
+        let connection: oracledb.Connection | undefined;
+
+        try {
+            connection = await this.oracleConnection.getConnection();
+            const result = await connection.execute<{
+                ID_PADRE: number;
+                ID_DATOS_MEDICOS: number;
+                TIPO_PADRE: string;
+                NOMBRE_COMPLETO: string | null;
+                FECHA_NACIMIENTO: string | null;
+                EMAIL: string | null;
+                TELEFONO: string | null;
+                TELEFONO_CASA: string | null;
+                TELEFONO_TRABAJO: string | null;
+            }>(
+                SELECT_PADRES_BY_BENEFICIARIO_ID,
+                { id_beneficiario },
+                { outFormat: oracledb.OUT_FORMAT_OBJECT }
+            );
+
+            if (!result.rows) {
+                return [];
+            }
+
+            return result.rows.map(row => ({
+                id_padre: row.ID_PADRE,
+                id_datos_medicos: row.ID_DATOS_MEDICOS,
+                tipo_padre: row.TIPO_PADRE,
+                nombre_completo: row.NOMBRE_COMPLETO,
+                fecha_nacimiento: row.FECHA_NACIMIENTO,
+                email: row.EMAIL,
+                telefono: row.TELEFONO,
+                telefono_casa: row.TELEFONO_CASA,
+                telefono_trabajo: row.TELEFONO_TRABAJO
+            }));
+
+        } catch (error) {
+            console.error('Error in getPadresByBeneficiarioId:', error);
+            throw error;
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
         }
     }
 

@@ -8,7 +8,8 @@ import {
     Identificadores,
     Datos_medicos,
     Direccion,
-    Beneficiario 
+    Beneficiario,
+    Padre
 } from '../types/beneficiarios.types';
 
 export interface BeneficiarioRepository 
@@ -16,6 +17,7 @@ export interface BeneficiarioRepository
     getBeneficiarios(): Promise<BeneficiarioDetalle[]>;
     getBeneficiarioById(id_beneficiario: number): Promise<BeneficiarioDetalle>;
     getBeneficiarioByFolio(folio: string): Promise<BeneficiarioDetalle>;
+    getPadresByBeneficiarioId(id_beneficiario: number): Promise<Padre[]>;
 
     createBeneficiario(input: CreateBeneficiarioInput): Promise<Beneficiario>;
     createIdentificadores(id_beneficiario: number, input: CreateIdentificadoresInput): Promise<Identificadores>;
