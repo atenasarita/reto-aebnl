@@ -74,6 +74,18 @@ export interface Direccion {
     domicilio_estado: string;
 }
 
+export interface Padre {
+    id_padre: number;
+    id_datos_medicos: number;
+    tipo_padre: string;
+    nombre_completo: string | null;
+    fecha_nacimiento: string | null;
+    email: string | null;
+    telefono: string | null;
+    telefono_casa: string | null;
+    telefono_trabajo: string | null;
+}
+
 // Types funciones
 export interface CreateIdentificadoresInput {
     CURP: string;
@@ -87,6 +99,16 @@ export interface CreateIdentificadoresInput {
     email?: string;
 }
 
+export interface CreatePadreInput {
+    tipo_padre: 'padre' | 'madre';
+    nombre_completo?: string | null;
+    fecha_nacimiento?: Date | string | null;
+    email?: string | null;
+    telefono?: string | null;
+    telefono_casa?: string | null;
+    telefono_trabajo?: string | null;
+}
+
 export interface CreateDatosMedicosInput {
     contacto_nombre: string;
     contacto_telefono: string;
@@ -95,6 +117,7 @@ export interface CreateDatosMedicosInput {
     tipo_sanguineo: TipoSanguineo;
     valvula: boolean;
     hospital?: string;
+    padres?: CreatePadreInput[];
 }
 
 export interface CreateDireccionInput {
