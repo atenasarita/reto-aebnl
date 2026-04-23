@@ -1,10 +1,10 @@
-import { TiposServicioRepository } from '../repositories/servicios.repository';
+import { ServicioRepository } from '../repositories/servicios.repository';
 
 export class ServiciosController {
   
-  private readonly repository: TiposServicioRepository;
+  private readonly repository: ServicioRepository;
 
-  constructor(repository: TiposServicioRepository) {
+  constructor(repository: ServicioRepository) {
     this.repository = repository;
   }
 
