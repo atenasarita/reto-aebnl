@@ -643,6 +643,9 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         const fechaFin = addDays(addMonthsKeepingCalendar(fechaInicio, meses), -1);
         const precioTotal = Number((input.precio_mensual * input.meses).toFixed(2));
         const estadoMembresia = fechaFin >= startOfDay(new Date()) ? 'activa' : 'vencida';
+        // console.log('input.fecha_inicio:', input.fecha_inicio);
+        // console.log('fechaInicio:', fechaInicio);
+        // console.log('fechaFin:', fechaFin);
 
         await connection.execute(
             INSERT_MEMBRESIA,

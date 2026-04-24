@@ -125,14 +125,29 @@ export function useRegistroBeneficiario(navigate) {
     setError(mensaje);
   };
 
-  const calculateFechaVigencia = () => {
-    const inicio = new Date(formData.fecha_inicio_membresia || fechaRegistro);
-    if (Number.isNaN(inicio.getTime())) return '';
+  // const calculateFechaVigencia = () => {
+  //   const inicio = new Date(formData.fecha_inicio_membresia);
+  //   if (Number.isNaN(inicio.getTime())) return '';
 
-    const vigencia = new Date(inicio);
-    vigencia.setMonth(vigencia.getMonth() + Number(formData.meses_membresia || 6));
-    return vigencia.toISOString().split('T')[0];
-  };
+  //   const vigencia = new Date(inicio);
+  //   vigencia.setMonth(vigencia.getMonth() + Number(formData.meses_membresia));
+  //   return vigencia.toISOString().split('T')[0];
+  // };
+
+  const calculateFechaVigencia = () => {
+  const inicio = new Date(`${formData.fecha_inicio_membresia || fechaRegistro}T00:00:00`);
+  if (Number.isNaN(inicio.getTime())) return '';
+
+  const vigencia = new Date(inicio);
+  vigencia.setMonth(vigencia.getMonth() + Number(formData.meses_membresia || 6));
+  vigencia.setDate(vigencia.getDate() - 1);
+
+  // Ajuste clave para evitar desfase
+  const offset = vigencia.getTimezoneOffset();
+  vigencia.setMinutes(vigencia.getMinutes() - offset);
+
+  return vigencia.toISOString().split('T')[0];
+};
 
   const handleNext = () => {
     setTouchedSteps(prev => [...new Set([...prev, currentStep])]);

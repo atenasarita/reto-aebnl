@@ -5,8 +5,17 @@ function calcAge(fechaNacimiento) {
   return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25))
 }
 
-function formatDate(dateStr) {
+function formatDateMX(dateStr) {
   return new Date(dateStr).toLocaleDateString('es-MX')
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—'
+
+  const dateOnly = String(dateStr).split('T')[0]
+  const [year, month, day] = dateOnly.split('-')
+
+  return `${Number(day)}/${Number(month)}/${year}`
 }
 
 function BeneficiarioDetalle({ beneficiario }) {
