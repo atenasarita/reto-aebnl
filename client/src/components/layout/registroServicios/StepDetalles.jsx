@@ -4,8 +4,6 @@ import { useEffect } from "react";
 
 import Dropdown from '../../ui/Dropdown'
 
-
-
 export default function StepDetalles({
   fecha,
   setFecha,
