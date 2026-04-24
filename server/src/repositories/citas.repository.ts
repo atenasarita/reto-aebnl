@@ -1,13 +1,12 @@
 import oracledb from "oracledb";
 import { OracleConnection } from "../db/oracle";
 import {citasQueries} from "./citas.queries";
-import { CitasRepository } from "../interfaces/citasRepository";
-import { CitaDetalle, CreateCitaInput, EstatusCita } from "../types/citas.types";
 
-export class OracleCitasRepository implements CitasRepository {
+export type EstadoCitas =  "programada" | "completada" | "cancelada";
+export class OracleCitasRepository {
     constructor(private readonly oracleConnection = new OracleConnection()){}
 
-    async getCitas(): Promise<CitaDetalle[]>{
+    async getCitas(){
         let connection;
 
         try {
@@ -18,13 +17,13 @@ export class OracleCitasRepository implements CitasRepository {
                 {},
                 {outFormat: oracledb.OUT_FORMAT_OBJECT}
             );
-            return (result.rows ?? []) as CitaDetalle[];
+            return result.rows ?? [];
         } finally {
             if(connection) await connection.close();
         }
     }
 
-    async createCita(input: CreateCitaInput):Promise<{ message: string }> {
+    async createCita(input: any){
         let connection;
 
         try {
@@ -40,7 +39,7 @@ export class OracleCitasRepository implements CitasRepository {
                     id_catalogo_servicio: input.id_catalogo_servicio,
                     motivo: input.motivo ?? null,
                     notas: input.notas ?? null,
-                    estatus: input.estatus ?? 'programada' as EstatusCita,
+                    estatus: input.estatus ?? 'programada',
                 },
                 {autoCommit: true}
             );

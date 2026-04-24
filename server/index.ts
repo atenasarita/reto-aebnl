@@ -10,6 +10,8 @@ import inventarioRoutes from "./src/routes/inventario.routes";
 import { errorMiddleware } from './src/middlewares/error.middleware.ts';
 import dashboardRoutes from "./src/routes/dashboard.routes";
 import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job';
+import citasRoutes from './src/routes/citas.routes.ts';
+
 
 const app = express();
 const PORT = 3000;
@@ -28,6 +30,7 @@ app.use('/api', beneficiariosRoutes);
 app.use('/api/inventario', inventarioRoutes);
 app.use('/api/preregistros', preregistrosRoutes);
 app.use('/api/recibos', recibosRoutes);
+app.use('/api/citas', citasRoutes);
 app.use('/api', dashboardRoutes);
 
 app.use(errorMiddleware);
