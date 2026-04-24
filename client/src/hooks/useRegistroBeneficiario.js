@@ -35,78 +35,145 @@ export function useRegistroBeneficiario(navigate) {
   }, []);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const {name, value} = e.target;
 
-    if (
-      name === 'nombres' ||
-      name === 'apellido_paterno' ||
-      name === 'apellido_materno' ||
-      name === 'contacto_nombre' ||
-      name === 'contacto_parentesco' ||
-      name === 'padre_nombre' ||
-      name === 'madre_nombre'
-    ) {
-      const limpio = limpiarSoloLetras(value);
-      setFormData(prev => ({ ...prev, [name]: limpio }));
-      return;
+    let cleanValue = value;
+
+    const camposSoloLetras = [
+      'nombres',
+      'apellido_paterno',
+      'apellido_materno',
+      'contacto_nombre',
+      'contacto_parentesco',
+      'padre_nombre',
+      'madre_nombre'
+    ]
+
+    const camposTelefono = [
+      'contacto_telefono',
+      'telefono',
+      'padre_telefono',
+      'padre_telefono_casa',
+      'padre_telefono_trabajo',
+      'madre_telefono',
+      'madre_telefono_casa',
+      'madre_telefono_trabajo'
+    ]
+
+    if(camposSoloLetras.includes(name)){
+      cleanValue = limpiarSoloLetras(value);
     }
 
-    if (
-      name === 'contacto_telefono' || 
-      name === 'telefono' ||
-      name === 'padre_telefono' ||
-      name === 'padre_telefono_casa' ||
-      name === 'padre_telefono_trabajo' ||
-      name === 'madre_telefono' ||
-      name === 'madre_telefono_casa' ||
-      name === 'madre_telefono_trabajo'
-    ) {
-    const limpio = value.replace(/\D/g, '').slice(0, 10);
-    setFormData(prev => ({ ...prev, [name]: limpio }));
-
-    // Solo actualizar el error si el campo ya fue tocado (hubo blur previo)
-    if (fieldErrors[name] !== undefined && fieldErrors[name] !== null) {
-      if (limpio && !telefonoValido(limpio)) {
-        setFieldErrors(prev => ({
-          ...prev,
-          [name]: 'No es un numero de telefono valido'
-        }));
-      } else {
-        setFieldErrors(prev => ({
-          ...prev,
-          [name]: ''
-        }));
-      }
+    if(camposTelefono.includes(name)){
+      cleanValue = value.replace(/\D/g, '').slice(0, 10);
     }
-    return;
-  }
 
-    if (name === 'valvula') {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value === 'true'
-      }));
-      return;
+    if(name === 'valvula'){
+      cleanValue = value === 'true';
+    }
+
+    if(name === 'CURP'){
+      cleanValue = value.toUpperCase().slice(0, 18);
     }
 
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: cleanValue
     }));
 
-    // Validación en tiempo real
-    const newError = validateField(name, value);
+    // const newError = validateField(name, cleanValue);
+    // setFieldErrors(prev => ({
+    //   ...prev,
+    //   [name]: newError
+    // }));
 
-    setFieldErrors(prev => ({
-      ...prev,
-      [name]: newError
-    }));
-
-    // Si el campo ya es válido → quitar error global
-    if (!newError) {
-      setError('');
+    // Solo limpiar error si el usuario está corrigiendo
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
     }
+
+
+    // if(!newError) {
+    //   setError('');
+    // }
   };
+
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+
+  //   if (
+  //     name === 'nombres' ||
+  //     name === 'apellido_paterno' ||
+  //     name === 'apellido_materno' ||
+  //     name === 'contacto_nombre' ||
+  //     name === 'contacto_parentesco' ||
+  //     name === 'padre_nombre' ||
+  //     name === 'madre_nombre'
+  //   ) {
+  //     const limpio = limpiarSoloLetras(value);
+  //     setFormData(prev => ({ ...prev, [name]: limpio }));
+  //     return;
+  //   }
+
+  //   if (
+  //     name === 'contacto_telefono' || 
+  //     name === 'telefono' ||
+  //     name === 'padre_telefono' ||
+  //     name === 'padre_telefono_casa' ||
+  //     name === 'padre_telefono_trabajo' ||
+  //     name === 'madre_telefono' ||
+  //     name === 'madre_telefono_casa' ||
+  //     name === 'madre_telefono_trabajo'
+  //   ) {
+  //   const limpio = value.replace(/\D/g, '').slice(0, 10);
+  //   setFormData(prev => ({ ...prev, [name]: limpio }));
+
+  //   // Solo actualizar el error si el campo ya fue tocado (hubo blur previo)
+  //   if (fieldErrors[name] !== undefined && fieldErrors[name] !== null) {
+  //     if (limpio && !telefonoValido(limpio)) {
+  //       setFieldErrors(prev => ({
+  //         ...prev,
+  //         [name]: 'No es un numero de telefono valido'
+  //       }));
+  //     } else {
+  //       setFieldErrors(prev => ({
+  //         ...prev,
+  //         [name]: ''
+  //       }));
+  //     }
+  //   }
+  //   return;
+  // }
+
+  //   if (name === 'valvula') {
+  //     setFormData(prev => ({
+  //       ...prev,
+  //       [name]: value === 'true'
+  //     }));
+  //     return;
+  //   }
+
+  //   setFormData(prev => ({
+  //     ...prev,
+  //     [name]: value
+  //   }));
+
+  //   // Validación en tiempo real
+  //   const newError = validateField(name, value);
+
+  //   setFieldErrors(prev => ({
+  //     ...prev,
+  //     [name]: newError
+  //   }));
+
+  //   // Si el campo ya es válido → quitar error global
+  //   if (!newError) {
+  //     setError('');
+  //   }
+  // };
 
   const handleBlur = (e) => {
     const { name, value } = e.target;

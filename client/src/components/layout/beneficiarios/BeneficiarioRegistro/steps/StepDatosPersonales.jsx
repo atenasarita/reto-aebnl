@@ -112,6 +112,7 @@ function StepDatosPersonales({
               value={formData.CURP}
               maxLength={18}
               onChange={handleInputChange}
+              onBlur={handleBlur}
               placeholder="XXXX000000XXXXXX00"
             />
             {fieldErrors.CURP && <small className="field-error">{fieldErrors.CURP}</small>}

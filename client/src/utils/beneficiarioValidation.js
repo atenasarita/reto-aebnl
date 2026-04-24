@@ -5,19 +5,14 @@ export function validateField(name, value) {
 
   switch (name) {
     case 'contacto_telefono':
-      if (value && !telefonoValido(value)) {
-        error = 'No es un numero de telefono valido';
-      }
-      break;
-
-      case 'telefono':
-      if (value && !telefonoValido(value)) {
+    case 'telefono':
+      if (value && value.length < 10 && !telefonoValido(value)) {
         error = 'No es un numero de telefono valido';
       }
       break;
 
     case 'domicilio_cp':
-      if (value && !cpValido(value)) {
+      if (value &&  value.length < 5 &&  !cpValido(value)) {
         error = 'No es un codigo postal valido';
       }
       break;
@@ -27,13 +22,15 @@ export function validateField(name, value) {
     case 'apellido_materno':
     case 'contacto_nombre':
     case 'contacto_parentesco':
-      if (value && !soloLetras(value)) {
+      if (value &&  !soloLetras(value)) {
         error = 'Solo se permiten letras';
       }
       break;
 
     case 'CURP':
-      if (value && !validarCURP(value)) {
+      if (value && value.length < 18 ) {
+        error = 'CURP invalida';
+      } else if(value && !validarCURP(value)){
         error = 'CURP invalida';
       }
       break;
