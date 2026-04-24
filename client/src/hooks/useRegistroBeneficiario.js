@@ -18,6 +18,7 @@ export function useRegistroBeneficiario(navigate) {
 
   const fechaNacimientoRef = useRef(null);
   const fechaMembresiaRef = useRef(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     const loadFolio = async () => {
@@ -203,8 +204,7 @@ export function useRegistroBeneficiario(navigate) {
       const payload = buildBeneficiarioPayload(formData, fechaRegistro, fechaNacimiento);
 
       await createBeneficiario(payload, token);
-      alert('Beneficiario registrado exitosamente');
-      navigate('/beneficiarios');
+      setShowSuccessModal(true);
     } catch (err) {
   try {
     const parsed = JSON.parse(err.message);
@@ -234,6 +234,8 @@ export function useRegistroBeneficiario(navigate) {
     error,
     fechaNacimientoRef,
     fechaMembresiaRef,
+    showSuccessModal,
+    setShowSuccessModal,
     setFechaNacimiento,
     handleInputChange,
     handleBlur,
@@ -245,6 +247,6 @@ export function useRegistroBeneficiario(navigate) {
     handlePrev,
     handleSubmit,
     validateStep: stepIsComplete,
-    areAllStepsComplete
+    areAllStepsComplete,
   };
 }
