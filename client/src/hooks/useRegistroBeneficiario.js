@@ -82,12 +82,17 @@ export function useRegistroBeneficiario(navigate) {
       [name]: value
     }));
 
-    if (fieldErrors[name]) {
-      const newError = validateField(name, value);
-      setFieldErrors(prev => ({
-        ...prev,
-        [name]: newError
-      }));
+    // Validación en tiempo real
+    const newError = validateField(name, value);
+
+    setFieldErrors(prev => ({
+      ...prev,
+      [name]: newError
+    }));
+
+    // Si el campo ya es válido → quitar error global
+    if (!newError) {
+      setError('');
     }
   };
 
@@ -190,7 +195,17 @@ export function useRegistroBeneficiario(navigate) {
       alert('Beneficiario registrado exitosamente');
       navigate('/beneficiarios');
     } catch (err) {
-      setError(err.message);
+  try {
+    const parsed = JSON.parse(err.message);
+
+    // Tomar el primer error que encuentre
+    const firstKey = Object.keys(parsed)[0];
+    const firstError = parsed[firstKey]?.[0];
+
+    setError(firstError || 'Error al registrar');
+  } catch {
+    setError(err.message || 'Error inesperado');
+  }
     } finally {
       setLoading(false);
     }
