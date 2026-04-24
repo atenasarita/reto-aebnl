@@ -248,18 +248,24 @@ export default function Recibos() {
     cargarDia(fecha);
     cargarMes(fecha);
   }, [fecha, cargarDia, cargarMes]);
+
+  const normalizar = (str) =>
+  (str || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
  
   // Filtros
   const filtrarRecibos = (lista, q) => {
-    if (!q) return lista;
-    const s = q.toLowerCase();
-    return lista.filter(
-      (r) =>
-        r.beneficiario?.toLowerCase().includes(s) ||
-        r.servicio?.toLowerCase().includes(s) ||
-        String(r.id_servicio_otorgado).includes(s)
-    );
-  };
+  if (!q) return lista;
+  const s = normalizar(q);
+  return lista.filter((r) =>
+    normalizar(r.beneficiario).includes(s) ||
+    normalizar(r.servicio).includes(s) ||
+    normalizar(String(r.id_servicio_otorgado)).includes(s)
+  );
+};
  
   const filtradosDia = filtrarRecibos(recibosDay, busquedaDia);
   const filtradosMes = filtrarRecibos(recibosMes, busquedaMes);
