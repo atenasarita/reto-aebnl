@@ -9,6 +9,7 @@ import beneficiariosRoutes from "./src/routes/beneficiarios.routes";
 import inventarioRoutes from "./src/routes/inventario.routes";
 import { errorMiddleware } from './src/middlewares/error.middleware.ts';
 import dashboardRoutes from "./src/routes/dashboard.routes";
+import reportesRoutes from "./src/routes/reportes.routes";
 import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job';
 
 const app = express();
@@ -29,6 +30,7 @@ app.use('/api/inventario', inventarioRoutes);
 app.use('/api/preregistros', preregistrosRoutes);
 app.use('/api/recibos', recibosRoutes);
 app.use('/api', dashboardRoutes);
+app.use('/api/reportes', reportesRoutes);
 
 app.use(errorMiddleware);
 
