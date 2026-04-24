@@ -20,7 +20,7 @@ function formatDate(dateStr) {
 
 function BeneficiarioDetalle({ beneficiario }) {
   const { folio, fecha_ingreso, genero, tipo_espina, identificadores, datos_medicos, direccion } = beneficiario
-  const { nombres, apellido_paterno, apellido_materno, CURP, fecha_nacimiento, estado_nacimiento, telefono, email } = identificadores
+  const { nombres, apellido_paterno, apellido_materno, CURP, fecha_nacimiento, estado_nacimiento, fotografia, telefono, email } = identificadores
   const { tipo_sanguineo, contacto_nombre, contacto_telefono, contacto_parentesco, valvula, hospital } = datos_medicos
   const { domicilio_calle, domicilio_cp, domicilio_ciudad, domicilio_estado } = direccion
   const fecha_inicio = beneficiario.membresia?.fecha_inicio ?? null
@@ -31,7 +31,13 @@ function BeneficiarioDetalle({ beneficiario }) {
   const valvulaTexto =
     valvula === 1 || valvula === '1' || valvula === true ? 'Sí'
     : valvula === 0 || valvula === '0' || valvula === false ? 'No'
-    : '—'
+    : '—';
+  
+    const fotoURL = fotografia ?
+    fotografia.startsWith('/uploads/')
+    ? `http://localhost:3000${fotografia}`
+    :fotografia
+    :null;
 
   return (
     <div className={styles.modalBody}>
@@ -41,7 +47,16 @@ function BeneficiarioDetalle({ beneficiario }) {
         <p className={styles.sectionLabel}>Beneficiario</p>
 
         <div className={styles.topSection}>
-          <div className={styles.avatar} />
+          <div className={styles.avatar}>
+            {fotoURL ? (
+              <img src={fotoURL} 
+              alt="Foto del beneficiario"
+              className={styles.avatarImg}
+               />
+            ): (
+              <span>{nombres?.charAt(0)}{apellido_paterno?.charAt(0)}</span>
+            )}
+          </div>
           <div className={styles.topInfo}>
             <div className={`${styles.field} ${styles.full}`}>
               <span className={styles.fieldLabel}>Nombre</span>
