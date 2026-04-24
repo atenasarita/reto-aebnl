@@ -12,6 +12,7 @@ import {
     INSERT_DIRECCION_RETURNING,
     INSERT_IDENTIFICADORES_RETURNING,
     INSERT_MEMBRESIA,
+    INSERT_PADRE,
     SELECT_BENEFICIARIO_BY_FOLIO,
     SELECT_BENEFICIARIO_BY_ID,
     SELECT_BENEFICIARIOS,
@@ -20,6 +21,7 @@ import {
     UPDATE_MEMBRESIA_ESTADO,
     UPDATE_BENEFICIARIO_ESTADO_EXPIRED_MEMBRESIAS,
     selectTipoEspinasByBeneficiarioIds,
+    SELECT_PADRES_BY_BENEFICIARIO_ID
 } from './beneficiario.queries';
 import {
     BeneficiarioDetalle,
@@ -32,6 +34,7 @@ import {
     Datos_medicos,
     Direccion,
     Beneficiario,
+    Padre
 } from '../types/beneficiarios.types';
 import { CreateMembresiaInput } from '../types/membresias.types';
 
@@ -183,13 +186,13 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
             },
             dias_para_vencer: row.DIAS_PARA_VENCER,
             membresia: row.ID_MEMBRESIA ? {
-            id_membresia: row.ID_MEMBRESIA,
-            precio: row.PRECIO!,
-            fecha_inicio: row.FECHA_INICIO!,
-            fecha_fin: row.FECHA_FIN!,
-            estado: row.MEMBRESIA_ESTADO!,
-            metodo_pago: row.METODO_PAGO!,
-        } : null,
+                id_membresia: row.ID_MEMBRESIA,
+                precio: row.PRECIO!,
+                fecha_inicio: row.FECHA_INICIO!,
+                fecha_fin: row.FECHA_FIN!,
+                estado: row.MEMBRESIA_ESTADO!,
+                metodo_pago: row.METODO_PAGO!,
+            } : null,
         };
     }
 
@@ -205,9 +208,9 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
 
         const placeholders = ids.map((_, index) => `:id${index}`).join(', ');
         const binds = ids.reduce<Record<string, number>>((acc, id, index) => {
-                acc[`id${index}`] = id;
-                return acc;
-            }, {});
+            acc[`id${index}`] = id;
+            return acc;
+        }, {});
 
         const result = await connection.execute(
             selectTipoEspinasByBeneficiarioIds(placeholders),
@@ -397,6 +400,10 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         }
     }
 
+    async getMembresiasProximas(): Promise<BeneficiarioConMembresiaProxVencer[]> {
+        return await this.getBeneficiariosWithMembresiaEndingSoon();
+    }
+
     async createBeneficiario(input: CreateBeneficiarioInput): Promise<Beneficiario> {
         let connection: oracledb.Connection | undefined;
 
@@ -404,7 +411,6 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
             connection = await this.oracleConnection.getConnection();
 
             const folio = input.folio ?? (await generateNextBeneficiarioFolio(connection));
-   
             const estado: Beneficiario['estado'] = 'inactivo';
 
             const result = await connection.execute(
@@ -423,7 +429,6 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
             const idBeneficiario = getOutBindNumber(outBinds.id_beneficiario);
 
             await this.insertTipoEspinas(connection, idBeneficiario, input.tipo_espinas);
-
             await this.insertIdentificadores(connection, idBeneficiario, input.identificadores);
             await this.insertDatosMedicos(connection, idBeneficiario, input.datos_medicos);
             await this.insertDireccion(connection, idBeneficiario, input.direccion);
@@ -589,6 +594,25 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         const outBinds = result.outBinds as { id_datos_medicos: number[] | number };
         const idDatosMedicos = getOutBindNumber(outBinds.id_datos_medicos);
 
+        if (input.padres && input.padres.length > 0) {
+            for (const padre of input.padres) {
+                await connection.execute(
+                    INSERT_PADRE,
+                    {
+                        id_datos_medicos: idDatosMedicos,
+                        tipo_padre: padre.tipo_padre,
+                        nombre_completo: padre.nombre_completo ?? null,
+                        fecha_nacimiento: padre.fecha_nacimiento ? new Date(padre.fecha_nacimiento) : null,
+                        email: padre.email ?? null,
+                        telefono: padre.telefono ?? null,
+                        telefono_casa: padre.telefono_casa ?? null,
+                        telefono_trabajo: padre.telefono_trabajo ?? null,
+                    },
+                    { autoCommit: false }
+                );
+            }
+        }
+
         return {
             id_datos_medicos: idDatosMedicos,
             id_beneficiario,
@@ -638,7 +662,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         id_beneficiario: number,
         input: CreateMembresiaInput,
     ): Promise<Beneficiario['estado']> {
-        const meses = input.meses; // La duracion de la membresia se puede ajustar según sea necesario
+        const meses = input.meses;
         const fechaInicio = startOfDay(input.fecha_inicio ?? new Date());
         const fechaFin = addDays(addMonthsKeepingCalendar(fechaInicio, meses), -1);
         const precioTotal = Number((input.precio_mensual * input.meses).toFixed(2));
@@ -721,6 +745,53 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                 },
                 { autoCommit: false },
             );
+        }
+    }
+
+    async getPadresByBeneficiarioId(id_beneficiario: number): Promise<Padre[]> {
+        let connection: oracledb.Connection | undefined;
+
+        try {
+            connection = await this.oracleConnection.getConnection();
+            const result = await connection.execute<{
+                ID_PADRE: number;
+                ID_DATOS_MEDICOS: number;
+                TIPO_PADRE: string;
+                NOMBRE_COMPLETO: string | null;
+                FECHA_NACIMIENTO: string | null;
+                EMAIL: string | null;
+                TELEFONO: string | null;
+                TELEFONO_CASA: string | null;
+                TELEFONO_TRABAJO: string | null;
+            }>(
+                SELECT_PADRES_BY_BENEFICIARIO_ID,
+                { id_beneficiario },
+                { outFormat: oracledb.OUT_FORMAT_OBJECT }
+            );
+
+            if (!result.rows) {
+                return [];
+            }
+
+            return result.rows.map(row => ({
+                id_padre: row.ID_PADRE,
+                id_datos_medicos: row.ID_DATOS_MEDICOS,
+                tipo_padre: row.TIPO_PADRE,
+                nombre_completo: row.NOMBRE_COMPLETO,
+                fecha_nacimiento: row.FECHA_NACIMIENTO,
+                email: row.EMAIL,
+                telefono: row.TELEFONO,
+                telefono_casa: row.TELEFONO_CASA,
+                telefono_trabajo: row.TELEFONO_TRABAJO
+            }));
+
+        } catch (error) {
+            console.error('Error in getPadresByBeneficiarioId:', error);
+            throw error;
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
         }
     }
 

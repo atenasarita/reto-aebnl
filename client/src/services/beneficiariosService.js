@@ -38,3 +38,19 @@ export async function createBeneficiario(payload, token) {
 
   return data;
 }
+
+export async function fetchPadresBeneficiario(idBeneficiario, token) {
+  const response = await fetch(`${API_URL}/${idBeneficiario}/padres`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Error al obtener historia de los padres');
+  }
+
+  return data;
+}

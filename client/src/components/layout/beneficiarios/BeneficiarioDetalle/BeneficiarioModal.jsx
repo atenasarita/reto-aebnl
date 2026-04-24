@@ -3,7 +3,7 @@ import styles from './BeneficiarioDetalle.module.css';
 import TabsNavegacion from './TabsNavegacion';
 import BeneficiarioDetalle from './BeneficiarioDetalle';
 import HistorialAsociado from './HistorialAsociado';
-// import HistorialPadres from './HistorialPadres';
+import HistorialPadres from './HistorialPadres';
 
 function BeneficiarioModal({ beneficiario, onClose }) {
   const [activeTab, setActiveTab] = useState('datos_generales');
@@ -26,9 +26,9 @@ function BeneficiarioModal({ beneficiario, onClose }) {
           <HistorialAsociado beneficiario={beneficiario} />
         )}
 
-        {/* {activeTab === 'historial_padres' && (
+        {activeTab === 'historial_padres' && (
           <HistorialPadres beneficiario={beneficiario} />
-        )} */}
+        )}
       </div>
     </div>
   );

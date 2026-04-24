@@ -75,3 +75,57 @@
 .btnPrimario:hover {
   background: #172e6e;
 }
+
+.barra {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.6fr) minmax(220px, 0.8fr) minmax(240px, 0.9fr) auto auto;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.busqueda {
+  min-width: 0;
+}
+
+.filtroCategoria {
+  min-width: 220px;
+}
+
+.filtroOrden {
+  min-width: 240px;
+}
+
+.btnSecundario,
+.btnPrimario {
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+@media (max-width: 1280px) {
+  .barra {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .busqueda {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .barra {
+    grid-template-columns: 1fr;
+  }
+
+  .filtroCategoria,
+  .filtroOrden,
+  .btnSecundario,
+  .btnPrimario {
+    width: 100%;
+  }
+}

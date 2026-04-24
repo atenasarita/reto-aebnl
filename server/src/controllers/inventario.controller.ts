@@ -7,30 +7,35 @@ import {
     Objeto_categoria,
     RegistrarMovimientoInventarioInput,
 } from '../types/inventario.types';
-
+import { OracleInventarioRepository } from '../repositories/inventario.repository';
 
 export class InventarioController {
-    repository: InventarioRepository;
+    private readonly repository: InventarioRepository;
 
-    constructor(repository: InventarioRepository) {
+    constructor(repository: InventarioRepository = new OracleInventarioRepository()) {
         this.repository = repository;
     }
 
     async getInventario(): Promise<GetInventarioResponse> {
-        return this.repository.getInventario();
+        return await this.repository.getInventario();
     }
 
+    async getProductosEscasos(): Promise<GetInventarioResponse> {
+        return await this.repository.getProductosEscasos();
+    }
 
     async listObjetoCategorias(): Promise<Objeto_categoria[]> {
-        return this.repository.listObjetoCategorias();
+        return await this.repository.listObjetoCategorias();
     }
 
     async createInventario(input: CreateInventarioInput): Promise<Inventario> {
-        return this.repository.createInventario(input);
+        return await this.repository.createInventario(input);
     }
 
-
-    async registrarMovimientoInventario(input: RegistrarMovimientoInventarioInput, idUsuario: number,): Promise<Movimientos_inventario> {
-        return this.repository.registrarMovimientoInventario(input, idUsuario);
+    async registrarMovimientoInventario(
+        input: RegistrarMovimientoInventarioInput,
+        idUsuario: number,
+    ): Promise<Movimientos_inventario> {
+        return await this.repository.registrarMovimientoInventario(input, idUsuario);
     }
 }

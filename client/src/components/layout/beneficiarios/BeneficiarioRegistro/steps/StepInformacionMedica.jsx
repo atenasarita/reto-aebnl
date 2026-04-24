@@ -72,6 +72,12 @@ function StepInformacionMedica({
         </div>
       </div>
 
+      <div style={{ marginTop: '2rem', marginBottom: '1rem' }}>
+        <h3 style={{ fontSize: '1.1rem', color: '#1a3b5c', borderBottom: '1px solid #e0e0e0', paddingBottom: '0.5rem' }}>
+          Datos de Diagnóstico
+        </h3>
+      </div>
+
       <div className="field-group full">
         <label>Tipo de Espina Bífida</label>
         <div className="checkbox-group">
@@ -125,6 +131,145 @@ function StepInformacionMedica({
           onChange={handleInputChange}
         />
       </div>
+
+      <div style={{ marginTop: '2rem', marginBottom: '1rem' }}>
+        <h3 style={{ fontSize: '1.1rem', color: '#1a3b5c', borderBottom: '1px solid #e0e0e0', paddingBottom: '0.5rem' }}>
+          Información de los Padres (Opcional)
+        </h3>
+      </div>
+      
+      {/* Datos del Padre */}
+      <h4 style={{ fontSize: '1rem', color: '#666', marginBottom: '0.5rem' }}>Datos del Padre</h4>
+      <div className="row">
+        <div className="field-group">
+          <label>Nombre del Padre</label>
+          <input
+            type="text"
+            name="padre_nombre"
+            value={formData.padre_nombre}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="field-group">
+          <label>Fecha de Nacimiento</label>
+          <input
+            type="date"
+            name="padre_fecha_nacimiento"
+            value={formData.padre_fecha_nacimiento}
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
+      <div className="row">
+        <div className="field-group">
+          <label>Email</label>
+          <input
+            type="email"
+            name="padre_email"
+            value={formData.padre_email}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="field-group">
+          <label>Teléfono (Móvil)</label>
+          <input
+            type="text"
+            name="padre_telefono"
+            maxLength={10}
+            value={formData.padre_telefono}
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
+      <div className="row">
+        <div className="field-group">
+          <label>Teléfono (Casa)</label>
+          <input
+            type="text"
+            name="padre_telefono_casa"
+            maxLength={10}
+            value={formData.padre_telefono_casa}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="field-group">
+          <label>Teléfono (Trabajo)</label>
+          <input
+            type="text"
+            name="padre_telefono_trabajo"
+            maxLength={10}
+            value={formData.padre_telefono_trabajo}
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
+
+      {/* Datos de la Madre */}
+      <h4 style={{ fontSize: '1rem', color: '#666', marginBottom: '0.5rem', marginTop: '1.5rem' }}>Datos de la Madre</h4>
+      <div className="row">
+        <div className="field-group">
+          <label>Nombre de la Madre</label>
+          <input
+            type="text"
+            name="madre_nombre"
+            value={formData.madre_nombre}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="field-group">
+          <label>Fecha de Nacimiento</label>
+          <input
+            type="date"
+            name="madre_fecha_nacimiento"
+            value={formData.madre_fecha_nacimiento}
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
+      <div className="row">
+        <div className="field-group">
+          <label>Email</label>
+          <input
+            type="email"
+            name="madre_email"
+            value={formData.madre_email}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="field-group">
+          <label>Teléfono (Móvil)</label>
+          <input
+            type="text"
+            name="madre_telefono"
+            maxLength={10}
+            value={formData.madre_telefono}
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
+      <div className="row">
+        <div className="field-group">
+          <label>Teléfono (Casa)</label>
+          <input
+            type="text"
+            name="madre_telefono_casa"
+            maxLength={10}
+            value={formData.madre_telefono_casa}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="field-group">
+          <label>Teléfono (Trabajo)</label>
+          <input
+            type="text"
+            name="madre_telefono_trabajo"
+            maxLength={10}
+            value={formData.madre_telefono_trabajo}
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
+      
     </div>
   );
 }

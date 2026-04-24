@@ -50,14 +50,27 @@ export const createIdentificadoresSchema = z.object({
 	email: z.email('email invalido').max(100).optional(),
 });
 
+export const createPadreSchema = z.object({
+    tipo_padre: z.enum(['padre', 'madre']),
+    nombre_completo: z.string().trim().max(150).nullable().optional(),
+    fecha_nacimiento: z.union([z.coerce.date(), z.string().length(0)]).nullable().optional()
+        .transform(val => (val === '' ? null : val)),
+    email: z.union([z.string().trim().email().max(100), z.string().length(0)]).nullable().optional()
+        .transform(val => (val === '' ? null : val)),
+    telefono: z.string().trim().max(20).nullable().optional(),
+    telefono_casa: z.string().trim().max(20).nullable().optional(),
+    telefono_trabajo: z.string().trim().max(20).nullable().optional(),
+});
+
 export const createDatosMedicosSchema = z.object({
-	contacto_nombre: z.string().trim().min(1, 'contacto_nombre es requerido').max(20),
-	contacto_telefono: z.string().trim().min(1, 'contacto_telefono es requerido').max(10),
-	contacto_parentesco: z.string().trim().min(1, 'contacto_parentesco es requerido').max(20),
-	alergias: z.string().trim().min(1, 'alergias es requerido').max(100),
-	tipo_sanguineo: tipoSanguineoSchema,
-	valvula: z.coerce.boolean().default(false),
-	hospital: z.string().trim().max(255),
+        contacto_nombre: z.string().trim().min(1, 'contacto_nombre es requerido').max(20),
+        contacto_telefono: z.string().trim().min(1, 'contacto_telefono es requerido').max(10),
+        contacto_parentesco: z.string().trim().min(1, 'contacto_parentesco es requerido').max(20),
+        alergias: z.string().trim().min(1, 'alergias es requerido').max(100),
+        tipo_sanguineo: tipoSanguineoSchema,
+        valvula: z.coerce.boolean().default(false),
+        hospital: z.string().trim().max(255),
+        padres: z.array(createPadreSchema).optional(),
 });
 
 export const createDireccionSchema = z.object({

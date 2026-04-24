@@ -41,14 +41,25 @@ export function useRegistroBeneficiario(navigate) {
       name === 'apellido_paterno' ||
       name === 'apellido_materno' ||
       name === 'contacto_nombre' ||
-      name === 'contacto_parentesco'
+      name === 'contacto_parentesco' ||
+      name === 'padre_nombre' ||
+      name === 'madre_nombre'
     ) {
       const limpio = limpiarSoloLetras(value);
       setFormData(prev => ({ ...prev, [name]: limpio }));
       return;
     }
 
-    if (name === 'contacto_telefono' || name === 'telefono') {
+    if (
+      name === 'contacto_telefono' || 
+      name === 'telefono' ||
+      name === 'padre_telefono' ||
+      name === 'padre_telefono_casa' ||
+      name === 'padre_telefono_trabajo' ||
+      name === 'madre_telefono' ||
+      name === 'madre_telefono_casa' ||
+      name === 'madre_telefono_trabajo'
+    ) {
     const limpio = value.replace(/\D/g, '').slice(0, 10);
     setFormData(prev => ({ ...prev, [name]: limpio }));
 
@@ -57,12 +68,12 @@ export function useRegistroBeneficiario(navigate) {
       if (limpio && !telefonoValido(limpio)) {
         setFieldErrors(prev => ({
           ...prev,
-          contacto_telefono: 'No es un numero de telefono valido'
+          [name]: 'No es un numero de telefono valido'
         }));
       } else {
         setFieldErrors(prev => ({
           ...prev,
-          contacto_telefono: ''
+          [name]: ''
         }));
       }
     }

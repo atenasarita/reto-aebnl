@@ -4,7 +4,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import usuariosRoutes from "./src/routes/usuarios.routes";
 import preregistrosRoutes from './src/routes/preregistros.routes';
-import recibosRoutes from './src/routes/recibos.routes.js';
+import recibosRoutes from './src/routes/recibos.routes';
 import beneficiariosRoutes from "./src/routes/beneficiarios.routes";
 import inventarioRoutes from "./src/routes/inventario.routes";
 import { errorMiddleware } from './src/middlewares/error.middleware.ts';
@@ -12,12 +12,11 @@ import dashboardRoutes from "./src/routes/dashboard.routes";
 import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job';
 
 const app = express();
-const PORT = 3000
+const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
 
-// Carpeta publica para imágenes subidas 
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 app.get("/", (req, res) => {
@@ -26,11 +25,10 @@ app.get("/", (req, res) => {
 
 app.use('/api', usuariosRoutes);
 app.use('/api', beneficiariosRoutes);
-app.use('/api', inventarioRoutes);
-
-app.use("/api/preregistros", preregistrosRoutes);
-app.use("/api/recibos", recibosRoutes);
-app.use("/api", dashboardRoutes);
+app.use('/api/inventario', inventarioRoutes);
+app.use('/api/preregistros', preregistrosRoutes);
+app.use('/api/recibos', recibosRoutes);
+app.use('/api', dashboardRoutes);
 
 app.use(errorMiddleware);
 

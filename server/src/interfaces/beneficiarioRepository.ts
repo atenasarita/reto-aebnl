@@ -1,21 +1,24 @@
 import {
     BeneficiarioDetalle,
     BeneficiarioConMembresiaProxVencer,
-    CreateBeneficiarioInput, 
-    CreateDireccionInput, 
-    CreateIdentificadoresInput, 
+    CreateBeneficiarioInput,
+    CreateDireccionInput,
+    CreateIdentificadoresInput,
     CreateDatosMedicosInput,
     Identificadores,
     Datos_medicos,
     Direccion,
-    Beneficiario 
+    Beneficiario,
+    Padre
 } from '../types/beneficiarios.types';
 
-export interface BeneficiarioRepository 
-{ 
+export interface BeneficiarioRepository {
     getBeneficiarios(): Promise<BeneficiarioDetalle[]>;
     getBeneficiarioById(id_beneficiario: number): Promise<BeneficiarioDetalle>;
     getBeneficiarioByFolio(folio: string): Promise<BeneficiarioDetalle>;
+    getBeneficiariosWithMembresiaEndingSoon(): Promise<BeneficiarioConMembresiaProxVencer[]>;
+    getMembresiasProximas(): Promise<BeneficiarioConMembresiaProxVencer[]>;
+    getPadresByBeneficiarioId(id_beneficiario: number): Promise<Padre[]>;
 
     createBeneficiario(input: CreateBeneficiarioInput): Promise<Beneficiario>;
     createIdentificadores(id_beneficiario: number, input: CreateIdentificadoresInput): Promise<Identificadores>;

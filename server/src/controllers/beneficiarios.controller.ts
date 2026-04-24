@@ -10,6 +10,7 @@ import {
   Datos_medicos,
   Direccion,
   Identificadores,
+  Padre
 } from "../types/beneficiarios.types";
 
 export class BeneficiariosController {
@@ -30,6 +31,10 @@ export class BeneficiariosController {
     async getBeneficiarioByFolio(folio: string): Promise<BeneficiarioDetalle> {
         return this.repository.getBeneficiarioByFolio(folio);
     }
+
+    async getPadresByBeneficiarioId(id_beneficiario: number): Promise<Padre[]> {
+        return this.repository.getPadresByBeneficiarioId(id_beneficiario);
+    }
     
     async createBeneficiario(input: CreateBeneficiarioInput): Promise<Beneficiario> {
         return this.repository.createBeneficiario(input);
@@ -49,5 +54,9 @@ export class BeneficiariosController {
 
     async getSiguienteFolio(): Promise<string> {
         return this.repository.getSiguienteFolio();
+    }
+
+    async getMembresiasProximas() {
+        return await this.repository.getMembresiasProximas();
     }
 }
