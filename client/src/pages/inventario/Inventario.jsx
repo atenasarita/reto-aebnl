@@ -13,10 +13,17 @@ import '../styles/Inventario.css'
 
 const ITEMS_POR_PAGINA = 5
 
+function getCantidadNumero(valor) {
+  if (typeof valor === 'number') return valor
+  const match = String(valor ?? '').match(/\d+(\.\d+)?/)
+  return match ? Number(match[0]) : 0
+}
+
 export default function Inventario() {
   const { items, loading, error, fetchInventario } = useInventario()
   const [consulta, setConsulta] = useState('')
   const [categoria, setCategoria] = useState('')
+  const [ordenCantidad, setOrdenCantidad] = useState('')
   const [pagina, setPagina] = useState(1)
   const [modalNuevoProducto, setModalNuevoProducto] = useState(false)
   const [modalMovimiento, setModalMovimiento] = useState(false)
@@ -40,14 +47,32 @@ export default function Inventario() {
     [consulta, categoria, productosUi]
   )
 
-  const total = filtrados.length
+  const filtradosYOrdenados = useMemo(() => {
+    const resultado = [...filtrados]
+
+    if (ordenCantidad === 'asc') {
+      resultado.sort(
+        (a, b) => getCantidadNumero(a.cantidad) - getCantidadNumero(b.cantidad)
+      )
+    }
+
+    if (ordenCantidad === 'desc') {
+      resultado.sort(
+        (a, b) => getCantidadNumero(b.cantidad) - getCantidadNumero(a.cantidad)
+      )
+    }
+
+    return resultado
+  }, [filtrados, ordenCantidad])
+
+  const total = filtradosYOrdenados.length
   const totalPaginas = Math.max(1, Math.ceil(total / ITEMS_POR_PAGINA))
 
   const paginaSegura = Math.min(pagina, totalPaginas)
   const filasPagina = useMemo(() => {
     const start = (paginaSegura - 1) * ITEMS_POR_PAGINA
-    return filtrados.slice(start, start + ITEMS_POR_PAGINA)
-  }, [filtrados, paginaSegura])
+    return filtradosYOrdenados.slice(start, start + ITEMS_POR_PAGINA)
+  }, [filtradosYOrdenados, paginaSegura])
 
   const handleBusqueda = (valor) => {
     setConsulta(valor)
@@ -56,6 +81,11 @@ export default function Inventario() {
 
   const handleCategoria = (valor) => {
     setCategoria(valor)
+    setPagina(1)
+  }
+
+  const handleOrdenCantidad = (valor) => {
+    setOrdenCantidad(valor)
     setPagina(1)
   }
 
@@ -76,24 +106,30 @@ export default function Inventario() {
             Gestión de productos e insumos médicos.
           </p>
         </header>
+
         <InventarioBarraAcciones
           onBusqueda={handleBusqueda}
           categoria={categoria}
           opcionesCategoria={opcionesCategoria}
           onCategoriaChange={handleCategoria}
+          ordenCantidad={ordenCantidad}
+          onOrdenCantidadChange={handleOrdenCantidad}
           onNuevoProducto={() => setModalNuevoProducto(true)}
           onRegistrarMovimiento={() => setModalMovimiento(true)}
         />
+
         {loading && (
           <p className="inventario-estado" role="status">
             Cargando inventario…
           </p>
         )}
+
         {error && !loading && (
           <p className="inventario-estado inventario-estado--error" role="alert">
             {error}
           </p>
         )}
+
         {!loading && !error && (
           <InventarioTabla
             filas={filasPagina}
@@ -110,6 +146,7 @@ export default function Inventario() {
         onClose={() => setModalNuevoProducto(false)}
         onExito={handleTrasGuardar}
       />
+
       <InventarioMovimientoModal
         open={modalMovimiento}
         onClose={() => setModalMovimiento(false)}
@@ -121,4 +158,3 @@ export default function Inventario() {
     </div>
   )
 }
-
