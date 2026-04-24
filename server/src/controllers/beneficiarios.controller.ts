@@ -55,4 +55,8 @@ export class BeneficiariosController {
     async getSiguienteFolio(): Promise<string> {
         return this.repository.getSiguienteFolio();
     }
+
+    async getMembresiasProximas() {
+        return await this.repository.getMembresiasProximas();
+    }
 }

@@ -10,11 +10,22 @@ import {
 import OracleDB from 'oracledb';
 
 export class BeneficiariosHandler {
-     beneficiariosController: BeneficiariosController;
+  beneficiariosController: BeneficiariosController;
 
   constructor(beneficiariosController: BeneficiariosController) {
     this.beneficiariosController = beneficiariosController;
   }
+
+  getMembresiasProximas = async (_req: Request, res: Response) => {
+    try {
+      const data = await this.beneficiariosController.getMembresiasProximas();
+      return res.status(200).json(data);
+    } catch (error) {
+      return res.status(500).json({
+        message: 'Error al obtener membresías próximas',
+      });
+    }
+  };
 
   getBeneficiarios = async (_req: Request, res: Response, next: NextFunction) => {
     try {
@@ -115,13 +126,13 @@ export class BeneficiariosHandler {
   };
 
   getSiguienteFolio = async (_req: Request, res: Response, next: NextFunction) => {
-  try {
-    const folio = await this.beneficiariosController.getSiguienteFolio();
-    return res.status(200).json({ folio });
-  } catch (error) {
-    return next(error);
-  }
-};
+    try {
+      const folio = await this.beneficiariosController.getSiguienteFolio();
+      return res.status(200).json({ folio });
+    } catch (error) {
+      return next(error);
+    }
+  };
 
   getPadresByBeneficiarioId = async (req: Request, res: Response, next: NextFunction) => {
     const id_beneficiario = Number(req.params.id_beneficiario);

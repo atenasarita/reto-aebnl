@@ -186,13 +186,13 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
             },
             dias_para_vencer: row.DIAS_PARA_VENCER,
             membresia: row.ID_MEMBRESIA ? {
-            id_membresia: row.ID_MEMBRESIA,
-            precio: row.PRECIO!,
-            fecha_inicio: row.FECHA_INICIO!,
-            fecha_fin: row.FECHA_FIN!,
-            estado: row.MEMBRESIA_ESTADO!,
-            metodo_pago: row.METODO_PAGO!,
-        } : null,
+                id_membresia: row.ID_MEMBRESIA,
+                precio: row.PRECIO!,
+                fecha_inicio: row.FECHA_INICIO!,
+                fecha_fin: row.FECHA_FIN!,
+                estado: row.MEMBRESIA_ESTADO!,
+                metodo_pago: row.METODO_PAGO!,
+            } : null,
         };
     }
 
@@ -208,9 +208,9 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
 
         const placeholders = ids.map((_, index) => `:id${index}`).join(', ');
         const binds = ids.reduce<Record<string, number>>((acc, id, index) => {
-                acc[`id${index}`] = id;
-                return acc;
-            }, {});
+            acc[`id${index}`] = id;
+            return acc;
+        }, {});
 
         const result = await connection.execute(
             selectTipoEspinasByBeneficiarioIds(placeholders),
@@ -400,6 +400,10 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         }
     }
 
+    async getMembresiasProximas(): Promise<BeneficiarioConMembresiaProxVencer[]> {
+        return await this.getBeneficiariosWithMembresiaEndingSoon();
+    }
+
     async createBeneficiario(input: CreateBeneficiarioInput): Promise<Beneficiario> {
         let connection: oracledb.Connection | undefined;
 
@@ -407,7 +411,6 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
             connection = await this.oracleConnection.getConnection();
 
             const folio = input.folio ?? (await generateNextBeneficiarioFolio(connection));
-   
             const estado: Beneficiario['estado'] = 'inactivo';
 
             const result = await connection.execute(
@@ -426,7 +429,6 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
             const idBeneficiario = getOutBindNumber(outBinds.id_beneficiario);
 
             await this.insertTipoEspinas(connection, idBeneficiario, input.tipo_espinas);
-
             await this.insertIdentificadores(connection, idBeneficiario, input.identificadores);
             await this.insertDatosMedicos(connection, idBeneficiario, input.datos_medicos);
             await this.insertDireccion(connection, idBeneficiario, input.direccion);
@@ -660,7 +662,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         id_beneficiario: number,
         input: CreateMembresiaInput,
     ): Promise<Beneficiario['estado']> {
-        const meses = input.meses; // La duracion de la membresia se puede ajustar según sea necesario
+        const meses = input.meses;
         const fechaInicio = startOfDay(input.fecha_inicio ?? new Date());
         const fechaFin = addDays(addMonthsKeepingCalendar(fechaInicio, meses), -1);
         const precioTotal = Number((input.precio_mensual * input.meses).toFixed(2));
