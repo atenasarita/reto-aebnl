@@ -15,72 +15,6 @@ export const reportesQueries = {
     FROM DUAL
   `,
 
-  financieroMesTotales: `
-    SELECT
-      COUNT(DISTINCT so.ID_SERVICIO_OTORGADO) AS num_servicios,
-      NVL(SUM(sf.MONTO_SERVICIO), 0) AS total_monto_servicio,
-      NVL(SUM(sf.MONTO_INVENTARIO), 0) AS total_monto_inventario,
-      NVL(SUM(sf.DESCUENTO), 0) AS total_descuentos,
-      NVL(SUM(sf.CUOTA_TOTAL), 0) AS total_cuota,
-      NVL(SUM(sf.MONTO_PAGADO), 0) AS total_pagado
-    FROM SERVICIOS_OTORGADOS so
-    LEFT JOIN SERVICIOS_FINANCIEROS sf ON sf.ID_SERVICIO_OTORGADO = so.ID_SERVICIO_OTORGADO
-    WHERE TRUNC(so.FECHA, 'MM') = TRUNC(TO_DATE(:mes, 'YYYY-MM'), 'MM')
-  `,
-
-  financieroMesPorMetodoPago: `
-    SELECT
-      NVL(sf.METODO_PAGO, 'sin_definir') AS metodo_pago,
-      COUNT(*) AS num_recibos,
-      NVL(SUM(sf.CUOTA_TOTAL), 0) AS total_cuota,
-      NVL(SUM(sf.MONTO_PAGADO), 0) AS total_pagado
-    FROM SERVICIOS_OTORGADOS so
-    INNER JOIN SERVICIOS_FINANCIEROS sf ON sf.ID_SERVICIO_OTORGADO = so.ID_SERVICIO_OTORGADO
-    WHERE TRUNC(so.FECHA, 'MM') = TRUNC(TO_DATE(:mes, 'YYYY-MM'), 'MM')
-    GROUP BY NVL(sf.METODO_PAGO, 'sin_definir')
-    ORDER BY 1
-  `,
-
-  beneficiariosPorIngreso: `
-    SELECT
-      b.ID_BENEFICIARIO,
-      b.FOLIO,
-      TRIM(
-        NVL(i.NOMBRES, '') || ' ' ||
-        NVL(i.APELLIDO_PATERNO, '') || ' ' ||
-        NVL(i.APELLIDO_MATERNO, '')
-      ) AS nombre_completo,
-      TO_CHAR(b.FECHA_INGRESO, 'YYYY-MM-DD') AS fecha_ingreso,
-      b.ESTADO
-    FROM BENEFICIARIO b
-    INNER JOIN IDENTIFICADORES i ON i.ID_BENEFICIARIO = b.ID_BENEFICIARIO
-    WHERE TRUNC(b.FECHA_INGRESO) BETWEEN TO_DATE(:desde, 'YYYY-MM-DD') AND TO_DATE(:hasta, 'YYYY-MM-DD')
-    ORDER BY b.FECHA_INGRESO DESC, b.ID_BENEFICIARIO
-  `,
-
-  citasPorPeriodo: `
-    SELECT
-      c.ID_CITA,
-      TO_CHAR(c.FECHA, 'YYYY-MM-DD') AS fecha,
-      c.HORA,
-      c.ESTATUS,
-      b.FOLIO,
-      TRIM(
-        NVL(i.NOMBRES, '') || ' ' ||
-        NVL(i.APELLIDO_PATERNO, '') || ' ' ||
-        NVL(i.APELLIDO_MATERNO, '')
-      ) AS nombre_beneficiario,
-      cs.NOMBRE AS servicio_nombre,
-      e.NOMBRE_COMPLETO AS especialista_nombre
-    FROM CITAS c
-    INNER JOIN BENEFICIARIO b ON b.ID_BENEFICIARIO = c.ID_BENEFICIARIO
-    INNER JOIN IDENTIFICADORES i ON i.ID_BENEFICIARIO = b.ID_BENEFICIARIO
-    LEFT JOIN ESPECIALISTAS e ON e.ID_ESPECIALISTA = c.ID_ESPECIALISTA
-    LEFT JOIN CATALOGO_SERVICIOS cs ON cs.ID_CATALOGO_SERVICIO = c.ID_CATALOGO_SERVICIO
-    WHERE TRUNC(c.FECHA) BETWEEN TO_DATE(:desde, 'YYYY-MM-DD') AND TO_DATE(:hasta, 'YYYY-MM-DD')
-    ORDER BY c.FECHA, c.HORA
-  `,
-
   analyticsTarjetas: `
     SELECT
       (SELECT COUNT(DISTINCT so.ID_BENEFICIARIO)
@@ -106,14 +40,99 @@ export const reportesQueries = {
     FROM DUAL
   `,
 
-  analyticsPersonasAtendidasPorMes: `
+  analyticsTotalesBeneficiarios: `
     SELECT
-      TO_CHAR(TRUNC(so.FECHA, 'MM'), 'YYYY-MM') AS mes,
-      COUNT(DISTINCT so.ID_BENEFICIARIO) AS cantidad
-    FROM SERVICIOS_OTORGADOS so
-    WHERE TRUNC(so.FECHA) BETWEEN TO_DATE(:desde, 'YYYY-MM-DD') AND TO_DATE(:hasta, 'YYYY-MM-DD')
-    GROUP BY TRUNC(so.FECHA, 'MM')
-    ORDER BY TRUNC(so.FECHA, 'MM')
+      (SELECT COUNT(*) FROM BENEFICIARIO WHERE LOWER(ESTADO) = 'activo') AS activos,
+      (SELECT COUNT(*) FROM BENEFICIARIO WHERE LOWER(ESTADO) = 'inactivo') AS inactivos,
+      (SELECT COUNT(*) FROM BENEFICIARIO) AS total
+    FROM DUAL
+  `,
+
+  analyticsDistribucionBeneficiariosEstado: `
+    SELECT
+      NVL(LOWER(b.ESTADO), 'sin_estado') AS estado,
+      COUNT(*) AS conteo
+    FROM BENEFICIARIO b
+    GROUP BY NVL(LOWER(b.ESTADO), 'sin_estado')
+    ORDER BY 1
+  `,
+
+  analyticsBeneficiariosPorTipoEspina: `
+    SELECT
+      eb.ID_ESPINA AS id_espina,
+      eb.NOMBRE AS nombre,
+      COUNT(DISTINCT be.ID_BENEFICIARIO) AS conteo
+    FROM ESPINA_BIFIDA eb
+    LEFT JOIN BENEFICIARIO_ESPINA be ON be.ID_ESPINA = eb.ID_ESPINA
+    GROUP BY eb.ID_ESPINA, eb.NOMBRE
+    ORDER BY eb.ID_ESPINA
+  `,
+
+  allTimesDistribucionGenero: `
+    SELECT
+      NVL(LOWER(b.GENERO), 'otro') AS genero,
+      COUNT(*) AS conteo
+    FROM BENEFICIARIO b
+    GROUP BY NVL(LOWER(b.GENERO), 'otro')
+    ORDER BY 1
+  `,
+
+  allTimesDistribucionEtapaVida: `
+    WITH edades AS (
+      SELECT
+        TRUNC(MONTHS_BETWEEN(TRUNC(SYSDATE), i.FECHA_NACIMIENTO) / 12) AS edad
+      FROM IDENTIFICADORES i
+      WHERE i.FECHA_NACIMIENTO IS NOT NULL
+    )
+    SELECT
+      CASE
+        WHEN edad BETWEEN 0 AND 12 THEN 'infancia_0_12'
+        WHEN edad BETWEEN 13 AND 17 THEN 'adolescencia_13_17'
+        WHEN edad BETWEEN 18 AND 59 THEN 'adultez_18_59'
+        ELSE 'adulto_mayor_60_mas'
+      END AS codigo,
+      COUNT(*) AS conteo
+    FROM edades
+    GROUP BY
+      CASE
+        WHEN edad BETWEEN 0 AND 12 THEN 'infancia_0_12'
+        WHEN edad BETWEEN 13 AND 17 THEN 'adolescencia_13_17'
+        WHEN edad BETWEEN 18 AND 59 THEN 'adultez_18_59'
+        ELSE 'adulto_mayor_60_mas'
+      END
+    ORDER BY 1
+  `,
+
+  rangoDistribucionBeneficiariosEstado: `
+    WITH atendidos AS (
+      SELECT DISTINCT so.ID_BENEFICIARIO
+      FROM SERVICIOS_OTORGADOS so
+      WHERE TRUNC(so.FECHA) BETWEEN TO_DATE(:desde, 'YYYY-MM-DD') AND TO_DATE(:hasta, 'YYYY-MM-DD')
+    )
+    SELECT
+      NVL(LOWER(b.ESTADO), 'sin_estado') AS estado,
+      COUNT(*) AS conteo
+    FROM BENEFICIARIO b
+    INNER JOIN atendidos a ON a.ID_BENEFICIARIO = b.ID_BENEFICIARIO
+    GROUP BY NVL(LOWER(b.ESTADO), 'sin_estado')
+    ORDER BY 1
+  `,
+
+  rangoBeneficiariosPorTipoEspina: `
+    WITH atendidos AS (
+      SELECT DISTINCT so.ID_BENEFICIARIO
+      FROM SERVICIOS_OTORGADOS so
+      WHERE TRUNC(so.FECHA) BETWEEN TO_DATE(:desde, 'YYYY-MM-DD') AND TO_DATE(:hasta, 'YYYY-MM-DD')
+    )
+    SELECT
+      eb.ID_ESPINA AS id_espina,
+      eb.NOMBRE AS nombre,
+      COUNT(DISTINCT be.ID_BENEFICIARIO) AS conteo
+    FROM ESPINA_BIFIDA eb
+    LEFT JOIN BENEFICIARIO_ESPINA be ON be.ID_ESPINA = eb.ID_ESPINA
+    INNER JOIN atendidos a ON a.ID_BENEFICIARIO = be.ID_BENEFICIARIO
+    GROUP BY eb.ID_ESPINA, eb.NOMBRE
+    ORDER BY eb.ID_ESPINA
   `,
 
   analyticsDistribucionGenero: `
@@ -161,18 +180,5 @@ export const reportesQueries = {
         ELSE 'adulto_mayor_60_mas'
       END
     ORDER BY 1
-  `,
-
-  analyticsDesgloseServiciosPorMes: `
-    SELECT
-      TO_CHAR(TRUNC(so.FECHA, 'MM'), 'YYYY-MM') AS mes,
-      SUM(CASE WHEN UPPER(cs.NOMBRE) LIKE '%CONSULTA%' THEN 1 ELSE 0 END) AS consultas,
-      SUM(CASE WHEN UPPER(cs.NOMBRE) LIKE '%TERAP%' THEN 1 ELSE 0 END) AS terapias,
-      SUM(CASE WHEN UPPER(cs.NOMBRE) LIKE '%APOYO%' THEN 1 ELSE 0 END) AS apoyo_social
-    FROM SERVICIOS_OTORGADOS so
-    LEFT JOIN CATALOGO_SERVICIOS cs ON cs.ID_CATALOGO_SERVICIO = so.ID_CATALOGO_SERVICIO
-    WHERE TRUNC(so.FECHA) BETWEEN TO_DATE(:desde, 'YYYY-MM-DD') AND TO_DATE(:hasta, 'YYYY-MM-DD')
-    GROUP BY TRUNC(so.FECHA, 'MM')
-    ORDER BY TRUNC(so.FECHA, 'MM')
   `,
 };
