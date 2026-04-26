@@ -12,6 +12,10 @@ import Inventario from "./pages/inventario/Inventario";
 import RegistroBeneficiario from "./pages/registro_beneficiario/registro_beneficiario";
 import Recibos from './pages/Recibos/Recibos' 
 import Reportes from "./pages/reportes/Reportes";
+import ReporteGeneral from "./pages/reportes/ReporteGeneral";
+import ReporteInventario from "./pages/reportes/ReporteInventario";
+import ReporteAnual from "./pages/reportes/ReporteAnual";
+import ReportePersonalizado from "./pages/reportes/ReportePersonalizado";
 
 // Dashboard del tablero (elige UNA línea según tu estructura)
 // Si tu dashboard está en: client/src/pages/dashboard.jsx
@@ -47,7 +51,13 @@ export default function App() {
           <Route path="/inventario" element={<Inventario />} />
             
           <Route path="/recibos" element={<Recibos />} />
-          <Route path="/reportes" element={<Reportes />} />
+          <Route path="/reportes" element={<Reportes />}>
+            <Route index element={<Navigate to="general" replace />} />
+            <Route path="general" element={<ReporteGeneral />} />
+            <Route path="inventario" element={<ReporteInventario />} />
+            <Route path="anual" element={<ReporteAnual />} />
+            <Route path="personalizado" element={<ReportePersonalizado />} />
+          </Route>
 
           {/* Default */}
           <Route path="/" element={<Navigate to="/login" replace />} />
