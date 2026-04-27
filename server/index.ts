@@ -7,7 +7,7 @@ import preregistrosRoutes from './src/routes/preregistros.routes';
 import recibosRoutes from './src/routes/recibos.routes';
 import beneficiariosRoutes from "./src/routes/beneficiarios.routes";
 import inventarioRoutes from "./src/routes/inventario.routes";
-import { errorMiddleware } from './src/middlewares/error.middleware.ts';
+import { errorMiddleware } from './src/middlewares/error.middleware';
 import dashboardRoutes from "./src/routes/dashboard.routes";
 import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job';
 
