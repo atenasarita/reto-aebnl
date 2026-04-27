@@ -161,6 +161,11 @@
   color: #64748b;
 }
 
+.reporte-chart-grid {
+  display: grid;
+  gap: 14px;
+}
+
 @media (max-width: 700px) {
   .reportes-page-layout {
     padding: 18px;
