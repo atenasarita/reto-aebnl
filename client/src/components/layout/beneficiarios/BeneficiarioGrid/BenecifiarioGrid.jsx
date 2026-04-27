@@ -5,7 +5,7 @@ import Pagination from '../../../ui/Pagination'
 // import BeneficiarioDetalle from '../BeneficiarioDetalle/BeneficiarioDetalle'
 import BeneficiarioModal from '../BeneficiarioDetalle/BeneficiarioModal'
 import { espinaBifidaOptions } from '../../../../utils/espinaBifidaTypes'
-import { downloadBeneficiarioPdf } from '../../../../utils/pdfFormat'
+import { downloadBeneficiarioPdf } from '../../../../utils/pdfFormatMembresia'
 
 const ITEMS_PER_PAGE = 8
 
