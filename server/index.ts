@@ -1,4 +1,5 @@
 import express from 'express';
+/* 
 import path from 'path';
 import cors from 'cors';
 import 'dotenv/config';
@@ -10,8 +11,13 @@ import inventarioRoutes from "./src/routes/inventario.routes";
 import { errorMiddleware } from './src/middlewares/error.middleware';
 import dashboardRoutes from "./src/routes/dashboard.routes";
 import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job';
+*/
+
+
 
 const app = express();
+
+/* 
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
@@ -36,4 +42,10 @@ app.use(errorMiddleware);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+*/
+
+app.get("/", (req, res) => {
+  res.send("OK 🚀");
 });
