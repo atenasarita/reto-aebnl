@@ -637,13 +637,20 @@
   gap: 14px;
 }
 
-/* Modal: lista de beneficiarios por estado */
+/* Modal: lista de beneficiarios por estado (viewport + portal a body) */
 .reporte-estados-dialog {
   border: none;
   padding: 0;
   border-radius: 1rem;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  z-index: 2000;
+  box-sizing: border-box;
+  width: min(36rem, 94vw);
   max-width: min(36rem, 94vw);
-  width: 100%;
   max-height: min(85vh, 720px);
   background: #ffffff;
   color: #0f172a;
