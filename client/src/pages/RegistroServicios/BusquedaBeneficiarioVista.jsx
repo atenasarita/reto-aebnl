@@ -13,9 +13,10 @@ import "../styles/BusquedaBeneficiarioVista.css";
 
 import { useProductos } from "../../hooks/useProductos";
 import useBeneficiarios from "../../hooks/useBeneficiarios"
-import useCitasHoy from "../../hooks/useCitasHoy";
+import useAgendaHoy from "../../hooks/useCitasHoy";
 import useServicios from "../../hooks/useServicios";
 import { useEspecialistas } from "../../hooks/useEspecialistas";
+
 
 import StepBusqueda from "../../components/layout/registroServicios/StepBusqueda";
 import StepDetalles from "../../components/layout/registroServicios/StepDetalles";
@@ -38,8 +39,7 @@ export default function BusquedaBeneficiarioVista() {
   const [citaSeleccionada, setCitaSeleccionada] = useState(null);
 
   const { data, loading, fetchBeneficiarios } = useBeneficiarios()
-  const { citas, loading: loadingCitas } = useCitasHoy();
-  
+  const { agendaItems, loading: loadingCitas } = useAgendaHoy();  
 
   const [fecha, setFecha] = useState("");
   const [tipoServicio, setTipoServicio] = useState("");
@@ -104,7 +104,7 @@ export default function BusquedaBeneficiarioVista() {
         }))
   : []
 
-  const citasFormateadas = (citas || []).map((c) => ({
+  const citasFormateadas = (agendaItems || []).map((c) => ({
     id: c.id_cita,
     beneficiario: c.nombre_completo,
     hora: c.hora,
