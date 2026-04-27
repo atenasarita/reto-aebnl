@@ -1,17 +1,15 @@
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { CircleCheck, UserMinus, Users } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import {
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "../../components/ui/chart";
 import { useReporteGeneral } from "../../hooks/useReporteGeneral";
 
-function getPercent(value, total) {
-  if (!total) return 0;
-  return Math.round((value / total) * 100);
+function formatNumber(value) {
+  return Number(value || 0).toLocaleString("es-MX");
 }
 
 export default function ReporteGeneral() {
@@ -24,20 +22,12 @@ export default function ReporteGeneral() {
     distribucionEtapaVida,
   } = data;
 
-  const activosPorcentaje = getPercent(beneficiariosActivos, totalBeneficiarios);
-  const dataEstatus = [{ tramo: "Beneficiarios", activos: beneficiariosActivos, inactivos: beneficiariosInactivos }];
-
   const generoConfig = {
     value: { label: "Beneficiarios", color: "#2563eb" },
   };
 
   const etapasConfig = {
     value: { label: "Beneficiarios", color: "#1d4ed8" },
-  };
-
-  const estatusConfig = {
-    activos: { label: "Activos", color: "#2563eb" },
-    inactivos: { label: "Inactivos", color: "#93c5fd" },
   };
 
   return (
@@ -51,10 +41,48 @@ export default function ReporteGeneral() {
         </div>
       ) : null}
 
+      <div className="reporte-general-kpi-grid">
+        <Card className="reporte-general-kpi-card reporte-general-kpi-bento">
+          <CardContent className="reporte-general-kpi-bento-inner">
+            <div className="reporte-general-kpi-bento-copy">
+              <p className="reporte-general-kpi-eyebrow">Total de beneficiarios</p>
+              <p className="reporte-general-kpi-number">{formatNumber(totalBeneficiarios)}</p>
+            </div>
+            <div className="reporte-general-kpi-icon-wrap reporte-general-kpi-icon-wrap--primary" aria-hidden>
+              <Users className="reporte-general-kpi-icon" strokeWidth={2} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="reporte-general-kpi-card reporte-general-kpi-bento">
+          <CardContent className="reporte-general-kpi-bento-inner">
+            <div className="reporte-general-kpi-bento-copy">
+              <p className="reporte-general-kpi-eyebrow">Beneficiarios activos</p>
+              <p className="reporte-general-kpi-number">{formatNumber(beneficiariosActivos)}</p>
+            </div>
+            <div className="reporte-general-kpi-icon-wrap reporte-general-kpi-icon-wrap--primary" aria-hidden>
+              <CircleCheck className="reporte-general-kpi-icon" strokeWidth={2} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="reporte-general-kpi-card reporte-general-kpi-bento">
+          <CardContent className="reporte-general-kpi-bento-inner">
+            <div className="reporte-general-kpi-bento-copy">
+              <p className="reporte-general-kpi-eyebrow">Beneficiarios inactivos</p>
+              <p className="reporte-general-kpi-number">{formatNumber(beneficiariosInactivos)}</p>
+            </div>
+            <div className="reporte-general-kpi-icon-wrap reporte-general-kpi-icon-wrap--secondary" aria-hidden>
+              <UserMinus className="reporte-general-kpi-icon" strokeWidth={2} />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       <Card className="reporte-general-panel">
         <CardHeader>
           <CardTitle>Distribución de género</CardTitle>
-          <CardDescription>Beneficiarios por sexo registrado.</CardDescription>
+          <CardDescription>Composición actual por género reportado.</CardDescription>
         </CardHeader>
         <CardContent>
           <ChartContainer config={generoConfig} className="reporte-general-chart reporte-general-chart-compact">
@@ -87,7 +115,7 @@ export default function ReporteGeneral() {
       <Card className="reporte-general-panel">
         <CardHeader>
           <CardTitle>Distribución por etapa de vida</CardTitle>
-          <CardDescription>Segmentación actual de beneficiarios.</CardDescription>
+          <CardDescription>Segmentación etaria del padrón actual.</CardDescription>
         </CardHeader>
         <CardContent>
           <ChartContainer config={etapasConfig} className="reporte-general-chart">
@@ -116,46 +144,7 @@ export default function ReporteGeneral() {
         </CardContent>
       </Card>
 
-      <Card className="reporte-general-stat-card">
-        <CardHeader>
-          <CardTitle>Total de beneficiarios</CardTitle>
-          <CardDescription>Conteo general del padrón.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="reporte-general-stat-value">{totalBeneficiarios.toLocaleString("es-MX")}</p>
-        </CardContent>
-      </Card>
-
-      <Card className="reporte-general-stat-card">
-        <CardHeader>
-          <CardTitle>Beneficiarios activos / inactivos</CardTitle>
-          <CardDescription>Estatus operativo actual.</CardDescription>
-        </CardHeader>
-        <CardContent className="reporte-general-status-content">
-          <div className="reporte-general-status-row">
-            <span>Activos</span>
-            <strong>{beneficiariosActivos.toLocaleString("es-MX")}</strong>
-          </div>
-          <div className="reporte-general-status-row">
-            <span>Inactivos</span>
-            <strong>{beneficiariosInactivos.toLocaleString("es-MX")}</strong>
-          </div>
-
-          <ChartContainer config={estatusConfig} className="reporte-general-chart reporte-general-chart-compact">
-            <BarChart data={dataEstatus} margin={{ left: 0, right: 0 }}>
-              <XAxis type="number" hide />
-              <YAxis type="category" dataKey="tramo" hide />
-              <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-              <ChartLegend content={<ChartLegendContent />} />
-              <Bar dataKey="activos" name="Activos" stackId="estado" fill="var(--color-activos)" />
-              <Bar dataKey="inactivos" name="Inactivos" stackId="estado" fill="var(--color-inactivos)" />
-            </BarChart>
-          </ChartContainer>
-          <p className="reporte-general-status-caption">{activosPorcentaje}% del padrón está activo.</p>
-        </CardContent>
-      </Card>
-
-      {loading ? <p className="reporte-general-loading">Cargando datos del reporte general...</p> : null}
+      {loading ? <p className="reporte-general-loading">Sincronizando indicadores del tablero...</p> : null}
     </section>
   );
 }
