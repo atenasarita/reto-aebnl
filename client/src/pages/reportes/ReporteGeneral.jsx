@@ -1,18 +1,51 @@
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { CircleCheck, UserMinus, Users } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "../../components/ui/chart";
+import { useMemo, useRef } from "react";
+import { Cell, Pie, PieChart } from "recharts";
+import { UserCheck, UserMinus, Users, X } from "lucide-react";
+import { Card, CardContent, CardHeader } from "../../components/ui/card";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../../components/ui/chart";
 import { useReporteGeneral } from "../../hooks/useReporteGeneral";
+import MapaBeneficiariosPorEstado from "../../components/reportes/MapaBeneficiariosPorEstado";
 
 function formatNumber(value) {
   return Number(value || 0).toLocaleString("es-MX");
 }
 
+function formatCompact(n) {
+  const v = Number(n) || 0;
+  if (v >= 1_000_000) {
+    const s = (v / 1_000_000).toFixed(1);
+    return `${s.endsWith(".0") ? s.slice(0, -2) : s}M`;
+  }
+  if (v >= 1000) {
+    const s = (v / 1000).toFixed(1);
+    return `${s.endsWith(".0") ? s.slice(0, -2) : s}k`;
+  }
+  return String(v);
+}
+
+const GENDER_CHART_COLORS = {
+  femenino: "#1e3b8a",
+  masculino: "#e8a598",
+  otro: "#94a3b8",
+};
+
+const GENDER_DISPLAY = {
+  femenino: "Mujeres",
+  masculino: "Hombres",
+  otro: "Otro",
+};
+
+function etapaShortLabel(key) {
+  const k = String(key || "").toLowerCase();
+  if (k.includes("infancia")) return "Infancia";
+  if (k.includes("adolescencia")) return "Adolescencia";
+  if (k.includes("adultez")) return "Adultez";
+  if (k.includes("adulto_mayor") || k.includes("mayor")) return "Adulto mayor";
+  return "Etapa";
+}
+
 export default function ReporteGeneral() {
+  const estadosDialogRef = useRef(null);
   const { data, loading, error, refetch } = useReporteGeneral();
   const {
     totalBeneficiarios,
@@ -20,15 +53,43 @@ export default function ReporteGeneral() {
     beneficiariosInactivos,
     distribucionGenero,
     distribucionEtapaVida,
+    distribucionEstado,
   } = data;
 
-  const generoConfig = {
-    value: { label: "Beneficiarios", color: "#2563eb" },
-  };
+  const pieGenero = distribucionGenero
+    .filter((item) => item.value > 0)
+    .map((item) => ({
+      key: item.key,
+      name: GENDER_DISPLAY[item.key] ?? item.label,
+      value: item.value,
+      porcentaje: item.porcentaje,
+      fill: GENDER_CHART_COLORS[item.key] ?? "#94a3b8",
+    }));
 
-  const etapasConfig = {
-    value: { label: "Beneficiarios", color: "#1d4ed8" },
-  };
+  const generoChartConfig = pieGenero.reduce((acc, row) => {
+    acc[row.key] = { label: row.name, color: row.fill };
+    return acc;
+  }, {});
+
+  const estadosOrdenados = useMemo(() => {
+    return [...distribucionEstado].sort((a, b) => {
+      if (b.value !== a.value) return b.value - a.value;
+      return a.label.localeCompare(b.label, "es", { sensitivity: "base" });
+    });
+  }, [distribucionEstado]);
+
+  const sumaEstados = useMemo(
+    () => distribucionEstado.reduce((acc, row) => acc + Number(row.value || 0), 0),
+    [distribucionEstado],
+  );
+
+  function openEstadosDialog() {
+    estadosDialogRef.current?.showModal();
+  }
+
+  function closeEstadosDialog() {
+    estadosDialogRef.current?.close();
+  }
 
   return (
     <section className="reporte-general-dashboard">
@@ -61,7 +122,7 @@ export default function ReporteGeneral() {
               <p className="reporte-general-kpi-number">{formatNumber(beneficiariosActivos)}</p>
             </div>
             <div className="reporte-general-kpi-icon-wrap reporte-general-kpi-icon-wrap--primary" aria-hidden>
-              <CircleCheck className="reporte-general-kpi-icon" strokeWidth={2} />
+              <UserCheck className="reporte-general-kpi-icon" strokeWidth={2} />
             </div>
           </CardContent>
         </Card>
@@ -79,70 +140,150 @@ export default function ReporteGeneral() {
         </Card>
       </div>
 
-      <Card className="reporte-general-panel">
-        <CardHeader>
-          <CardTitle>Distribución de género</CardTitle>
-          <CardDescription>Composición actual por género reportado.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ChartContainer config={generoConfig} className="reporte-general-chart reporte-general-chart-compact">
-            <BarChart data={distribucionGenero} layout="vertical" margin={{ left: 6, right: 8 }}>
-              <CartesianGrid horizontal={false} strokeDasharray="3 3" />
-              <XAxis type="number" hide />
-              <YAxis
-                type="category"
-                dataKey="label"
-                width={90}
-                tickLine={false}
-                axisLine={false}
-                tick={{ fill: "#334155", fontSize: 12, fontWeight: 600 }}
-              />
-              <ChartTooltip content={<ChartTooltipContent hideLabel />} />
-              <Bar dataKey="value" name="Beneficiarios" fill="var(--color-value)" radius={[0, 6, 6, 0]} />
-            </BarChart>
-          </ChartContainer>
-          <div className="reporte-general-percent-list">
-            {distribucionGenero.map((item) => (
-              <div key={item.key} className="reporte-general-percent-row">
-                <span>{item.label}</span>
-                <strong>{item.porcentaje}%</strong>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="reporte-general-bento">
+        <Card className="reporte-general-panel reporte-general-bento-map">
+          <CardHeader className="reporte-general-bento-header">
+            <h2 className="reporte-general-bento-title">Cobertura por estado</h2>
+            <button type="button" className="reporte-general-bento-link" onClick={openEstadosDialog}>
+              Ver detalles &gt;
+            </button>
+          </CardHeader>
+          <CardContent className="reporte-general-map-card-content">
+            <MapaBeneficiariosPorEstado distribucionEstado={distribucionEstado} />
+          </CardContent>
+        </Card>
 
-      <Card className="reporte-general-panel">
-        <CardHeader>
-          <CardTitle>Distribución por etapa de vida</CardTitle>
-          <CardDescription>Segmentación etaria del padrón actual.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ChartContainer config={etapasConfig} className="reporte-general-chart">
-            <BarChart data={distribucionEtapaVida} margin={{ left: 0, right: 10 }}>
-              <CartesianGrid vertical={false} strokeDasharray="3 3" />
-              <XAxis
-                dataKey="label"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#334155", fontSize: 12 }}
-                interval={0}
-              />
-              <YAxis axisLine={false} tickLine={false} />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="value" name="Beneficiarios" fill="var(--color-value)" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ChartContainer>
-          <div className="reporte-general-percent-list">
-            {distribucionEtapaVida.map((item) => (
-              <div key={item.key} className="reporte-general-percent-row">
-                <span>{item.label}</span>
-                <strong>{item.porcentaje}%</strong>
+        <Card className="reporte-general-panel reporte-general-bento-gender">
+          <CardHeader>
+            <p className="reporte-general-bento-eyebrow">Distribución de género</p>
+          </CardHeader>
+          <CardContent>
+            {pieGenero.length ? (
+              <div className="reporte-general-bento-gender-inner">
+                <div className="reporte-general-bento-donut">
+                  <ChartContainer config={generoChartConfig} className="reporte-general-chart reporte-general-chart-donut">
+                    <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                      <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                      <Pie
+                        data={pieGenero}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius="62%"
+                        outerRadius="88%"
+                        strokeWidth={2}
+                        stroke="#ffffff"
+                      >
+                        {pieGenero.map((entry) => (
+                          <Cell key={entry.key} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ChartContainer>
+                  <div className="reporte-general-bento-donut-center">
+                    <p className="reporte-general-bento-donut-total">{formatCompact(totalBeneficiarios)}</p>
+                    <p className="reporte-general-bento-donut-label">Total</p>
+                  </div>
+                </div>
+                <div className="reporte-general-bento-gender-legend">
+                  {pieGenero.map((row) => (
+                    <div key={row.key} className="reporte-general-bento-legend-row">
+                      <span className="reporte-general-bento-legend-dot" style={{ background: row.fill }} />
+                      <span>
+                        {row.name} {row.porcentaje}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+            ) : (
+              <p className="reporte-mxmap-hint">Sin datos de género para el periodo.</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="reporte-general-panel reporte-general-bento-life">
+          <CardHeader>
+            <p className="reporte-general-bento-eyebrow">Etapa de vida</p>
+          </CardHeader>
+          <CardContent>
+            <div className="reporte-general-bento-life-list">
+              {distribucionEtapaVida.map((item) => (
+                <div key={item.key} className="reporte-general-bento-life-row">
+                  <span className="reporte-general-bento-life-name">{etapaShortLabel(item.key)}</span>
+                  <span className="reporte-general-bento-life-pct">{item.porcentaje}%</span>
+                  <div className="reporte-general-bento-life-bar-wrap">
+                    <div
+                      className="reporte-general-bento-life-bar-fill"
+                      style={{ width: `${Math.min(100, Math.max(0, item.porcentaje))}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <dialog ref={estadosDialogRef} className="reporte-estados-dialog" aria-labelledby="reporte-estados-dialog-title">
+        <div className="reporte-estados-dialog-inner">
+          <div className="reporte-estados-dialog-header">
+            <div>
+              <h3 id="reporte-estados-dialog-title" className="reporte-estados-dialog-title">
+                Beneficiarios por estado
+              </h3>
+              <p className="reporte-estados-dialog-sub">Conteo según domicilio registrado.</p>
+            </div>
+            <button type="button" className="reporte-estados-dialog-close" onClick={closeEstadosDialog} aria-label="Cerrar">
+              <X size={18} strokeWidth={2} />
+            </button>
           </div>
-        </CardContent>
-      </Card>
+          <div className="reporte-estados-dialog-scroll">
+            <table className="reporte-estados-table">
+              <thead>
+                <tr>
+                  <th scope="col">Estado</th>
+                  <th scope="col" className="reporte-estados-col-num">
+                    Beneficiarios
+                  </th>
+                  <th scope="col" className="reporte-estados-col-pct">
+                    %
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {estadosOrdenados.length ? (
+                  estadosOrdenados.map((row) => (
+                    <tr key={row.key}>
+                      <td>{row.label}</td>
+                      <td className="reporte-estados-col-num">{formatNumber(row.value)}</td>
+                      <td className="reporte-estados-col-pct">{row.porcentaje}%</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={3} style={{ textAlign: "center", color: "#64748b", padding: "1.25rem" }}>
+                      No hay datos por estado para mostrar.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          <div className="reporte-estados-dialog-footer">
+            <span>
+              Suma por estado: <strong>{formatNumber(sumaEstados)}</strong>
+              {totalBeneficiarios ? (
+                <>
+                  {" "}
+                  · Total padrón: <strong>{formatNumber(totalBeneficiarios)}</strong>
+                </>
+              ) : null}
+            </span>
+          </div>
+        </div>
+      </dialog>
 
       {loading ? <p className="reporte-general-loading">Sincronizando indicadores del tablero...</p> : null}
     </section>

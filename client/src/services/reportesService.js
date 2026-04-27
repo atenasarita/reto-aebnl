@@ -27,6 +27,14 @@ function mapEtapaCodigoLabel(codigo, etiqueta) {
   return map[codigo] || "Sin etapa";
 }
 
+function estadoDisplayLabel(raw) {
+  const s = String(raw ?? "").trim();
+  if (!s || s.toLowerCase() === "sin_estado") return "Sin estado";
+  return s
+    .toLowerCase()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function normalizeReporteGeneral(payload) {
   const beneficiariosActivos = toNumber(payload?.beneficiarios_activos);
   const beneficiariosInactivos = toNumber(payload?.beneficiarios_inactivos);
@@ -37,6 +45,9 @@ function normalizeReporteGeneral(payload) {
     : [];
   const beneficiariosPorEtapaVida = Array.isArray(payload?.beneficiarios_por_etapa_vida)
     ? payload.beneficiarios_por_etapa_vida
+    : [];
+  const beneficiariosPorEstado = Array.isArray(payload?.beneficiarios_por_estado)
+    ? payload.beneficiarios_por_estado
     : [];
 
   const distribucionGenero = beneficiariosPorGenero.map((item) => {
@@ -60,12 +71,25 @@ function normalizeReporteGeneral(payload) {
     };
   });
 
+  const totalPorEstado = beneficiariosPorEstado.reduce((acc, item) => acc + toNumber(item?.conteo), 0);
+  const distribucionEstado = beneficiariosPorEstado.map((item) => {
+    const raw = String(item?.estado ?? "sin_estado");
+    const value = toNumber(item?.conteo);
+    return {
+      key: raw,
+      label: estadoDisplayLabel(raw),
+      value,
+      porcentaje: toNumber(item?.porcentaje) || toPercent(value, totalPorEstado || 1),
+    };
+  });
+
   return {
     totalBeneficiarios,
     beneficiariosActivos,
     beneficiariosInactivos,
     distribucionGenero,
     distribucionEtapaVida,
+    distribucionEstado,
   };
 }
 

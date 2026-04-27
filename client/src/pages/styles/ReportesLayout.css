@@ -238,12 +238,315 @@
   border-radius: 16px;
 }
 
+.reporte-general-map-card {
+  grid-column: 1 / -1;
+}
+
+.reporte-general-map-card-content.shadcn-card-content {
+  padding-top: 0.25rem;
+}
+
+/* Bento: mapa ancho + columna derecha (género + etapa) */
+.reporte-general-bento {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 340px);
+  grid-template-rows: auto auto;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.reporte-general-bento-map {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+
+.reporte-general-bento-gender {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.reporte-general-bento-life {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.reporte-general-bento-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.reporte-general-bento-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #121317;
+}
+
+.reporte-general-bento-link {
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #2563eb;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.reporte-general-bento-link:hover {
+  text-decoration: underline;
+}
+
+.reporte-general-bento-eyebrow {
+  margin: 0 0 0.75rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #666e85;
+}
+
+.reporte-general-bento-gender-inner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 168px;
+}
+
+.reporte-general-bento-donut {
+  flex: 0 0 150px;
+  width: 150px;
+  height: 150px;
+  position: relative;
+}
+
+.reporte-general-bento-donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  text-align: center;
+}
+
+.reporte-general-bento-donut-total {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #121317;
+}
+
+.reporte-general-bento-donut-label {
+  margin: 0.15rem 0 0;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.reporte-general-bento-gender-legend {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.reporte-general-bento-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.reporte-general-bento-legend-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.reporte-general-bento-life-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.reporte-general-bento-life-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 0.35rem 0.65rem;
+  align-items: center;
+}
+
+.reporte-general-bento-life-name {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #334155;
+}
+
+.reporte-general-bento-life-pct {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #1e3b8a;
+}
+
+.reporte-general-bento-life-bar-wrap {
+  grid-column: 1 / -1;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #f1f5f9;
+  overflow: hidden;
+}
+
+.reporte-general-bento-life-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #1e3b8a;
+  min-width: 2px;
+  transition: width 0.35s ease;
+}
+
+.reporte-mxmap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.reporte-mxmap-frame {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid #f1f1f4;
+  background: #f8fafc;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.reporte-mxmap-frame--legend {
+  position: relative;
+}
+
+.reporte-mxmap-floating-legend {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 1;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.65rem;
+  background: #ffffff;
+  border: 1px solid #eef2f7;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.reporte-mxmap-floating-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.reporte-mxmap-floating-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.reporte-mxmap-frame svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.reporte-mxmap-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+}
+
+.reporte-mxmap-footer--solo-hint {
+  justify-content: flex-start;
+}
+
+.reporte-mxmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reporte-mxmap-legend-low,
+.reporte-mxmap-legend-high {
+  width: 2.75rem;
+  height: 0.45rem;
+  border-radius: 999px;
+}
+
+.reporte-mxmap-legend-low {
+  background: #e8eefc;
+}
+
+.reporte-mxmap-legend-high {
+  background: #1e3b8a;
+}
+
+.reporte-mxmap-legend-labels {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #666e85;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.reporte-mxmap-hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.reporte-mxmap-hint strong {
+  color: #121317;
+}
+
 .reporte-general-chart {
   height: 240px;
 }
 
 .reporte-general-chart-compact {
   height: 160px;
+}
+
+.reporte-general-chart-donut.shadcn-chart-container {
+  height: 150px;
+  min-height: 150px;
 }
 
 .reporte-general-percent-list {
@@ -334,6 +637,133 @@
   gap: 14px;
 }
 
+/* Modal: lista de beneficiarios por estado */
+.reporte-estados-dialog {
+  border: none;
+  padding: 0;
+  border-radius: 1rem;
+  max-width: min(36rem, 94vw);
+  width: 100%;
+  max-height: min(85vh, 720px);
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18);
+}
+
+.reporte-estados-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.48);
+}
+
+.reporte-estados-dialog-inner {
+  display: flex;
+  flex-direction: column;
+  max-height: min(85vh, 720px);
+}
+
+.reporte-estados-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 1.1rem 1.15rem 0.65rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.reporte-estados-dialog-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #121317;
+}
+
+.reporte-estados-dialog-sub {
+  margin: 0.35rem 0 0;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.reporte-estados-dialog-close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: #f8fafc;
+  color: #475569;
+  cursor: pointer;
+}
+
+.reporte-estados-dialog-close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.reporte-estados-dialog-scroll {
+  overflow: auto;
+  padding: 0.5rem 0 0.75rem;
+}
+
+.reporte-estados-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.reporte-estados-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  text-align: left;
+  padding: 0.55rem 1.15rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.reporte-estados-table tbody td {
+  padding: 0.65rem 1.15rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+.reporte-estados-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.reporte-estados-table .reporte-estados-col-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: #1e3b8a;
+}
+
+.reporte-estados-table .reporte-estados-col-pct {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: #64748b;
+  width: 4.5rem;
+}
+
+.reporte-estados-dialog-footer {
+  padding: 0.65rem 1.15rem 1rem;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.reporte-estados-dialog-footer strong {
+  color: #121317;
+}
+
 @media (max-width: 700px) {
   .reportes-page-layout {
     padding: 18px;
@@ -373,5 +803,31 @@
 
   .reporte-general-kpi-grid {
     grid-template-columns: 1fr;
+  }
+
+  .reporte-general-bento {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .reporte-general-bento-map,
+  .reporte-general-bento-gender,
+  .reporte-general-bento-life {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .reporte-general-bento-gender-inner {
+    flex-direction: column;
+    align-items: stretch;
+    min-height: 0;
+  }
+
+  .reporte-general-bento-donut {
+    flex: none;
+    width: 100%;
+    max-width: 220px;
+    height: 200px;
+    margin: 0 auto;
   }
 }

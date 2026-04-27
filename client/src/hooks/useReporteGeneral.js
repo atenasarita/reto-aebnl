@@ -7,6 +7,7 @@ const INITIAL_DATA = {
   beneficiariosInactivos: 0,
   distribucionGenero: [],
   distribucionEtapaVida: [],
+  distribucionEstado: [],
 };
 
 export function useReporteGeneral() {
