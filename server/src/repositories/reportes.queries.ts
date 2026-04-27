@@ -50,10 +50,11 @@ export const reportesQueries = {
 
   analyticsDistribucionBeneficiariosEstado: `
     SELECT
-      NVL(LOWER(b.ESTADO), 'sin_estado') AS estado,
+      NVL(LOWER(TRIM(d.DOMICILIO_ESTADO)), 'sin_estado') AS estado,
       COUNT(*) AS conteo
     FROM BENEFICIARIO b
-    GROUP BY NVL(LOWER(b.ESTADO), 'sin_estado')
+    LEFT JOIN DIRECCION d ON d.ID_BENEFICIARIO = b.ID_BENEFICIARIO
+    GROUP BY NVL(LOWER(TRIM(d.DOMICILIO_ESTADO)), 'sin_estado')
     ORDER BY 1
   `,
 
@@ -110,11 +111,12 @@ export const reportesQueries = {
       WHERE TRUNC(so.FECHA) BETWEEN TO_DATE(:desde, 'YYYY-MM-DD') AND TO_DATE(:hasta, 'YYYY-MM-DD')
     )
     SELECT
-      NVL(LOWER(b.ESTADO), 'sin_estado') AS estado,
+      NVL(LOWER(TRIM(d.DOMICILIO_ESTADO)), 'sin_estado') AS estado,
       COUNT(*) AS conteo
     FROM BENEFICIARIO b
     INNER JOIN atendidos a ON a.ID_BENEFICIARIO = b.ID_BENEFICIARIO
-    GROUP BY NVL(LOWER(b.ESTADO), 'sin_estado')
+    LEFT JOIN DIRECCION d ON d.ID_BENEFICIARIO = b.ID_BENEFICIARIO
+    GROUP BY NVL(LOWER(TRIM(d.DOMICILIO_ESTADO)), 'sin_estado')
     ORDER BY 1
   `,
 

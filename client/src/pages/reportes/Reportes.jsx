@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import ReportesTabsNav from "../../components/layout/reportes/ReportesTabsNav/ReportesTabsNav";
-import "./styles/ReportesLayout.css";
+import "../styles/ReportesLayout.css";
 
 const REPORTES_NAV = [
   { to: "general", label: "General", icon: "general" },
@@ -22,7 +22,7 @@ export default function Reportes() {
           <button type="button" className="reportes-meta-btn">
             Exportar
           </button>
-        </div>
+        </div>  
       </header>
 
       <ReportesTabsNav items={REPORTES_NAV} />
