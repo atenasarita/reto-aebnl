@@ -3,8 +3,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-process.env.TNS_ADMIN = process.env.ORACLE_TNS_ADMIN;
-
 export class OracleConnection {
     async getConnection() {
         const user = process.env.ORACLE_USER;

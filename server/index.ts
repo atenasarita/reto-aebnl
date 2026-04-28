@@ -27,7 +27,10 @@ app.get("/", (req, res) => {
 });
 
 
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173", // tu frontend
+  credentials: true
+}));
 
 app.use(express.json());
 
