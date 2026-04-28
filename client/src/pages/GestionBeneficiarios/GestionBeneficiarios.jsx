@@ -9,6 +9,8 @@ import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
 
 import { API_URL } from '../../utils/config'
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 const ESTATUS_OPTIONS = [
   { label: 'Todos', value: '' },
