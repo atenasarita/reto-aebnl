@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { qase } from 'playwright-qase-reporter';
 
-test('HU-002-1 - Inicio de sesión exitoso', async ({ page }) => {
+test(qase(9, 'HU-002-1 - Inicio de sesión exitoso'), async ({ page }) => {
     // 1. Ingresar a la login
     await page.goto('http://localhost:5173/login');
 
@@ -17,7 +18,7 @@ test('HU-002-1 - Inicio de sesión exitoso', async ({ page }) => {
 
 });
 
-test('HU-002-2 - Inicio de sesión fallido por credenciales incorrectas', async ({ page }) => {
+test(qase(10, 'HU-002-2 - Inicio de sesión fallido por credenciales incorrectas'), async ({ page }) => {
     // 1. Ingresar a la login
     await page.goto('http://localhost:5173/login');
 
