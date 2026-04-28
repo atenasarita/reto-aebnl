@@ -2,9 +2,20 @@ import { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
 import { AppError, ValidationError } from '../errors/appError';
 
-export const errorMiddleware = (error: unknown, _req: Request, res: Response, _next: NextFunction) => {
+export const errorMiddleware = (
+  error: unknown,
+  _req: Request,
+  res: Response,
+  _next: NextFunction
+) => {
   if (error instanceof ZodError) {
-    const validationError = new ValidationError('Payload invalido.', error.flatten());
+    const zodError = error as ZodError;
+
+    const validationError = new ValidationError(
+      'Payload invalido.',
+      zodError.flatten()
+    );
+
     return res.status(validationError.statusCode).json({
       message: validationError.message,
       code: validationError.code,
