@@ -266,6 +266,38 @@
   grid-row: 1;
 }
 
+article.reporte-general-bento-gender.shadcn-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.reporte-general-bento-gender-header.shadcn-card-header {
+  text-align: center;
+  padding-bottom: 0.35rem;
+}
+
+.reporte-general-bento-gender-header .reporte-general-bento-eyebrow {
+  margin-bottom: 0;
+}
+
+.reporte-general-bento-eyebrow--centered {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.reporte-general-bento-gender-content.shadcn-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  min-height: 0;
+  padding-top: 0.35rem;
+  padding-bottom: 1.35rem;
+}
+
 .reporte-general-bento-life {
   grid-column: 2;
   grid-row: 2;
@@ -316,14 +348,17 @@
 .reporte-general-bento-gender-inner {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  min-height: 168px;
+  justify-content: center;
+  gap: 1.35rem;
+  width: 100%;
+  min-height: 0;
+  flex: 1;
 }
 
 .reporte-general-bento-donut {
-  flex: 0 0 150px;
-  width: 150px;
-  height: 150px;
+  flex: 0 0 auto;
+  width: 158px;
+  height: 158px;
   position: relative;
 }
 
@@ -353,24 +388,45 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #64748b;
+  color: #6b7280;
 }
 
 .reporte-general-bento-gender-legend {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
+  max-width: 11.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  justify-content: center;
+  gap: 0.75rem;
 }
 
 .reporte-general-bento-legend-row {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: flex-start;
+  gap: 0.55rem;
+}
+
+.reporte-general-bento-legend-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.reporte-general-bento-legend-name {
   font-size: 0.8125rem;
   font-weight: 600;
+  line-height: 1.25;
   color: #334155;
+}
+
+.reporte-general-bento-legend-pct {
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: #6b7280;
 }
 
 .reporte-general-bento-legend-dot {
@@ -378,6 +434,7 @@
   height: 0.55rem;
   border-radius: 999px;
   flex-shrink: 0;
+  margin-top: 0.28rem;
 }
 
 .reporte-general-bento-life-list {
@@ -545,8 +602,8 @@
 }
 
 .reporte-general-chart-donut.shadcn-chart-container {
-  height: 150px;
-  min-height: 150px;
+  height: 158px;
+  min-height: 158px;
 }
 
 .reporte-general-percent-list {
@@ -826,15 +883,32 @@
 
   .reporte-general-bento-gender-inner {
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
+    justify-content: center;
+    gap: 1.1rem;
     min-height: 0;
+  }
+
+  .reporte-general-bento-gender-legend {
+    max-width: 100%;
+    width: 100%;
+    align-items: center;
+  }
+
+  .reporte-general-bento-legend-row {
+    width: 100%;
+    max-width: 16rem;
   }
 
   .reporte-general-bento-donut {
     flex: none;
-    width: 100%;
-    max-width: 220px;
-    height: 200px;
+    width: 168px;
+    height: 168px;
     margin: 0 auto;
+  }
+
+  .reporte-general-chart-donut.shadcn-chart-container {
+    height: 168px;
+    min-height: 168px;
   }
 }

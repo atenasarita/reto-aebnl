@@ -26,8 +26,8 @@ function formatCompact(n) {
 
 const GENDER_CHART_COLORS = {
   femenino: "#1e3b8a",
-  masculino: "#e8a598",
-  otro: "#94a3b8",
+  masculino: "#C0DBFE",
+  otro: "#CBD5E1",
 };
 
 const GENDER_DISPLAY = {
@@ -155,10 +155,10 @@ export default function ReporteGeneral() {
         </Card>
 
         <Card className="reporte-general-panel reporte-general-bento-gender">
-          <CardHeader>
-            <p className="reporte-general-bento-eyebrow">Distribución de género</p>
+          <CardHeader className="reporte-general-bento-gender-header">
+            <p className="reporte-general-bento-eyebrow reporte-general-bento-eyebrow--centered">Distribución de género</p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="reporte-general-bento-gender-content">
             {pieGenero.length ? (
               <div className="reporte-general-bento-gender-inner">
                 <div className="reporte-general-bento-donut">
@@ -191,8 +191,9 @@ export default function ReporteGeneral() {
                   {pieGenero.map((row) => (
                     <div key={row.key} className="reporte-general-bento-legend-row">
                       <span className="reporte-general-bento-legend-dot" style={{ background: row.fill }} />
-                      <span>
-                        {row.name} {row.porcentaje}%
+                      <span className="reporte-general-bento-legend-text">
+                        <span className="reporte-general-bento-legend-name">{row.name}</span>
+                        <span className="reporte-general-bento-legend-pct">{row.porcentaje}%</span>
                       </span>
                     </div>
                   ))}
@@ -281,7 +282,7 @@ export default function ReporteGeneral() {
                 <div className="reporte-estados-dialog-footer">
                   <span>
                     Suma por estado: <strong>{formatNumber(sumaEstados)}</strong>
-                    
+
                   </span>
                 </div>
               </div>
