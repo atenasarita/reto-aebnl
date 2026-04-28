@@ -7,6 +7,10 @@ import { Bell, LogOut } from "lucide-react";
 import { API_URL } from '../../../utils/config';
 import { getValidToken, handleUnauthorizedResponse, logout } from '../../../utils/auth';
 
+<<<<<<< HEAD
+=======
+const API_URL = import.meta.env.VITE_API_URL;
+>>>>>>> 7c258b7 (cors fix)
 
 const NAV_LINKS = [
   { label: "Inicio", to: "/dashboard" },

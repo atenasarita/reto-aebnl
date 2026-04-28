@@ -47,6 +47,7 @@ process.env.TNS_ADMIN = walletDir;
 const app = express();
 const PORT = Number(process.env.PORT) || 10000;
 
+<<<<<<< HEAD
 app.use(cors({
   origin: [
     'http://localhost:5173',
@@ -55,6 +56,10 @@ app.use(cors({
   ],
   credentials: true
 }));
+=======
+app.use(cors());
+
+>>>>>>> 7c258b7 (cors fix)
 app.use(express.json());
 
 app.get("/", (req, res) => {
