@@ -127,7 +127,7 @@ function Navbar({
           fetchJson(`${API_URL}/dashboard/preregistro-pendientes`, token),
         ]);
 
-        console.log("RESULTADO MEMBRESIAS:", results[0]);
+        // console.log("RESULTADO MEMBRESIAS:", results[0]);
 
         if (results[0].status === "fulfilled") {
           console.log("PAYLOAD MEMBRESIAS:", results[0].value);
