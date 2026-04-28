@@ -1,9 +1,9 @@
-import { BASE_URL, getAuthHeaders, parseErrorMessage } from './apiService'
+import { API_URL, getAuthHeaders, parseErrorMessage } from './apiService'
 
 /* GET /api/inventario */
 export async function getInventario() {
   try {
-    const response = await fetch(`${BASE_URL}/api/inventario`, {
+    const response = await fetch(`${API_URL}/api/inventario`, {
       method: 'GET',
       headers: getAuthHeaders(),
     })
@@ -28,7 +28,7 @@ export async function getInventario() {
 
 /* GET /api/inventario/categorias */
 export async function getCategoriasInventario() {
-  const response = await fetch(`${BASE_URL}/api/inventario/categorias`, {
+  const response = await fetch(`${API_URL}/api/inventario/categorias`, {
     method: 'GET',
     headers: getAuthHeaders(),
   })
@@ -41,7 +41,7 @@ export async function getCategoriasInventario() {
 
 /* POST /api/inventario */
 export async function createProductoInventario(payload) {
-  const response = await fetch(`${BASE_URL}/api/inventario`, {
+  const response = await fetch(`${API_URL}/api/inventario`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(payload),
@@ -54,7 +54,7 @@ export async function createProductoInventario(payload) {
 
 /* POST /api/inventario/movimientos */
 export async function registrarMovimientoInventario(payload) {
-  const response = await fetch(`${BASE_URL}/api/inventario/movimientos`, {
+  const response = await fetch(`${API_URL}/api/inventario/movimientos`, {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(payload),
