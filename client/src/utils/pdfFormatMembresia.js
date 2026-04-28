@@ -1,4 +1,5 @@
 ﻿import { jsPDF } from 'jspdf';
+import JsBarcode from 'jsbarcode';
 
 const calcAge = (fechaNacimiento) => {
   if (!fechaNacimiento) return '—';
@@ -133,6 +134,24 @@ export const downloadBeneficiarioPdf = (data, id) => {
   drawTitle('Vigencia de Membresía', 110, yR, 85); yR += 8;
   drawField('Desde', formatDate(fecha_inicio), 110, yR, 41);
   drawField('Hasta', formatDate(fecha_fin), 110 + 44, yR, 41);
+  yR += 16;
+
+  // Generar y agregar código de barras basado en el folio
+  if (folio || id) {
+    try {
+      const canvas = document.createElement('canvas');
+      JsBarcode(canvas, String(folio || id), {
+        format: "CODE128",
+        displayValue: false,
+        margin: 5,
+        height: 50
+      });
+      const barcodeDataUrl = canvas.toDataURL("image/jpeg", 1.0);
+      doc.addImage(barcodeDataUrl, 'JPEG', 30, 147.5, 60, 20);
+    } catch (err) {
+      console.error('Error generando código de barras:', err);
+    }
+  }
 
   doc.save(`Beneficiario_${folio || id}.pdf`);
 };
