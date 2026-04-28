@@ -23,11 +23,14 @@ app.listen(PORT, '0.0.0.0', () => {
 });
 
 app.get("/", (req, res) => {
-    res.send("usa index.js");
+    res.send("usa index.ts");
 });
 
 
-app.use(cors());
+app.use(cors({
+  origin: "*", // rápido para pruebas
+}));
+
 app.use(express.json());
 
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
