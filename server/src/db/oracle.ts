@@ -3,8 +3,11 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> a3dab2a (fix)
 export class OracleConnection {
     async getConnection() {
         const user = process.env.ORACLE_USER;
