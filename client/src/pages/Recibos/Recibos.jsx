@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import "../styles/Recibos.css";
 
-const API_BASE = import.meta.env.VITE_API_URL || "https://reto-aebnl-production.up.railway.app";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const fmt = (n) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(n ?? 0);
@@ -224,7 +224,7 @@ export default function Recibos() {
   const cargarDia = useCallback(async (f) => {
     setLoadingDay(true); setErrorDay("");
     try {
-      const res = await fetch(`${API_BASE}/api/recibos?fecha=${f}`);
+      const res = await fetch(`${API_URL}/api/recibos?fecha=${f}`);
       if (!res.ok) throw new Error(`Error ${res.status}`);
       setRecibosDay(await res.json());
     } catch (e) {

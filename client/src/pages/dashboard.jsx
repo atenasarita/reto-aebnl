@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import "./styles/dashboard.css";
 
-const API_URL = "https://reto-aebnl-production.up.railway.app/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const actions = [
   {
@@ -337,7 +337,7 @@ export default function Dashboard() {
   }, [isAdministrador]);
 
   const fetchAgenda = async () => {
-    const res = await fetch(`${API_URL}/dashboard/agenda-hoy`, {
+    const res = await fetch(`${API_URL}/api/dashboard/agenda-hoy`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -353,7 +353,7 @@ export default function Dashboard() {
   };
 
   const fetchPreregistros = async () => {
-    const res = await fetch(`${API_URL}/dashboard/preregistro-pendientes`, {
+    const res = await fetch(`${API_URL}/api/dashboard/preregistro-pendientes`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -370,7 +370,7 @@ export default function Dashboard() {
 
   const onUpdateEstado = async (id, estado) => {
     try {
-      const res = await fetch(`${API_URL}/dashboard/preregistro/${id}/estado`, {
+      const res = await fetch(`${API_URL}/api/dashboard/preregistro/${id}/estado`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

@@ -1,4 +1,4 @@
-export const BASE_URL = 'https://reto-aebnl-production.up.railway.app'
+export const API_URL = import.meta.env.VITE_API_URL;
 
 export function getAuthHeaders() {
   const token = localStorage.getItem('token')

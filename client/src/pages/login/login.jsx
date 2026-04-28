@@ -12,6 +12,7 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -19,7 +20,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch('https://reto-aebnl-production.up.railway.app/api/usuarios/login', {
+      const response = await fetch(`${API_URL}/api/usuarios/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

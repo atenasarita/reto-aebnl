@@ -7,6 +7,8 @@ import BeneficiarioGrid from '../../components/layout/beneficiarios/Beneficiario
 import { FiUserPlus, FiSearch } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 // 1. Fix ESTATUS_OPTIONS — lowercase to match API
 const ESTATUS_OPTIONS = [
@@ -15,8 +17,6 @@ const ESTATUS_OPTIONS = [
   { label: 'Inactivo',      value: 'inactivo'       }, 
   { label: 'Por vencer',    value: 'por-vencer'     },
 ]
-
-
 
 function GestionBeneficiarios() {
   const [all, setAll]           = useState([])   // raw list from API
@@ -36,7 +36,7 @@ function GestionBeneficiarios() {
     setError('')
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('https://reto-aebnl-production.up.railway.app/api/beneficiarios', {
+      const response = await fetch(`${API_URL}/api/beneficiarios`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
@@ -90,7 +90,7 @@ function GestionBeneficiarios() {
     setError('')
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`https://reto-aebnl-production.up.railway.app/api/beneficiarios/folio/${query.trim()}`, {
+      const response = await fetch(`${API_URL}/api/beneficiarios/folio/${query.trim()}`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
