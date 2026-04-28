@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import "../styles/Recibos.css";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_API_URL || "https://reto-aebnl-production.up.railway.app";
 
 const fmt = (n) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(n ?? 0);

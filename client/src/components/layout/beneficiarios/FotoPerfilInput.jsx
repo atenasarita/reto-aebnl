@@ -11,7 +11,7 @@ function FotoPerfilInput({
     useEffect(() => {
         if(value && typeof value === 'string'){
             if(value.startsWith('/uploads/')){
-                setPreview(`http://localhost:3000${value}`);
+                setPreview(`https://reto-aebnl-production.up.railway.app${value}`);
             } else {
                 setPreview(value);
             }
@@ -44,7 +44,7 @@ function FotoPerfilInput({
             const formData = new FormData();
             formData.append('fotografia', file);
 
-            const response = await fetch('http://localhost:3000/api/beneficiarios/upload-foto', {
+            const response = await fetch('https://reto-aebnl-production.up.railway.app/api/beneficiarios/upload-foto', {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -54,7 +54,7 @@ function FotoPerfilInput({
 
             const data = await response.json();
             console.log('ruta devuelta:', data.ruta);
-            console.log('url completa:', `http://localhost:3000${data.ruta}`);
+            console.log('url completa:', `https://reto-aebnl-production.up.railway.app${data.ruta}`);
 
             if(!response.ok){
                 throw new Error(data.message || 'Error al subir la fotografia');

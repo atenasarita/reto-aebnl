@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://localhost:3000'
+export const BASE_URL = 'https://reto-aebnl-production.up.railway.app'
 
 export function getAuthHeaders() {
   const token = localStorage.getItem('token')

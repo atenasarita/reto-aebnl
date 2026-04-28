@@ -19,7 +19,7 @@ function BeneficiarioGrid({ data, loading }) {
 
   async function handleView(id) {
     const token = localStorage.getItem('token')
-    const res = await fetch(`http://localhost:3000/api/beneficiarios/${id}`, {
+    const res = await fetch(`https://reto-aebnl-production.up.railway.app/api/beneficiarios/${id}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const data = await res.json()

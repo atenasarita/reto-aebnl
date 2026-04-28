@@ -36,7 +36,7 @@ function GestionBeneficiarios() {
     setError('')
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:3000/api/beneficiarios', {
+      const response = await fetch('https://reto-aebnl-production.up.railway.app/api/beneficiarios', {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
@@ -90,7 +90,7 @@ function GestionBeneficiarios() {
     setError('')
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`http://localhost:3000/api/beneficiarios/folio/${query.trim()}`, {
+      const response = await fetch(`https://reto-aebnl-production.up.railway.app/api/beneficiarios/folio/${query.trim()}`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import "./styles/dashboard.css";
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = "https://reto-aebnl-production.up.railway.app/api";
 
 const actions = [
   {

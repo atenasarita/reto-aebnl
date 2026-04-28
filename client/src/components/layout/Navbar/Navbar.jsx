@@ -4,7 +4,7 @@ import styles from "./Navbar.module.css";
 import logo from "../../../assets/logo.png";
 import { Bell } from "lucide-react";
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = "https://reto-aebnl-production.up.railway.app/api";
 
 const NAV_LINKS = [
   { label: "Tablero", to: "/dashboard" },

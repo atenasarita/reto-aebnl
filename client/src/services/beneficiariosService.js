@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api/beneficiarios';
+const API_URL = 'https://reto-aebnl-production.up.railway.app/api/beneficiarios';
 
 export async function fetchSiguienteFolio(token) {
   const response = await fetch(`${API_URL}/siguiente-folio`, {

@@ -293,7 +293,7 @@ function StepSuccess({ data }) {
 }
 
 // Flujo de Prerregistro
-const API_BASE = (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) || "http://localhost:3000";
+const API_BASE = (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) || "https://reto-aebnl-production.up.railway.app";
 
 export default function Prerregistro() {
   const [step, setStep] = useState(0);
