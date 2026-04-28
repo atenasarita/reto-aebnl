@@ -1,3 +1,4 @@
+import "./ReportePersonalizado.css";
 export default function ReportePersonalizado() {
   return (
     <article className="reporte-placeholder">

@@ -1,11 +1,11 @@
 import { Outlet } from "react-router-dom";
-import ReportesTabsNav from "../../components/layout/reportes/ReportesTabsNav/ReportesTabsNav";
-import "../styles/ReportesLayout.css";
+import ReportesTabsNav from "../../../components/layout/reportes/ReportesTabsNav/ReportesTabsNav";
+import "./Reportes.css";
 
 const REPORTES_NAV = [
   { to: "general", label: "General", icon: "general" },
   { to: "inventario", label: "Inventario", icon: "inventario" },
-  { to: "anual", label: "Período", icon: "anual" },
+  { to: "mensual", label: "Período", icon: "anual" },
   { to: "personalizado", label: "Personalizado", icon: "personalizado" },
 ];
 

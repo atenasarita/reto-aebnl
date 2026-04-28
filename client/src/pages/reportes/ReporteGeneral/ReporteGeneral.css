@@ -1,0 +1,257 @@
+.reporte-general-dashboard {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.reporte-general-alert {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #fecaca;
+  background: #fff1f2;
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: #9f1239;
+}
+
+.reporte-general-alert p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.reporte-general-alert button {
+  border: 1px solid #fda4af;
+  background: #ffffff;
+  color: #9f1239;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.reporte-general-loading {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.reporte-general-kpi-grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.reporte-general-panel {
+  border-radius: 16px;
+}
+
+.reporte-general-map-card-content.shadcn-card-content {
+  padding-top: 0.25rem;
+}
+
+.reporte-general-bento {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 340px);
+  grid-template-rows: auto auto;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.reporte-general-bento-map {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+
+.reporte-general-bento-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.reporte-general-bento-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #121317;
+}
+
+.reporte-general-bento-link {
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #2563eb;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.reporte-general-bento-link:hover {
+  text-decoration: underline;
+}
+
+.reporte-estados-dialog {
+  border: none;
+  padding: 0;
+  border-radius: 1rem;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  z-index: 2000;
+  box-sizing: border-box;
+  width: min(36rem, 94vw);
+  max-width: min(36rem, 94vw);
+  max-height: min(85vh, 720px);
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18);
+}
+
+.reporte-estados-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.48);
+}
+
+.reporte-estados-dialog-inner {
+  display: flex;
+  flex-direction: column;
+  max-height: min(85vh, 720px);
+}
+
+.reporte-estados-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 1.1rem 1.15rem 0.65rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.reporte-estados-dialog-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #121317;
+}
+
+.reporte-estados-dialog-sub {
+  margin: 0.35rem 0 0;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.reporte-estados-dialog-close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: #f8fafc;
+  color: #475569;
+  cursor: pointer;
+}
+
+.reporte-estados-dialog-close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.reporte-estados-dialog-scroll {
+  overflow: auto;
+  padding: 0.5rem 0 0.75rem;
+}
+
+.reporte-estados-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.reporte-estados-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  text-align: left;
+  padding: 0.55rem 1.15rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.reporte-estados-table tbody td {
+  padding: 0.65rem 1.15rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+.reporte-estados-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.reporte-estados-table .reporte-estados-col-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: #1e3b8a;
+}
+
+.reporte-estados-table .reporte-estados-col-pct {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: #64748b;
+  width: 4.5rem;
+}
+
+.reporte-estados-dialog-footer {
+  padding: 0.65rem 1.15rem 1rem;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.reporte-estados-dialog-footer strong {
+  color: #121317;
+}
+
+@media (max-width: 700px) {
+  .reporte-general-dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .reporte-general-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reporte-general-bento {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .reporte-general-bento-map {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}

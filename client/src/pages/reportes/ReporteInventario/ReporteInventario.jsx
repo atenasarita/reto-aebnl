@@ -1,3 +1,4 @@
+import "./ReporteInventario.css";
 export default function ReporteInventario() {
   return (
     <article className="reporte-placeholder">

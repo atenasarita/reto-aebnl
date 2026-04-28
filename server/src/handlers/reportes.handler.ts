@@ -38,6 +38,29 @@ export class ReportesHandler {
       return res.status(500).json({ message: "Error al obtener reporte por rango de fechas." });
     }
   };
+
+  getMensual = async (req: Request, res: Response) => {
+    const mesRaw = Number(req.query.mes);
+    const anioRaw = Number(req.query.anio);
+    if (!Number.isInteger(mesRaw) || mesRaw < 1 || mesRaw > 12) {
+      return res
+        .status(400)
+        .json({ message: "Parámetro 'mes' inválido. Usa un entero entre 1 y 12." });
+    }
+    if (!Number.isInteger(anioRaw) || anioRaw < 1900 || anioRaw > 2100) {
+      return res
+        .status(400)
+        .json({ message: "Parámetro 'anio' inválido. Usa un año entre 1900 y 2100." });
+    }
+
+    try {
+      const data = await this.controller.getMensual(mesRaw, anioRaw);
+      return res.json(data);
+    } catch (err: unknown) {
+      console.error("[reportes] mensual:", err);
+      return res.status(500).json({ message: "Error al obtener reporte mensual." });
+    }
+  };
 }
 
 export default ReportesHandler;

@@ -1,0 +1,296 @@
+.reporte-mensual-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.reporte-mensual-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.reporte-mensual-title {
+  margin: 0;
+  font-size: 2.25rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  line-height: 1.05;
+}
+
+.reporte-periodo-switch {
+  width: fit-content;
+  display: inline-flex;
+  border: 1px solid #dbe5f2;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 3px;
+}
+
+.reporte-periodo-switch button {
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.reporte-periodo-switch-link {
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 8px 14px;
+  text-decoration: none;
+  line-height: 1.2;
+}
+
+.reporte-periodo-switch button.is-active {
+  background: #1d4ed8;
+  color: #ffffff;
+}
+
+.reporte-mensual-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.reporte-mensual-selectors {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 4px 6px 4px 10px;
+}
+
+.reporte-mensual-select {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.reporte-mensual-select select {
+  border: none;
+  background: transparent;
+  color: #0f172a;
+  padding: 6px 4px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  outline: none;
+  cursor: pointer;
+}
+
+.reporte-mensual-anual-placeholder {
+  display: grid;
+}
+
+.reporte-general-alert {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #fecaca;
+  background: #fff1f2;
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: #9f1239;
+}
+
+.reporte-general-alert p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.reporte-general-alert button {
+  border: 1px solid #fda4af;
+  background: #ffffff;
+  color: #9f1239;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.reporte-general-loading {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.reporte-mensual-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.reporte-mensual-main-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.reporte-mensual-main-row .reporte-mensual-trend {
+  height: 100%;
+}
+
+.reporte-mensual-main-estados.shadcn-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.reporte-mensual-trend.shadcn-card {
+  border-radius: 1.05rem;
+  border-color: #eef2f7;
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+}
+
+.reporte-mensual-trend-header.shadcn-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 0.5rem;
+}
+
+.reporte-mensual-trend-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #121317;
+}
+
+.reporte-mensual-trend-sub {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.reporte-mensual-trend-pill {
+  align-self: flex-start;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #dbeafe;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+}
+
+.reporte-mensual-trend-content.shadcn-card-content {
+  padding-top: 0.25rem;
+}
+
+.reporte-mensual-trend-chart {
+  width: 100%;
+  height: 300px;
+}
+
+.reporte-mensual-chart-tooltip {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+  min-width: 8rem;
+}
+
+.reporte-mensual-chart-tooltip-label {
+  margin: 0 0 0.2rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.reporte-mensual-chart-tooltip-value {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.reporte-mensual-chart-tooltip-value strong {
+  color: #1e3b8a;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.reporte-mensual-grid-secondary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+.reporte-mensual-grid-secondary > * {
+  min-width: 0;
+}
+
+.reporte-mensual-grid-item .reporte-general-bento-gender.shadcn-card {
+  height: 100%;
+}
+
+.reporte-mensual-grid-item .reporte-general-bento-life.shadcn-card {
+  height: 100%;
+}
+
+@media (max-width: 960px) {
+  .reporte-mensual-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reporte-mensual-main-row {
+    grid-template-columns: 1fr;
+  }
+
+  .reporte-mensual-grid-secondary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .reporte-mensual-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .reporte-mensual-title {
+    font-size: 1.5rem;
+  }
+
+  .reporte-mensual-trend-chart {
+    height: 240px;
+  }
+
+  .reporte-mensual-filters {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

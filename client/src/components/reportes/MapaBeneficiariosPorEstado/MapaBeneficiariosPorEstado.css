@@ -1,0 +1,80 @@
+.reporte-mxmap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.reporte-mxmap-frame {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid #f1f1f4;
+  background: #f8fafc;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.reporte-mxmap-frame--legend {
+  position: relative;
+}
+
+.reporte-mxmap-floating-legend {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 1;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.65rem;
+  background: #ffffff;
+  border: 1px solid #eef2f7;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.reporte-mxmap-floating-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.reporte-mxmap-floating-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.reporte-mxmap-frame svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.reporte-mxmap-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+}
+
+.reporte-mxmap-footer--solo-hint {
+  justify-content: flex-start;
+}
+
+.reporte-mxmap-hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.reporte-mxmap-hint strong {
+  color: #121317;
+}

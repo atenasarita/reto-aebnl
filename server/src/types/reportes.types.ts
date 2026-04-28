@@ -28,6 +28,26 @@ export interface ReporteRangoFechas {
   beneficiarios_por_tipo_espina: BeneficiariosPorTipoEspina[];
 }
 
+// 3. Reporte mensual: enfocado en servicios y atención por mes
+export interface ReporteMensual {
+  periodo: ReportePeriodo;
+  mes: number;
+  anio: number;
+  nuevos_beneficiarios: number;
+  beneficiarios_atendidos: number;
+  servicios_periodo: number;
+  servicios_por_dia: ServiciosPorDia[];
+  beneficiarios_por_genero: DistribucionPorGenero[];
+  beneficiarios_por_etapa_vida: DistribucionEtapaVida[];
+  beneficiarios_por_estado: DistribucionBeneficiariosEstado[];
+}
+
+export interface ServiciosPorDia {
+  fecha: string;
+  dia: number;
+  conteo: number;
+}
+
 export interface DistribucionPorGenero {
   genero: Genero;
   conteo: number;

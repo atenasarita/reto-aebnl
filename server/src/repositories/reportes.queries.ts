@@ -152,6 +152,16 @@ export const reportesQueries = {
     ORDER BY 1
   `,
 
+  analyticsServiciosPorDia: `
+    SELECT
+      TO_CHAR(TRUNC(so.FECHA), 'YYYY-MM-DD') AS fecha,
+      COUNT(*) AS conteo
+    FROM SERVICIOS_OTORGADOS so
+    WHERE TRUNC(so.FECHA) BETWEEN TO_DATE(:desde, 'YYYY-MM-DD') AND TO_DATE(:hasta, 'YYYY-MM-DD')
+    GROUP BY TRUNC(so.FECHA)
+    ORDER BY TRUNC(so.FECHA)
+  `,
+
   analyticsDistribucionEtapaVida: `
     WITH atendidos AS (
       SELECT DISTINCT so.ID_BENEFICIARIO

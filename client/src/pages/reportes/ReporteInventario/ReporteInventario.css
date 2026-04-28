@@ -1,0 +1,17 @@
+.reporte-placeholder {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+}
+
+.reporte-placeholder h2 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.reporte-placeholder p {
+  margin: 8px 0 0;
+  color: #475569;
+}

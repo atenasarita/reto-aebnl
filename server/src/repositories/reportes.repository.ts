@@ -8,7 +8,9 @@ import {
   DistribucionEtapaVida,
   DistribucionPorGenero,
   ReporteAllTimes,
+  ReporteMensual,
   ReporteRangoFechas,
+  ServiciosPorDia,
 } from "../types/reportes.types";
 import { reportesQueries } from "./reportes.queries";
 
@@ -76,6 +78,52 @@ function mapTipoEspina(rows: Record<string, unknown>[]): BeneficiariosPorTipoEsp
     nombre: String(r.NOMBRE ?? r.nombre ?? ""),
     conteo: num(r.CONTEO ?? r.conteo),
   }));
+}
+
+function pad2(n: number): string {
+  return n < 10 ? `0${n}` : String(n);
+}
+
+function rangoMes(mes: number, anio: number): { desde: string; hasta: string; diasEnMes: number } {
+  const diasEnMes = new Date(anio, mes, 0).getDate();
+  const desde = `${anio}-${pad2(mes)}-01`;
+  const hasta = `${anio}-${pad2(mes)}-${pad2(diasEnMes)}`;
+  return { desde, hasta, diasEnMes };
+}
+
+function mapServiciosPorDia(
+  rows: Record<string, unknown>[],
+  desde: string,
+  diasEnMes: number
+): ServiciosPorDia[] {
+  const conteos = new Map<string, number>();
+  rows.forEach((r) => {
+    const fechaRaw = r.FECHA ?? r.fecha;
+    if (!fechaRaw) return;
+    let fechaStr: string;
+    if (fechaRaw instanceof Date) {
+      fechaStr = `${fechaRaw.getFullYear()}-${pad2(fechaRaw.getMonth() + 1)}-${pad2(
+        fechaRaw.getDate()
+      )}`;
+    } else {
+      fechaStr = String(fechaRaw).slice(0, 10);
+    }
+    conteos.set(fechaStr, num(r.CONTEO ?? r.conteo));
+  });
+
+  const [anioStr, mesStr] = desde.split("-");
+  const anio = Number(anioStr);
+  const mes = Number(mesStr);
+  const result: ServiciosPorDia[] = [];
+  for (let d = 1; d <= diasEnMes; d++) {
+    const fechaStr = `${anio}-${pad2(mes)}-${pad2(d)}`;
+    result.push({
+      fecha: fechaStr,
+      dia: d,
+      conteo: conteos.get(fechaStr) ?? 0,
+    });
+  }
+  return result;
 }
 
 export class ReportesRepository implements IReportesRepository {
@@ -178,6 +226,64 @@ export class ReportesRepository implements IReportesRepository {
         beneficiarios_por_etapa_vida: mapDistribucionEtapaVida(etapaRows),
         beneficiarios_por_estado: mapDistribucionEstado(estadoRows),
         beneficiarios_por_tipo_espina: mapTipoEspina(espinaRows),
+      };
+    } finally {
+      if (conn) await conn.close();
+    }
+  }
+
+  async getMensual(mes: number, anio: number): Promise<ReporteMensual> {
+    const { desde, hasta, diasEnMes } = rangoMes(mes, anio);
+
+    let conn: oracledb.Connection | undefined;
+    try {
+      conn = await getConnection();
+
+      const tarjetasRes = await conn.execute(
+        reportesQueries.analyticsTarjetas,
+        { desde, hasta },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const serviciosDiaRes = await conn.execute(
+        reportesQueries.analyticsServiciosPorDia,
+        { desde, hasta },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const generoRes = await conn.execute(
+        reportesQueries.analyticsDistribucionGenero,
+        { desde, hasta },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const etapaRes = await conn.execute(
+        reportesQueries.analyticsDistribucionEtapaVida,
+        { desde, hasta },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const estadoRes = await conn.execute(
+        reportesQueries.rangoDistribucionBeneficiariosEstado,
+        { desde, hasta },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+
+      const tarjetasRow = (tarjetasRes.rows?.[0] as Record<string, unknown>) ?? {};
+      const serviciosDiaRows = (serviciosDiaRes.rows ?? []) as Record<string, unknown>[];
+      const generoRows = (generoRes.rows ?? []) as Record<string, unknown>[];
+      const etapaRows = (etapaRes.rows ?? []) as Record<string, unknown>[];
+      const estadoRows = (estadoRes.rows ?? []) as Record<string, unknown>[];
+
+      return {
+        periodo: { desde, hasta },
+        mes,
+        anio,
+        nuevos_beneficiarios: num(tarjetasRow.NUEVOS_REGISTROS ?? tarjetasRow.nuevos_registros),
+        beneficiarios_atendidos: num(tarjetasRow.TOTAL_ATENDIDOS ?? tarjetasRow.total_atendidos),
+        servicios_periodo: num(
+          tarjetasRow.SERVICIOS_OTORGADOS_PERIODO ?? tarjetasRow.servicios_otorgados_periodo
+        ),
+        servicios_por_dia: mapServiciosPorDia(serviciosDiaRows, desde, diasEnMes),
+        beneficiarios_por_genero: mapDistribucionGenero(generoRows),
+        beneficiarios_por_etapa_vida: mapDistribucionEtapaVida(etapaRows),
+        beneficiarios_por_estado: mapDistribucionEstado(estadoRows),
       };
     } finally {
       if (conn) await conn.close();

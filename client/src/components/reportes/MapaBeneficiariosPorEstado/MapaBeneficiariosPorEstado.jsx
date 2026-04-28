@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
+import "./MapaBeneficiariosPorEstado.css";
 
 const COLOR_ALTA = "#1e3b8a";
 const COLOR_MEDIA = "#64748b";
