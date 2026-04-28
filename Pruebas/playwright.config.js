@@ -23,11 +23,31 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [
+    ['list'],
+    [
+      'playwright-qase-reporter',
+      {
+        mode: 'testops',
+        debug: false,
+        testops: {
+          api: {
+            token: '250598a3d556b8005894e1fb78d7de669b006912f424f72f619625cdebc3f3a8',
+          },
+          project: 'WS',
+          uploadAttachments: true,
+          run: {
+            title: 'Prueba Automatizada',
+            complete: true,
+          },
+        },
+      },
+    ],
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
-    // baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:5173',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
