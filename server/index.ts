@@ -27,9 +27,7 @@ app.get("/", (req, res) => {
 });
 
 
-app.use(cors({
-  origin: "*", // rápido para pruebas
-}));
+app.use(cors());
 
 app.use(express.json());
 
