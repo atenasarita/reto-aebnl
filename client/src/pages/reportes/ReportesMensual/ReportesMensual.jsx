@@ -169,9 +169,6 @@ export default function ReportesMensual() {
               <CardHeader className="reporte-mensual-trend-header">
                 <div>
                   <h3 className="reporte-mensual-trend-title">Servicios otorgados por día</h3>
-                  <p className="reporte-mensual-trend-sub">
-                    {rangoLabel || "Visualización del tráfico diario en el mes seleccionado."}
-                  </p>
                 </div>
                 <span className="reporte-mensual-trend-pill">
                   {mesNombre} {anio}
