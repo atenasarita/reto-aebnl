@@ -33,6 +33,11 @@ if (!fs.existsSync(walletDir)) {
   console.log("✅ Wallet descomprimido");
 }
 
+console.log("TNS_ADMIN:", process.env.TNS_ADMIN);
+
+const files = fs.readdirSync(walletDir);
+console.log("FILES:", files);
+
 
 const app = express();
 
