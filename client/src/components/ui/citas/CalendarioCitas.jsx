@@ -1,18 +1,33 @@
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from '@fullcalendar/timegrid';
+import { useEffect, useState } from "react";
 
-export default function CalendarioCitas({setTitulo}) {
+export default function CalendarioCitas() {
+  const [eventos, setEventos] = useState([]);
+
   return (
     <FullCalendar
       plugins={[dayGridPlugin, timeGridPlugin]}
       initialView="dayGridMonth"
       locale='es'
-      headerToolbar={{
-        left: "prev today next",
-        center: "title",
-        right: "dayGridMonth timeGridWeek timeGridDay",
+      height= "100%"
+      expandRows={true}
+
+      customButtons={{
+        nuevaCita: {
+          text: "+ Nueva Cita",
+          click: () => {
+            console.log("Abrir nueva cita");
+          },
+        },
       }}
+      headerToolbar={{
+        left: "title",
+        center: "dayGridMonth timeGridWeek timeGridDay",
+        right: "prev today next nuevaCita",
+      }
+    }
       buttonText={{
         today: "Hoy",
         month: "Mes",
@@ -24,12 +39,7 @@ export default function CalendarioCitas({setTitulo}) {
             month: "long",
             year: "numeric",
         });
-
-        setTitulo(
-            titulo.charAt(0).toUpperCase() + titulo.slice(1)
-        );
-      }
-        
+      } 
       }
     />
   );
