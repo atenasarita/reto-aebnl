@@ -12,6 +12,26 @@ import dashboardRoutes from "./src/routes/dashboard.routes";
 import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job';
 
 
+import fs from "fs";
+import { execSync } from "child_process";
+
+const walletDir = "/opt/render/project/src/wallet";
+
+if (!fs.existsSync(walletDir)) {
+  console.log("📦 Creando wallet...");
+
+  // 1. Crear carpeta
+  fs.mkdirSync(walletDir, { recursive: true });
+
+  // 2. Convertir base64 → zip
+  const buffer = Buffer.from(process.env.WALLET_BASE64!, "base64");
+  fs.writeFileSync("wallet.zip", buffer);
+
+  // 3. Descomprimir
+  execSync(`unzip wallet.zip -d ${walletDir}`);
+
+  console.log("✅ Wallet descomprimido");
+}
 
 
 const app = express();
@@ -46,18 +66,3 @@ app.use('/api', dashboardRoutes);
 app.use(errorMiddleware);
 
 // startMembresiaExpirationJob();
-
-
-
-import fs from "fs";
-
-const walletPath = process.env.TNS_ADMIN!;
-
-console.log("TNS_ADMIN:", walletPath);
-
-try {
-  const files = fs.readdirSync(walletPath);
-  console.log("FILES:", files);
-} catch (err) {
-  console.error("ERROR leyendo wallet:", err);
-}
