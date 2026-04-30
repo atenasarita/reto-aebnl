@@ -49,3 +49,15 @@ app.use(errorMiddleware);
 
 
 
+import fs from "fs";
+
+const path = process.env.TNS_ADMIN!;
+
+console.log("TNS_ADMIN:", path);
+
+try {
+  const files = fs.readdirSync(path);
+  console.log("FILES:", files);
+} catch (err) {
+  console.error("ERROR leyendo wallet:", err);
+}
