@@ -84,18 +84,3 @@ app.use(errorMiddleware);
 // });
 
 startMembresiaExpirationJob();
-
-
-
-import fs from "fs";
-
-const walletPath = process.env.TNS_ADMIN!;
-
-console.log("TNS_ADMIN:", walletPath);
-
-try {
-  const files = fs.readdirSync(walletPath);
-  console.log("FILES:", files);
-} catch (err) {
-  console.error("ERROR leyendo wallet:", err);
-}
