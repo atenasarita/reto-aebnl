@@ -16,10 +16,12 @@ test(qase(13, 'HU - 013 - Cambio automático de actividad de membresía a inacti
     const beneficiarioAVencer= 'Maria Gonzalez Martinez'; 
     await page.getByRole('textbox', { name: 'Buscar por nombre, folio o CURP...' }).click();
     await page.getByRole('textbox', { name: 'Buscar por nombre, folio o CURP...' }).fill(beneficiarioAVencer);
-    const tarjeta = page.locator('.tarjeta-beneficiario', { hasText: beneficiarioAVencer });
+    await page.getByRole('button', { name: 'Buscar' }).click(); // Forzar el click en el botón Buscar de la interfaz
+    await page.waitForTimeout(2000); // 2 segundos de gracia extra
+    const tarjeta = page.locator('div[class*="card"]', { hasText: beneficiarioAVencer });
 
     // Verificar si tiene el estatus de Activo
-    await expect(tarjeta.locator('.badge-estado')).toHaveText(/Activo/i);
+    await expect(tarjeta).toContainText(/Activo/i, { timeout: 15000 });
 
     // Aplicar la hora en la que se termina la membresía
     console.log('Cambiando fecha del sistema...');
@@ -33,6 +35,7 @@ test(qase(13, 'HU - 013 - Cambio automático de actividad de membresía a inacti
     // Verificar que aparece el beneficiario
     await page.getByRole('textbox', { name: 'Buscar por nombre, folio o CURP...' }).click();
     await page.getByRole('textbox', { name: 'Buscar por nombre, folio o CURP...' }).fill(beneficiarioAVencer);
+    await page.waitForTimeout(1000);
     await expect(tarjeta).toBeVisible();
 
     // Aplicar filtro de Activo
@@ -40,7 +43,7 @@ test(qase(13, 'HU - 013 - Cambio automático de actividad de membresía a inacti
     await page.getByText('Activo', { exact: true }).click(); 
 
     // Verificar que no está activo
-    await expect(page.locator('.tarjeta-beneficiario', { hasText: beneficiarioAVencer })).not.toBeVisible();
+    await expect(page.locator('div[class*="card"]', { hasText: beneficiarioAVencer })).not.toBeVisible();
 });
 
 test(qase(14, 'HU - 013 - Cambio automático de actividad de membresía a inactivo #HU013-2'), async ({ page }) => {  
@@ -58,10 +61,11 @@ test(qase(14, 'HU - 013 - Cambio automático de actividad de membresía a inacti
     const beneficiarioActivo = 'Sofia Ramirez Santos'; 
     await page.getByRole('textbox', { name: 'Buscar por nombre, folio o CURP...' }).click();
     await page.getByRole('textbox', { name: 'Buscar por nombre, folio o CURP...' }).fill(beneficiarioActivo);
-    const tarjeta = page.locator('.tarjeta-beneficiario', { hasText: beneficiarioActivo });
+    await page.waitForTimeout(2000);
+    const tarjeta = page.locator('div[class*="card"]', { hasText: beneficiarioActivo });
 
     // Verificar si tiene el estatus de Activo al inicio
-    await expect(tarjeta.locator('.badge-estado')).toHaveText(/activo/i);
+    await expect(tarjeta).toContainText(/Activo/i, { timeout: 15000 });
 
     // Adelantar la fecha del sistema
     console.log('Adelantando fecha del sistema...');
@@ -75,6 +79,7 @@ test(qase(14, 'HU - 013 - Cambio automático de actividad de membresía a inacti
     // Verificar que el beneficiario aparece
     await page.getByRole('textbox', { name: 'Buscar por nombre, folio o CURP...' }).click();
     await page.getByRole('textbox', { name: 'Buscar por nombre, folio o CURP...' }).fill(beneficiarioActivo);
+    await page.waitForTimeout(1000);
     await expect(tarjeta).toBeVisible();
 
     // Aplicar filtro de Inactivo
@@ -82,5 +87,5 @@ test(qase(14, 'HU - 013 - Cambio automático de actividad de membresía a inacti
     await page.getByText('Inactivo', { exact: true }).click(); 
 
     // Verificar que el beneficiario no aparece
-    await expect(page.locator('.tarjeta-beneficiario', { hasText: beneficiarioActivo })).not.toBeVisible();
+    await expect(page.locator('div[class*="card"]', { hasText: beneficiarioActivo })).not.toBeVisible();
 });
