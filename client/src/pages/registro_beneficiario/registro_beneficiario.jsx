@@ -8,9 +8,13 @@ import StepDatosPersonales from '../../components/layout/beneficiarios/Beneficia
 import StepInformacionMedica from '../../components/layout/beneficiarios/BeneficiarioRegistro/steps/StepInformacionMedica';
 import StepDomicilio from '../../components/layout/beneficiarios/BeneficiarioRegistro/steps/StepDomicilio';
 import StepMembresia from '../../components/layout/beneficiarios/BeneficiarioRegistro/steps/StepMembresia';
+import { useState } from 'react';
+
+import Modal from '../../components/layout/beneficiarios/BeneficiarioRegistro/BeneficiarioModal/RegistroPopUps';
 
 function RegistroBeneficiario() {
   const navigate = useNavigate();
+  const [showCancelModal ,setShowCancelModal] = useState(false);
 
   const {
     currentStep,
@@ -24,6 +28,8 @@ function RegistroBeneficiario() {
     error,
     fechaNacimientoRef,
     fechaMembresiaRef,
+    showSuccessModal,
+    setShowSuccessModal,
     setFechaNacimiento,
     handleInputChange,
     handleBlur,
@@ -111,9 +117,7 @@ function RegistroBeneficiario() {
             onPrev={handlePrev}
             onSubmit={handleSubmit}
             onCancel={() => {
-              if (confirm('Seguro que quieres cancelar?')) {
-                navigate('/beneficiarios');
-              }
+              setShowCancelModal(true)
             }}
           />
 
@@ -132,7 +136,30 @@ function RegistroBeneficiario() {
           </section>
         </section>
       </main>
-    </div>
+      <Modal
+      isOpen={showCancelModal}
+      title="Cancelar registro"
+      message="¿Seguro que quieres cancelar? Se perderá la información capturada."
+      cancelText="Volver"
+      confirmText="Sí, cancelar"
+      onClose={() => setShowCancelModal(false)}
+      onConfirm={() => {
+        setShowCancelModal(false);
+        navigate('/beneficiarios');
+      }}
+    />
+
+      <Modal
+      isOpen={showSuccessModal}
+      title="Registro exitoso"
+      message="El beneficiario fue registrado correctamente en el sistema."
+      confirmText="Aceptar"
+      onConfirm={() => {
+        setShowSuccessModal(false);
+        navigate('/beneficiarios');
+      }}
+      />
+  </div>
   );
 }
 

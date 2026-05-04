@@ -5,6 +5,7 @@ import Pagination from '../../../ui/Pagination'
 // import BeneficiarioDetalle from '../BeneficiarioDetalle/BeneficiarioDetalle'
 import BeneficiarioModal from '../BeneficiarioDetalle/BeneficiarioModal'
 import { espinaBifidaOptions } from '../../../../utils/espinaBifidaTypes'
+import { downloadBeneficiarioPdf } from '../../../../utils/pdfFormatMembresia'
 
 const ITEMS_PER_PAGE = 8
 
@@ -24,6 +25,26 @@ function BeneficiarioGrid({ data, loading }) {
     })
     const data = await res.json()
     setSelected(data)
+  }
+
+  async function handleDownloadPdf(id) {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:3000/api/beneficiarios/${id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (!res.ok) {
+        throw new Error('No se pudo obtener la información del beneficiario.');
+      }
+      
+      const data = await res.json();
+      
+      downloadBeneficiarioPdf(data, id);
+    } catch (error) {
+      console.error('Error al descargar el PDF:', error);
+      alert('Error al descargar el archivo PDF.');
+    }
   }
 
   const normalized = data.map((b) => {
@@ -69,6 +90,7 @@ function BeneficiarioGrid({ data, loading }) {
             onView={() => handleView(b.id_beneficiario)} // ← fixed
             onEdit={() => console.log('editar', b.id_beneficiario)}
             onCard={() => console.log('credencial', b.id_beneficiario)}
+            onDownloadPdf={() => handleDownloadPdf(b.id_beneficiario)}
           />
         ))}
       </div>

@@ -32,14 +32,21 @@ body {
 }
 
 .layout {
-  display: grid;
+  display: flex;
   grid-template-columns: 280px 1fr;
   gap: 20px;
-  align-items: start;
+  align-items: flex-start;
 }
 
 .sidebar {
-  padding-top: 24px;
+  width: 260px;
+  min-height: 620px;
+  background-color: #1f3166;
+
+  position: sticky;
+  top: 120px;
+  align-self: flex-start;
+  height: fit-content;
 }
 
 .steps {
@@ -139,11 +146,22 @@ body {
   background: #8ea9c4;
 }  
 
+/* .form-card {
+  background: white;
+  border: 1px solid #dce3ef;
+  border-radius: 20px;
+  padding: 36px;
+  max-width: none;
+} */
+
 .form-card {
   background: white;
   border: 1px solid #dce3ef;
   border-radius: 20px;
   padding: 36px;
+  flex: 1;
+  width: 100%;
+  max-width: none;
 }
 
 .top-info {
@@ -305,6 +323,20 @@ body {
   z-index: 3;
   cursor: pointer;
   pointer-events: auto;
+}
+
+.error-message {
+  background-color: #fff5f5;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+  border-left: 6px solid #e53935;
+  padding: 12px 16px;
+  margin: 12px 0;
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {

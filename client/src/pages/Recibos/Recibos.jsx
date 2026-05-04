@@ -248,18 +248,24 @@ export default function Recibos() {
     cargarDia(fecha);
     cargarMes(fecha);
   }, [fecha, cargarDia, cargarMes]);
+
+  const normalizar = (str) =>
+  (str || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
  
   // Filtros
   const filtrarRecibos = (lista, q) => {
-    if (!q) return lista;
-    const s = q.toLowerCase();
-    return lista.filter(
-      (r) =>
-        r.beneficiario?.toLowerCase().includes(s) ||
-        r.servicio?.toLowerCase().includes(s) ||
-        String(r.id_servicio_otorgado).includes(s)
-    );
-  };
+  if (!q) return lista;
+  const s = normalizar(q);
+  return lista.filter((r) =>
+    normalizar(r.beneficiario).includes(s) ||
+    normalizar(r.servicio).includes(s) ||
+    normalizar(String(r.id_servicio_otorgado)).includes(s)
+  );
+};
  
   const filtradosDia = filtrarRecibos(recibosDay, busquedaDia);
   const filtradosMes = filtrarRecibos(recibosMes, busquedaMes);
@@ -287,6 +293,56 @@ export default function Recibos() {
           <button className="btn-hoy" onClick={() => setFecha(hoy())}>Hoy</button>
         </div>
       </header>
+
+      {/* RECIBOS DEL DIA */}
+      <section className="recibos-section">
+        <div className="section-title-row">
+          <div>
+            <h2 className="section-title">Recibos del día</h2>
+            <p className="section-sub">{fmtFecha(fecha)}</p>
+          </div>
+          <div className="search-wrap">
+            <span className="search-icon">⌕</span>
+            <input
+              className="search-input"
+              type="text"
+              placeholder="Buscar en el día…"
+              value={busquedaDia}
+              onChange={(e) => setBusquedaDia(e.target.value)}
+            />
+          </div>
+        </div>
+ 
+        {/* Resumen del día */}
+        {!loadingDay && filtradosDia.length > 0 && (
+          <div className="resumen-strip">
+            <ResumenCard label="Recibos del día" value={filtradosDia.length} sub={fmtFecha(fecha)} />
+            <ResumenCard label="Total facturado"  value={fmt(totalDia)} />
+            <ResumenCard label="Total cobrado"    value={fmt(pagadoDia)} />
+            <ResumenCard
+              label="Diferencia"
+              value={fmt(totalDia - pagadoDia)}
+              sub={totalDia - pagadoDia > 0 ? "pendiente" : "al corriente"}
+            />
+          </div>
+        )}
+ 
+        <div className="recibos-card">
+          <TablaRecibos
+            recibos={filtradosDia}
+            loading={loadingDay}
+            error={errorDay}
+            onVerDetalle={setSeleccion}
+            mostrarFecha={false}
+            emptyMsg="Sin recibos para esta fecha."
+          />
+          {!loadingDay && !errorDay && filtradosDia.length > 0 && (
+            <p className="tabla-footer">
+              Mostrando {filtradosDia.length} de {recibosDay.length} recibos · {fmtFecha(fecha)}
+            </p>
+          )}
+        </div>
+      </section>
  
       {/* RECIBOS DEL MES */}
       <section className="recibos-section">
@@ -333,56 +389,6 @@ export default function Recibos() {
           {!loadingMes && !errorMes && filtradosMes.length > 0 && (
             <p className="tabla-footer">
               Mostrando {filtradosMes.length} de {recibosMes.length} recibos · {fmtMes(fecha)}
-            </p>
-          )}
-        </div>
-      </section>
- 
-      {/* RECIBOS DEL DIA */}
-      <section className="recibos-section">
-        <div className="section-title-row">
-          <div>
-            <h2 className="section-title">Recibos del día</h2>
-            <p className="section-sub">{fmtFecha(fecha)}</p>
-          </div>
-          <div className="search-wrap">
-            <span className="search-icon">⌕</span>
-            <input
-              className="search-input"
-              type="text"
-              placeholder="Buscar en el día…"
-              value={busquedaDia}
-              onChange={(e) => setBusquedaDia(e.target.value)}
-            />
-          </div>
-        </div>
- 
-        {/* Resumen del día */}
-        {!loadingDay && filtradosDia.length > 0 && (
-          <div className="resumen-strip">
-            <ResumenCard label="Recibos del día" value={filtradosDia.length} sub={fmtFecha(fecha)} />
-            <ResumenCard label="Total facturado"  value={fmt(totalDia)} />
-            <ResumenCard label="Total cobrado"    value={fmt(pagadoDia)} />
-            <ResumenCard
-              label="Diferencia"
-              value={fmt(totalDia - pagadoDia)}
-              sub={totalDia - pagadoDia > 0 ? "pendiente" : "al corriente"}
-            />
-          </div>
-        )}
- 
-        <div className="recibos-card">
-          <TablaRecibos
-            recibos={filtradosDia}
-            loading={loadingDay}
-            error={errorDay}
-            onVerDetalle={setSeleccion}
-            mostrarFecha={false}
-            emptyMsg="Sin recibos para esta fecha."
-          />
-          {!loadingDay && !errorDay && filtradosDia.length > 0 && (
-            <p className="tabla-footer">
-              Mostrando {filtradosDia.length} de {recibosDay.length} recibos · {fmtFecha(fecha)}
             </p>
           )}
         </div>
