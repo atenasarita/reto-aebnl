@@ -162,6 +162,29 @@ export const reportesQueries = {
     ORDER BY TRUNC(so.FECHA)
   `,
 
+  /** Servicios agrupados por mes (1–12) dentro del año :anio */
+  analyticsServiciosPorMesAnio: `
+    SELECT
+      EXTRACT(MONTH FROM TRUNC(so.FECHA)) AS mes,
+      COUNT(*) AS conteo
+    FROM SERVICIOS_OTORGADOS so
+    WHERE EXTRACT(YEAR FROM TRUNC(so.FECHA)) = :anio
+    GROUP BY EXTRACT(MONTH FROM TRUNC(so.FECHA))
+    ORDER BY 1
+  `,
+
+  /** Nuevos beneficiarios (FECHA_INGRESO) por mes dentro del año :anio */
+  analyticsNuevosBeneficiariosPorMesAnio: `
+    SELECT
+      EXTRACT(MONTH FROM TRUNC(b.FECHA_INGRESO)) AS mes,
+      COUNT(*) AS conteo
+    FROM BENEFICIARIO b
+    WHERE b.FECHA_INGRESO IS NOT NULL
+      AND EXTRACT(YEAR FROM TRUNC(b.FECHA_INGRESO)) = :anio
+    GROUP BY EXTRACT(MONTH FROM TRUNC(b.FECHA_INGRESO))
+    ORDER BY 1
+  `,
+
   analyticsDistribucionEtapaVida: `
     WITH atendidos AS (
       SELECT DISTINCT so.ID_BENEFICIARIO

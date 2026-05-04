@@ -18,5 +18,6 @@ const reportesAuth = [
 router.get("/analytics", ...reportesAuth, handler.getAllTimes);
 router.get("/analytics/periodo", ...reportesAuth, handler.getRangoFechas);
 router.get("/analytics/mensual", ...reportesAuth, handler.getMensual);
+router.get("/analytics/anual", ...reportesAuth, handler.getAnual);
 
 export default router;

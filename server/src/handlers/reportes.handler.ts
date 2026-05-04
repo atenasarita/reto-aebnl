@@ -61,6 +61,23 @@ export class ReportesHandler {
       return res.status(500).json({ message: "Error al obtener reporte mensual." });
     }
   };
+
+  getAnual = async (req: Request, res: Response) => {
+    const anioRaw = Number(req.query.anio);
+    if (!Number.isInteger(anioRaw) || anioRaw < 1900 || anioRaw > 2100) {
+      return res
+        .status(400)
+        .json({ message: "Parámetro 'anio' inválido. Usa un año entre 1900 y 2100." });
+    }
+
+    try {
+      const data = await this.controller.getAnual(anioRaw);
+      return res.json(data);
+    } catch (err: unknown) {
+      console.error("[reportes] anual:", err);
+      return res.status(500).json({ message: "Error al obtener reporte anual." });
+    }
+  };
 }
 
 export default ReportesHandler;

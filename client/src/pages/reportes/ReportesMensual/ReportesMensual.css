@@ -189,18 +189,15 @@
   color: #64748b;
 }
 
-.reporte-mensual-trend-pill {
-  align-self: flex-start;
+.reporte-mensual-trend-rango {
   flex-shrink: 0;
-  border-radius: 999px;
-  background: #eff6ff;
-  color: #1d4ed8;
-  border: 1px solid #dbeafe;
-  font-size: 0.6875rem;
+  max-width: min(100%, 22rem);
+  font-family: var(--font-rp-head, system-ui, sans-serif);
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 5px 10px;
+  line-height: 1.35;
+  color: #475569;
+  text-align: right;
 }
 
 .reporte-mensual-trend-content.shadcn-card-content {

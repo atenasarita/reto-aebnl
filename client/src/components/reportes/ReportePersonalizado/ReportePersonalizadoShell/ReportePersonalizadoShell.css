@@ -1,0 +1,66 @@
+.reporte-personalizado-theme {
+  --rp-bg: #f6f6f8;
+  --rp-on-surface: #121317;
+  --rp-on-surface-variant: #666e85;
+  --rp-primary: #1e3b8a;
+  --rp-surface-bright: #ffffff;
+  --rp-outline-variant: #f1f1f4;
+  --rp-container-low: #f8fafc;
+  --rp-error: #ba1a1a;
+  --rp-radius-xl: 0.75rem;
+  --rp-radius-2xl: 1rem;
+  --rp-icon-soft-bg: rgba(30, 59, 138, 0.1);
+  --font-rp-head: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-rp-body: "Inter", system-ui, sans-serif;
+}
+
+.reporte-personalizado-shell .reporte-mxmap-hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--rp-on-surface-variant);
+  line-height: 1.45;
+}
+
+.reporte-personalizado-theme {
+  font-family: var(--font-rp-body);
+  color: var(--rp-on-surface);
+  background: var(--rp-bg);
+  margin: 0 -1.5rem;
+  padding: 0 1.5rem 2rem;
+}
+
+@media (min-width: 768px) {
+  .reporte-personalizado-theme {
+    margin: 0 -2rem;
+    padding: 0 2rem 2.5rem;
+  }
+}
+
+.reporte-personalizado-inner {
+  max-width: 96rem;
+  margin: 0 auto;
+  padding-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.reporte-personalizado-page-intro {
+  margin-bottom: 0;
+}
+
+.reporte-personalizado-page-intro h1 {
+  margin: 0;
+  font-family: var(--font-rp-head);
+  font-size: clamp(1.5rem, 2.8vw, 1.875rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--rp-on-surface);
+}
+
+.reporte-personalizado-filters-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}

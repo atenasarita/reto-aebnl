@@ -22,6 +22,7 @@ export interface ReporteRangoFechas {
   nuevos_beneficiarios: number;
   beneficiarios_atendidos: number;
   servicios_periodo: number;
+  servicios_por_dia: ServiciosPorDia[];
   beneficiarios_por_genero: DistribucionPorGenero[];
   beneficiarios_por_etapa_vida: DistribucionEtapaVida[];
   beneficiarios_por_estado: DistribucionBeneficiariosEstado[];
@@ -37,6 +38,26 @@ export interface ReporteMensual {
   beneficiarios_atendidos: number;
   servicios_periodo: number;
   servicios_por_dia: ServiciosPorDia[];
+  beneficiarios_por_genero: DistribucionPorGenero[];
+  beneficiarios_por_etapa_vida: DistribucionEtapaVida[];
+  beneficiarios_por_estado: DistribucionBeneficiariosEstado[];
+}
+
+/** Métricas agregadas por mes dentro de un año calendario (1–12). */
+export interface MesMetricasAnual {
+  mes: number;
+  servicios_otorgados: number;
+  nuevos_beneficiarios: number;
+}
+
+// 4. Reporte anual: totales del año + series mensuales + demografía del año
+export interface ReporteAnual {
+  periodo: ReportePeriodo;
+  anio: number;
+  nuevos_beneficiarios: number;
+  beneficiarios_atendidos: number;
+  servicios_periodo: number;
+  por_mes: MesMetricasAnual[];
   beneficiarios_por_genero: DistribucionPorGenero[];
   beneficiarios_por_etapa_vida: DistribucionEtapaVida[];
   beneficiarios_por_estado: DistribucionBeneficiariosEstado[];

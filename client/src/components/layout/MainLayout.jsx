@@ -1,20 +1,32 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar/Navbar";
 
-const RUTA_A_ENLACE_ACTIVO = {
-  "/dashboard": "Tablero",
-  "/beneficiarios": "Beneficiarios",
-  "/registro_beneficiario": "Beneficiarios",
-  "/prerregistro": "Prerregistro",
-  "/servicios": "Servicios",
-  "/inventario": "Inventario",
-  "/citas": "Citas",
-  "/reportes": "Reportes",
-};
+const RUTAS_NAV = [
+  { prefix: "/registro_beneficiario", label: "Beneficiarios", exact: true },
+  { prefix: "/beneficiarios", label: "Beneficiarios" },
+  { prefix: "/prerregistro", label: "Prerregistro" },
+  { prefix: "/servicios", label: "Servicios" },
+  { prefix: "/inventario", label: "Inventario" },
+  { prefix: "/citas", label: "Citas" },
+  { prefix: "/reportes", label: "Reportes" },
+  { prefix: "/recibos", label: "Recibos" },
+  { prefix: "/dashboard", label: "Tablero" },
+];
+
+function resolveActiveNavLabel(pathname) {
+  for (const { prefix, label, exact } of RUTAS_NAV) {
+    if (exact) {
+      if (pathname === prefix) return label;
+      continue;
+    }
+    if (pathname === prefix || pathname.startsWith(`${prefix}/`)) return label;
+  }
+  return "Tablero";
+}
 
 function MainLayout() {
   const { pathname } = useLocation();
-  const activeLink = RUTA_A_ENLACE_ACTIVO[pathname] ?? "Tablero";
+  const activeLink = resolveActiveNavLabel(pathname);
 
   let storedUser = null;
 

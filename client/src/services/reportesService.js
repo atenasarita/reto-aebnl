@@ -140,11 +140,8 @@ function normalizeServiciosPorDia(rows) {
   });
 }
 
-function normalizeReporteMensual(payload, mes, anio) {
-  const nuevosBeneficiarios = toNumber(payload?.nuevos_beneficiarios);
-  const beneficiariosAtendidos = toNumber(payload?.beneficiarios_atendidos);
-  const serviciosPeriodo = toNumber(payload?.servicios_periodo);
-
+/** Género, etapa y estado de beneficiarios atendidos en el periodo (mensual / anual / rango). */
+function mapDistribucionesBeneficiariosDesdePayload(payload) {
   const beneficiariosPorGenero = Array.isArray(payload?.beneficiarios_por_genero)
     ? payload.beneficiarios_por_genero
     : [];
@@ -198,6 +195,17 @@ function normalizeReporteMensual(payload, mes, anio) {
     };
   });
 
+  return { distribucionGenero, distribucionEtapaVida, distribucionEstado };
+}
+
+function normalizeReporteMensual(payload, mes, anio) {
+  const nuevosBeneficiarios = toNumber(payload?.nuevos_beneficiarios);
+  const beneficiariosAtendidos = toNumber(payload?.beneficiarios_atendidos);
+  const serviciosPeriodo = toNumber(payload?.servicios_periodo);
+
+  const { distribucionGenero, distribucionEtapaVida, distribucionEstado } =
+    mapDistribucionesBeneficiariosDesdePayload(payload);
+
   const periodo = payload?.periodo ?? {};
   const mesNum = toNumber(payload?.mes) || Number(mes) || 0;
   const anioNum = toNumber(payload?.anio) || Number(anio) || 0;
@@ -237,4 +245,127 @@ export async function getReporteMensual(mes, anio) {
 
   const data = await response.json();
   return normalizeReporteMensual(data, mes, anio);
+}
+
+function normalizePorMesAnual(rows) {
+  if (!Array.isArray(rows)) return [];
+  return rows.map((item) => {
+    const mes = toNumber(item?.mes);
+    const mesLabel =
+      mes >= 1 && mes <= 12 ? NOMBRES_MES_LARGO[mes - 1] : "";
+    return {
+      mes,
+      mesLabel,
+      servicios: toNumber(item?.servicios_otorgados ?? item?.servicios),
+      nuevosBeneficiarios: toNumber(
+        item?.nuevos_beneficiarios ?? item?.nuevosBeneficiarios,
+      ),
+    };
+  });
+}
+
+function normalizeReporteAnual(payload, anio) {
+  const periodo = payload?.periodo ?? {};
+  const anioNum = toNumber(payload?.anio) || Number(anio) || 0;
+
+  const { distribucionGenero, distribucionEtapaVida, distribucionEstado } =
+    mapDistribucionesBeneficiariosDesdePayload(payload);
+
+  return {
+    anio: anioNum,
+    periodo: {
+      desde: String(periodo.desde ?? ""),
+      hasta: String(periodo.hasta ?? ""),
+    },
+    nuevosBeneficiarios: toNumber(payload?.nuevos_beneficiarios),
+    beneficiariosAtendidos: toNumber(payload?.beneficiarios_atendidos),
+    serviciosPeriodo: toNumber(payload?.servicios_periodo),
+    porMes: normalizePorMesAnual(payload?.por_mes),
+    distribucionGenero,
+    distribucionEtapaVida,
+    distribucionEstado,
+  };
+}
+
+export async function getReporteAnual(anio) {
+  const params = new URLSearchParams({ anio: String(anio) });
+  const response = await fetch(
+    `${BASE_URL}/api/reportes/analytics/anual?${params.toString()}`,
+    {
+      method: "GET",
+      headers: getAuthHeaders(),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
+
+  const data = await response.json();
+  return normalizeReporteAnual(data, anio);
+}
+
+/** Serie diaria en rango arbitrario (ej. reporte por periodo / personalizado). */
+function normalizeServiciosPorPeriodo(rows) {
+  if (!Array.isArray(rows)) return [];
+  return rows.map((item) => {
+    const fecha = String(item?.fecha ?? "");
+    return {
+      fecha,
+      dia: Number(item?.dia) || 0,
+      diaLabel: fecha.length >= 10 ? fecha.slice(5) : "",
+      conteo: toNumber(item?.conteo),
+    };
+  });
+}
+
+/**
+ * Normaliza `GET /api/reportes/analytics/periodo?desde=&hasta=`.
+ */
+function normalizeReportePeriodo(payload) {
+  const nuevosBeneficiarios = toNumber(payload?.nuevos_beneficiarios);
+  const beneficiariosAtendidos = toNumber(payload?.beneficiarios_atendidos);
+  const serviciosPeriodo = toNumber(payload?.servicios_periodo);
+  const citasPeriodo = toNumber(payload?.citas_periodo);
+
+  const { distribucionGenero, distribucionEtapaVida, distribucionEstado } =
+    mapDistribucionesBeneficiariosDesdePayload(payload);
+
+  const periodo = payload?.periodo ?? {};
+
+  return {
+    periodo: {
+      desde: String(periodo.desde ?? ""),
+      hasta: String(periodo.hasta ?? ""),
+    },
+    citasPeriodo,
+    nuevosBeneficiarios,
+    beneficiariosAtendidos,
+    serviciosPeriodo,
+    serviciosPorDia: normalizeServiciosPorPeriodo(payload?.servicios_por_dia),
+    distribucionGenero,
+    distribucionEtapaVida,
+    distribucionEstado,
+  };
+}
+
+export async function getReportePeriodo(desde, hasta) {
+  const params = new URLSearchParams({
+    desde: String(desde),
+    hasta: String(hasta),
+  });
+  const response = await fetch(
+    `${BASE_URL}/api/reportes/analytics/periodo?${params.toString()}`,
+    {
+      method: "GET",
+      headers: getAuthHeaders(),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
+
+  const data = await response.json();
+  return normalizeReportePeriodo(data);
 }

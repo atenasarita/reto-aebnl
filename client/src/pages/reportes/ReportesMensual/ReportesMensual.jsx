@@ -37,16 +37,6 @@ function formatNumber(value) {
   return Number(value || 0).toLocaleString("es-MX");
 }
 
-function formatRangoFechas(periodo, mesNombre, anio) {
-  if (!periodo?.desde || !periodo?.hasta) {
-    if (mesNombre && anio) return `${mesNombre} ${anio}`;
-    return "";
-  }
-  const [, , dDesde] = periodo.desde.split("-");
-  const [, , dHasta] = periodo.hasta.split("-");
-  return `${mesNombre} ${Number(dDesde)} – ${Number(dHasta)}, ${anio}`;
-}
-
 function ServiciosTooltip({ active, payload, label, mesNombre }) {
   if (!active || !payload?.length) return null;
   const value = payload[0]?.value ?? 0;
@@ -75,7 +65,6 @@ export default function ReportesMensual() {
   const { data, loading, error, refetch } = useReporteMensual(mes, anio);
   const {
     mesNombre,
-    periodo,
     nuevosBeneficiarios,
     beneficiariosAtendidos,
     serviciosPeriodo,
@@ -91,7 +80,11 @@ export default function ReportesMensual() {
   );
 
   const tieneServicios = serviciosPorDia.some((d) => Number(d.conteo) > 0);
-  const rangoLabel = formatRangoFechas(periodo, mesNombre, anio);
+
+  const rangoLabel = useMemo(() => {
+    if (mesNombre && anio) return `${mesNombre} ${anio}`;
+    return "";
+  }, [mesNombre, anio]);
 
   return (
     <article className="reporte-mensual-shell">
@@ -170,9 +163,9 @@ export default function ReportesMensual() {
                 <div>
                   <h3 className="reporte-mensual-trend-title">Servicios otorgados por día</h3>
                 </div>
-                <span className="reporte-mensual-trend-pill">
-                  {mesNombre} {anio}
-                </span>
+                {rangoLabel ? (
+                  <span className="reporte-mensual-trend-rango">{rangoLabel}</span>
+                ) : null}
               </CardHeader>
               <CardContent className="reporte-mensual-trend-content">
                 {tieneServicios ? (

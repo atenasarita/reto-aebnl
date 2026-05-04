@@ -7,7 +7,9 @@ import {
   DistribucionBeneficiariosEstado,
   DistribucionEtapaVida,
   DistribucionPorGenero,
+  MesMetricasAnual,
   ReporteAllTimes,
+  ReporteAnual,
   ReporteMensual,
   ReporteRangoFechas,
   ServiciosPorDia,
@@ -91,6 +93,58 @@ function rangoMes(mes: number, anio: number): { desde: string; hasta: string; di
   return { desde, hasta, diasEnMes };
 }
 
+function rangoAnio(anio: number): { desde: string; hasta: string } {
+  return { desde: `${anio}-01-01`, hasta: `${anio}-12-31` };
+}
+
+function mapPorMesAnual(
+  servRows: Record<string, unknown>[],
+  nuevosRows: Record<string, unknown>[]
+): MesMetricasAnual[] {
+  const servMap = new Map<number, number>();
+  for (const r of servRows) {
+    const m = num(r.MES ?? r.mes);
+    if (m >= 1 && m <= 12) servMap.set(m, num(r.CONTEO ?? r.conteo));
+  }
+  const nuevosMap = new Map<number, number>();
+  for (const r of nuevosRows) {
+    const m = num(r.MES ?? r.mes);
+    if (m >= 1 && m <= 12) nuevosMap.set(m, num(r.CONTEO ?? r.conteo));
+  }
+  return Array.from({ length: 12 }, (_, i) => {
+    const mes = i + 1;
+    return {
+      mes,
+      servicios_otorgados: servMap.get(mes) ?? 0,
+      nuevos_beneficiarios: nuevosMap.get(mes) ?? 0,
+    };
+  });
+}
+
+function parseYmd(s: string): { y: number; m: number; d: number } {
+  const parts = s.split("-").map(Number);
+  return { y: parts[0] ?? 0, m: parts[1] ?? 0, d: parts[2] ?? 0 };
+}
+
+function addOneDayYmd(y: number, m: number, d: number): string {
+  const dt = new Date(y, m - 1, d + 1);
+  return `${dt.getFullYear()}-${pad2(dt.getMonth() + 1)}-${pad2(dt.getDate())}`;
+}
+
+function eachDayInclusive(desde: string, hasta: string): string[] {
+  const out: string[] = [];
+  let cur = desde;
+  let guard = 0;
+  const maxDays = 4000;
+  while (cur <= hasta && guard++ < maxDays) {
+    out.push(cur);
+    if (cur === hasta) break;
+    const { y, m, d } = parseYmd(cur);
+    cur = addOneDayYmd(y, m, d);
+  }
+  return out;
+}
+
 function mapServiciosPorDia(
   rows: Record<string, unknown>[],
   desde: string,
@@ -124,6 +178,28 @@ function mapServiciosPorDia(
     });
   }
   return result;
+}
+
+function mapServiciosPorRango(rows: Record<string, unknown>[], desde: string, hasta: string): ServiciosPorDia[] {
+  const conteos = new Map<string, number>();
+  rows.forEach((r) => {
+    const fechaRaw = r.FECHA ?? r.fecha;
+    if (!fechaRaw) return;
+    let fechaStr: string;
+    if (fechaRaw instanceof Date) {
+      fechaStr = `${fechaRaw.getFullYear()}-${pad2(fechaRaw.getMonth() + 1)}-${pad2(fechaRaw.getDate())}`;
+    } else {
+      fechaStr = String(fechaRaw).slice(0, 10);
+    }
+    conteos.set(fechaStr, num(r.CONTEO ?? r.conteo));
+  });
+
+  const days = eachDayInclusive(desde, hasta);
+  return days.map((fechaStr, index) => ({
+    fecha: fechaStr,
+    dia: index + 1,
+    conteo: conteos.get(fechaStr) ?? 0,
+  }));
 }
 
 export class ReportesRepository implements IReportesRepository {
@@ -187,6 +263,11 @@ export class ReportesRepository implements IReportesRepository {
         { desde, hasta },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
+      const serviciosDiaRes = await conn.execute(
+        reportesQueries.analyticsServiciosPorDia,
+        { desde, hasta },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
       const generoRes = await conn.execute(
         reportesQueries.analyticsDistribucionGenero,
         { desde, hasta },
@@ -209,6 +290,7 @@ export class ReportesRepository implements IReportesRepository {
       );
 
       const tarjetasRow = (tarjetasRes.rows?.[0] as Record<string, unknown>) ?? {};
+      const serviciosDiaRows = (serviciosDiaRes.rows ?? []) as Record<string, unknown>[];
       const generoRows = (generoRes.rows ?? []) as Record<string, unknown>[];
       const etapaRows = (etapaRes.rows ?? []) as Record<string, unknown>[];
       const estadoRows = (estadoRes.rows ?? []) as Record<string, unknown>[];
@@ -222,6 +304,7 @@ export class ReportesRepository implements IReportesRepository {
         servicios_periodo: num(
           tarjetasRow.SERVICIOS_OTORGADOS_PERIODO ?? tarjetasRow.servicios_otorgados_periodo
         ),
+        servicios_por_dia: mapServiciosPorRango(serviciosDiaRows, desde, hasta),
         beneficiarios_por_genero: mapDistribucionGenero(generoRows),
         beneficiarios_por_etapa_vida: mapDistribucionEtapaVida(etapaRows),
         beneficiarios_por_estado: mapDistribucionEstado(estadoRows),
@@ -281,6 +364,69 @@ export class ReportesRepository implements IReportesRepository {
           tarjetasRow.SERVICIOS_OTORGADOS_PERIODO ?? tarjetasRow.servicios_otorgados_periodo
         ),
         servicios_por_dia: mapServiciosPorDia(serviciosDiaRows, desde, diasEnMes),
+        beneficiarios_por_genero: mapDistribucionGenero(generoRows),
+        beneficiarios_por_etapa_vida: mapDistribucionEtapaVida(etapaRows),
+        beneficiarios_por_estado: mapDistribucionEstado(estadoRows),
+      };
+    } finally {
+      if (conn) await conn.close();
+    }
+  }
+
+  async getAnual(anio: number): Promise<ReporteAnual> {
+    const { desde, hasta } = rangoAnio(anio);
+
+    let conn: oracledb.Connection | undefined;
+    try {
+      conn = await getConnection();
+
+      const tarjetasRes = await conn.execute(
+        reportesQueries.analyticsTarjetas,
+        { desde, hasta },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const servMesRes = await conn.execute(
+        reportesQueries.analyticsServiciosPorMesAnio,
+        { anio },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const nuevosMesRes = await conn.execute(
+        reportesQueries.analyticsNuevosBeneficiariosPorMesAnio,
+        { anio },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const generoRes = await conn.execute(
+        reportesQueries.analyticsDistribucionGenero,
+        { desde, hasta },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const etapaRes = await conn.execute(
+        reportesQueries.analyticsDistribucionEtapaVida,
+        { desde, hasta },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const estadoRes = await conn.execute(
+        reportesQueries.rangoDistribucionBeneficiariosEstado,
+        { desde, hasta },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+
+      const tarjetasRow = (tarjetasRes.rows?.[0] as Record<string, unknown>) ?? {};
+      const servMesRows = (servMesRes.rows ?? []) as Record<string, unknown>[];
+      const nuevosMesRows = (nuevosMesRes.rows ?? []) as Record<string, unknown>[];
+      const generoRows = (generoRes.rows ?? []) as Record<string, unknown>[];
+      const etapaRows = (etapaRes.rows ?? []) as Record<string, unknown>[];
+      const estadoRows = (estadoRes.rows ?? []) as Record<string, unknown>[];
+
+      return {
+        periodo: { desde, hasta },
+        anio,
+        nuevos_beneficiarios: num(tarjetasRow.NUEVOS_REGISTROS ?? tarjetasRow.nuevos_registros),
+        beneficiarios_atendidos: num(tarjetasRow.TOTAL_ATENDIDOS ?? tarjetasRow.total_atendidos),
+        servicios_periodo: num(
+          tarjetasRow.SERVICIOS_OTORGADOS_PERIODO ?? tarjetasRow.servicios_otorgados_periodo
+        ),
+        por_mes: mapPorMesAnual(servMesRows, nuevosMesRows),
         beneficiarios_por_genero: mapDistribucionGenero(generoRows),
         beneficiarios_por_etapa_vida: mapDistribucionEtapaVida(etapaRows),
         beneficiarios_por_estado: mapDistribucionEstado(estadoRows),

@@ -1,116 +1,15 @@
-.reporte-anual-shell {
-  display: grid;
-  gap: 16px;
-}
-
-.reporte-anual-header {
+/* Toggle de serie en cabecera del gráfico anual */
+.reporte-anual-trend-controls {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.reporte-anual-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  justify-content: flex-end;
   flex-wrap: wrap;
-}
-
-.reporte-periodo-switch {
-  width: fit-content;
-  display: inline-flex;
-  border: 1px solid #dbe5f2;
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 3px;
-}
-
-.reporte-periodo-switch button {
-  border: 0;
-  border-radius: 9px;
-  background: transparent;
-  color: #475569;
-  font-size: 14px;
-  font-weight: 700;
-  padding: 8px 14px;
-  cursor: pointer;
-}
-
-.reporte-periodo-switch-link {
-  border: 0;
-  border-radius: 9px;
-  background: transparent;
-  color: #475569;
-  font-size: 14px;
-  font-weight: 700;
-  padding: 8px 14px;
-  text-decoration: none;
-  line-height: 1.2;
-}
-
-.reporte-periodo-switch button.is-active {
-  background: #1d4ed8;
-  color: #ffffff;
-}
-
-.reporte-anual-title {
-  margin: 0;
-  font-size: 1.8rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #0f172a;
-}
-
-.reporte-anual-selectors {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.75rem;
-  padding: 4px 6px 4px 10px;
-}
-
-.reporte-anual-select {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #64748b;
-}
-
-.reporte-anual-select select {
-  border: none;
-  background: transparent;
-  color: #0f172a;
-  padding: 6px 4px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  outline: none;
-  cursor: pointer;
-}
-
-.reporte-anual-placeholder.shadcn-card {
-  border-radius: 1rem;
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-}
-
-.reporte-anual-placeholder .shadcn-card-content {
-  color: #64748b;
-  font-weight: 600;
-  min-height: 120px;
-  display: flex;
-  align-items: center;
+  gap: 10px;
 }
 
 @media (max-width: 700px) {
-  .reporte-anual-header {
-    align-items: stretch;
-    flex-direction: column;
+  .reporte-mensual-trend-header .reporte-anual-trend-controls {
+    width: 100%;
+    justify-content: flex-start;
   }
 }
