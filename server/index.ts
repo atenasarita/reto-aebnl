@@ -37,6 +37,9 @@ if (!fs.existsSync(walletDir)) {
   console.log("✅ Wallet descomprimido");
 }
 
+console.log("📄 sqlnet.ora:", fs.readFileSync(`${walletDir}/sqlnet.ora`, 'utf8'));
+
+
 console.log("TNS_ADMIN:", process.env.TNS_ADMIN);
 
 const app = express();
