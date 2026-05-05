@@ -1,0 +1,93 @@
+.detalle-cita-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 50px;
+}
+
+.detalle-cita-modal {
+  width: 90%;
+  max-width: 1100%;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
+  overflow: hidden;
+  position: relative;
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.detalle-cita-modal h2 {
+  margin: 0;
+  padding: 34px 42px;
+  background: #253f91;
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.detalle-cita-close {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.detalle-cita-modal p {
+  margin: 0 42px;
+  padding: 18px 0;
+  border-bottom: 1px solid #edf1f7;
+  color: #334155;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.detalle-cita-modal p:first-of-type {
+  margin-top: 28px;
+}
+
+.detalle-cita-modal strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.detalle-cita-modal p:last-of-type {
+  min-height: 90px;
+  padding: 18px 20px;
+  margin-top: 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.modificar-cita-btn {
+  display: block;
+  margin: 30px 42px 34px auto;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 10px;
+  background: #253f91;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(37, 63, 145, 0.25);
+}
+
+.modificar-cita-btn:hover {
+  background: #1f3478;
+}
