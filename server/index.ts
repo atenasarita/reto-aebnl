@@ -17,23 +17,27 @@ import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job'
 import fs from "fs";
 import { execSync } from "child_process";
 
-const walletDir = "/tmp/wallet"; // ← cambia a /tmp/wallet
+const walletDir = "/tmp/wallet";
 
 if (!fs.existsSync(walletDir)) {
   console.log("📦 Creando wallet...");
   fs.mkdirSync(walletDir, { recursive: true });
+
   const buffer = Buffer.from(process.env.WALLET_BASE64!, "base64");
   fs.writeFileSync("/tmp/wallet.zip", buffer);
+
   execSync(`unzip /tmp/wallet.zip -d ${walletDir}`);
+
+  // ✅ Sobreescribir sqlnet.ora con la ruta correcta
+  fs.writeFileSync(
+    `${walletDir}/sqlnet.ora`,
+    `WALLET_LOCATION = (SOURCE = (METHOD = file) (METHOD_DATA = (DIRECTORY = "${walletDir}")))\nSSL_SERVER_DN_MATCH=yes\n`
+  );
+
   console.log("✅ Wallet descomprimido");
 }
 
-
 console.log("TNS_ADMIN:", process.env.TNS_ADMIN);
-
-const files = fs.readdirSync(walletDir);
-console.log("FILES:", files);
-
 
 const app = express();
 
