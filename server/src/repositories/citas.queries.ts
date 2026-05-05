@@ -1,20 +1,23 @@
 export const citasQueries ={
     getCitas: `
-    SELECT 
-    id_cita AS "id",
-    motivo AS "title",
-    TO_CHAR(fecha, 'YYYY-MM-DD') || 'T' ||
-    CASE 
-        WHEN LENGTH(hora) = 5 THEN hora || ':00'
-        ELSE hora
-    END AS "start",
-    id_beneficiario AS "idBeneficiario",
-    id_especialista AS "id_especialista",
-    id_catalogo_servicio AS "idServicio",
-    notas AS "notas",
-    estatus AS "estatus"
-FROM citas
-ORDER BY fecha DESC, hora DESC;
+        SELECT 
+            c.id_cita AS "id",
+            c.motivo AS "title",
+            TO_CHAR(c.fecha, 'YYYY-MM-DD') || 'T' ||
+            CASE 
+                WHEN LENGTH(c.hora) = 5 THEN c.hora || ':00'
+                ELSE c.hora
+            END AS "start",
+            c.id_beneficiario AS "idBeneficiario",
+            c.id_especialista AS "id_especialista",
+            e.nombre_completo AS "especialista",
+            c.id_catalogo_servicio AS "idServicio",
+            c.notas AS "notas",
+            c.estatus AS "estatus"
+        FROM citas c
+        JOIN especialistas e 
+            ON c.id_especialista = e.id_especialista
+        ORDER BY c.fecha DESC, c.hora DESC;
     `.trim(),
 
     insertCita: `
