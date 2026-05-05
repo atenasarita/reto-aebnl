@@ -30,15 +30,17 @@ const walletDir = process.env.TNS_ADMIN || '/tmp/wallet';
 if (!fs.existsSync(walletDir)) {
   console.log('📦 Creando wallet...');
   fs.mkdirSync(walletDir, { recursive: true });
-  const buffer = Buffer.from(process.env.WALLET_BASE64!, 'base64');
-  fs.writeFileSync('/tmp/wallet.zip', buffer);
-  execSync(`unzip /tmp/wallet.zip -d ${walletDir}`);
-  fs.writeFileSync(
-    `${walletDir}/sqlnet.ora`,
-    `WALLET_LOCATION = (SOURCE = (METHOD = file) (METHOD_DATA = (DIRECTORY = "${walletDir}")))\nSSL_SERVER_DN_MATCH=yes\n`
-  );
-  console.log('✅ Wallet descomprimido');
+
+  // 2. Convertir base64 → zip
+  const buffer = Buffer.from(process.env.WALLET_BASE64!, "base64");
+  fs.writeFileSync("wallet.zip", buffer);
+
+  // 3. Descomprimir
+  execSync(`unzip wallet.zip -d ${walletDir}`);
+
+  console.log("✅ Wallet descomprimido");
 }
+
 
 process.env.TNS_ADMIN = walletDir;
 // ─────────────────────────────────────────────────────────────
