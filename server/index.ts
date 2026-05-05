@@ -1,3 +1,5 @@
+// index.ts
+
 import express from 'express';
 import path from 'path';
 import cors from 'cors';
@@ -15,23 +17,17 @@ import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job'
 import fs from "fs";
 import { execSync } from "child_process";
 
-const walletDir = "/opt/render/project/src/wallet";
+const walletDir = "/tmp/wallet"; // ← cambia a /tmp/wallet
 
 if (!fs.existsSync(walletDir)) {
   console.log("📦 Creando wallet...");
-
-  // 1. Crear carpeta
   fs.mkdirSync(walletDir, { recursive: true });
-
-  // 2. Convertir base64 → zip
   const buffer = Buffer.from(process.env.WALLET_BASE64!, "base64");
-  fs.writeFileSync("wallet.zip", buffer);
-
-  // 3. Descomprimir
-  execSync(`unzip wallet.zip -d ${walletDir}`);
-
+  fs.writeFileSync("/tmp/wallet.zip", buffer);
+  execSync(`unzip /tmp/wallet.zip -d ${walletDir}`);
   console.log("✅ Wallet descomprimido");
 }
+
 
 console.log("TNS_ADMIN:", process.env.TNS_ADMIN);
 
