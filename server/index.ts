@@ -58,6 +58,10 @@ socket.on('timeout', () => {
   socket.destroy();
 });
 
+console.log("ORACLE_USER:", process.env.ORACLE_USER);
+console.log("ORACLE_CONNECT_STRING:", process.env.ORACLE_CONNECT_STRING);
+console.log("ORACLE_PASSWORD existe:", !!process.env.ORACLE_PASSWORD);
+
 const app = express();
 
 const PORT = Number(process.env.PORT) || 3000;
