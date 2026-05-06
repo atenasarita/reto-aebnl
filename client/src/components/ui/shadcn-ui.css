@@ -1,0 +1,97 @@
+.shadcn-card {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+}
+
+.shadcn-card-header {
+  padding: 18px 18px 8px;
+}
+
+.shadcn-card-title {
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.shadcn-card-description {
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.shadcn-card-content {
+  padding: 10px 18px 18px;
+}
+
+.shadcn-card-footer {
+  padding: 0 18px 18px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.shadcn-chart-container {
+  width: 100%;
+  height: 280px;
+}
+
+.shadcn-chart-tooltip {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  padding: 8px 10px;
+}
+
+.shadcn-chart-tooltip-label {
+  margin: 0 0 6px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.shadcn-chart-tooltip-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+}
+
+.shadcn-chart-tooltip-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: #0f172a;
+  font-size: 12px;
+}
+
+.shadcn-chart-tooltip-item strong {
+  font-size: 12px;
+}
+
+.shadcn-chart-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.shadcn-chart-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.shadcn-chart-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}

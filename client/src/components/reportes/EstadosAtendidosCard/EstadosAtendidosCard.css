@@ -1,0 +1,69 @@
+.reporte-general-panel {
+  border-radius: 16px;
+}
+
+.reporte-general-bento-eyebrow {
+  margin: 0 0 0.75rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #666e85;
+}
+
+.reporte-mensual-estados.shadcn-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.reporte-mensual-estados-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.reporte-mensual-estados-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 0.3rem 0.65rem;
+  align-items: center;
+}
+
+.reporte-mensual-estados-name {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #334155;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.reporte-mensual-estados-value {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #1e3b8a;
+}
+
+.reporte-mensual-estados-bar-wrap {
+  grid-column: 1 / -1;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #f1f5f9;
+  overflow: hidden;
+}
+
+.reporte-mensual-estados-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #1e3b8a 0%, #3b82f6 100%);
+  min-width: 2px;
+  transition: width 0.35s ease;
+}
+
+.reporte-mxmap-hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
