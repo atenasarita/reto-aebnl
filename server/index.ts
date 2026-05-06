@@ -15,7 +15,15 @@ import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job'
 
 
 import fs from "fs";
+
 import { execSync } from "child_process";
+
+try {
+  const result = execSync('nc -zv adb.mx-queretaro-1.oraclecloud.com 1522 2>&1', { timeout: 10000 }).toString();
+  console.log("NC TEST:", result);
+} catch (e: any) {
+  console.log("NC TEST FAILED:", e.stdout?.toString() || e.message);
+}
 
 const walletDir = "/tmp/wallet";
 
