@@ -53,9 +53,14 @@ const PORT = Number(process.env.PORT) || 10000;
 
 app.use(cors({
   origin: [
+<<<<<<< HEAD
     'http://localhost:5173',
     'http://localhost:5174',
     'https://aebnl.netlify.app'
+=======
+    "http://localhost:5173",
+    "https://aebnl.netlify.app"
+>>>>>>> eb9b56a (cors para uso de frontend en netlify)
   ],
   credentials: true
 }));
