@@ -3,6 +3,9 @@
 import express from 'express';
 import path from 'path';
 import cors from 'cors';
+import net from 'net';
+import fs from "fs";
+import { execSync } from "child_process";
 import 'dotenv/config';
 import usuariosRoutes from "./src/routes/usuarios.routes";
 import preregistrosRoutes from './src/routes/preregistros.routes';
@@ -12,18 +15,6 @@ import inventarioRoutes from "./src/routes/inventario.routes";
 import { errorMiddleware } from './src/middlewares/error.middleware';
 import dashboardRoutes from "./src/routes/dashboard.routes";
 import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job';
-
-
-import fs from "fs";
-
-import { execSync } from "child_process";
-
-try {
-  const result = execSync('nc -zv adb.mx-queretaro-1.oraclecloud.com 1522 2>&1', { timeout: 10000 }).toString();
-  console.log("NC TEST:", result);
-} catch (e: any) {
-  console.log("NC TEST FAILED:", e.stdout?.toString() || e.message);
-}
 
 const walletDir = "/tmp/wallet";
 
@@ -36,7 +27,6 @@ if (!fs.existsSync(walletDir)) {
 
   execSync(`unzip /tmp/wallet.zip -d ${walletDir}`);
 
-  // ✅ Sobreescribir sqlnet.ora con la ruta correcta
   fs.writeFileSync(
     `${walletDir}/sqlnet.ora`,
     `WALLET_LOCATION = (SOURCE = (METHOD = file) (METHOD_DATA = (DIRECTORY = "${walletDir}")))\nSSL_SERVER_DN_MATCH=yes\n`
@@ -51,8 +41,22 @@ console.log("SQLNET.ORA:", sqlnetContent);
 const tnsnamesContent = fs.readFileSync(`${walletDir}/tnsnames.ora`, 'utf8');
 console.log("TNSNAMES.ORA:", tnsnamesContent);
 
-
 console.log("TNS_ADMIN:", process.env.TNS_ADMIN);
+
+// TCP Test
+const socket = new net.Socket();
+socket.setTimeout(5000);
+socket.connect(1522, 'adb.mx-queretaro-1.oraclecloud.com', () => {
+  console.log("TCP TEST: ✅ Puerto 1522 alcanzable");
+  socket.destroy();
+});
+socket.on('error', (err) => {
+  console.log("TCP TEST FAILED:", err.message);
+});
+socket.on('timeout', () => {
+  console.log("TCP TEST: ⏱ Timeout - puerto bloqueado o no responde");
+  socket.destroy();
+});
 
 const app = express();
 
@@ -63,12 +67,11 @@ app.listen(PORT, '0.0.0.0', () => {
 });
 
 app.get("/", (req, res) => {
-    res.send("usa index.ts");
+  res.send("usa index.ts");
 });
 
-
 app.use(cors({
-  origin: "http://localhost:5173", // tu frontend
+  origin: "http://localhost:5173",
   credentials: true
 }));
 
