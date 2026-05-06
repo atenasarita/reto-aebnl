@@ -75,7 +75,10 @@ app.get("/", (req, res) => {
 });
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: [
+    "http://localhost:5173",
+    "https://aebnl.netlify.app"
+  ],
   credentials: true
 }));
 
