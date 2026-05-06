@@ -80,11 +80,7 @@ app.use('/api', especialistasRoutes);
 
 app.use(errorMiddleware);
 
-// app.get('/api/citas-test', (req, res) => {
-//   res.json({ ok: true });
-// });
-
-startMembresiaExpirationJob();
+// startMembresiaExpirationJob();
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
