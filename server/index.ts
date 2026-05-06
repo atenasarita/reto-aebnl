@@ -37,7 +37,11 @@ if (!fs.existsSync(walletDir)) {
   console.log("✅ Wallet descomprimido");
 }
 
-console.log("📄 sqlnet.ora:", fs.readFileSync(`${walletDir}/sqlnet.ora`, 'utf8'));
+const sqlnetContent = fs.readFileSync(`${walletDir}/sqlnet.ora`, 'utf8');
+console.log("SQLNET.ORA:", sqlnetContent);
+
+const tnsnamesContent = fs.readFileSync(`${walletDir}/tnsnames.ora`, 'utf8');
+console.log("TNSNAMES.ORA:", tnsnamesContent);
 
 
 console.log("TNS_ADMIN:", process.env.TNS_ADMIN);
