@@ -40,7 +40,9 @@ if (!fs.existsSync(walletDir)) {
   console.log('✅ Wallet descomprimido');
 }
 
-console.log("TNS_ADMIN:", process.env.TNS_ADMIN);
+process.env.TNS_ADMIN = walletDir;
+// ─────────────────────────────────────────────────────────────
+
 
 const app = express();
 const PORT = Number(process.env.PORT) || 10000;
