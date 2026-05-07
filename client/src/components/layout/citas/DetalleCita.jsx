@@ -17,7 +17,7 @@ export default function DetalleCita({cita, onClose}){
                 <p><strong>Servicio:</strong>{cita.extendedProps?.idServicio}</p>
                 <p><strong>Estatus:</strong>{cita.extendedProps?.estatus}</p>
                 <p><strong>Notas:</strong>{cita.extendedProps?.notas || "Sin notas"}</p>
-
+                {/* TODO funcionalidad de boton modificar */}
                 <button className="modificar-cita-btn">
                     Modificar cita
                 </button>
