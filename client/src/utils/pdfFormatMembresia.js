@@ -1,5 +1,6 @@
 ﻿import { jsPDF } from 'jspdf';
 import JsBarcode from 'jsbarcode';
+import logoAebnl from '../assets/aebnl_vertical.png';
 
 const calcAge = (fechaNacimiento) => {
   if (!fechaNacimiento) return '—';
@@ -16,142 +17,125 @@ export const downloadBeneficiarioPdf = (data, id) => {
   const doc = new jsPDF({
     orientation: 'l',
     unit: 'mm',
-    format: [210, 180]
+    format: [190, 65]
   });
   
-  doc.setDrawColor(220, 220, 220);
-  doc.setFillColor(255, 255, 255);
-  doc.roundedRect(10, 10, 190, 160, 4, 4, 'FD');
-
-  doc.setDrawColor(240, 240, 240);
-  doc.line(105, 10, 105, 170);
-
-  const drawField = (label, value, x, y, w) => {
-
-    doc.setFontSize(8);
-    doc.setTextColor(150, 150, 150);
-    doc.setFont('helvetica', 'normal');
-    doc.text(label, x + w / 2, y, { align: 'center' });
-    
-    doc.setFillColor(249, 250, 251);
-    doc.setDrawColor(240, 240, 240);
-    doc.roundedRect(x, y + 2, w, 7.5, 1.5, 1.5, 'FD');
-
-    doc.setFontSize(9);
-    doc.setTextColor(30, 30, 30);
-    
-    let text = typeof value === 'string' && value.trim() !== '' ? value : (value ? value.toString() : '—');
-    if (text === 'NaN') text = '—';
-    
-    // Truncar texto si es mas ancho que su caja
-    if (doc.getTextWidth(text) > w - 4) {
-      while (doc.getTextWidth(text + '...') > w - 4 && text.length > 0) {
-        text = text.slice(0, -1);
-      }
-      text += '...';
-    }
-    
-    doc.text(text, x + w / 2, y + 7.2, { align: 'center', baseline: 'bottom' });
-  };
-
-  const drawTitle = (title, x, y, width) => {
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(26, 54, 93);
-    doc.text(title, x + width / 2, y, { align: 'center' });
-    doc.setFont('helvetica', 'normal');
-  };
-  
-  const { folio, fecha_ingreso, genero, tipo_espina, identificadores = {}, datos_medicos = {}, direccion = {}, membresia = {} } = data;
-  const { nombres, apellido_paterno, apellido_materno, CURP, fecha_nacimiento, estado_nacimiento, telefono, email, fotografia } = identificadores;
-  const { tipo_sanguineo, contacto_nombre, contacto_telefono, contacto_parentesco, valvula, hospital } = datos_medicos;
+  const { folio, fecha_ingreso, tipo_espina, identificadores = {}, datos_medicos = {}, direccion = {}, padres = [] } = data;
+  const { nombres, apellido_paterno, apellido_materno, fecha_nacimiento, estado_nacimiento, telefono, email, fotografia } = identificadores;
+  const { tipo_sanguineo, contacto_nombre, contacto_telefono, valvula, hospital } = datos_medicos;
   const { domicilio_calle, domicilio_cp, domicilio_ciudad, domicilio_estado } = direccion;
-  const fecha_inicio = membresia?.fecha_inicio ?? null;
-  const fecha_fin = membresia?.fecha_fin ?? null;
 
   const nombreCompleto = `${nombres || ''} ${apellido_paterno || ''} ${apellido_materno || ''}`.trim();
-  const diagnostico = tipo_espina && tipo_espina.length > 0 ? tipo_espina.map(e => e.nombre).join(' · ') : '—';
-  const valvulaTexto = (valvula === 1 || valvula === '1' || valvula === true) ? 'Sí' : (valvula === 0 || valvula === '0' || valvula === false) ? 'No' : '—';
-  const contactoEmergencia = `${contacto_nombre || '—'} ${contacto_parentesco ? `(${contacto_parentesco})` : ''}`.trim();
+  let direccionCompleta = `${domicilio_calle || ''}, ${domicilio_ciudad || ''}, ${domicilio_estado || ''}`;
+  if (domicilio_cp) direccionCompleta += `, CP ${domicilio_cp}`;
+  direccionCompleta = direccionCompleta.replace(/^[,\s]+|[,\s]+$/g, '').replace(/,\s*,/g, ',');
 
-  let yL = 20;
-  drawTitle('Beneficiario', 15, yL, 85); yL += 8;
+  const diagnostico = tipo_espina && tipo_espina.length > 0 ? tipo_espina.map(e => e.nombre).join(', ') : '';
+  const valvulaTexto = (valvula === 1 || valvula === '1' || valvula === true) ? 'SI' : (valvula === 0 || valvula === '0' || valvula === false) ? 'NO' : '';
   
-  // FOTO DEL BENEFICIARIO
+  const nombresPadres = padres && padres.length > 0 ? padres.map(p => p.nombre_completo).join('\n') : (contacto_nombre || '');
+
+  doc.setLineWidth(0.3);
+
+  // Marco
+  doc.setDrawColor(0, 0, 0);
+  doc.line(95, 0, 95, 65);
+  doc.setDrawColor(0, 0, 0);
+  doc.rect(0, 0, 190, 65);
+
+  try {
+    doc.addImage(logoAebnl, 'JPEG', 7, 5, 17, 25);
+  } catch (error) {
+    doc.setFillColor(235, 235, 235);
+    doc.rect(5, 5, 20, 25, 'F');
+  }
+
   if (fotografia) {
     try {
-      doc.addImage(`http://localhost:3000${fotografia}`, 'JPEG', 15, yL, 20, 20);
+      doc.addImage(`http://localhost:3000${fotografia}`, 'JPEG', 5, 33, 20, 25);
     } catch(err) {
-      doc.setFillColor(226, 232, 240);
-      doc.rect(15, yL, 20, 20, 'F');
+      doc.setFillColor(235, 235, 235);
+      doc.rect(5, 33, 20, 25, 'F');
     }
   } else {
-    doc.setFillColor(226, 232, 240);
-    doc.rect(15, yL, 20, 20, 'F');
+    doc.setFillColor(235, 235, 235);
+    doc.rect(5, 33, 20, 25, 'F');
   }
 
-  drawField('Nombre', nombreCompleto, 40, yL, 60); yL += 11;
-  drawField('CURP', CURP, 40, yL, 60); yL += 13;
-  
-  drawField('Fecha de nacimiento', formatDate(fecha_nacimiento), 15, yL, 26.5);
-  drawField('Edad', calcAge(fecha_nacimiento), 15 + 29.25, yL, 26.5);
-  drawField('Sexo', genero, 15 + 58.5, yL, 26.5); yL += 14;
-  
-  drawField('Nombre padre / madre', '—', 15, yL, 85); yL += 14;
-  
-  drawField('Folio', folio, 15, yL, 41);
-  drawField('Fecha de alta', formatDate(fecha_ingreso), 15 + 44, yL, 41); yL += 18;
-  
-  drawTitle('Dirección', 15, yL, 85); yL += 8;
-  drawField('Calle', domicilio_calle, 15, yL, 85); yL += 14;
-  
-  drawField('Ciudad', domicilio_ciudad, 15, yL, 41);
-  drawField('Estado', domicilio_estado, 15 + 44, yL, 41); yL += 14;
-  drawField('C.P.', domicilio_cp, 15, yL, 41);
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
 
-  let yR = 20;
-  drawTitle('Contacto', 110, yR, 85); yR += 8;
-  drawField('Email', email, 110, yR, 41);
-  drawField('Teléfono', telefono, 110 + 44, yR, 41); yR += 14;
-  
-  drawField('Contacto de emergencia', contactoEmergencia, 110, yR, 41);
-  drawField('Tel. emergencia', contacto_telefono, 110 + 44, yR, 41); yR += 18;
-  
-  drawTitle('Historial', 110, yR, 85); yR += 8;
-  drawField('Estado de nacimiento', estado_nacimiento, 110, yR, 41);
-  drawField('Hospital', hospital, 110 + 44, yR, 41); yR += 14;
-  
-  drawField('Diagnóstico', diagnostico, 110, yR, 85); yR += 14;
-  
-  drawField('Tipo de sangre', tipo_sanguineo, 110, yR, 41);
-  drawField('Válvula', valvulaTexto, 110 + 44, yR, 41); yR += 14;
-  
-  drawField('Etapa de vida', '—', 110, yR, 41);
-  drawField('¿Vive el beneficiario?', '—', 110 + 44, yR, 41); yR += 14;
-  
-  drawField('Notas', '—', 110, yR, 85); yR += 18;
-  
-  drawTitle('Vigencia de Membresía', 110, yR, 85); yR += 8;
-  drawField('Desde', formatDate(fecha_inicio), 110, yR, 41);
-  drawField('Hasta', formatDate(fecha_fin), 110 + 44, yR, 41);
-  yR += 16;
+  doc.text(`Folio: ${folio || id || ''}`, 65, 6);
+  doc.setTextColor(0, 0, 0);
 
-  // Generar y agregar código de barras basado en el folio
-  if (folio || id) {
-    try {
-      const canvas = document.createElement('canvas');
-      JsBarcode(canvas, String(folio || id), {
-        format: "CODE128",
-        displayValue: false,
-        margin: 5,
-        height: 50
-      });
-      const barcodeDataUrl = canvas.toDataURL("image/jpeg", 1.0);
-      doc.addImage(barcodeDataUrl, 'JPEG', 30, 147.5, 60, 20);
-    } catch (err) {
-      console.error('Error generando código de barras:', err);
-    }
+  doc.text('Nombre:', 28, 11);
+  doc.text(nombreCompleto, 42, 11);
+  doc.line(40, 12, 85, 12);
+
+  doc.text('Dirección:', 28, 17);
+  const dirLines = doc.splitTextToSize(direccionCompleta, 55);
+  doc.text(dirLines, 28, 21);
+
+  doc.text('Tel. Casa:', 50, 32);
+  doc.text(telefono || '', 65, 32);
+  doc.line(65, 33, 90, 33);
+
+  doc.text('Nombre de padres:', 28, 38);
+  const truncPadres = doc.splitTextToSize(nombresPadres || '', 55);
+  for (let i = 0; i < truncPadres.length && i < 2; i++) {
+    const yPos = 42 + (i * 4);
+    doc.text(truncPadres[i], 28, yPos);
+    doc.line(28, yPos + 1, 85, yPos + 1);
   }
+
+  doc.text('Fecha de Expedicion:', 28, 55);
+  doc.text(formatDate(fecha_ingreso), 60, 55);
+
+  const oR = 98;
+
+  doc.text('Padecimiento:', oR, 8);
+  doc.text(diagnostico, oR + 22, 8);
+  
+  doc.text('Tipo de Sangre:', oR, 14);
+  doc.text(tipo_sanguineo || '', oR + 22, 14);
+
+  doc.text('Tiene Valvula?', oR + 50, 14);
+  doc.text(valvulaTexto, oR + 72, 14);
+
+  doc.text('En caso de accidente avisar a:', oR, 20);
+  doc.text(contacto_nombre || '', oR + 2, 25); 
+  doc.line(oR + 1, 26, oR + 45, 26);
+  
+  doc.text('Teléfono:', oR + 50, 25);
+  doc.text(contacto_telefono || '', oR + 65, 25);
+  doc.line(oR + 64, 26, oR + 88, 26);
+
+  doc.text('Correo Eléctronico:', oR, 34);
+  doc.text(email || '', oR + 26, 34);
+
+  doc.setFontSize(6);
+  doc.text('ASOCIACION DE ESPINA BIFIDA', oR + 17, 40, { align: 'center' });
+  doc.text('DE NUEVO LEON ABP', oR + 17, 43, { align: 'center' });
+  
+  doc.text('***********************', oR + 17, 48, { align: 'center' }); 
+  
+  doc.text('Monterrey, NL', oR + 17, 52, { align: 'center' });
+  doc.text('Teléfono: **********', oR + 17, 55, { align: 'center' });
+  doc.text('www.espinabifida.org.mx', oR + 17, 58, { align: 'center' });
+
+  doc.setFontSize(8);
+  doc.text('Datos de Nacimiento:', oR + 45, 40);
+  
+  doc.text('Fecha', oR + 40, 45);
+  doc.text(formatDate(fecha_nacimiento), oR + 60, 45);
+  
+  doc.text('Lugar Nac.', oR + 40, 50);
+  doc.text(estado_nacimiento || '', oR + 60, 50);
+  
+  doc.text('Hospital', oR + 40, 55);
+  const truncHospital = doc.splitTextToSize(hospital || '', 30);
+  doc.text(truncHospital[0] || '', oR + 60, 56);
 
   doc.save(`Beneficiario_${folio || id}.pdf`);
 };
