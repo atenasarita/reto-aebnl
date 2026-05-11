@@ -26,6 +26,8 @@ export default function CalendarioCitas() {
   return "blue";
   }
 
+  
+
   const obtenerCitas = async () => {
     try {
       const response = await fetch("http://localhost:3000/api/citas");

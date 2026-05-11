@@ -1,4 +1,4 @@
-.detalle-cita-overlay {
+/* .detalle-cita-overlay {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.45);
@@ -90,4 +90,128 @@
 
 .modificar-cita-btn:hover {
   background: #1f3478;
+} */
+
+
+.detalle-cita-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: clamp(16px, 4vw, 50px);
+}
+
+.detalle-cita-modal {
+  width: min(100%, 1100px);
+  max-height: calc(100vh - 32px);
+  background: #ffffff;
+  border-radius: clamp(12px, 2vw, 18px);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
+  overflow-y: auto;
+  position: relative;
+  font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.detalle-cita-modal h2 {
+  margin: 0;
+  padding: clamp(24px, 4vw, 34px) clamp(22px, 5vw, 42px);
+  padding-right: 80px;
+  background: #253f91;
+  color: #ffffff;
+  font-size: clamp(24px, 5vw, 36px);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.detalle-cita-close {
+  position: absolute;
+  top: clamp(16px, 3vw, 24px);
+  right: clamp(18px, 4vw, 28px);
+  width: clamp(34px, 5vw, 38px);
+  height: clamp(34px, 5vw, 38px);
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  font-size: clamp(18px, 4vw, 22px);
+  cursor: pointer;
+}
+
+.detalle-cita-modal p {
+  margin: 0 clamp(22px, 5vw, 42px);
+  padding: clamp(14px, 3vw, 18px) 0;
+  border-bottom: 1px solid #edf1f7;
+  color: #334155;
+  font-size: clamp(14px, 2.5vw, 16px);
+  line-height: 1.5;
+}
+
+.detalle-cita-modal p:first-of-type {
+  margin-top: clamp(18px, 4vw, 28px);
+}
+
+.detalle-cita-modal strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #1e293b;
+  font-size: clamp(13px, 2.3vw, 14px);
+  font-weight: 700;
+}
+
+.detalle-cita-modal p:last-of-type {
+  min-height: clamp(70px, 15vw, 90px);
+  padding: clamp(14px, 3vw, 18px) clamp(14px, 4vw, 20px);
+  margin-top: 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.modificar-cita-btn {
+  display: block;
+  margin: clamp(24px, 5vw, 30px) clamp(22px, 5vw, 42px) clamp(28px, 5vw, 34px) auto;
+  padding: clamp(12px, 3vw, 14px) clamp(22px, 5vw, 28px);
+  border: none;
+  border-radius: 10px;
+  background: #253f91;
+  color: #ffffff;
+  font-size: clamp(14px, 2.5vw, 16px);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(37, 63, 145, 0.25);
+}
+
+.modificar-cita-btn:hover {
+  background: #1f3478;
+}
+
+@media (max-width: 600px) {
+  .detalle-cita-overlay {
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  .detalle-cita-modal {
+    width: 100%;
+    max-height: calc(100vh - 24px);
+    border-radius: 14px;
+  }
+
+  .detalle-cita-modal h2 {
+    padding: 24px 60px 24px 22px;
+  }
+
+  .detalle-cita-modal p {
+    margin-left: 22px;
+    margin-right: 22px;
+  }
+
+  .modificar-cita-btn {
+    width: calc(100% - 44px);
+    margin-left: 22px;
+    margin-right: 22px;
+  }
 }
