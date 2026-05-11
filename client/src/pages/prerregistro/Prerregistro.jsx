@@ -1,5 +1,7 @@
 import { useState } from "react";
 import "../styles/Prerregistro.css";
+import { API_URL } from '../api/config';
+
 
 const espinaBifidaOptions = [
   { value: 1, label: "Encefalocele" },
@@ -292,8 +294,6 @@ function StepSuccess({ data }) {
   );
 }
 
-// Flujo de Prerregistro
-const API_BASE = (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) || "http://localhost:3000";
 
 export default function Prerregistro() {
   const [step, setStep] = useState(0);
@@ -336,7 +336,7 @@ export default function Prerregistro() {
     };
 
     try {
-      const res = await fetch(`${API_BASE}/api/preregistros`, {
+      const res = await fetch(`${API_URL}/api/preregistros`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

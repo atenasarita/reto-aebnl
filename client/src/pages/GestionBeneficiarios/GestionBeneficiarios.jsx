@@ -7,6 +7,8 @@ import BeneficiarioGrid from '../../components/layout/beneficiarios/Beneficiario
 import { FiUserPlus, FiSearch } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 
+import { API_URL } from '../api/config';
+
 
 // 1. Fix ESTATUS_OPTIONS — lowercase to match API
 const ESTATUS_OPTIONS = [
@@ -36,7 +38,7 @@ function GestionBeneficiarios() {
     setError('')
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:3000/api/beneficiarios', {
+      const response = await fetch(`${API_URL}/api/beneficiarios`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
@@ -90,7 +92,7 @@ function GestionBeneficiarios() {
     setError('')
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`http://localhost:3000/api/beneficiarios/folio/${query.trim()}`, {
+      const response = await fetch(`${API_URL}/api/beneficiarios/folio/${query.trim()}`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,

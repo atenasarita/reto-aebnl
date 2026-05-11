@@ -3,6 +3,8 @@ import logo from '../../assets/espina.png';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../api/config';
+
 
 function Login() {
   const [usuario, setUsuario] = useState('');
@@ -19,7 +21,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3000/api/usuarios/login', {
+      const response = await fetch(`${API_URL}/api/usuarios/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
