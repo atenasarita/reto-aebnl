@@ -122,6 +122,7 @@
   background: #253f91;
   color: #ffffff;
   font-size: clamp(24px, 5vw, 36px);
+  text-align: center;
   font-weight: 700;
   letter-spacing: 0.3px;
 }
@@ -140,20 +141,23 @@
   cursor: pointer;
 }
 
-.detalle-cita-modal p {
-  margin: 0 clamp(22px, 5vw, 42px);
-  padding: clamp(14px, 3vw, 18px) 0;
+.detalle-cita-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0 28px;
+  margin: 28px clamp(22px, 5vw, 42px) 0;
+}
+
+.detalle-cita-grid p {
+  margin: 0;
+  padding: 18px 0;
   border-bottom: 1px solid #edf1f7;
   color: #334155;
   font-size: clamp(14px, 2.5vw, 16px);
   line-height: 1.5;
 }
 
-.detalle-cita-modal p:first-of-type {
-  margin-top: clamp(18px, 4vw, 28px);
-}
-
-.detalle-cita-modal strong {
+.detalle-cita-grid strong {
   display: block;
   margin-bottom: 6px;
   color: #1e293b;
@@ -161,12 +165,13 @@
   font-weight: 700;
 }
 
-.detalle-cita-modal p:last-of-type {
+.detalle-cita-notas {
+  grid-column: 1 / -1;
   min-height: clamp(70px, 15vw, 90px);
-  padding: clamp(14px, 3vw, 18px) clamp(14px, 4vw, 20px);
   margin-top: 18px;
+  padding: 18px 20px !important;
   background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #e2e8f0 !important;
   border-radius: 12px;
 }
 
@@ -188,7 +193,7 @@
   background: #1f3478;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
   .detalle-cita-overlay {
     align-items: flex-start;
     padding: 12px;
@@ -204,9 +209,13 @@
     padding: 24px 60px 24px 22px;
   }
 
-  .detalle-cita-modal p {
-    margin-left: 22px;
-    margin-right: 22px;
+  .detalle-cita-grid {
+    grid-template-columns: 1fr;
+    margin: 22px;
+  }
+
+  .detalle-cita-notas {
+    grid-column: 1;
   }
 
   .modificar-cita-btn {
