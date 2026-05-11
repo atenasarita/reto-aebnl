@@ -10,13 +10,20 @@ export default function DetalleCita({cita, onClose}){
                 </button>
                 <h2>Detalle de cita</h2>
 
-                <p><strong>Motivo:</strong>{cita.title}</p>
-                <p><strong>Fecha y Hora:</strong>{cita.start?.toLocaleString()}</p>
-                <p><strong>Beneficiario:</strong>{cita.extendedProps?.idBeneficiario}</p>
-                <p><strong>Especialista:</strong>{cita.extendedProps?.especialista}</p>
-                <p><strong>Servicio:</strong>{cita.extendedProps?.idServicio}</p>
-                <p><strong>Estatus:</strong>{cita.extendedProps?.estatus}</p>
-                <p><strong>Notas:</strong>{cita.extendedProps?.notas || "Sin notas"}</p>
+                <div className="detalle-cita-grid">
+                    <p><strong>Motivo:</strong>{cita.title}</p>
+                    <p><strong>Fecha y Hora:</strong>{cita.start?.toLocaleString()}</p>
+
+                    <p><strong>Beneficiario:</strong>{cita.extendedProps?.idBeneficiario}</p>
+                    <p><strong>Especialista:</strong>{cita.extendedProps?.especialista}</p>
+
+                    <p><strong>Servicio:</strong>{cita.extendedProps?.idServicio}</p>
+                    <p><strong>Estatus:</strong>{cita.extendedProps?.estatus}</p>
+                    <p className="detalle-cita-notas">
+                        <strong>Notas:</strong>{cita.extendedProps?.notas || "Sin notas"}
+                    </p>
+                </div>
+                
                 {/* TODO funcionalidad de boton modificar */}
                 <button className="modificar-cita-btn">
                     Modificar cita
