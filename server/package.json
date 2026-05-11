@@ -4,8 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --watch src --ext ts --exec tsx index.ts",
-    "build": "tsc"
+    "dev": "nodemon --watch src --ext ts --exec tsx index.ts",
+    "build": "tsc",
+    "start": "node scripts/setup-wallet.js && node dist/index.js"
   },
   "keywords": [],
   "author": "",
