@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import "../styles/Recibos.css";
 
-import { API_URL } from '../api/config';
+import { API_URL } from '../../utils/config'
 
 const fmt = (n) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(n ?? 0);

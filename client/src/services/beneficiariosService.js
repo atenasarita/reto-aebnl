@@ -1,4 +1,4 @@
-import { API_URL } from '../api/config';
+import { API_URL } from '../utils/config'
 
 export async function fetchSiguienteFolio(token) {
   const response = await fetch(`${API_URL}/siguiente-folio`, {

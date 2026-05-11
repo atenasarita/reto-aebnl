@@ -7,7 +7,7 @@ import BeneficiarioGrid from '../../components/layout/beneficiarios/Beneficiario
 import { FiUserPlus, FiSearch } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 
-import { API_URL } from '../api/config';
+import { API_URL } from '../../utils/config'
 
 
 // 1. Fix ESTATUS_OPTIONS — lowercase to match API

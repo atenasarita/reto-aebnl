@@ -7,7 +7,7 @@ import BeneficiarioModal from '../BeneficiarioDetalle/BeneficiarioModal'
 import { espinaBifidaOptions } from '../../../../utils/espinaBifidaTypes'
 import { downloadBeneficiarioPdf } from '../../../../utils/pdfFormatMembresia'
 
-import { API_URL } from '../api/config';
+import { API_URL } from '../../../../utils/config'
 
 
 const ITEMS_PER_PAGE = 8

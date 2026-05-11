@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "../styles/Prerregistro.css";
-import { API_URL } from '../api/config';
+
+import { API_URL } from '../../utils/config'
 
 
 const espinaBifidaOptions = [

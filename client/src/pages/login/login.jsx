@@ -3,7 +3,8 @@ import logo from '../../assets/espina.png';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { API_URL } from '../api/config';
+
+import { API_URL } from '../../utils/config'
 
 
 function Login() {

@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import logo from "../../../assets/logo.png";
 import { Bell } from "lucide-react";
-import { API_URL } from '../api/config';
+
+import { API_URL } from '../../../utils/config'
 
 
 const NAV_LINKS = [
