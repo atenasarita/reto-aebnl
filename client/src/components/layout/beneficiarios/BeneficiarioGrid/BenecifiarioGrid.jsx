@@ -7,6 +7,9 @@ import BeneficiarioModal from '../BeneficiarioDetalle/BeneficiarioModal'
 import { espinaBifidaOptions } from '../../../../utils/espinaBifidaTypes'
 import { downloadBeneficiarioPdf } from '../../../../utils/pdfFormatMembresia'
 
+import { API_URL } from '../../../../utils/config'
+
+
 const ITEMS_PER_PAGE = 8
 
 function BeneficiarioGrid({ data, loading }) {
@@ -20,7 +23,7 @@ function BeneficiarioGrid({ data, loading }) {
 
   async function handleView(id) {
     const token = localStorage.getItem('token')
-    const res = await fetch(`http://localhost:3000/api/beneficiarios/${id}`, {
+    const res = await fetch(`${API_URL}/api/beneficiarios/${id}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const data = await res.json()
@@ -30,7 +33,7 @@ function BeneficiarioGrid({ data, loading }) {
   async function handleDownloadPdf(id) {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:3000/api/beneficiarios/${id}`, {
+      const res = await fetch(`${API_URL}/api/beneficiarios/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
