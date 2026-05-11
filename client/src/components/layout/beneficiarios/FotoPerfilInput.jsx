@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { FaUpload } from 'react-icons/fa'
 
+
+const API_URL = "http://localhost:3000";
+
 function FotoPerfilInput({
     value, onChange, onError
 }){
@@ -10,11 +13,7 @@ function FotoPerfilInput({
 
     useEffect(() => {
         if(value && typeof value === 'string'){
-            if(value.startsWith('/uploads/')){
-                setPreview(`http://localhost:3000${value}`);
-            } else {
-                setPreview(value);
-            }
+            setPreview(value);
         } else {
             setPreview('');
         }
@@ -35,16 +34,16 @@ function FotoPerfilInput({
         onError?.('');
         setSubiendo(true);
 
-        try {
-            // Preview local
-            const localPreview = URL.createObjectURL(file);
-            setPreview(localPreview);
+        const localPreview = URL.createObjectURL(file);
+        setPreview(localPreview);
 
+        try {
             const token = localStorage.getItem('token');
+
             const formData = new FormData();
             formData.append('fotografia', file);
 
-            const response = await fetch('http://localhost:3000/api/beneficiarios/upload-foto', {
+            const response = await fetch(`${API_URL}/api/beneficiarios/upload-foto`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -53,15 +52,18 @@ function FotoPerfilInput({
             });
 
             const data = await response.json();
-            console.log('ruta devuelta:', data.ruta);
-            console.log('url completa:', `http://localhost:3000${data.ruta}`);
+
+            // console.log('ruta devuelta:', data.ruta);
+            // console.log('url completa:', `http://localhost:3000${data.ruta}`);
 
             if(!response.ok){
                 throw new Error(data.message || 'Error al subir la fotografia');
             }
+            console.log("ruta: ", data.ruta);
 
             // Guardar en el formaulario solo la ruta
             onChange?.(data.ruta);
+            setPreview(data.ruta);
 
         } catch(error) {
             console.error('Error subiendo foto: ', error);
@@ -69,6 +71,8 @@ function FotoPerfilInput({
             setPreview('');
         } finally {
             setSubiendo(false);
+            URL.revokeObjectURL(localPreview);
+            e.target.value = "";
         }
     };
 

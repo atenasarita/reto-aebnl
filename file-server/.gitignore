@@ -12,3 +12,5 @@ Wallet_*/
 *.jks
 *.ora
 .DS_Store
+upload/foto/*
+!upload/foto/.gitkeep

@@ -15,7 +15,7 @@ const UPLOAD_SECRET = process.env.UPLOAD_SECRET || '';
 
 app.use(cors());
 
-const uploadDir = path.join(process.cwd(), 'uploads',  'fotos');
+const uploadDir = path.join(process.cwd(), 'upload',  'foto');
 
 if(!fs.existsSync(uploadDir)){
     fs.mkdirSync(uploadDir, {recursive: true});
@@ -57,14 +57,14 @@ const uploadFoto = multer({
     },
 });
 
-app.use('/fotos', express.static(uploadDir));
+app.use('/foto', express.static(uploadDir));
 
-app.post('/uploads/foto', validarToken, uploadFoto.single('fotografia'), (req, res) => {
+app.post('/upload/foto', validarToken, uploadFoto.single('fotografia'), (req, res) => {
     if(!req.file){
         return res.status(400).json({message: 'No se recibio ninguna foto'});
     }
 
-    const url = `${FILES_BASE_URL}/fotos/${req.file.filename}`;
+    const url = `${FILES_BASE_URL}/foto/${req.file.filename}`;
 
     return res.status(200).json({
         url,

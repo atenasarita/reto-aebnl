@@ -11,6 +11,7 @@ import {
   createIdentificadoresSchema,
 } from '../schemas/beneficiarios.schemas';
 import { uploadFoto } from '../middlewares/upload.middleware';
+import { subirFotoAServidor } from '../services/fileServer.service';
 
 const router = Router();
 
@@ -97,15 +98,24 @@ router.post(
   authenticateJWT,
   authorizeRoles('administrador', 'operador'),
   uploadFoto.single('fotografia'),
-  (req, res) => {
-    if (!req.file) {
-      return res.status(400).json({ message: 'No se recibio ninguna foto' });
-    }
+  async (req, res) => {
+    try {
+      if(!req.file){
+        return res.status(400).json({ message: 'No se recibio nunguna foto'});
+      }
 
-    return res.status(200).json({
-      ruta: `/uploads/fotos/${req.file.filename}`,
-      nombre: req.file.filename,
-    });
+      const resultado = await subirFotoAServidor(req.file);
+
+      return res.status(200).json({
+        ruta: resultado.url,
+        nombre: resultado.nombre,
+      });
+    } catch (error){
+      console.error(error);
+      return res.status(500).json({
+        message: 'Error al subir la foto al servidor de archivos',
+      });
+    }
   }
 );
 
