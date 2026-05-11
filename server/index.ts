@@ -1,20 +1,51 @@
+import 'dotenv/config';
+
+
 import express from 'express';
 import cors from 'cors';
-import 'dotenv/config';
+import fs from 'fs';
+import net from 'net';
+import { execSync } from 'child_process';
 import usuariosRoutes from "./src/routes/usuarios.routes";
 import preregistrosRoutes from './src/routes/preregistros.routes';
 import recibosRoutes from './src/routes/recibos.routes';
 import beneficiariosRoutes from "./src/routes/beneficiarios.routes";
 import inventarioRoutes from "./src/routes/inventario.routes";
-import { errorMiddleware } from './src/middlewares/error.middleware.ts';
+import { errorMiddleware } from './src/middlewares/error.middleware';
 import dashboardRoutes from "./src/routes/dashboard.routes";
 import reportesRoutes from "./src/routes/reportes.routes";
 import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job';
 
-const app = express();
-const PORT = 3000;
+// ── Wallet setup ──────────────────────────────────────────────
+const walletDir = process.env.TNS_ADMIN || '/tmp/wallet';
 
-app.use(cors());
+if (!fs.existsSync(walletDir)) {
+  console.log('📦 Creando wallet...');
+  fs.mkdirSync(walletDir, { recursive: true });
+  const buffer = Buffer.from(process.env.WALLET_BASE64!, 'base64');
+  fs.writeFileSync('/tmp/wallet.zip', buffer);
+  execSync(`unzip /tmp/wallet.zip -d ${walletDir}`);
+  fs.writeFileSync(
+    `${walletDir}/sqlnet.ora`,
+    `WALLET_LOCATION = (SOURCE = (METHOD = file) (METHOD_DATA = (DIRECTORY = "${walletDir}")))\nSSL_SERVER_DN_MATCH=yes\n`
+  );
+  console.log('✅ Wallet descomprimido');
+}
+
+process.env.TNS_ADMIN = walletDir;
+// ─────────────────────────────────────────────────────────────
+
+
+const app = express();
+const PORT = Number(process.env.PORT) || 10000;
+
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://aebnl.netlify.app'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -33,6 +64,6 @@ app.use(errorMiddleware);
 
 startMembresiaExpirationJob();
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
 });

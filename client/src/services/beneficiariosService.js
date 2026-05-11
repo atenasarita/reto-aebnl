@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api/beneficiarios';
+import { API_URL } from '../utils/config'
 
 export async function fetchSiguienteFolio(token) {
   const response = await fetch(`${API_URL}/siguiente-folio`, {

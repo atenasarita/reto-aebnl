@@ -1,4 +1,6 @@
-import { BASE_URL, getAuthHeaders, parseErrorMessage } from "./apiService";
+import { getAuthHeaders, parseErrorMessage } from "./apiService";
+import { API_URL } from '../utils/config'
+
 
 function toNumber(value) {
   const n = Number(value);
@@ -94,7 +96,7 @@ function normalizeReporteGeneral(payload) {
 }
 
 export async function getReporteGeneral() {
-  const response = await fetch(`${BASE_URL}/api/reportes/analytics`, {
+  const response = await fetch(`${API_URL}/api/reportes/analytics`, {
     method: "GET",
     headers: getAuthHeaders(),
   });
@@ -232,7 +234,7 @@ function normalizeReporteMensual(payload, mes, anio) {
 export async function getReporteMensual(mes, anio) {
   const params = new URLSearchParams({ mes: String(mes), anio: String(anio) });
   const response = await fetch(
-    `${BASE_URL}/api/reportes/analytics/mensual?${params.toString()}`,
+    `${API_URL}/api/reportes/analytics/mensual?${params.toString()}`,
     {
       method: "GET",
       headers: getAuthHeaders(),
@@ -290,7 +292,7 @@ function normalizeReporteAnual(payload, anio) {
 export async function getReporteAnual(anio) {
   const params = new URLSearchParams({ anio: String(anio) });
   const response = await fetch(
-    `${BASE_URL}/api/reportes/analytics/anual?${params.toString()}`,
+    `${API_URL}/api/reportes/analytics/anual?${params.toString()}`,
     {
       method: "GET",
       headers: getAuthHeaders(),
@@ -355,7 +357,7 @@ export async function getReportePeriodo(desde, hasta) {
     hasta: String(hasta),
   });
   const response = await fetch(
-    `${BASE_URL}/api/reportes/analytics/periodo?${params.toString()}`,
+    `${API_URL}/api/reportes/analytics/periodo?${params.toString()}`,
     {
       method: "GET",
       headers: getAuthHeaders(),
