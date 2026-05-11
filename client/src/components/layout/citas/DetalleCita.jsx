@@ -1,8 +1,13 @@
 import "./detalleCita.css"
-export default function DetalleCita({cita, onClose}){
+import { useState } from "react";
+import CitasPop from "../../ui/CitasPop";
+
+export default function DetalleCita({cita, onClose, onRefresh}){
+    const [popupAbierto, setPopupAbierto] = useState(false);
     if (!cita) return null;
 
     return (
+        <>
         <div className="detalle-cita-overlay">
             <div className="detalle-cita-modal">
                 <button className="detalle-cita-close" onClick={onClose}>
@@ -18,10 +23,25 @@ export default function DetalleCita({cita, onClose}){
                 <p><strong>Estatus:</strong>{cita.extendedProps?.estatus}</p>
                 <p><strong>Notas:</strong>{cita.extendedProps?.notas || "Sin notas"}</p>
                 {/* TODO funcionalidad de boton modificar */}
-                <button className="modificar-cita-btn">
+                <button className="modificar-cita-btn"
+                    onClick={() => {
+                        onClose();
+                        setPopupAbierto(true);
+                    }}
+                >
                     Modificar cita
                 </button>
             </div>
         </div>
+
+        <CitasPop
+                open={popupAbierto}
+                onClose={() => setPopupAbierto(false)}
+                onSuccess={() => {
+                    setPopupAbierto(false);
+                    onRefresh?.();
+                }}
+            />
+        </>
     );
 }
