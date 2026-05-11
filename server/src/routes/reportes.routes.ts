@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ReportesRepository } from "../repositories/reportes.repository.ts";
+import { ReportesRepository } from "../repositories/reportes.repository";
 import ReportesController from "../controllers/reportes.controller";
 import ReportesHandler from "../handlers/reportes.handler";
 import { authenticateJWT, authorizeRoles } from "../middlewares/auth.middleware";
