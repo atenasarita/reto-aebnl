@@ -1,10 +1,12 @@
+import 'dotenv/config';
+
+
 import express from 'express';
 import path from 'path';
 import cors from 'cors';
 import fs from 'fs';
 import net from 'net';
 import { execSync } from 'child_process';
-import 'dotenv/config';
 import usuariosRoutes from "./src/routes/usuarios.routes";
 import preregistrosRoutes from './src/routes/preregistros.routes';
 import recibosRoutes from './src/routes/recibos.routes';
@@ -16,7 +18,7 @@ import reportesRoutes from "./src/routes/reportes.routes";
 import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job';
 
 // ── Wallet setup ──────────────────────────────────────────────
-const walletDir = '/tmp/wallet';
+const walletDir = process.env.TNS_ADMIN || '/tmp/wallet';
 
 if (!fs.existsSync(walletDir)) {
   console.log('📦 Creando wallet...');
@@ -33,6 +35,7 @@ if (!fs.existsSync(walletDir)) {
 
 process.env.TNS_ADMIN = walletDir;
 // ─────────────────────────────────────────────────────────────
+
 
 const app = express();
 const PORT = Number(process.env.PORT) || 10000;
