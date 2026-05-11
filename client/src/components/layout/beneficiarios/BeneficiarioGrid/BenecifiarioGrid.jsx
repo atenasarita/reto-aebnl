@@ -39,7 +39,13 @@ function BeneficiarioGrid({ data, loading }) {
       }
       
       const data = await res.json();
-      
+   
+      const resPadres = await fetch(`http://localhost:3000/api/beneficiarios/${id}/padres`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (resPadres.ok) {
+        data.padres = await resPadres.json();
+      }
       downloadBeneficiarioPdf(data, id);
     } catch (error) {
       console.error('Error al descargar el PDF:', error);
