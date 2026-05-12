@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { FaUpload } from 'react-icons/fa'
-import { API_URL } from '../../../../utils/config'
+import { API_URL } from '../../../utils/config';
 
 function FotoPerfilInput({
     value, onChange, onError
