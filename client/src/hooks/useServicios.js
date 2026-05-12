@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from '../utils/config'
+
 
 export default function useServicios() {
   const [tipos, setTipos] = useState([]);
@@ -12,7 +14,7 @@ export default function useServicios() {
       const token = localStorage.getItem('token');
 
       const res = await axios.get(
-        'http://localhost:3000/api/registro_servicios/tipos', 
+        `${API_URL}/api/registro_servicios/tipos`, 
         {
           headers: {
             Authorization: `Bearer ${token}`,

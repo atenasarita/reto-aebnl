@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { API_URL } from '../utils/config'
+
 
 export default function useBeneficiarios() {
   const [data, setData] = useState([])
@@ -13,7 +15,7 @@ export default function useBeneficiarios() {
       const token = localStorage.getItem('token')
 
       const response = await fetch(
-        'http://localhost:3000/api/beneficiarios',
+        `${API_URL}/api/beneficiarios`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -50,7 +52,7 @@ export default function useBeneficiarios() {
       const token = localStorage.getItem('token')
 
       const response = await fetch(
-        `http://localhost:3000/api/beneficiarios/folio/${query.trim()}`,
+        `${API_URL}/api/beneficiarios/folio/${query.trim()}`,
         {
           headers: {
             'Content-Type': 'application/json',

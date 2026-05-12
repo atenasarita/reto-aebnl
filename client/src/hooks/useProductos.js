@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { API_URL } from '../utils/config'
 
 export function useProductos() {
   const [productos, setProductos] = useState([])
@@ -10,7 +11,7 @@ export function useProductos() {
     setError(null)
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:3000/api/inventario', {
+      const response = await fetch(`${API_URL}/api/inventario`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react"
-
-const API_URL = "http://localhost:3000/api"
+import { API_URL } from '../utils/config'
 
 export default function useAgendaHoy() {
   const [agendaItems, setAgendaItems] = useState([])
@@ -14,7 +13,7 @@ export default function useAgendaHoy() {
     try {
       const token = localStorage.getItem("token")
 
-      const res = await fetch(`${API_URL}/dashboard/agenda-hoy`, {
+      const res = await fetch(`${API_URL}/api/dashboard/agenda-hoy`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

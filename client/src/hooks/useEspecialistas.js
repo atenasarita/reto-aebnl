@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
+import { API_URL } from '../utils/config'
+
 
 export function useEspecialistas(idEspecialidad) {
   const [especialistas, setEspecialistas] = useState([])
@@ -18,7 +20,7 @@ export function useEspecialistas(idEspecialidad) {
       const token = localStorage.getItem('token')
 
       const response = await fetch(
-        `http://localhost:3000/api/registro_servicios/especialistas/${idEspecialidad}`,
+        `${API_URL}/api/registro_servicios/especialistas/${idEspecialidad}`,
         {
           headers: {
             'Content-Type': 'application/json',
