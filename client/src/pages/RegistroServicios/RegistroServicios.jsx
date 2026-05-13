@@ -17,7 +17,6 @@ import useAgendaHoy from "../../hooks/useCitasHoy";
 import useServicios from "../../hooks/useServicios";
 import { useEspecialistas } from "../../hooks/useEspecialistas";
 
-
 import StepBusqueda from "../../components/layout/registroServicios/StepBusqueda";
 import StepDetalles from "../../components/layout/registroServicios/StepDetalles";
 import StepInsumos from "../../components/layout/registroServicios/StepInsumos";
@@ -34,11 +33,11 @@ export default function RegistroServicios() {
   const [pasoActual, setPasoActual] = useState(1);
   const [query, setQuery] = useState("");
 
-
   const [beneficiarioSeleccionado, setBeneficiarioSeleccionado] = useState(null);
   const [citaSeleccionada, setCitaSeleccionada] = useState(null);
 
-  const { data, loading, fetchBeneficiarios } = useBeneficiarios()
+  const { data, loading } = useBeneficiarios()
+  
   const { agendaItems, loading: loadingCitas } = useAgendaHoy();  
 
   const [fecha, setFecha] = useState("");
@@ -49,7 +48,6 @@ export default function RegistroServicios() {
   const [insumos, setInsumos] = useState([]);
   const { productos, loading: loadingProductos, error: errorProductos } = useProductos()
   const { especialistas, loading: loadingMedicos } = useEspecialistas(tipoServicio);
-
 
   const [metodoPago, setMetodoPago] = useState("");
   const [montoPagado, setMontoPagado] = useState("");
@@ -75,21 +73,16 @@ export default function RegistroServicios() {
 
   const servicioLabel = tiposOptions.find(t => t.value === tipoServicio)?.label;
 
-  useEffect(() => {
-    if (query.length >= 2) {
-      fetchBeneficiarios(query)
-    }
-  }, [query])
+  // ✅ Quitamos el useEffect que llamaba fetchBeneficiarios(query)
+  // El filtrado se hace localmente sobre data que ya está cargada
 
   const resultados = query.length >= 2
     ? data
         .filter((b) => {
           const nombre = `${b.identificadores?.nombres ?? ''} ${b.identificadores?.apellido_paterno ?? ''}`.toLowerCase()
           const folio = b.folio?.toLowerCase() ?? ''
-          const curp = b.identificadores?.curp?.toLowerCase() ?? ''
-
+          const curp = b.identificadores?.CURP?.toLowerCase() ?? ''
           const q = query.toLowerCase()
-
           return (
             nombre.includes(q) ||
             folio.includes(q) ||
@@ -99,7 +92,7 @@ export default function RegistroServicios() {
         .map((b) => ({
           folio: b.folio,
           nombre: `${b.identificadores?.nombres ?? ''} ${b.identificadores?.apellido_paterno ?? ''}`.trim(),
-          curp: b.identificadores?.curp ?? '',
+          curp: b.identificadores?.CURP ?? '',
           membresia: b.estado === 'activo' ? 'Activa' : 'Inactiva',
         }))
   : []
@@ -112,12 +105,11 @@ export default function RegistroServicios() {
     medico: c.especialista_nombre,
   }));
 
-
   const beneficiarioFinal = beneficiarioSeleccionado
-  ? resultados.find((b) => b.folio === beneficiarioSeleccionado)
-  : citaSeleccionada
-  ? citasFormateadas.find((c) => c.id === citaSeleccionada)
-  : null;
+    ? resultados.find((b) => b.folio === beneficiarioSeleccionado)
+    : citaSeleccionada
+    ? citasFormateadas.find((c) => c.id === citaSeleccionada)
+    : null;
 
   const puedeAvanzar = () => {
     if (pasoActual === 1) return !!(beneficiarioSeleccionado || citaSeleccionada);
@@ -143,21 +135,18 @@ export default function RegistroServicios() {
   }
 
   return (
-    
     <div className='page'>
-        <div className='description'>
-          <h1 className='title'>Registrar Nuevo Servicio</h1>
-          <h2 className='subtitle'>Complete los datos para dar de alta un nuevo servicio medico.</h2>
-        </div>
+      <div className='description'>
+        <h1 className='title'>Registrar Nuevo Servicio</h1>
+        <h2 className='subtitle'>Complete los datos para dar de alta un nuevo servicio medico.</h2>
+      </div>
       <div className='inner'>
 
-        {/* Tabs */}
         <nav className='tabsWrap'>
           {PASOS.map((paso) => {
             const activo = pasoActual === paso.id;
             const completado = pasoActual > paso.id;
             const { Icon } = paso;
-
             return (
               <div
                 key={paso.id}
@@ -171,24 +160,23 @@ export default function RegistroServicios() {
         </nav>
 
         <div className='grid'>
-
-          {/* MAIN */}
           <main className='main'>
 
-          {pasoActual === 1 && (
-            <StepBusqueda
-              setQuery={setQuery}
-              resultados={resultados}
-              loading={loading}
-              loadingCitas={loadingCitas}
-              beneficiarioSeleccionado={beneficiarioSeleccionado}
-              setBeneficiarioSeleccionado={setBeneficiarioSeleccionado}
-              citaSeleccionada={citaSeleccionada}
-              setCitaSeleccionada={setCitaSeleccionada}
-              CITAS_HOY={citasFormateadas}  
-            />
-          )}
-            
+            {pasoActual === 1 && (
+              <StepBusqueda
+                setQuery={setQuery}
+                query={query} 
+                resultados={resultados}
+                loading={loading}
+                loadingCitas={loadingCitas}
+                beneficiarioSeleccionado={beneficiarioSeleccionado}
+                setBeneficiarioSeleccionado={setBeneficiarioSeleccionado}
+                citaSeleccionada={citaSeleccionada}
+                setCitaSeleccionada={setCitaSeleccionada}
+                CITAS_HOY={citasFormateadas}  
+              />
+            )}
+
             {pasoActual === 2 && (
               <StepDetalles
                 fecha={fecha}
@@ -204,7 +192,6 @@ export default function RegistroServicios() {
               />
             )}
 
-
             {pasoActual === 3 && (
               <StepInsumos
                 insumos={insumos}
@@ -214,8 +201,6 @@ export default function RegistroServicios() {
                 errorProductos={errorProductos}
               />
             )}
-
-            
 
             {pasoActual === 4 && (
               <StepFinanzas
@@ -229,7 +214,6 @@ export default function RegistroServicios() {
               />
             )}
 
-            {/* NAV */}
             <div className='navRow'>
               {pasoActual > 1 && (
                 <button
@@ -245,9 +229,7 @@ export default function RegistroServicios() {
               {pasoActual < totalPasos ? (
                 <button
                   className='btnPrimary'
-                  style={{
-                    opacity: puedeAvanzar() ? 1 : 0.2,
-                  }}
+                  style={{ opacity: puedeAvanzar() ? 1 : 0.2 }}
                   onClick={() => puedeAvanzar() && setPasoActual(pasoActual + 1)}
                 >
                   Continuar <ChevronRight size={16} />
@@ -264,10 +246,7 @@ export default function RegistroServicios() {
 
           </main>
 
-          {/* ASIDE */}
           <aside className='aside'>
-            
-            {/* Header */}
             <div className='asideHeader'>
               <div className='asideIconWrap'>
                 <ClipboardList size={20} color="#1e3b8a" />
@@ -275,7 +254,6 @@ export default function RegistroServicios() {
               <h3 className='asideTitle'>Resumen del Registro</h3>
             </div>
 
-            {/* Progreso */}
             <div className='procesoBadge'>
               <p className='procesoLabel'>ESTADO DEL PROCESO</p>
               <p className='procesoStep'>Paso {pasoActual} de {totalPasos}</p>
@@ -284,7 +262,6 @@ export default function RegistroServicios() {
               </div>
             </div>
 
-            {/* Datos */}
             <dl className='dl'>
               <div className='dlRow'>
                 <dt>Beneficiario:</dt>
@@ -304,7 +281,6 @@ export default function RegistroServicios() {
               </div>
             </dl>
 
-            {/* Totales */}
             <div className='totales'>
               <div className='totalesRow'>
                 <span>Total:</span>
@@ -322,7 +298,6 @@ export default function RegistroServicios() {
               <p className='totalesExtra'>Método: {metodoPago || "Pendiente"}</p>
               <p className='totalesExtra'>Pagado: ${(parseFloat(montoPagado) || 0).toFixed(2)}</p>
             </div>
-
           </aside>
         </div>
       </div>

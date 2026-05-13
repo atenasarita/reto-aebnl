@@ -9,6 +9,7 @@ import Button from "../../ui/Button"
 
 export default function StepBusqueda({
   setQuery,
+  query,
   resultados = [],
   loading,
   loadingCitas,
@@ -54,8 +55,10 @@ export default function StepBusqueda({
           <div className='resultList'>  
             {loading ? (
               <p className='empty'>Buscando...</p>
-            ) : resultados.length === 0 ? (
+            ) : resultados.length === 0 && query?.length >= 2 ? (
               <p className='empty'>Sin resultados</p>
+            ) : resultados.length === 0 ? (
+              <p className='empty'>Escribe al menos 2 caracteres para buscar</p>
             ) : (
               resultados.map((b) => {
                 const activo = beneficiarioSeleccionado === b.folio;
