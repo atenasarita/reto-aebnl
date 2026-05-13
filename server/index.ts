@@ -15,6 +15,8 @@ import serviciosRoutes from "./src/routes/servicios.routes";
 import { errorMiddleware } from './src/middlewares/error.middleware';
 import dashboardRoutes from "./src/routes/dashboard.routes";
 import reportesRoutes from "./src/routes/reportes.routes";
+import especialistasRoutes from './src/routes/especialistas.routes';
+
 import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job';
 
 // ── Wallet setup ──────────────────────────────────────────────
@@ -61,6 +63,7 @@ app.use('/api/recibos', recibosRoutes);
 app.use('/api', dashboardRoutes);
 app.use('/api/reportes', reportesRoutes);
 app.use('/api', serviciosRoutes)
+app.use('/api', especialistasRoutes);
 
 app.use(errorMiddleware);
 
