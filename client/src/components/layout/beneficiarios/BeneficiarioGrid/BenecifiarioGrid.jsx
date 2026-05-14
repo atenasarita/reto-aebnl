@@ -43,7 +43,7 @@ function BeneficiarioGrid({ data, loading }) {
       
       const data = await res.json();
    
-      const resPadres = await fetch(`http://localhost:3000/api/beneficiarios/${id}/padres`, {
+      const resPadres = await fetch(`${API_URL}/api/beneficiarios/${id}/padres`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (resPadres.ok) {
