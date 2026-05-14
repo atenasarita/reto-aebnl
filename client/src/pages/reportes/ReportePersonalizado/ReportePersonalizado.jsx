@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useOutletContext } from "react-router-dom";
 import PersonalizadoDemograficosGrid from "../../../components/reportes/ReportePersonalizado/PersonalizadoDemograficosGrid/PersonalizadoDemograficosGrid";
 import PersonalizadoFiltrosDemograficos from "../../../components/reportes/ReportePersonalizado/PersonalizadoFiltrosDemograficos/PersonalizadoFiltrosDemograficos";
 import PersonalizadoLedgerDimensiones from "../../../components/reportes/ReportePersonalizado/PersonalizadoLedgerDimensiones/PersonalizadoLedgerDimensiones";
@@ -26,10 +27,18 @@ import {
   resolverGranularidadServicios,
   resolverSeleccion,
   textoMetricas,
+  tituloServiciosPorGranularidad,
 } from "../../../components/reportes/ReportePersonalizado/reportePersonalizado.utils";
+import {
+  buildCsvReportePersonalizado,
+  exportTimestampSlug,
+  sanitizeFilenamePart,
+  triggerCsvDownload,
+} from "../../../utils/reportesCsvExport";
 import { useReportePersonalizado } from "../../../hooks/useReportePersonalizado";
 
 export default function ReportePersonalizado() {
+  const { registerCsvExportHandler } = useOutletContext() || {};
   const def = useMemo(() => defaultRangoMesActual(), []);
   const [desdeDraft, setDesdeDraft] = useState(def.desde);
   const [hastaDraft, setHastaDraft] = useState(def.hasta);
@@ -174,6 +183,57 @@ export default function ReportePersonalizado() {
     data.distribucionEstado,
     estadosSel,
     estadosEfectivos,
+  ]);
+
+  const metricasTieneServicios = metricas.has(METRICA_SERVICIOS);
+  const metricasTieneNuevos = metricas.has(METRICA_NUEVOS);
+  const metricasTieneDemo = metricas.has(METRICA_DEMOGRAFICOS);
+  const granularidadLabel = tituloServiciosPorGranularidad(granularidadServicios);
+
+  useEffect(() => {
+    if (!registerCsvExportHandler) return undefined;
+    registerCsvExportHandler(() => {
+      if (!hayDatos) {
+        window.alert("Aplica primero el periodo en las fechas y pulsa «Generar reporte».");
+        return;
+      }
+      const csv = buildCsvReportePersonalizado({
+        desde: aplicadoDesde,
+        hasta: aplicadoHasta,
+        filtrosMetricasTexto: textoMetricas(metricas),
+        metricasTieneServicios,
+        metricasTieneNuevos,
+        metricasTieneDemo,
+        data,
+        distribGeneroVista,
+        distribEtapaVista,
+        distribEstadoVista,
+        serieServiciosVista,
+        granularidadLabel,
+      });
+      const desdePart = sanitizeFilenamePart(aplicadoDesde || "desde");
+      const hastaPart = sanitizeFilenamePart(aplicadoHasta || "hasta");
+      triggerCsvDownload(
+        `reporte_personalizado_${desdePart}_${hastaPart}_${exportTimestampSlug()}.csv`,
+        csv,
+      );
+    });
+    return () => registerCsvExportHandler(null);
+  }, [
+    aplicadoDesde,
+    aplicadoHasta,
+    hayDatos,
+    data,
+    distribEstadoVista,
+    distribEtapaVista,
+    distribGeneroVista,
+    granularidadLabel,
+    metricas,
+    metricasTieneDemo,
+    metricasTieneNuevos,
+    metricasTieneServicios,
+    registerCsvExportHandler,
+    serieServiciosVista,
   ]);
 
   const muestraDemo = metricas.has(METRICA_DEMOGRAFICOS);

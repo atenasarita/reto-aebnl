@@ -1,7 +1,7 @@
 import "./ReporteAnual.css";
 import "../ReportesMensual/ReportesMensual.css";
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useOutletContext } from "react-router-dom";
 import {
   Area,
   AreaChart,
@@ -17,8 +17,13 @@ import DistribucionGeneroDonut from "../../../components/reportes/DistribucionGe
 import DistribucionEtapaVidaList from "../../../components/reportes/DistribucionEtapaVidaList/DistribucionEtapaVidaList";
 import EstadosAtendidosCard from "../../../components/reportes/EstadosAtendidosCard/EstadosAtendidosCard";
 import IndicadorCard from "../../../components/reportes/IndicadorCard/IndicadorCard";
-import { useReporteAnual } from "../../../hooks/useReporteAnual";
 import ReportesLoading from "../../../components/reportes/ReportesLoading/ReportesLoading";
+import { useReporteAnual } from "../../../hooks/useReporteAnual";
+import {
+  buildCsvReporteAnual,
+  exportTimestampSlug,
+  triggerCsvDownload,
+} from "../../../utils/reportesCsvExport";
 
 const SERIE_SERVICIOS = "servicios";
 const SERIE_NUEVOS = "nuevos";
@@ -62,6 +67,7 @@ function NuevosPorMesTooltip({ active, payload }) {
 }
 
 export default function ReporteAnual() {
+  const { registerCsvExportHandler } = useOutletContext() || {};
   const [anio, setAnio] = useState(new Date().getFullYear());
   const [serieMensual, setSerieMensual] = useState(SERIE_SERVICIOS);
 
@@ -90,6 +96,15 @@ export default function ReporteAnual() {
   const tieneNuevosPorMes = porMes.some((d) => Number(d.nuevosBeneficiarios) > 0);
   const mostrarServicios = serieMensual === SERIE_SERVICIOS;
   const tieneDatosSerie = mostrarServicios ? tieneServiciosPorMes : tieneNuevosPorMes;
+
+  useEffect(() => {
+    if (!registerCsvExportHandler) return undefined;
+    registerCsvExportHandler(() => {
+      const csv = buildCsvReporteAnual(data, anio);
+      triggerCsvDownload(`reporte_anual_${anio}_${exportTimestampSlug()}.csv`, csv);
+    });
+    return () => registerCsvExportHandler(null);
+  }, [anio, data, registerCsvExportHandler]);
 
   return (
     <article className="reporte-mensual-shell">

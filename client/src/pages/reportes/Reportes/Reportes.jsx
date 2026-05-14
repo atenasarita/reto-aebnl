@@ -1,3 +1,4 @@
+import { useCallback, useRef } from "react";
 import { Outlet } from "react-router-dom";
 import ReportesTabsNav from "../../../components/layout/reportes/ReportesTabsNav/ReportesTabsNav";
 import "./Reportes.css";
@@ -10,6 +11,26 @@ const REPORTES_NAV = [
 ];
 
 export default function Reportes() {
+  const csvExportHandlerRef = useRef(null);
+
+  const registerCsvExportHandler = useCallback((handler) => {
+    csvExportHandlerRef.current = typeof handler === "function" ? handler : null;
+  }, []);
+
+  const handleExportCsv = useCallback(() => {
+    const run = csvExportHandlerRef.current;
+    if (typeof run === "function") {
+      try {
+        run();
+      } catch (e) {
+        console.error("[Reportes] Error al exportar CSV:", e);
+        window.alert("No se pudo generar el archivo CSV. Revisa la consola para más detalle.");
+      }
+      return;
+    }
+    window.alert("No hay un reporte listo para exportar en esta pantalla.");
+  }, []);
+
   return (
     <section className="reportes-page-layout">
       <header className="reportes-page-header">
@@ -19,16 +40,21 @@ export default function Reportes() {
         </div>
 
         <div className="reportes-page-header-meta">
-          <button type="button" className="reportes-meta-btn">
-            Exportar
+          <button
+            type="button"
+            className="reportes-meta-btn"
+            onClick={handleExportCsv}
+            title="Descargar los datos del reporte actual como archivo CSV"
+          >
+            Exportar CSV
           </button>
-        </div>  
+        </div>
       </header>
 
       <ReportesTabsNav items={REPORTES_NAV} />
 
       <div className="reportes-page-content">
-        <Outlet />
+        <Outlet context={{ registerCsvExportHandler }} />
       </div>
     </section>
   );
