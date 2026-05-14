@@ -4,7 +4,8 @@ import styles from "./Navbar.module.css";
 import logo from "../../../assets/logo.png";
 import { Bell } from "lucide-react";
 
-const API_URL = "http://localhost:3000/api";
+import { API_URL } from '../../../utils/config'
+
 
 const NAV_LINKS = [
   { label: "Tablero", to: "/dashboard" },
@@ -122,9 +123,9 @@ function Navbar({
 
       try {
         const results = await Promise.allSettled([
-          fetchJson(`${API_URL}/beneficiarios/membresias-proximas`, token),
-          fetchJson(`${API_URL}/inventario/escasez`, token),
-          fetchJson(`${API_URL}/dashboard/preregistro-pendientes`, token),
+          fetchJson(`${API_URL}/api/beneficiarios/membresias-proximas`, token),
+          fetchJson(`${API_URL}/api/inventario/escasez`, token),
+          fetchJson(`${API_URL}/api/dashboard/preregistro-pendientes`, token),
         ]);
 
         console.log("RESULTADO MEMBRESIAS:", results[0]);
