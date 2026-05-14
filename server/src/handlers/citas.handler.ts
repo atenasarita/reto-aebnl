@@ -20,3 +20,13 @@ export const createCita = async(req:Request, res:Response, next: NextFunction) =
         next(error);
     }
 };
+
+export const updateCita = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = Number(req.params.id);
+    const result = await citasRepository.updateCita(id, req.body);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};

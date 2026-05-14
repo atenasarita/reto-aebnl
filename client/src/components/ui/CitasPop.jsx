@@ -16,7 +16,7 @@ const HORARIOS = [
 const ESTADOS = ["programada", "completada", "cancelada"];
 
 const hoy = () => {
-  const d  = new Date();
+  const d = new Date();
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const dd = String(d.getDate()).padStart(2, "0");
   return `${d.getFullYear()}-${mm}-${dd}`;
@@ -51,10 +51,10 @@ function InfoChip({ icon, label, value }) {
 
 // Buscador de beneficiario
 function BuscadorBeneficiario({ value, onChange }) {
-  const [query,      setQuery]      = useState("");
+  const [query, setQuery] = useState("");
   const [resultados, setResultados] = useState([]);
-  const [buscando,   setBuscando]   = useState(false);
-  const [abierto,    setAbierto]    = useState(false);
+  const [buscando, setBuscando] = useState(false);
+  const [abierto, setAbierto] = useState(false);
 
   const buscar = useCallback(async (q) => {
     if (q.length < 2) { setResultados([]); setAbierto(false); return; }
@@ -156,21 +156,43 @@ function EstadoPicker({ value, onChange }) {
 }
 
 // Formulario
-function CitasForm({ onClose, onSuccess }) {
+function CitasForm({ onClose, onSuccess, cita, modo }) {
   const [beneficiario, setBeneficiario] = useState(null);
-  const [fecha,        setFecha]        = useState(hoy());
-  const [horario,      setHorario]      = useState(HORARIOS[0].hora);
-  const [especialista, setEspecialista] = useState("");
-  const [servicio,     setServicio]     = useState("");
-  const [estado,       setEstado]       = useState("programada");
-  const [motivo,       setMotivo]       = useState("");
-  const [notas,        setNotas]        = useState("");
+  const [fecha, setFecha] = useState(
+    cita?.start
+      ? new Date(cita.start).toISOString().split("T")[0]
+      : hoy()
+  );
+  const [horario, setHorario] = useState(
+    cita?.start
+      ? new Date(cita.start).toTimeString().slice(0, 5)
+      : HORARIOS[0].hora
+  );
+  const [especialista, setEspecialista] = useState(
+    cita?.extendedProps?.id_especialista
+      ? String(cita.extendedProps.id_especialista)
+      : ""
+  );
+  const [servicio, setServicio] = useState(
+    cita?.extendedProps?.idServicio
+      ? String(cita.extendedProps.idServicio)
+      : ""
+  );
+  const [estado, setEstado] = useState(
+    cita?.extendedProps?.estatus || "programada"
+  );
+  const [motivo, setMotivo] = useState(
+    cita?.title || ""
+  );
+  const [notas, setNotas] = useState(
+    cita?.extendedProps?.notas || ""
+  );
 
   const [especialistas, setEspecialistas] = useState([]);
-  const [servicios,     setServicios]     = useState([]);
-  const [cargandoCat,   setCargandoCat]   = useState(false);
-  const [guardando,     setGuardando]     = useState(false);
-  const [error,         setError]         = useState("");
+  const [servicios, setServicios] = useState([]);
+  const [cargandoCat, setCargandoCat] = useState(false);
+  const [guardando, setGuardando] = useState(false);
+  const [error, setError] = useState("");
 
   // Catalogo
   useEffect(() => {
@@ -204,30 +226,73 @@ function CitasForm({ onClose, onSuccess }) {
     cargar();
   }, []);
 
+  useEffect(() => {
+    const cargarBeneficiario = async () => {
+      if (!cita?.extendedProps?.idBeneficiario) return;
+      try {
+        const res = await fetch(
+          `${API_BASE}/api/beneficiarios/${cita.extendedProps.idBeneficiario}`
+        );
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+
+        setBeneficiario({
+          id_beneficiario: data.id_beneficiario,
+          folio: data.folio,
+          nombres: data.identificadores?.nombres ?? "",
+          apellido_paterno: data.identificadores?.apellido_paterno ?? "",
+          apellido_materno: data.identificadores?.apellido_materno ?? "",
+          telefono: data.identificadores?.telefono ?? null,
+          email: data.identificadores?.email ?? null,
+        });
+      } catch (e) {
+        console.error("Error cargando beneficiario", e);
+      }
+    };
+
+    if (modo === "editar") {
+      cargarBeneficiario();
+    }
+  }, [cita, modo]);
+
   const valido = beneficiario && fecha && horario && especialista && servicio;
 
   // Se guardan los datos
   const handleGuardar = async () => {
     if (!valido) return;
+
     setGuardando(true);
     setError("");
 
     const payload = {
-      id_beneficiario:      beneficiario.id_beneficiario,
-      id_especialista:      Number(especialista),
+      id_beneficiario: beneficiario.id_beneficiario,
+      id_especialista: Number(especialista),
       id_catalogo_servicio: Number(servicio),
       fecha,
-      hora:                 horario,
-      motivo:               motivo  || null,
-      notas:                notas   || null,
-      estatus:              estado,
+      hora: horario,
+      motivo: motivo || null,
+      notas: notas || null,
+      estatus: estado,
     };
 
     try {
-      const res = await fetch(`${API_BASE}/api/citas`, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify(payload),
+
+      const url =
+        modo === "editar"
+          ? `${API_BASE}/api/citas/${cita.id}`
+          : `${API_BASE}/api/citas`;
+
+      const method =
+        modo === "editar"
+          ? "PUT"
+          : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -236,12 +301,20 @@ function CitasForm({ onClose, onSuccess }) {
       }
 
       const data = await res.json();
+
       onSuccess?.(data);
       onClose();
+
     } catch (e) {
-      setError(e.message || "No se pudo guardar la cita. Intenta de nuevo.");
+
+      setError(
+        e.message || "No se pudo guardar la cita."
+      );
+
     } finally {
+
       setGuardando(false);
+
     }
   };
 
@@ -312,10 +385,10 @@ function CitasForm({ onClose, onSuccess }) {
               {cargandoCat
                 ? <option>Cargando…</option>
                 : especialistas.map((e) => (
-                    <option key={e.id_especialista} value={e.id_especialista}>
-                      {e.nombre_completo}
-                    </option>
-                  ))
+                  <option key={e.id_especialista} value={e.id_especialista}>
+                    {e.nombre_completo}
+                  </option>
+                ))
               }
             </select>
           </Field>
@@ -330,10 +403,10 @@ function CitasForm({ onClose, onSuccess }) {
               {cargandoCat
                 ? <option>Cargando…</option>
                 : servicios.map((s) => (
-                    <option key={s.id_catalogo_servicio} value={s.id_catalogo_servicio}>
-                      {s.nombre}
-                    </option>
-                  ))
+                  <option key={s.id_catalogo_servicio} value={s.id_catalogo_servicio}>
+                    {s.nombre}
+                  </option>
+                ))
               }
             </select>
           </Field>
@@ -400,7 +473,7 @@ function CitasForm({ onClose, onSuccess }) {
 }
 
 // Componente principal del popup
-export default function CitasPop({ open, onClose, onSuccess }) {
+export default function CitasPop({ open, onClose, onSuccess, cita = null, modo = "crear" }) {
   useEffect(() => {
     if (!open) return;
     const handler = (e) => { if (e.key === "Escape") onClose(); };
@@ -427,11 +500,15 @@ export default function CitasPop({ open, onClose, onSuccess }) {
         <div className="cp-header">
           <div className="cp-header-left">
             <div className="cp-header-icon">📅</div>
-            <h2 className="cp-title">Detalles de la cita</h2>
+            <h2 className="cp-title">
+              {modo === "editar"
+                ? "Modificar cita"
+                : "Nueva cita"}
+            </h2>
           </div>
           <button className="cp-header-close" onClick={onClose} aria-label="Cerrar">✕</button>
         </div>
-        <CitasForm onClose={onClose} onSuccess={onSuccess} />
+        <CitasForm onClose={onClose} onSuccess={onSuccess} cita={cita} modo={modo} />
       </div>
     </div>
   );
