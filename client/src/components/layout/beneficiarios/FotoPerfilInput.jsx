@@ -1,20 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { FaUpload } from 'react-icons/fa'
-import { API_URL } from '../../../utils/config';
+// import { API_URL } from '../../../utils/config';
 
 function FotoPerfilInput({
     value, onChange, onError
 }){
     const fileInputRef = useRef(null);
     const[preview, setPreview] = useState('');
-    const[subiendo, setSubiendo] = useState(false);
+    // const[subiendo, setSubiendo] = useState(false);
 
     useEffect(() => {
-        if(value && typeof value === 'string'){
+        if (value?.preview){
+            setPreview(value.preview);
+        } else if (value && typeof value === "string"){
             setPreview(value);
         } else {
-            setPreview('');
+            setPreview("");
         }
+
     }, [value]);
 
     const handleOpenFileSelector = () => {
@@ -30,45 +33,51 @@ function FotoPerfilInput({
             return;
         }
         onError?.('');
-        setSubiendo(true);
+        // setSubiendo(true);
 
         const localPreview = URL.createObjectURL(file);
         setPreview(localPreview);
 
-        try {
-            const token = localStorage.getItem('token');
+        onChange?.({
+            file,
+            preview: localPreview
+        });
 
-            const formData = new FormData();
-            formData.append('fotografia', file);
 
-            const response = await fetch(`${API_URL}/api/beneficiarios/upload-foto`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                body: formData
-            });
+        // try {
+        //     const token = localStorage.getItem('token');
 
-            const data = await response.json();
+        //     const formData = new FormData();
+        //     formData.append('fotografia', file);
 
-            if(!response.ok){
-                throw new Error(data.message || 'Error al subir la fotografia');
-            }
-            console.log("ruta: ", data.ruta);
+        //     const response = await fetch(`${API_URL}/api/beneficiarios/upload-foto`, {
+        //         method: 'POST',
+        //         headers: {
+        //             Authorization: `Bearer ${token}`
+        //         },
+        //         body: formData
+        //     });
 
-            // Guardar en el formaulario solo la ruta
-            onChange?.(data.ruta);
-            setPreview(data.ruta);
+        //     const data = await response.json();
 
-        } catch(error) {
-            console.error('Error subiendo foto: ', error);
-            onError?.(error.message || 'No se pudo subir la fotografia');
-            setPreview('');
-        } finally {
-            setSubiendo(false);
-            URL.revokeObjectURL(localPreview);
-            e.target.value = "";
-        }
+        //     if(!response.ok){
+        //         throw new Error(data.message || 'Error al subir la fotografia');
+        //     }
+        //     console.log("ruta: ", data.ruta);
+
+        //     // Guardar en el formaulario solo la ruta
+        //     onChange?.(data.ruta);
+        //     setPreview(data.ruta);
+
+        // } catch(error) {
+        //     console.error('Error subiendo foto: ', error);
+        //     onError?.(error.message || 'No se pudo subir la fotografia');
+        //     setPreview('');
+        // } finally {
+        //     setSubiendo(false);
+        //     URL.revokeObjectURL(localPreview);
+        //     e.target.value = "";
+        // }
     };
 
     return(

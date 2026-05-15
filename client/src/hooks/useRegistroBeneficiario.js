@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { limpiarSoloLetras, telefonoValido } from '../utils/validator';
+import { limpiarSoloLetras, telefonoValido  } from '../utils/validator';
 import { initialFormData, registroSteps } from '../utils/beneficiarioConstants';
 import { validateField, validateStep } from '../utils/beneficiarioValidation';
 import { buildBeneficiarioPayload } from '../utils/beneficiarioPayload';
 import { fetchSiguienteFolio, createBeneficiario } from '../services/beneficiariosService';
+import { API_URL } from '../utils/config';
 
 export function useRegistroBeneficiario(navigate) {
   const [currentStep, setCurrentStep] = useState(0);
@@ -175,14 +176,37 @@ export function useRegistroBeneficiario(navigate) {
   //   }
   // };
 
-  const handleBlur = (e) => {
+  const handleBlur = async (e) => {
     const { name, value } = e.target;
+
     const newError = validateField(name, value);
 
     setFieldErrors(prev => ({
       ...prev,
       [name]: newError
     }));
+    if (newError) return;
+
+    // TODO encontrar API para CURP o hacer la validacion un
+    // if(name === 'CURP' && value.length === 18){
+    //   try {
+    //     const result = await validarCurpApi(value);
+
+    //     if(!result.valida){
+    //       setFieldErrors(prev => ({
+    //         ...prev,
+    //         CURP: 'La CURP no fue encontrada o no es válida'
+    //       }));
+
+    //     }
+    //   }catch (error){
+    //     console.log(error); // 👈 MUY IMPORTANTE
+    //     setFieldErrors(prev => ({
+    //       ...prev,
+    //       CURP: 'No se pudo validar en este momento'
+    //     }));
+    //   }
+    // }
   };
 
   const handleTipoEspinasChange = (e) => {
@@ -200,7 +224,9 @@ export function useRegistroBeneficiario(navigate) {
   const handleFotoChange = (fotoBase64) => {
     setFormData(prev => ({
       ...prev,
-      fotografia: fotoBase64
+      fotografiaFile: fotoBase64?.file || null,
+      fotografiaPreview: fotoBase64?.preview || "",
+      fotografia: ""
     }));
     setError('');
   };
@@ -249,6 +275,27 @@ export function useRegistroBeneficiario(navigate) {
   const stepIsComplete = (index) => validateStep(index, formData, fechaNacimiento);
   const areAllStepsComplete = registroSteps.every((_, index) => stepIsComplete(index));
 
+  const subirFotoBeneficiario = async (fotoFile, token) => {
+    const formDataFoto = new FormData();
+
+    formDataFoto.append("fotografia", fotoFile);
+
+    const response = await fetch (`${API_URL}/api/beneficiarios/upload-foto`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: formDataFoto
+    });
+
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(data.message || "Error al subir la fotografía");
+    }
+    return data.ruta;
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
     setError('');
@@ -268,10 +315,29 @@ export function useRegistroBeneficiario(navigate) {
       }
 
       const token = localStorage.getItem('token');
-      const payload = buildBeneficiarioPayload(formData, fechaRegistro, fechaNacimiento);
+
+      let rutaFoto = "";
+
+      if (formData.fotografiaFile){
+        rutaFoto = await subirFotoBeneficiario(formData.fotografiaFile, token);
+      }
+      const payload = buildBeneficiarioPayload(
+        {...formData,
+          fotografia: rutaFoto
+        },
+        fechaRegistro, 
+        fechaNacimiento
+      );
 
       await createBeneficiario(payload, token);
+      setFormData(prev => ({
+        ...prev,
+        fotografiaFile: null,
+        fotografiaPreview: "",
+        fotografia: rutaFoto
+      }));
       setShowSuccessModal(true);
+
     } catch (err) {
   try {
     const parsed = JSON.parse(err.message);
