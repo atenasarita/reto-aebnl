@@ -1,7 +1,7 @@
 import { API_URL } from '../utils/config'
 
 export async function fetchSiguienteFolio(token) {
-  const response = await fetch(`${API_URL}/siguiente-folio`, {
+  const response = await fetch(`${API_URL}/api/beneficiarios/siguiente-folio`, {
     headers: {
       Authorization: `Bearer ${token}`
     }
