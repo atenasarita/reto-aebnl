@@ -27,4 +27,14 @@ export class ServiciosHandler{
         });
       }
     };
+
+    registrarServicio = async (req: Request, res: Response) => {
+      try {
+        const data = await this.serviciosController.registrarServicio(req.body);
+        res.status(201).json({ ok: true, data });
+      } catch (error) {
+        console.error('Error en registrarServicio:', error);
+        res.status(500).json({ ok: false, message: 'Error al registrar servicio' });
+      }
+    };
 }

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { API_URL } from '../utils/config'
-
+import { API_URL } from "../utils/config";
 
 export default function useServicios() {
   const [tipos, setTipos] = useState([]);
@@ -10,11 +9,13 @@ export default function useServicios() {
 
   const fetchTipos = async () => {
     setLoading(true);
+    setError(null);
+
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        `${API_URL}/api/registro_servicios/tipos`, 
+        `${API_URL}/api/registro_servicios/tipos`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -26,7 +27,11 @@ export default function useServicios() {
 
     } catch (err) {
       console.error("Error fetching tipos servicio:", err);
-      setError(err);
+
+      setError(
+        err.response?.data?.message || err.message
+      );
+
     } finally {
       setLoading(false);
     }
@@ -36,5 +41,10 @@ export default function useServicios() {
     fetchTipos();
   }, []);
 
-  return { tipos, loading, error };
+  return {
+    tipos,
+    loading,
+    error,
+    refetch: fetchTipos,
+  };
 }

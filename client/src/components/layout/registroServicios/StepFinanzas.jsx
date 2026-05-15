@@ -3,7 +3,7 @@ import SearchBar from '../../ui/SearchBar'
 import "../../../pages/styles/BusquedaBeneficiarioVista.css"
 
 const METODOS_PAGO = [
-  "Efectivo",
+  "efectivo",
   "Transferencia",
   "Tarjeta débito",
   "Tarjeta crédito",

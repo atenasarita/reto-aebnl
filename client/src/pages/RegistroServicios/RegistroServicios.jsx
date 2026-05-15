@@ -15,6 +15,7 @@ import { useProductos } from "../../hooks/useProductos";
 import useBeneficiarios from "../../hooks/useBeneficiarios"
 import useAgendaHoy from "../../hooks/useCitasHoy";
 import useServicios from "../../hooks/useServicios";
+import useRegistrarServicio from "../../hooks/useRegistrarServicios";
 
 import StepBusqueda from "../../components/layout/registroServicios/StepBusqueda";
 import StepDetalles from "../../components/layout/registroServicios/StepDetalles";
@@ -56,6 +57,38 @@ export default function RegistroServicios() {
   const [descuento, setDescuento] = useState(0);
   const [yaAporto, setYaAporto] = useState(false);
   const [guardado, setGuardado] = useState(false);
+
+
+  const { registrar, loading: guardando } = useRegistrarServicio();
+
+  const handleGuardar = async () => {
+    try {
+      await registrar({
+        id_beneficiario: beneficiarioFinal?.id_beneficiario,
+        id_catalogo_servicio: tipoServicio,
+        fecha,
+        hora,
+        id_cita: citaSeleccionada ?? null,
+        cantidad: parseInt(cantidad) || 1,
+        notas,
+        insumos: insumos.map(i => ({
+          id: i.id,
+          cantidad: i.cantidad,
+          precio: i.precio,
+        })),
+        monto_servicio: totalServicio,
+        monto_inventario: subtotalInsumos,
+        descuento: parseFloat(descuento) || 0,
+        cuota_total: totalConDescuento,
+        monto_pagado: parseFloat(montoPagado) || 0,
+        metodo_pago: metodoPago,
+        ya_aporto: yaAporto,
+      });
+      setGuardado(true);
+    } catch (err) {
+      console.error('Error al guardar:', err);
+    }
+  };
 
   const totalPasos = PASOS.length;
   const progresoPct = (pasoActual / totalPasos) * 100;
@@ -106,6 +139,7 @@ useEffect(() => {
           return nombre.includes(q) || folio.includes(q) || curp.includes(q);
         })
         .map((b) => ({
+          id_beneficiario: b.id_beneficiario,
           folio: b.folio,
           nombre: `${b.identificadores?.nombres ?? ''} ${b.identificadores?.apellido_paterno ?? ''}`.trim(),
           curp: b.identificadores?.CURP ?? '',
@@ -253,8 +287,12 @@ useEffect(() => {
                   Continuar <ChevronRight size={16} />
                 </button>
               ) : (
-                <button className='btnPrimary' onClick={() => setGuardado(true)}>
-                  Guardar <CheckCircle2 size={16} />
+                <button
+                  className='btnPrimary'
+                  onClick={handleGuardar}
+                  disabled={guardando}
+                >
+                  {guardando ? 'Guardando...' : 'Guardar'} <CheckCircle2 size={16} />
                 </button>
               )}
             </div>

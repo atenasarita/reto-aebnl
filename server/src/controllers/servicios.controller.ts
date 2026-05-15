@@ -11,4 +11,8 @@ export class ServiciosController {
   async getTiposServicio() {
     return this.repository.getTiposServicio();
   }
+
+  async registrarServicio(input: any) {
+  return this.repository.registrarServicio(input);
+}
 }
