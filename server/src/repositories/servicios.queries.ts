@@ -25,3 +25,22 @@ export const INSERT_SERVICIO_FINANCIERO = `
   VALUES 
     (:id_servicio_otorgado, :monto_servicio, :monto_inventario, :descuento, :cuota_total, :monto_pagado, :metodo_pago, :ya_aporto)
 `;
+
+export const SELECT_CANTIDAD_INVENTARIO = `
+  SELECT CANTIDAD
+  FROM INVENTARIO
+  WHERE ID_INVENTARIO = :id_inventario
+`;
+
+export const UPDATE_CANTIDAD_INVENTARIO = `
+  UPDATE INVENTARIO
+  SET CANTIDAD = CANTIDAD - :cantidad
+  WHERE ID_INVENTARIO = :id_inventario
+`;
+
+export const INSERT_MOVIMIENTO_INVENTARIO = `
+  INSERT INTO MOVIMIENTOS_INVENTARIO
+    (ID_INVENTARIO, TIPO_MOVIMIENTO, CANTIDAD, FECHA, CANT_ANTERIOR, CANT_NUEVA, ID_SERVICIO_OTORGADO, ID_USUARIO, MOTIVO)
+  VALUES
+    (:id_inventario, 'salida', :cantidad, SYSDATE, :cant_anterior, :cant_nueva, :id_servicio_otorgado, :id_usuario, 'Venta Cliente')
+`;

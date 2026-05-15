@@ -1,6 +1,14 @@
 import oracledb from 'oracledb';
 import { OracleConnection } from '../db/oracle';
-import { SELECT_TIPOS_SERVICIO, INSERT_SERVICIO_OTORGADO, INSERT_VENTA_INVENTARIO, INSERT_SERVICIO_FINANCIERO } from './servicios.queries';
+import {
+  SELECT_TIPOS_SERVICIO,
+  INSERT_SERVICIO_OTORGADO,
+  INSERT_VENTA_INVENTARIO,
+  INSERT_SERVICIO_FINANCIERO,
+  SELECT_CANTIDAD_INVENTARIO,
+  UPDATE_CANTIDAD_INVENTARIO,
+  INSERT_MOVIMIENTO_INVENTARIO,
+} from './servicios.queries';
 
 type TipoServicioRow = {
   ID_CATALOGO_SERVICIO: number;
@@ -31,6 +39,11 @@ type RegistrarServicioInput = {
   monto_pagado: number;
   metodo_pago: string;
   ya_aporto: boolean;
+  id_usuario: number; // 👈 necesario para MOVIMIENTOS_INVENTARIO
+};
+
+type CantidadRow = {
+  CANTIDAD: number;
 };
 
 export class ServicioRepository {
@@ -62,34 +75,30 @@ export class ServicioRepository {
       }));
 
     } finally {
-      if (connection) {
-        await connection.close();
-      }
+      if (connection) await connection.close();
     }
   }
 
   async registrarServicio(input: RegistrarServicioInput) {
-
-  console.log("INPUT COMPLETO:");
-  console.log(JSON.stringify(input, null, 2));
+    console.log("INPUT COMPLETO:");
+    console.log(JSON.stringify(input, null, 2));
 
     let connection: oracledb.Connection | undefined;
 
     try {
       connection = await this.oracleConnection.getConnection();
 
-      console.log("ID_CATALOGO_SERVICIO:", input.id_catalogo_servicio);
-      
+      // ── 1. Insertar servicio otorgado ──────────────────────────────
       const resultServicio = await connection.execute(
         INSERT_SERVICIO_OTORGADO,
         {
-          id_beneficiario: input.id_beneficiario,
+          id_beneficiario:      input.id_beneficiario,
           id_catalogo_servicio: input.id_catalogo_servicio,
-          fecha: input.fecha,
-          hora: input.hora || '00:00',
-          id_cita: input.id_cita ?? null,
-          cantidad: input.cantidad,
-          notas: input.notas ?? null,
+          fecha:                input.fecha,
+          hora:                 input.hora || '00:00',
+          id_cita:              input.id_cita ?? null,
+          cantidad:             input.cantidad,
+          notas:                input.notas ?? null,
           id_servicio_otorgado: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
         }
       );
@@ -97,30 +106,76 @@ export class ServicioRepository {
       const outBinds = resultServicio.outBinds as { id_servicio_otorgado: number[] };
       const idServicio = outBinds.id_servicio_otorgado[0];
 
+      // ── 2. Insumos: venta + descuento inventario + movimiento ──────
       for (const insumo of input.insumos) {
+
+        // 2a. Registrar en VENTA_INVENTARIO
         await connection.execute(
           INSERT_VENTA_INVENTARIO,
           {
             id_servicio_otorgado: idServicio,
-            id_inventario: insumo.id,
-            cantidad: insumo.cantidad,
-            precio_unitario: insumo.precio,
-            subtotal: insumo.precio * insumo.cantidad,
+            id_inventario:        insumo.id,
+            cantidad:             insumo.cantidad,
+            precio_unitario:      insumo.precio,
+            subtotal:             insumo.precio * insumo.cantidad,
+          }
+        );
+
+        // 2b. Leer cantidad actual (dentro de la misma transacción)
+        const resultCantidad = await connection.execute(
+          SELECT_CANTIDAD_INVENTARIO,
+          { id_inventario: insumo.id },
+          { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
+
+        const rows = resultCantidad.rows as CantidadRow[];
+
+        if (!rows || rows.length === 0) {
+          throw new Error(`Insumo ID ${insumo.id} no encontrado en inventario`);
+        }
+
+        const cantAnterior = rows[0].CANTIDAD;
+        const cantNueva    = cantAnterior - insumo.cantidad;
+
+        if (cantNueva < 0) {
+          throw new Error(
+            `Stock insuficiente para insumo ID ${insumo.id}. ` +
+            `Disponible: ${cantAnterior}, solicitado: ${insumo.cantidad}`
+          );
+        }
+
+        // 2c. Descontar del inventario
+        await connection.execute(
+          UPDATE_CANTIDAD_INVENTARIO,
+          { cantidad: insumo.cantidad, id_inventario: insumo.id }
+        );
+
+        // 2d. Registrar movimiento de salida
+        await connection.execute(
+          INSERT_MOVIMIENTO_INVENTARIO,
+          {
+            id_inventario:        insumo.id,
+            cantidad:             insumo.cantidad,
+            cant_anterior:        cantAnterior,
+            cant_nueva:           cantNueva,
+            id_servicio_otorgado: idServicio,
+            id_usuario:           input.id_usuario,
           }
         );
       }
 
+      // ── 3. Insertar registro financiero ────────────────────────────
       await connection.execute(
         INSERT_SERVICIO_FINANCIERO,
         {
           id_servicio_otorgado: idServicio,
-          monto_servicio: input.monto_servicio,
-          monto_inventario: input.monto_inventario,
-          descuento: input.descuento || 0,
-          cuota_total: input.cuota_total,
-          monto_pagado: input.monto_pagado,
-          metodo_pago: input.metodo_pago,
-          ya_aporto: input.ya_aporto ? 1 : 0,
+          monto_servicio:       input.monto_servicio,
+          monto_inventario:     input.monto_inventario,
+          descuento:            input.descuento || 0,
+          cuota_total:          input.cuota_total,
+          monto_pagado:         input.monto_pagado,
+          metodo_pago:          input.metodo_pago,
+          ya_aporto:            input.ya_aporto ? 1 : 0,
         }
       );
 

@@ -56,37 +56,9 @@ export default function RegistroServicios() {
   const [descuento, setDescuento] = useState(0);
   const [yaAporto, setYaAporto] = useState(false);
   const [guardado, setGuardado] = useState(false);
-
+  const [errorGuardado, setErrorGuardado] = useState(null);
 
   const { registrar, loading: guardando } = useRegistrarServicio();
-
-  const handleGuardar = async () => {
-    try {
-      await registrar({
-        id_beneficiario: beneficiarioFinal?.id_beneficiario,
-        id_catalogo_servicio: tipoServicio,
-        fecha,
-        hora,
-        id_cita: citaSeleccionada ?? null,
-        notas,
-        insumos: insumos.map(i => ({
-          id: i.id,
-          cantidad: i.cantidad,
-          precio: i.precio,
-        })),
-        monto_servicio: totalServicio,
-        monto_inventario: subtotalInsumos,
-        descuento: parseFloat(descuento) || 0,
-        cuota_total: totalConDescuento,
-        monto_pagado: parseFloat(montoPagado) || 0,
-        metodo_pago: metodoPago,
-        ya_aporto: yaAporto,
-      });
-      setGuardado(true);
-    } catch (err) {
-      console.error('Error al guardar:', err);
-    }
-  };
 
   const totalPasos = PASOS.length;
   const progresoPct = (pasoActual / totalPasos) * 100;
@@ -112,7 +84,6 @@ export default function RegistroServicios() {
   // ── Precio del servicio seleccionado ──────────────────────
   useEffect(() => {
     const found = (tipos || []).find(t => String(t.id) === String(tipoServicio));
-    console.log("useEffect tipoServicio:", tipoServicio, "found:", found);
     setPrecioServicio(found?.precio || 0);
   }, [tipoServicio, tipos]);
 
@@ -126,11 +97,11 @@ export default function RegistroServicios() {
     t => String(t.value) === String(tipoServicio)
   )?.label;
 
+  // ── Resultados de búsqueda ─────────────────────────────────
   const resultados = query.length >= 2
     ? data
         .filter((b) => {
           if (b.estado !== 'activo') return false;
-
           const nombre = `${b.identificadores?.nombres ?? ''} ${b.identificadores?.apellido_paterno ?? ''}`.toLowerCase();
           const folio = b.folio?.toLowerCase() ?? '';
           const curp = b.identificadores?.CURP?.toLowerCase() ?? '';
@@ -146,35 +117,81 @@ export default function RegistroServicios() {
         }))
     : [];
 
+  // ── Citas de hoy — incluye id_beneficiario ─────────────────
   const citasFormateadas = (agendaItems || []).map((c) => ({
-    id: c.id_cita,
-    beneficiario: c.nombre_completo,
-    hora: c.hora,
-    tipo: c.servicio_nombre,
-    medico: c.especialista_nombre,
+    id:              c.id_cita,
+    id_beneficiario: c.id_beneficiario, // 👈 necesario para el guardado
+    nombre:          c.nombre_completo,
+    beneficiario:    c.nombre_completo,
+    hora:            c.hora,
+    tipo:            c.servicio_nombre,
+    medico:          c.especialista_nombre,
   }));
 
+  // ── Beneficiario mostrado en el resumen ────────────────────
   const beneficiarioFinal = beneficiarioSeleccionado
     ? resultados.find((b) => b.folio === beneficiarioSeleccionado)
     : citaSeleccionada
     ? citasFormateadas.find((c) => c.id === citaSeleccionada)
     : null;
 
+  // ── Guardar ────────────────────────────────────────────────
+  const handleGuardar = async () => {
+    setErrorGuardado(null);
+
+    // Resolver id_beneficiario según el origen (búsqueda o cita)
+    const id_beneficiario = beneficiarioSeleccionado
+      ? resultados.find((b) => b.folio === beneficiarioSeleccionado)?.id_beneficiario
+      : citasFormateadas.find((c) => c.id === citaSeleccionada)?.id_beneficiario;
+
+    if (!id_beneficiario) {
+      setErrorGuardado('No se pudo identificar al beneficiario. Vuelve al paso 1.');
+      return;
+    }
+
+    try {
+      await registrar({
+      id_beneficiario,
+      id_catalogo_servicio: tipoServicio,
+      fecha,
+      hora,
+      id_cita: citaSeleccionada ?? null,
+      notas,
+
+      id_usuario: 1,
+
+      insumos: insumos.map(i => ({
+        id: i.id,
+        cantidad: i.cantidad,
+        precio: i.precio,
+      })),
+
+      monto_servicio: totalServicio,
+      monto_inventario: subtotalInsumos,
+      descuento: parseFloat(descuento) || 0,
+      cuota_total: totalConDescuento,
+      monto_pagado: parseFloat(montoPagado) || 0,
+      metodo_pago: metodoPago,
+      ya_aporto: yaAporto,
+    });
+
+      setGuardado(true);
+
+    } catch (err) {
+      console.error('Error al guardar:', err);
+      setErrorGuardado(err.message || 'Ocurrió un error al guardar el servicio.');
+    }
+  };
+
   const puedeAvanzar = () => {
     if (pasoActual === 1) return !!(beneficiarioSeleccionado || citaSeleccionada);
     if (pasoActual === 2) return !!(fecha && hora);
-
-    if (pasoActual === 3) {
-      const tieneServicio = !!tipoServicio;
-      const tieneInsumos = insumos.length > 0;
-
-      return tieneServicio || tieneInsumos;
-    }
-
+    if (pasoActual === 3) return !!(tipoServicio || insumos.length > 0);
     if (pasoActual === 4) return !!(metodoPago && montoPagado);
     return true;
   };
 
+  // ── Pantalla de éxito ──────────────────────────────────────
   if (guardado) {
     return (
       <div className='page'>
@@ -247,10 +264,10 @@ export default function RegistroServicios() {
                 categoriasOptions={categoriasOptions}
                 tiposOptions={tiposOptions}
                 loadingServicios={loadingServicios}
+                notas={notas}
+                setNotas={setNotas}
               />
             )}
-
-          
 
             {pasoActual === 3 && (
               <StepInsumos
@@ -261,7 +278,6 @@ export default function RegistroServicios() {
                 errorProductos={errorProductos}
               />
             )}
-
 
             {pasoActual === 4 && (
               <StepFinanzas
@@ -275,6 +291,13 @@ export default function RegistroServicios() {
                 yaAporto={yaAporto}
                 setYaAporto={setYaAporto}
               />
+            )}
+
+            {/* Error al guardar */}
+            {errorGuardado && (
+              <p style={{ color: '#dc2626', marginTop: '0.5rem', fontSize: '0.875rem' }}>
+                {errorGuardado}
+              </p>
             )}
 
             <div className='navRow'>
@@ -292,21 +315,18 @@ export default function RegistroServicios() {
                 >
                   Continuar <ChevronRight size={16} />
                 </button>
-                
               ) : (
                 <button
                   className='btnPrimary'
                   onClick={handleGuardar}
-                  disabled={guardando}
+                  disabled={guardando || !puedeAvanzar()}
                 >
                   {guardando ? 'Guardando...' : 'Guardar'} <CheckCircle2 size={16} />
                 </button>
               )}
             </div>
 
-            {pasoActual === 3 &&
-            !tipoServicio &&
-            insumos.length === 0 && (
+            {pasoActual === 3 && !tipoServicio && insumos.length === 0 && (
               <p className="registro-servicios__hint">
                 Debe seleccionar al menos un servicio o un insumo para continuar.
               </p>
@@ -333,7 +353,7 @@ export default function RegistroServicios() {
             <dl className='dl'>
               <div className='dlRow'>
                 <dt>Beneficiario:</dt>
-                <dd>{beneficiarioFinal?.nombre || "—"}</dd>
+                <dd>{beneficiarioFinal?.nombre || beneficiarioFinal?.beneficiario || "—"}</dd>
               </div>
               <div className='dlRow'>
                 <dt>Fecha:</dt>
@@ -382,7 +402,10 @@ export default function RegistroServicios() {
               </div>
               <div className='totalesRow'>
                 <span>Saldo:</span>
-                <strong className='totalesSaldo' style={{ color: saldoRestante > 0 ? "#dc2626" : "#0f766e" }}>
+                <strong
+                  className='totalesSaldo'
+                  style={{ color: saldoRestante > 0 ? "#dc2626" : "#0f766e" }}
+                >
                   ${saldoRestante.toFixed(2)}
                 </strong>
               </div>
