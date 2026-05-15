@@ -102,6 +102,8 @@ useEffect(() => {
   const resultados = query.length >= 2
     ? data
         .filter((b) => {
+          if (b.estado !== 'activo') return false;
+          
           const nombre = `${b.identificadores?.nombres ?? ''} ${b.identificadores?.apellido_paterno ?? ''}`.toLowerCase();
           const folio = b.folio?.toLowerCase() ?? '';
           const curp = b.identificadores?.CURP?.toLowerCase() ?? '';
