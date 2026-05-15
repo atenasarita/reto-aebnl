@@ -8,7 +8,7 @@ import { API_URL } from '../../../utils/config'
 
 
 const NAV_LINKS = [
-  { label: "Tablero", to: "/dashboard" },
+  { label: "Inicio", to: "/dashboard" },
   { label: "Beneficiarios", to: "/beneficiarios" },
   { label: "Prerregistro", to: "/prerregistro" },
   { label: "Servicios", to: "/registro_servicios" },
