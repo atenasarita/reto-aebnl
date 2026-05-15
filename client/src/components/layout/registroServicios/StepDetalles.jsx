@@ -11,8 +11,6 @@ export default function StepDetalles({
   setCategoriaServicio,
   tipoServicio,
   setTipoServicio,
-  cantidad,
-  setCantidad,
   categoriasOptions = [],
   tiposOptions = [],
   loadingServicios,
@@ -20,7 +18,7 @@ export default function StepDetalles({
 
   return (
     <div className='panel'>
-      <div className='formGrid3'>
+      <div className='formGrid2'>
 
         {/* Fecha */}
         <div className='field'>
@@ -49,22 +47,6 @@ export default function StepDetalles({
             className='input'
             value={hora}
             onChange={(e) => setHora(e.target.value)}
-          />
-        </div>
-
-        {/* Cantidad */}
-        <div className='field'>
-          <label htmlFor="cantidad" className='fieldLabel'>
-            <Hash size={14} style={{ marginRight: 6 }} />
-            Cant. por estudio
-          </label>
-          <input
-            id="cantidad"
-            type="number"
-            min="1"
-            className='input'
-            value={cantidad}
-            onChange={(e) => setCantidad(e.target.value)}
           />
         </div>
 

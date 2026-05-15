@@ -41,7 +41,6 @@ export default function RegistroServicios() {
 
   const [fecha, setFecha] = useState("");
   const [hora, setHora] = useState("");
-  const [cantidad, setCantidad] = useState(1);
   const [notas, setNotas] = useState("");
   const [categoriaServicio, setCategoriaServicio] = useState("");
   const [tipoServicio, setTipoServicio] = useState("");
@@ -69,7 +68,6 @@ export default function RegistroServicios() {
         fecha,
         hora,
         id_cita: citaSeleccionada ?? null,
-        cantidad: parseInt(cantidad) || 1,
         notas,
         insumos: insumos.map(i => ({
           id: i.id,
@@ -106,26 +104,27 @@ export default function RegistroServicios() {
     .filter(t => !categoriaServicio || t.categoria === categoriaServicio)
     .map(t => ({ label: t.nombre, value: t.id, precio: t.precio }));
 
-  // ── Reset servicio al cambiar categoría ───────────────────
   useEffect(() => {
     setTipoServicio("");
     setPrecioServicio(0);
   }, [categoriaServicio]);
 
   // ── Precio del servicio seleccionado ──────────────────────
-useEffect(() => {
-  const found = (tipos || []).find(t => String(t.id) === String(tipoServicio));
-  console.log("useEffect tipoServicio:", tipoServicio, "found:", found);
-  setPrecioServicio(found?.precio || 0);
-}, [tipoServicio, tipos]);
+  useEffect(() => {
+    const found = (tipos || []).find(t => String(t.id) === String(tipoServicio));
+    console.log("useEffect tipoServicio:", tipoServicio, "found:", found);
+    setPrecioServicio(found?.precio || 0);
+  }, [tipoServicio, tipos]);
 
   const subtotalInsumos = insumos.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
-  const totalServicio = precioServicio * (parseInt(cantidad) || 1);
+  const totalServicio = precioServicio;
   const totalFinal = totalServicio + subtotalInsumos;
   const totalConDescuento = Math.max(0, totalFinal - (parseFloat(descuento) || 0));
   const saldoRestante = totalConDescuento - (parseFloat(montoPagado) || 0);
 
-  const servicioLabel = tiposOptions.find(t => t.value === tipoServicio)?.label;
+  const servicioLabel = tiposOptions.find(
+    t => String(t.value) === String(tipoServicio)
+  )?.label;
 
   const resultados = query.length >= 2
     ? data
@@ -163,6 +162,15 @@ useEffect(() => {
 
   const puedeAvanzar = () => {
     if (pasoActual === 1) return !!(beneficiarioSeleccionado || citaSeleccionada);
+    if (pasoActual === 2) return !!(fecha && hora);
+
+    if (pasoActual === 3) {
+      const tieneServicio = !!tipoServicio;
+      const tieneInsumos = insumos.length > 0;
+
+      return tieneServicio || tieneInsumos;
+    }
+
     if (pasoActual === 4) return !!(metodoPago && montoPagado);
     return true;
   };
@@ -187,7 +195,7 @@ useEffect(() => {
     <div className='page'>
       <div className='description'>
         <h1 className='title'>Registrar Nuevo Servicio</h1>
-        <h2 className='subtitle'>Complete los datos para dar de alta un nuevo servicio médico.</h2>
+        <h2 className='subtitle'>Complete los datos para registrar un servicio otorgado.</h2>
       </div>
       <div className='inner'>
 
@@ -236,8 +244,6 @@ useEffect(() => {
                 setCategoriaServicio={setCategoriaServicio}
                 tipoServicio={tipoServicio}
                 setTipoServicio={setTipoServicio}
-                cantidad={cantidad}
-                setCantidad={setCantidad}
                 categoriasOptions={categoriasOptions}
                 tiposOptions={tiposOptions}
                 loadingServicios={loadingServicios}
@@ -286,6 +292,7 @@ useEffect(() => {
                 >
                   Continuar <ChevronRight size={16} />
                 </button>
+                
               ) : (
                 <button
                   className='btnPrimary'
@@ -296,6 +303,14 @@ useEffect(() => {
                 </button>
               )}
             </div>
+
+            {pasoActual === 3 &&
+            !tipoServicio &&
+            insumos.length === 0 && (
+              <p className="registro-servicios__hint">
+                Debe seleccionar al menos un servicio o un insumo para continuar.
+              </p>
+            )}
 
           </main>
 
@@ -335,10 +350,6 @@ useEffect(() => {
               <div className='dlRow'>
                 <dt>Servicio:</dt>
                 <dd>{servicioLabel || "—"}</dd>
-              </div>
-              <div className='dlRow'>
-                <dt>Cantidad:</dt>
-                <dd>{cantidad}</dd>
               </div>
               <div className='dlRow'>
                 <dt>Ya Aportó:</dt>
