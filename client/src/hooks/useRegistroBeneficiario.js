@@ -82,99 +82,14 @@ export function useRegistroBeneficiario(navigate) {
       [name]: cleanValue
     }));
 
-    // const newError = validateField(name, cleanValue);
-    // setFieldErrors(prev => ({
-    //   ...prev,
-    //   [name]: newError
-    // }));
 
-    // Solo limpiar error si el usuario está corrigiendo
     if (fieldErrors[name]) {
       setFieldErrors(prev => ({
         ...prev,
         [name]: ''
       }));
     }
-
-
-    // if(!newError) {
-    //   setError('');
-    // }
   };
-
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-
-  //   if (
-  //     name === 'nombres' ||
-  //     name === 'apellido_paterno' ||
-  //     name === 'apellido_materno' ||
-  //     name === 'contacto_nombre' ||
-  //     name === 'contacto_parentesco' ||
-  //     name === 'padre_nombre' ||
-  //     name === 'madre_nombre'
-  //   ) {
-  //     const limpio = limpiarSoloLetras(value);
-  //     setFormData(prev => ({ ...prev, [name]: limpio }));
-  //     return;
-  //   }
-
-  //   if (
-  //     name === 'contacto_telefono' || 
-  //     name === 'telefono' ||
-  //     name === 'padre_telefono' ||
-  //     name === 'padre_telefono_casa' ||
-  //     name === 'padre_telefono_trabajo' ||
-  //     name === 'madre_telefono' ||
-  //     name === 'madre_telefono_casa' ||
-  //     name === 'madre_telefono_trabajo'
-  //   ) {
-  //   const limpio = value.replace(/\D/g, '').slice(0, 10);
-  //   setFormData(prev => ({ ...prev, [name]: limpio }));
-
-  //   // Solo actualizar el error si el campo ya fue tocado (hubo blur previo)
-  //   if (fieldErrors[name] !== undefined && fieldErrors[name] !== null) {
-  //     if (limpio && !telefonoValido(limpio)) {
-  //       setFieldErrors(prev => ({
-  //         ...prev,
-  //         [name]: 'No es un numero de telefono valido'
-  //       }));
-  //     } else {
-  //       setFieldErrors(prev => ({
-  //         ...prev,
-  //         [name]: ''
-  //       }));
-  //     }
-  //   }
-  //   return;
-  // }
-
-  //   if (name === 'valvula') {
-  //     setFormData(prev => ({
-  //       ...prev,
-  //       [name]: value === 'true'
-  //     }));
-  //     return;
-  //   }
-
-  //   setFormData(prev => ({
-  //     ...prev,
-  //     [name]: value
-  //   }));
-
-  //   // Validación en tiempo real
-  //   const newError = validateField(name, value);
-
-  //   setFieldErrors(prev => ({
-  //     ...prev,
-  //     [name]: newError
-  //   }));
-
-  //   // Si el campo ya es válido → quitar error global
-  //   if (!newError) {
-  //     setError('');
-  //   }
-  // };
 
   const handleBlur = async (e) => {
     const { name, value } = e.target;
@@ -187,26 +102,6 @@ export function useRegistroBeneficiario(navigate) {
     }));
     if (newError) return;
 
-    // TODO encontrar API para CURP o hacer la validacion un
-    // if(name === 'CURP' && value.length === 18){
-    //   try {
-    //     const result = await validarCurpApi(value);
-
-    //     if(!result.valida){
-    //       setFieldErrors(prev => ({
-    //         ...prev,
-    //         CURP: 'La CURP no fue encontrada o no es válida'
-    //       }));
-
-    //     }
-    //   }catch (error){
-    //     console.log(error); // 👈 MUY IMPORTANTE
-    //     setFieldErrors(prev => ({
-    //       ...prev,
-    //       CURP: 'No se pudo validar en este momento'
-    //     }));
-    //   }
-    // }
   };
 
   const handleTipoEspinasChange = (e) => {
@@ -235,14 +130,6 @@ export function useRegistroBeneficiario(navigate) {
     setError(mensaje);
   };
 
-  // const calculateFechaVigencia = () => {
-  //   const inicio = new Date(formData.fecha_inicio_membresia);
-  //   if (Number.isNaN(inicio.getTime())) return '';
-
-  //   const vigencia = new Date(inicio);
-  //   vigencia.setMonth(vigencia.getMonth() + Number(formData.meses_membresia));
-  //   return vigencia.toISOString().split('T')[0];
-  // };
 
   const calculateFechaVigencia = () => {
   const inicio = new Date(`${formData.fecha_inicio_membresia || fechaRegistro}T00:00:00`);

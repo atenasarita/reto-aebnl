@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { FaUpload } from 'react-icons/fa'
-// import { API_URL } from '../../../utils/config';
 
 function FotoPerfilInput({
     value, onChange, onError
 }){
     const fileInputRef = useRef(null);
     const[preview, setPreview] = useState('');
-    // const[subiendo, setSubiendo] = useState(false);
 
     useEffect(() => {
         if (value?.preview){
@@ -33,7 +31,6 @@ function FotoPerfilInput({
             return;
         }
         onError?.('');
-        // setSubiendo(true);
 
         const localPreview = URL.createObjectURL(file);
         setPreview(localPreview);
@@ -42,42 +39,6 @@ function FotoPerfilInput({
             file,
             preview: localPreview
         });
-
-
-        // try {
-        //     const token = localStorage.getItem('token');
-
-        //     const formData = new FormData();
-        //     formData.append('fotografia', file);
-
-        //     const response = await fetch(`${API_URL}/api/beneficiarios/upload-foto`, {
-        //         method: 'POST',
-        //         headers: {
-        //             Authorization: `Bearer ${token}`
-        //         },
-        //         body: formData
-        //     });
-
-        //     const data = await response.json();
-
-        //     if(!response.ok){
-        //         throw new Error(data.message || 'Error al subir la fotografia');
-        //     }
-        //     console.log("ruta: ", data.ruta);
-
-        //     // Guardar en el formaulario solo la ruta
-        //     onChange?.(data.ruta);
-        //     setPreview(data.ruta);
-
-        // } catch(error) {
-        //     console.error('Error subiendo foto: ', error);
-        //     onError?.(error.message || 'No se pudo subir la fotografia');
-        //     setPreview('');
-        // } finally {
-        //     setSubiendo(false);
-        //     URL.revokeObjectURL(localPreview);
-        //     e.target.value = "";
-        // }
     };
 
     return(
