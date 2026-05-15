@@ -17,7 +17,7 @@ export async function fetchSiguienteFolio(token) {
 }
 
 export async function createBeneficiario(payload, token) {
-  const response = await fetch(API_URL, {
+  const response = await fetch(`${API_URL}/api/beneficiarios`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
