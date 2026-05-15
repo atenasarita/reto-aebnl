@@ -2,12 +2,12 @@ import Dropdown from '../../ui/Dropdown'
 import SearchBar from '../../ui/SearchBar' 
 import "../../../pages/styles/BusquedaBeneficiarioVista.css"
 
+/** Valores internos; el servidor los traduce a efectivo|tarjeta|donacion para Oracle. */
 const METODOS_PAGO = [
-  "efectivo",
-  "Transferencia",
-  "Tarjeta débito",
-  "Tarjeta crédito",
-  "Cheque",
+  { label: "Efectivo", value: "efectivo" },
+  { label: "Transferencia", value: "transferencia" },
+  { label: "Tarjeta (débito o crédito)", value: "tarjeta" },
+  { label: "Cheque", value: "cheque" },
 ];
 
 export default function StepFinanzas({
@@ -29,7 +29,7 @@ export default function StepFinanzas({
 
   const metodoOptions = [
     { label: "Seleccionar...", value: "" },
-    ...METODOS_PAGO.map(m => ({ label: m, value: m }))
+    ...METODOS_PAGO.map((m) => ({ label: m.label, value: m.value })),
   ];
 
   return (

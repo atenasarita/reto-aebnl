@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Search,
   ClipboardList,
@@ -157,6 +157,7 @@ export default function RegistroServicios() {
       hora,
       id_cita: citaSeleccionada ?? null,
       notas,
+      cantidad: 1,
 
       id_usuario: 1,
 
@@ -191,6 +192,27 @@ export default function RegistroServicios() {
     return true;
   };
 
+  /** Vuelve al inicio del flujo con formulario limpio (solo desactivar guardado deja el paso 4 lleno). */
+  const iniciarNuevoServicio = useCallback(() => {
+    setPasoActual(1);
+    setQuery("");
+    setBeneficiarioSeleccionado(null);
+    setCitaSeleccionada(null);
+    setFecha("");
+    setHora("");
+    setNotas("");
+    setCategoriaServicio("");
+    setTipoServicio("");
+    setPrecioServicio(0);
+    setInsumos([]);
+    setMetodoPago("");
+    setMontoPagado("");
+    setDescuento(0);
+    setYaAporto(false);
+    setErrorGuardado(null);
+    setGuardado(false);
+  }, []);
+
   // ── Pantalla de éxito ──────────────────────────────────────
   if (guardado) {
     return (
@@ -199,7 +221,7 @@ export default function RegistroServicios() {
           <div className='main'>
             <CheckCircle2 size={64} color="#0f766e" />
             <h2>Servicio registrado</h2>
-            <button className='btnPrimary' onClick={() => setGuardado(false)}>
+            <button className='btnPrimary' type="button" onClick={iniciarNuevoServicio}>
               Nuevo servicio
             </button>
           </div>

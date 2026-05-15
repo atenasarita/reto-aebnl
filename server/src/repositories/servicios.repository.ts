@@ -46,6 +46,24 @@ type CantidadRow = {
   CANTIDAD: number;
 };
 
+/** Valores que cumplen el CHECK de METODO_PAGO en SERVICIOS_FINANCIEROS (alineado a membrecías/recibos). */
+type MetodoPagoServicioOracle = 'efectivo' | 'tarjeta' | 'donacion';
+
+function metodoPagoParaOracle(raw: string): MetodoPagoServicioOracle {
+  const s = String(raw ?? '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '');
+
+  if (s.includes('tarjeta')) return 'tarjeta';
+  if (s === 'efectivo') return 'efectivo';
+  if (s === 'transferencia') return 'donacion';
+  if (s === 'cheque') return 'donacion';
+  if (s === 'donacion') return 'donacion';
+  return 'efectivo';
+}
+
 export class ServicioRepository {
   private readonly oracleConnection: OracleConnection;
 
@@ -174,7 +192,7 @@ export class ServicioRepository {
           descuento:            input.descuento || 0,
           cuota_total:          input.cuota_total,
           monto_pagado:         input.monto_pagado,
-          metodo_pago:          input.metodo_pago,
+          metodo_pago:          metodoPagoParaOracle(input.metodo_pago),
           ya_aporto:            input.ya_aporto ? 1 : 0,
         }
       );

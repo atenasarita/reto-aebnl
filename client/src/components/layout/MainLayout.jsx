@@ -5,7 +5,7 @@ const RUTAS_NAV = [
   { prefix: "/registro_beneficiario", label: "Beneficiarios", exact: true },
   { prefix: "/beneficiarios", label: "Beneficiarios" },
   { prefix: "/prerregistro", label: "Prerregistro" },
-  { prefix: "/servicios", label: "Servicios" },
+  { prefix: "/registro_servicios", label: "Servicios" },
   { prefix: "/inventario", label: "Inventario" },
   { prefix: "/citas", label: "Citas" },
   { prefix: "/reportes", label: "Reportes" },
