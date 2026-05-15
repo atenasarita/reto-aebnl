@@ -39,7 +39,7 @@ function Login() {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
-      navigate('/beneficiarios');
+      navigate('/dashboard');
     } catch (error) {
       setError(error.message || 'Error de conexión');
     } finally {
