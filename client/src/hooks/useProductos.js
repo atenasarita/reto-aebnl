@@ -29,6 +29,7 @@ export function useProductos() {
           id: row.ID_INVENTARIO,
           nombre: row.NOMBRE ?? '',
           precio: Number(row.PRECIO) || 0,
+          stock: Number(row.CANTIDAD) || 0, 
         }))
       )
     } catch (err) {

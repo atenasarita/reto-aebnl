@@ -96,7 +96,7 @@ function BeneficiarioGrid({ data, loading }) {
           <BeneficiarioCard
             key={b.id_beneficiario}
             beneficiario={b}
-            onView={() => handleView(b.id_beneficiario)} // ← fixed
+            onView={() => handleView(b.id_beneficiario)} 
             onEdit={() => console.log('editar', b.id_beneficiario)}
             onCard={() => console.log('credencial', b.id_beneficiario)}
             onDownloadPdf={() => handleDownloadPdf(b.id_beneficiario)}

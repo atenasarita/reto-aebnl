@@ -73,11 +73,6 @@ export default function RegistroServicios() {
     .filter(t => !categoriaServicio || t.categoria === categoriaServicio)
     .map(t => ({ label: t.nombre, value: t.id, precio: t.precio }));
 
-console.log("tipos raw:", tipos);
-console.log("tiposOptions:", tiposOptions);
-console.log("tipoServicio:", tipoServicio);
-console.log("precioServicio:", precioServicio);
-
   // ── Reset servicio al cambiar categoría ───────────────────
   useEffect(() => {
     setTipoServicio("");
@@ -103,7 +98,7 @@ useEffect(() => {
     ? data
         .filter((b) => {
           if (b.estado !== 'activo') return false;
-          
+
           const nombre = `${b.identificadores?.nombres ?? ''} ${b.identificadores?.apellido_paterno ?? ''}`.toLowerCase();
           const folio = b.folio?.toLowerCase() ?? '';
           const curp = b.identificadores?.CURP?.toLowerCase() ?? '';
