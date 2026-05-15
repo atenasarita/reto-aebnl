@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { limpiarSoloLetras, telefonoValido } from '../utils/validator';
+import { limpiarSoloLetras, telefonoValido  } from '../utils/validator';
 import { initialFormData, registroSteps } from '../utils/beneficiarioConstants';
 import { validateField, validateStep } from '../utils/beneficiarioValidation';
 import { buildBeneficiarioPayload } from '../utils/beneficiarioPayload';
 import { fetchSiguienteFolio, createBeneficiario } from '../services/beneficiariosService';
+import { API_URL } from '../utils/config';
 
 export function useRegistroBeneficiario(navigate) {
   const [currentStep, setCurrentStep] = useState(0);
@@ -81,108 +82,26 @@ export function useRegistroBeneficiario(navigate) {
       [name]: cleanValue
     }));
 
-    // const newError = validateField(name, cleanValue);
-    // setFieldErrors(prev => ({
-    //   ...prev,
-    //   [name]: newError
-    // }));
 
-    // Solo limpiar error si el usuario está corrigiendo
     if (fieldErrors[name]) {
       setFieldErrors(prev => ({
         ...prev,
         [name]: ''
       }));
     }
-
-
-    // if(!newError) {
-    //   setError('');
-    // }
   };
 
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-
-  //   if (
-  //     name === 'nombres' ||
-  //     name === 'apellido_paterno' ||
-  //     name === 'apellido_materno' ||
-  //     name === 'contacto_nombre' ||
-  //     name === 'contacto_parentesco' ||
-  //     name === 'padre_nombre' ||
-  //     name === 'madre_nombre'
-  //   ) {
-  //     const limpio = limpiarSoloLetras(value);
-  //     setFormData(prev => ({ ...prev, [name]: limpio }));
-  //     return;
-  //   }
-
-  //   if (
-  //     name === 'contacto_telefono' || 
-  //     name === 'telefono' ||
-  //     name === 'padre_telefono' ||
-  //     name === 'padre_telefono_casa' ||
-  //     name === 'padre_telefono_trabajo' ||
-  //     name === 'madre_telefono' ||
-  //     name === 'madre_telefono_casa' ||
-  //     name === 'madre_telefono_trabajo'
-  //   ) {
-  //   const limpio = value.replace(/\D/g, '').slice(0, 10);
-  //   setFormData(prev => ({ ...prev, [name]: limpio }));
-
-  //   // Solo actualizar el error si el campo ya fue tocado (hubo blur previo)
-  //   if (fieldErrors[name] !== undefined && fieldErrors[name] !== null) {
-  //     if (limpio && !telefonoValido(limpio)) {
-  //       setFieldErrors(prev => ({
-  //         ...prev,
-  //         [name]: 'No es un numero de telefono valido'
-  //       }));
-  //     } else {
-  //       setFieldErrors(prev => ({
-  //         ...prev,
-  //         [name]: ''
-  //       }));
-  //     }
-  //   }
-  //   return;
-  // }
-
-  //   if (name === 'valvula') {
-  //     setFormData(prev => ({
-  //       ...prev,
-  //       [name]: value === 'true'
-  //     }));
-  //     return;
-  //   }
-
-  //   setFormData(prev => ({
-  //     ...prev,
-  //     [name]: value
-  //   }));
-
-  //   // Validación en tiempo real
-  //   const newError = validateField(name, value);
-
-  //   setFieldErrors(prev => ({
-  //     ...prev,
-  //     [name]: newError
-  //   }));
-
-  //   // Si el campo ya es válido → quitar error global
-  //   if (!newError) {
-  //     setError('');
-  //   }
-  // };
-
-  const handleBlur = (e) => {
+  const handleBlur = async (e) => {
     const { name, value } = e.target;
+
     const newError = validateField(name, value);
 
     setFieldErrors(prev => ({
       ...prev,
       [name]: newError
     }));
+    if (newError) return;
+
   };
 
   const handleTipoEspinasChange = (e) => {
@@ -200,7 +119,9 @@ export function useRegistroBeneficiario(navigate) {
   const handleFotoChange = (fotoBase64) => {
     setFormData(prev => ({
       ...prev,
-      fotografia: fotoBase64
+      fotografiaFile: fotoBase64?.file || null,
+      fotografiaPreview: fotoBase64?.preview || "",
+      fotografia: ""
     }));
     setError('');
   };
@@ -209,14 +130,6 @@ export function useRegistroBeneficiario(navigate) {
     setError(mensaje);
   };
 
-  // const calculateFechaVigencia = () => {
-  //   const inicio = new Date(formData.fecha_inicio_membresia);
-  //   if (Number.isNaN(inicio.getTime())) return '';
-
-  //   const vigencia = new Date(inicio);
-  //   vigencia.setMonth(vigencia.getMonth() + Number(formData.meses_membresia));
-  //   return vigencia.toISOString().split('T')[0];
-  // };
 
   const calculateFechaVigencia = () => {
   const inicio = new Date(`${formData.fecha_inicio_membresia || fechaRegistro}T00:00:00`);
@@ -249,6 +162,27 @@ export function useRegistroBeneficiario(navigate) {
   const stepIsComplete = (index) => validateStep(index, formData, fechaNacimiento);
   const areAllStepsComplete = registroSteps.every((_, index) => stepIsComplete(index));
 
+  const subirFotoBeneficiario = async (fotoFile, token) => {
+    const formDataFoto = new FormData();
+
+    formDataFoto.append("fotografia", fotoFile);
+
+    const response = await fetch (`${API_URL}/api/beneficiarios/upload-foto`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: formDataFoto
+    });
+
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(data.message || "Error al subir la fotografía");
+    }
+    return data.ruta;
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
     setError('');
@@ -268,10 +202,29 @@ export function useRegistroBeneficiario(navigate) {
       }
 
       const token = localStorage.getItem('token');
-      const payload = buildBeneficiarioPayload(formData, fechaRegistro, fechaNacimiento);
+
+      let rutaFoto = "";
+
+      if (formData.fotografiaFile){
+        rutaFoto = await subirFotoBeneficiario(formData.fotografiaFile, token);
+      }
+      const payload = buildBeneficiarioPayload(
+        {...formData,
+          fotografia: rutaFoto
+        },
+        fechaRegistro, 
+        fechaNacimiento
+      );
 
       await createBeneficiario(payload, token);
+      setFormData(prev => ({
+        ...prev,
+        fotografiaFile: null,
+        fotografiaPreview: "",
+        fotografia: rutaFoto
+      }));
       setShowSuccessModal(true);
+
     } catch (err) {
   try {
     const parsed = JSON.parse(err.message);
