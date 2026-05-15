@@ -172,7 +172,7 @@ function Navbar({
                 ? `${preregistrosCount} prerregistro(s) pendiente(s).`
                 : "Sin nuevos prerregistros pendientes.",
             count: preregistrosCount,
-            to: "/prerregistro",
+            to: "/dashboard",
           },
         ]);
       } catch (error) {
