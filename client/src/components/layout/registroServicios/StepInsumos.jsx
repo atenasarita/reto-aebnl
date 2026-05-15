@@ -12,17 +12,27 @@ export default function StepInsumos({ insumos, setInsumos }) {
   const { productos, loading, error } = useProductos();
   const [productoSelec, setProductoSelec] = useState("");
   const [cantidad, setCantidad] = useState(1);
+  const [errorStock, setErrorStock] = useState("");
 
   const agregarInsumo = () => {
+    setErrorStock("");
     if (!productoSelec) return;
     const prod = productos.find((p) => p.id === parseInt(productoSelec));
     if (!prod) return;
 
     const existe = insumos.find((i) => i.id === prod.id);
+    const cantidadActual = existe ? existe.cantidad : 0;
+    const cantidadNueva = cantidadActual + cantidad;
+
+    if (cantidadNueva > prod.stock) {
+      setErrorStock(`Solo hay ${prod.stock} unidades disponibles de ${prod.nombre}`);
+      return;
+    }
+
     if (existe) {
       setInsumos(
         insumos.map((i) =>
-          i.id === prod.id ? { ...i, cantidad: i.cantidad + cantidad } : i
+          i.id === prod.id ? { ...i, cantidad: cantidadNueva } : i
         )
       );
     } else {
@@ -34,11 +44,18 @@ export default function StepInsumos({ insumos, setInsumos }) {
   };
 
   const eliminarInsumo = (id) => {
+    setErrorStock("");
     setInsumos(insumos.filter((i) => i.id !== id));
   };
 
   const actualizarCantidad = (id, nuevaCantidad) => {
+    setErrorStock("");
     if (nuevaCantidad < 1) return;
+    const prod = productos.find((p) => p.id === id);
+    if (prod && nuevaCantidad > prod.stock) {
+      setErrorStock(`Solo hay ${prod.stock} unidades disponibles de ${prod.nombre}`);
+      return;
+    }
     setInsumos(
       insumos.map((i) => (i.id === id ? { ...i, cantidad: nuevaCantidad } : i))
     );
@@ -46,7 +63,10 @@ export default function StepInsumos({ insumos, setInsumos }) {
 
   const subtotal = insumos.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
 
-  const productoOptions = productos.map(p => ({ label: p.nombre, value: String(p.id) }))
+  const productoOptions = productos.map(p => ({
+    label: `${p.nombre} (${p.stock} disp.)`,
+    value: String(p.id)
+  }));
 
   if (loading) return <p>Cargando productos…</p>;
   if (error)   return <p>Error al cargar productos.</p>;
@@ -61,7 +81,7 @@ export default function StepInsumos({ insumos, setInsumos }) {
             className='dropdown-servicios'
             options={[{ label: "Seleccionar...", value: "" }, ...productoOptions]}
             value={productoSelec}  
-            onChange={setProductoSelec}
+            onChange={(val) => { setProductoSelec(val); setErrorStock(""); }}
           />
         </div>
 
@@ -71,8 +91,13 @@ export default function StepInsumos({ insumos, setInsumos }) {
             type="number"
             className='input'
             min={1}
+            max={
+              productoSelec
+                ? productos.find((p) => p.id === parseInt(productoSelec))?.stock
+                : undefined
+            }
             value={cantidad}
-            onChange={(e) => setCantidad(parseInt(e.target.value) || 1)}
+            onChange={(e) => { setCantidad(parseInt(e.target.value) || 1); setErrorStock(""); }}
           />
         </div>
 
@@ -101,7 +126,22 @@ export default function StepInsumos({ insumos, setInsumos }) {
         </Button>
       </div>
 
-      {/* Tabla de insumos — sin cambios */}
+      {/* Mensaje de error stock */}
+      {errorStock && (
+        <p style={{
+          color: '#dc2626',
+          fontSize: 13,
+          fontWeight: 600,
+          margin: '8px 0 0',
+          padding: '8px 12px',
+          background: '#fee2e2',
+          borderRadius: 8,
+          border: '1px solid #fca5a5',
+        }}>
+          {errorStock}
+        </p>
+      )}
+
       <table className='insumoTable'>
         <thead>
           <tr>
@@ -128,6 +168,7 @@ export default function StepInsumos({ insumos, setInsumos }) {
                     type="number"
                     className='inputQty'
                     min={1}
+                    max={productos.find((p) => p.id === i.id)?.stock}
                     value={i.cantidad}
                     onChange={(e) =>
                       actualizarCantidad(i.id, parseInt(e.target.value) || 1)

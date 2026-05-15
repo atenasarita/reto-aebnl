@@ -11,5 +11,6 @@ const servicioController = new ServiciosController(servicioRepository);
 const serviciosHandler = new ServiciosHandler(servicioController);
 
 router.get('/registro_servicios/tipos', authenticateJWT, authorizeRoles('administrador', 'operador'), serviciosHandler.getTiposServicio);
+router.post('/registro_servicios', authenticateJWT, authorizeRoles('administrador', 'operador'), serviciosHandler.registrarServicio);
 
 export default router;

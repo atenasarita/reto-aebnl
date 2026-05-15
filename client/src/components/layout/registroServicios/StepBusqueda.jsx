@@ -77,13 +77,7 @@ export default function StepBusqueda({
                         {b.folio} · {b.curp}
                       </p>
                     </div>
-                    <span style={{
-                      fontSize: 12, fontWeight: 700, padding: "3px 10px", borderRadius: 999,
-                      background: b.membresia === "Activa" ? "#dcfce7" : "#fee2e2",
-                      color: b.membresia === "Activa" ? "#166534" : "#991b1b",
-                    }}>
-                      {b.membresia}
-                    </span>
+                    
                   </div>
                 );
               })

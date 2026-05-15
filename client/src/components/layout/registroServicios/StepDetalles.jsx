@@ -1,33 +1,25 @@
-import { Calendar, User, Stethoscope } from "lucide-react";
+import { Calendar, Clock, Stethoscope, FileText, Hash, Tag } from "lucide-react";
 import "../../../pages/styles/BusquedaBeneficiarioVista.css"
-import { useEffect } from "react";
-
 import Dropdown from '../../ui/Dropdown'
 
 export default function StepDetalles({
   fecha,
   setFecha,
+  hora,
+  setHora,
+  categoriaServicio,
+  setCategoriaServicio,
   tipoServicio,
   setTipoServicio,
-  medico,
-  setMedico,
+  categoriasOptions = [],
   tiposOptions = [],
   loadingServicios,
-  medicosOptions = [],
-  loadingMedicos,
 }) {
 
-      useEffect(() => {
-        if (tipoServicio) {
-          setMedico('');
-        }
-      }, [tipoServicio]);
-
   return (
-    
     <div className='panel'>
-      <div className='formGrid3'>
-        
+      <div className='formGrid2'>
+
         {/* Fecha */}
         <div className='field'>
           <label htmlFor="fecha" className='fieldLabel'>
@@ -39,17 +31,43 @@ export default function StepDetalles({
             type="date"
             className='input'
             value={fecha}
-            onChange={(e) => {
-              console.log("onChange fecha:", e.target.value);
-              setFecha(e.target.value);
-            }}
-            onBlur={() => console.log("onBlur fecha")}
-            onFocus={() => console.log("onFocus fecha")}
+            onChange={(e) => setFecha(e.target.value)}
           />
         </div>
 
+        {/* Hora */}
+        <div className='field'>
+          <label htmlFor="hora" className='fieldLabel'>
+            <Clock size={14} style={{ marginRight: 6 }} />
+            Hora de cita
+          </label>
+          <input
+            id="hora"
+            type="time"
+            className='input'
+            value={hora}
+            onChange={(e) => setHora(e.target.value)}
+          />
+        </div>
 
-        {/* Tipo servicio */}
+        {/* Categoría */}
+        <div className='field'>
+          <label className='fieldLabel'>
+            <Tag size={14} style={{ marginRight: 6 }} />
+            Categoría
+          </label>
+          <Dropdown
+            options={loadingServicios
+              ? [{ label: "Cargando...", value: "" }]
+              : categoriasOptions
+            }
+            value={categoriaServicio}
+            onChange={setCategoriaServicio}
+            className='dropdown-servicios'
+          />
+        </div>
+
+        {/* Servicio */}
         <div className='field'>
           <label className='fieldLabel'>
             <Stethoscope size={14} style={{ marginRight: 6 }} />
@@ -57,45 +75,23 @@ export default function StepDetalles({
           </label>
           <Dropdown
             options={[
-              { label: loadingServicios ? "Cargando..." : "Seleccionar", value: "" },
+              {
+                label: categoriaServicio
+                  ? "Seleccionar servicio"
+                  : "Selecciona una categoría",
+                value: ""
+              },
               ...tiposOptions
             ]}
             value={tipoServicio}
             onChange={setTipoServicio}
+            disabled={!categoriaServicio}
             className='dropdown-servicios'
-            
           />
         </div>
 
-        
-
-        {/* Médico */}
-        <div className='field'>
-          <label className='fieldLabel'>
-            <User size={14} style={{ marginRight: 6 }} />
-            Médico
-          </label>
-          <Dropdown
-              options={[
-                {
-                  label: loadingMedicos
-                    ? "Cargando médicos..."
-                    : tipoServicio
-                    ? "Seleccionar"
-                    : "Selecciona un servicio",
-                  value: "",
-                },
-                ...medicosOptions
-              ]}
-              value={medico}
-              onChange={setMedico}
-              disabled={!tipoServicio}
-              className='dropdown-servicios'
-
-            />
-        </div>
-
       </div>
+
     </div>
   );
 }
