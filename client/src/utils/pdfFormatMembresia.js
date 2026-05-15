@@ -49,10 +49,10 @@ export const downloadBeneficiarioPdf = (data, id) => {
     doc.setFillColor(235, 235, 235);
     doc.rect(5, 5, 20, 25, 'F');
   }
-
+  const fotoURL = fotografia || null;
   if (fotografia) {
     try {
-      doc.addImage(`http://localhost:3000${fotografia}`, 'JPEG', 5, 33, 20, 25);
+      doc.addImage(fotoURL, 'JPEG', 5, 33, 20, 25);
     } catch(err) {
       doc.setFillColor(235, 235, 235);
       doc.rect(5, 33, 20, 25, 'F');
