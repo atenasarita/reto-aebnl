@@ -271,25 +271,28 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
                     <button
                       type="button"
                       className="icon-btn accept"
+                      aria-label="Aceptar preregistro"
                       onClick={() => onUpdateEstado(item.id_preregistro, "aceptado")}
                     >
-                      <Check size={24} />
+                      <Check />
                     </button>
 
                     <button
                       type="button"
                       className="icon-btn reject"
+                      aria-label="Rechazar preregistro"
                       onClick={() => onUpdateEstado(item.id_preregistro, "rechazado")}
                     >
-                      <X size={24} />
+                      <X />
                     </button>
 
                     <button
                       type="button"
                       className={`icon-btn expand ${isOpen ? "open" : ""}`}
+                      aria-label="Expandir detalles"
                       onClick={() => toggleItem(item.id_preregistro)}
                     >
-                      <ChevronDown size={24} />
+                      <ChevronDown />
                     </button>
                   </div>
                 </div>
