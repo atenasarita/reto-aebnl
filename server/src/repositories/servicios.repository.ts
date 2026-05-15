@@ -3,8 +3,10 @@ import { OracleConnection } from '../db/oracle';
 import { SELECT_TIPOS_SERVICIO } from './servicios.queries';
 
 type TipoServicioRow = {
-  ID_ESPECIALIDAD: number;
+  ID_CATALOGO_SERVICIO: number;
   NOMBRE: string;
+  CATEGORIA: string;
+  PRECIO: number;
 };
 
 export class ServicioRepository {
@@ -29,8 +31,10 @@ export class ServicioRepository {
       const rows = (result.rows ?? []) as TipoServicioRow[];
 
       return rows.map((row) => ({
-        id: row.ID_ESPECIALIDAD,
-        nombre: row.NOMBRE
+        id: row.ID_CATALOGO_SERVICIO,
+        nombre: row.NOMBRE,
+        categoria: row.CATEGORIA,
+        precio: row.PRECIO,
       }));
 
     } finally {

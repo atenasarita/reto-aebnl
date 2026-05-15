@@ -22,7 +22,6 @@ export default function useServicios() {
         }
       );
 
-      console.log("FULL RESPONSE:", res.data.data);
       setTipos(res.data.data);
 
     } catch (err) {

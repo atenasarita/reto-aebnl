@@ -53,9 +53,6 @@ function FotoPerfilInput({
 
             const data = await response.json();
 
-            // console.log('ruta devuelta:', data.ruta);
-            // console.log('url completa:', `http://localhost:3000${data.ruta}`);
-
             if(!response.ok){
                 throw new Error(data.message || 'Error al subir la fotografia');
             }

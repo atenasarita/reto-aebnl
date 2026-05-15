@@ -6,8 +6,7 @@ function StepMembresia({
   handleInputChange,
   calculateFechaVigencia
 }) {
-  console.log('fecha_inicio_membresia enviada:', formData.fecha_inicio_membresia);
-  console.log('fecha vigencia calculada:', calculateFechaVigencia());
+  
   return (
     <div className="section-block">
       <h2>Membresía</h2>
