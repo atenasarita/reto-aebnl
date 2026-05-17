@@ -13,9 +13,9 @@ export default function Reportes() {
   return (
     <section className="reportes-page-layout">
       <header className="reportes-page-header">
-        <div className="reportes-page-title">
-          <h1>Panel Reportes</h1>
-          <p>Navega entre los distintos reportes del sistema.</p>
+        <div className="reportes-page-title page-header">
+          <h1 className="page-header-title">Panel Reportes</h1>
+          <p className="page-header-subtitle">Navega entre los distintos reportes del sistema.</p>
         </div>
 
         <div className="reportes-page-header-meta">

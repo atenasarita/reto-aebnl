@@ -16,6 +16,7 @@ import DistribucionEtapaVidaList from "../../../components/reportes/Distribucion
 import EstadosAtendidosCard from "../../../components/reportes/EstadosAtendidosCard/EstadosAtendidosCard";
 import { useReporteMensual } from "../../../hooks/useReporteMensual";
 import IndicadorCard from "../../../components/reportes/IndicadorCard/IndicadorCard";
+import ReportesLoading from "../../../components/reportes/ReportesLoading/ReportesLoading";
 import "./ReportesMensual.css";
 
 const MONTH_OPTIONS = [
@@ -138,6 +139,13 @@ export default function ReportesMensual() {
           </div>
         ) : null}
 
+        {loading ? (
+          <ReportesLoading
+            message={`Cargando indicadores de ${mesNombre} ${anio}…`}
+            className="reportes-loading--periodo"
+          />
+        ) : (
+          <>
           <div className="reporte-mensual-kpi-grid">
             <IndicadorCard
               label="Nuevos beneficiarios"
@@ -250,11 +258,8 @@ export default function ReportesMensual() {
             </div>
           </div>
 
-        {loading ? (
-          <p className="reporte-general-loading">
-            Cargando indicadores de {mesNombre} {anio}...
-          </p>
-        ) : null}
+          </>
+        )}
       </>
     </article>
   );

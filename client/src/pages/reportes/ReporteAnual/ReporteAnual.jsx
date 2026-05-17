@@ -18,6 +18,7 @@ import DistribucionEtapaVidaList from "../../../components/reportes/Distribucion
 import EstadosAtendidosCard from "../../../components/reportes/EstadosAtendidosCard/EstadosAtendidosCard";
 import IndicadorCard from "../../../components/reportes/IndicadorCard/IndicadorCard";
 import { useReporteAnual } from "../../../hooks/useReporteAnual";
+import ReportesLoading from "../../../components/reportes/ReportesLoading/ReportesLoading";
 
 const SERIE_SERVICIOS = "servicios";
 const SERIE_NUEVOS = "nuevos";
@@ -132,6 +133,13 @@ export default function ReporteAnual() {
           </div>
         ) : null}
 
+        {loading ? (
+          <ReportesLoading
+            message={`Cargando indicadores del año ${anio}…`}
+            className="reportes-loading--periodo"
+          />
+        ) : (
+          <>
         <div className="reporte-mensual-kpi-grid">
           <IndicadorCard label="Nuevos beneficiarios" value={nuevosBeneficiarios} icon={UserPlus} />
           <IndicadorCard label="Total atendidos" value={beneficiariosAtendidos} icon={Users} />
@@ -267,9 +275,8 @@ export default function ReporteAnual() {
           </div>
         </div>
 
-        {loading ? (
-          <p className="reporte-general-loading">Cargando indicadores del año {anio}...</p>
-        ) : null}
+          </>
+        )}
       </>
     </article>
   );

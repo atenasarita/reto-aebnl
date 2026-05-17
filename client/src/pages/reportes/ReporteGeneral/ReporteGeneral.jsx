@@ -7,6 +7,7 @@ import MapaBeneficiariosPorEstado from "../../../components/reportes/MapaBenefic
 import DistribucionGeneroDonut from "../../../components/reportes/DistribucionGeneroDonut/DistribucionGeneroDonut";
 import DistribucionEtapaVidaList from "../../../components/reportes/DistribucionEtapaVidaList/DistribucionEtapaVidaList";
 import IndicadorCard from "../../../components/reportes/IndicadorCard/IndicadorCard";
+import ReportesLoading from "../../../components/reportes/ReportesLoading/ReportesLoading";
 import "./ReporteGeneral.css";
 
 function formatNumber(value) {
@@ -56,37 +57,44 @@ export default function ReporteGeneral() {
         </div>
       ) : null}
 
-      <div className="reporte-general-kpi-grid">
-        <IndicadorCard label="Total de beneficiarios" value={totalBeneficiarios} icon={Users} />
-        <IndicadorCard label="Beneficiarios activos" value={beneficiariosActivos} icon={UserCheck} />
-        <IndicadorCard
-          label="Beneficiarios inactivos"
-          value={beneficiariosInactivos}
-          icon={UserMinus}
-          iconVariant="secondary"
+      {loading ? (
+        <ReportesLoading
+          message="Sincronizando indicadores del tablero…"
+          className="reportes-loading--dashboard"
         />
-      </div>
+      ) : (
+        <>
+          <div className="reporte-general-kpi-grid">
+            <IndicadorCard label="Total de beneficiarios" value={totalBeneficiarios} icon={Users} />
+            <IndicadorCard label="Beneficiarios activos" value={beneficiariosActivos} icon={UserCheck} />
+            <IndicadorCard
+              label="Beneficiarios inactivos"
+              value={beneficiariosInactivos}
+              icon={UserMinus}
+              iconVariant="secondary"
+            />
+          </div>
 
-      <div className="reporte-general-bento">
-        <Card className="reporte-general-panel reporte-general-bento-map">
-          <CardHeader className="reporte-general-bento-header">
-            <h2 className="reporte-general-bento-title">Cobertura por estado</h2>
-            <button type="button" className="reporte-general-bento-link" onClick={openEstadosDialog}>
-              Ver detalles &gt;
-            </button>
-          </CardHeader>
-          <CardContent className="reporte-general-map-card-content">
-            <MapaBeneficiariosPorEstado distribucionEstado={distribucionEstado} />
-          </CardContent>
-        </Card>
+          <div className="reporte-general-bento">
+            <Card className="reporte-general-panel reporte-general-bento-map">
+              <CardHeader className="reporte-general-bento-header">
+                <h2 className="reporte-general-bento-title">Cobertura por estado</h2>
+                <button type="button" className="reporte-general-bento-link" onClick={openEstadosDialog}>
+                  Ver detalles &gt;
+                </button>
+              </CardHeader>
+              <CardContent className="reporte-general-map-card-content">
+                <MapaBeneficiariosPorEstado distribucionEstado={distribucionEstado} />
+              </CardContent>
+            </Card>
 
-        <DistribucionGeneroDonut
-          distribucionGenero={distribucionGenero}
-          total={totalBeneficiarios}
-        />
+            <DistribucionGeneroDonut
+              distribucionGenero={distribucionGenero}
+              total={totalBeneficiarios}
+            />
 
-        <DistribucionEtapaVidaList distribucionEtapaVida={distribucionEtapaVida} />
-      </div>
+            <DistribucionEtapaVidaList distribucionEtapaVida={distribucionEtapaVida} />
+          </div>
 
       {typeof document !== "undefined"
         ? createPortal(
@@ -150,8 +158,8 @@ export default function ReporteGeneral() {
             document.body,
           )
         : null}
-
-      {loading ? <p className="reporte-general-loading">Sincronizando indicadores del tablero...</p> : null}
+        </>
+      )}
     </section>
   );
 }
