@@ -4,31 +4,31 @@
   padding: 0;
 }
 
-body {
-  background: #f5f7fb;
-  font-family: Arial, sans-serif;
-  color: #1f2a44;
-}
+
 
 .page {
   min-height: 100vh;
+  background: inherit;
+  color: var(--color-text-primary);
 }
 
 
 .content {
-  padding: 32px 40px;
+  padding: var(--space-8) var(--space-16);
 }
 
 .page-header h1 {
-  font-size: 52px;
-  margin-bottom: 8px;
-  color: #000;
+  font-size: 30px;
+  font-weight: 800;
+  margin-bottom: var(--space-2);
+  color: var(--color-text-primary);
 }
 
 .page-header p {
-  color: #6d7a92;
-  font-size: 18px;
-  margin-bottom: 28px;
+  color: var(--color-text-muted);
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: var(--space-6);
 }
 
 .layout {
@@ -285,7 +285,7 @@ body {
   background: white;
   color: #1f2a44;
   resize: vertical;
-  font-family: Arial, sans-serif;
+  font-family: inherit;
 }
 
 .field-group.full textarea {
@@ -378,7 +378,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .checkbox-card input[type="checkbox"] {
   width: 18px;
   height: 18px;
-  accent-color: #28489f;
+  accent-color: var(--color-brand);
   cursor: pointer;
 }
 

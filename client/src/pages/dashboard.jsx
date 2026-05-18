@@ -148,9 +148,9 @@ function AgendaCard({ agendaItems }) {
           <p>Gestión de citas y flujo de pacientes para hoy.</p>
         </div>
 
-        <div className="empty-panel-state">
-          <CalendarDays size={42} />
-          <h3>Sin citas para hoy</h3>
+          <div className="empty-panel-state">
+            <CalendarDays size={28} strokeWidth={1.75} />
+            <h3>Sin citas para hoy</h3>
           <p>No hay registros de agenda para la fecha actual.</p>
         </div>
       </section>
@@ -182,7 +182,7 @@ function AgendaCard({ agendaItems }) {
                     />
                   ) : (
                     <div className="agenda-avatar placeholder">
-                      <User size={34} />
+                      <User size={22} strokeWidth={1.75} />
                     </div>
                   )}
 
@@ -215,7 +215,7 @@ function AgendaCard({ agendaItems }) {
                 <div className="agenda-note-left">
                   {item.motivo ? (
                     <>
-                      <Info size={16} />
+                      <Info size={14} strokeWidth={2} />
                       <span>{item.motivo}</span>
                     </>
                   ) : (
@@ -245,14 +245,14 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
   return (
     <section className="preregistro-panel">
       <div className="preregistro-header">
-        <h2>PERSONAS EN PRE-REGISTRO</h2>
-        <div className="pending-badge">{preregistroItems.length} Pendientes</div>
+        <h2>Personas en pre-registro</h2>
+        <div className="pending-badge">{preregistroItems.length} pendientes</div>
       </div>
 
       <div className="preregistro-list">
         {!preregistroItems.length ? (
           <div className="empty-side-state">
-            <User size={40} />
+            <User size={26} strokeWidth={1.75} />
             <h3>Sin pendientes</h3>
             <p>No hay personas en pre-registro por ahora.</p>
           </div>
@@ -271,7 +271,7 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
                 >
                   <div className="preregistro-left">
                     <div className="preregistro-avatar">
-                      <User size={24} />
+                      <User size={18} strokeWidth={1.75} />
                     </div>
 
                     <div className="preregistro-text">

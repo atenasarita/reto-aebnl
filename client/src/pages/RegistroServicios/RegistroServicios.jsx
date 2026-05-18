@@ -232,9 +232,9 @@ export default function RegistroServicios() {
 
   return (
     <div className='page'>
-      <div className='description'>
-        <h1 className='title'>Registrar Nuevo Servicio</h1>
-        <h2 className='subtitle'>Complete los datos para registrar un servicio otorgado.</h2>
+      <div className='description page-header'>
+        <h1 className='page-header-title'>Registrar Nuevo Servicio</h1>
+        <p className='page-header-subtitle'>Complete los datos para registrar un servicio otorgado.</p>
       </div>
       <div className='inner'>
 

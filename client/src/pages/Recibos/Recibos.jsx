@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useId, useRef } from "react";
 import "../styles/Recibos.css";
 
 import { API_URL } from '../../utils/config'
@@ -24,7 +24,7 @@ const hoy = () => new Date().toISOString().split("T")[0];
 // Loader
 function Skeleton({ rows = 4 }) {
   return (
-    <div className="skeleton-wrap">
+    <div className="skeleton-wrap" role="status" aria-live="polite" aria-label="Cargando recibos">
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="skeleton-row" style={{ animationDelay: `${i * 0.07}s` }} />
       ))}
@@ -45,23 +45,55 @@ function PagoBadge({ metodo }) {
 
 // Detalles
 function ReciboDetalle({ recibo, onClose }) {
+  const dialogTitleId = useId();
+  const dialogDescId = useId();
+  const closeBtnRef = useRef(null);
+
+  useEffect(() => {
+    if (!recibo) return undefined;
+
+    closeBtnRef.current?.focus();
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [recibo, onClose]);
+
   if (!recibo) return null;
 
   const totalInv = recibo.items_inventario?.reduce((s, i) => s + Number(i.subtotal), 0) ?? 0;
 
   return (
     <div className="detalle-overlay" onClick={onClose}>
-      <div className="detalle-panel" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="detalle-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={dialogTitleId}
+        aria-describedby={dialogDescId}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="detalle-header">
           <div>
             <p className="detalle-folio">Folio #{recibo.id_servicio_otorgado}</p>
-            <h2 className="detalle-nombre">{recibo.beneficiario}</h2>
-            <p className="detalle-meta">
+            <h2 id={dialogTitleId} className="detalle-nombre">{recibo.beneficiario}</h2>
+            <p id={dialogDescId} className="detalle-meta">
               {recibo.servicio} · {fmtFecha(recibo.fecha)} {recibo.hora}
             </p>
           </div>
-          <button className="btn-close" onClick={onClose}>✕</button>
+          <button ref={closeBtnRef} className="btn-close" onClick={onClose} aria-label="Cerrar detalle del recibo">✕</button>
         </div>
 
         {/* Inventario */}
@@ -135,7 +167,7 @@ function ReciboDetalle({ recibo, onClose }) {
 function ReciboRow({ recibo, onVerDetalle, mostrarFecha = false }) {
   return (
     <tr className="recibo-row">
-      <td className="td-folio">#{recibo.id_servicio_otorgado}</td>
+      <th scope="row" className="td-folio">#{recibo.id_servicio_otorgado}</th>
       <td>{recibo.beneficiario}</td>
       <td>{recibo.servicio}</td>
       {mostrarFecha && <td>{fmtFecha(recibo.fecha)}</td>}
@@ -148,7 +180,11 @@ function ReciboRow({ recibo, onVerDetalle, mostrarFecha = false }) {
           : <span className="text-muted">—</span>}
       </td>
       <td>
-        <button className="btn-ver" onClick={() => onVerDetalle(recibo)}>
+        <button
+          className="btn-ver"
+          onClick={() => onVerDetalle(recibo)}
+          aria-label={`Ver detalle del recibo ${recibo.id_servicio_otorgado}`}
+        >
           Ver
         </button>
       </td>
@@ -168,7 +204,15 @@ function ResumenCard({ label, value, sub }) {
 }
 
 // Tabla de recibos
-function TablaRecibos({ recibos, loading, error, onVerDetalle, mostrarFecha = false, emptyMsg }) {
+function TablaRecibos({
+  recibos,
+  loading,
+  error,
+  onVerDetalle,
+  mostrarFecha = false,
+  emptyMsg,
+  caption,
+}) {
   if (loading) return <Skeleton rows={4} />;
   if (error)   return <div className="estado-msg estado-error">⚠ {error}</div>;
   if (!recibos.length) return <div className="estado-msg">{emptyMsg}</div>;
@@ -176,6 +220,7 @@ function TablaRecibos({ recibos, loading, error, onVerDetalle, mostrarFecha = fa
   return (
     <div className="table-wrap">
       <table className="recibos-table">
+        <caption className="sr-only">{caption}</caption>
         <thead>
           <tr>
             <th>Folio</th>
@@ -187,7 +232,6 @@ function TablaRecibos({ recibos, loading, error, onVerDetalle, mostrarFecha = fa
             <th className="text-right">Pagado</th>
             <th>Método</th>
             <th>Detalles</th>
-            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -207,9 +251,23 @@ function TablaRecibos({ recibos, loading, error, onVerDetalle, mostrarFecha = fa
 
 // Página principal
 export default function Recibos() {
+  const fechaInputId = useId();
+  const busquedaDiaInputId = useId();
+  const busquedaMesInputId = useId();
+  const recibosDiaHeadingId = useId();
+  const recibosMesHeadingId = useId();
+  const tabsHintId = useId();
+  const tabDiaId = useId();
+  const tabMesId = useId();
+  const panelDiaId = useId();
+  const panelMesId = useId();
+  const tabDiaRef = useRef(null);
+  const tabMesRef = useRef(null);
+
   const [fecha,        setFecha]        = useState(hoy());
   const [busquedaDia,  setBusquedaDia]  = useState("");
   const [busquedaMes,  setBusquedaMes]  = useState("");
+  const [vistaActiva,  setVistaActiva]  = useState("dia");
  
   const [recibosDay,   setRecibosDay]   = useState([]);
   const [loadingDay,   setLoadingDay]   = useState(false);
@@ -233,7 +291,8 @@ export default function Recibos() {
   }, []);
  
   const cargarMes = useCallback(async (f) => {
-    setLoadingMes(true); setErrorMes("");``
+    setLoadingMes(true);
+    setErrorMes("");
     try {
       const mes = f.slice(0, 7);
       const res = await fetch(`${API_URL}/api/recibos/resumen-mes?fecha=${mes}`);
@@ -274,17 +333,39 @@ export default function Recibos() {
   const pagadoDia   = filtradosDia.reduce((s, r) => s + Number(r.financiero?.monto_pagado ?? 0), 0);
   const totalMes    = filtradosMes.reduce((s, r) => s + Number(r.financiero?.cuota_total  ?? 0), 0);
   const pagadoMes   = filtradosMes.reduce((s, r) => s + Number(r.financiero?.monto_pagado ?? 0), 0);
+
+  const onTabsKeyDown = (event) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+
+    event.preventDefault();
+    if (event.key === "Home") {
+      setVistaActiva("dia");
+      tabDiaRef.current?.focus();
+      return;
+    }
+    if (event.key === "End") {
+      setVistaActiva("mes");
+      tabMesRef.current?.focus();
+      return;
+    }
+
+    const nextView = vistaActiva === "dia" ? "mes" : "dia";
+    setVistaActiva(nextView);
+    if (nextView === "dia") tabDiaRef.current?.focus();
+    if (nextView === "mes") tabMesRef.current?.focus();
+  };
  
   return (
-    <div className="recibos-page">
-      <header className="recibos-header">
-        <div>
-          <h1 className="recibos-title">Recibos</h1>
-          <p className="recibos-subtitle">Registro de servicios y cobros</p>
+    <main className="recibos-page" aria-labelledby="recibos-page-title">
+      <header className="recibos-header page-header">
+        <div className="recibos-heading">
+          <h1 id="recibos-page-title" className="page-header-title">Recibos</h1>
+          <p className="page-header-subtitle">Registro de servicios y cobros</p>
         </div>
         <div className="fecha-wrap">
-          <span className="fecha-label">Fecha</span>
+          <label htmlFor={fechaInputId} className="fecha-label">Fecha</label>
           <input
+            id={fechaInputId}
             className="fecha-input"
             type="date"
             value={fecha}
@@ -294,108 +375,164 @@ export default function Recibos() {
         </div>
       </header>
 
-      {/* RECIBOS DEL DIA */}
-      <section className="recibos-section">
-        <div className="section-title-row">
-          <div>
-            <h2 className="section-title">Recibos del día</h2>
-            <p className="section-sub">{fmtFecha(fecha)}</p>
-          </div>
-          <div className="search-wrap">
-            <span className="search-icon">⌕</span>
-            <input
-              className="search-input"
-              type="text"
-              placeholder="Buscar en el día…"
-              value={busquedaDia}
-              onChange={(e) => setBusquedaDia(e.target.value)}
-            />
-          </div>
+      <div className="recibos-tabs-wrap">
+        <p id={tabsHintId} className="sr-only">
+          Usa las flechas izquierda y derecha para cambiar entre recibos del día y del mes.
+        </p>
+        <div
+          className="recibos-tabs"
+          role="tablist"
+          aria-label="Vistas de recibos"
+          aria-describedby={tabsHintId}
+          onKeyDown={onTabsKeyDown}
+        >
+          <button
+            ref={tabDiaRef}
+            id={tabDiaId}
+            role="tab"
+            type="button"
+            aria-selected={vistaActiva === "dia"}
+            aria-controls={panelDiaId}
+            tabIndex={vistaActiva === "dia" ? 0 : -1}
+            className={`recibos-tab ${vistaActiva === "dia" ? "is-active" : ""}`}
+            onClick={() => setVistaActiva("dia")}
+          >
+            Recibos del día
+          </button>
+          <button
+            ref={tabMesRef}
+            id={tabMesId}
+            role="tab"
+            type="button"
+            aria-selected={vistaActiva === "mes"}
+            aria-controls={panelMesId}
+            tabIndex={vistaActiva === "mes" ? 0 : -1}
+            className={`recibos-tab ${vistaActiva === "mes" ? "is-active" : ""}`}
+            onClick={() => setVistaActiva("mes")}
+          >
+            Recibos del mes
+          </button>
         </div>
+      </div>
  
-        {/* Resumen del día */}
-        {!loadingDay && filtradosDia.length > 0 && (
-          <div className="resumen-strip">
-            <ResumenCard label="Recibos del día" value={filtradosDia.length} sub={fmtFecha(fecha)} />
-            <ResumenCard label="Total facturado"  value={fmt(totalDia)} />
-            <ResumenCard label="Total cobrado"    value={fmt(pagadoDia)} />
-            <ResumenCard
-              label="Diferencia"
-              value={fmt(totalDia - pagadoDia)}
-              sub={totalDia - pagadoDia > 0 ? "pendiente" : "al corriente"}
-            />
+      {vistaActiva === "dia" && (
+        <section
+          id={panelDiaId}
+          className="recibos-section"
+          role="tabpanel"
+          aria-labelledby={tabDiaId}
+        >
+          <div className="section-title-row">
+            <div>
+              <h2 id={recibosDiaHeadingId} className="section-title">Recibos del día</h2>
+              <p className="section-sub">{fmtFecha(fecha)}</p>
+            </div>
+            <div className="search-wrap">
+              <label htmlFor={busquedaDiaInputId} className="sr-only">Buscar recibos del día</label>
+              <span className="search-icon" aria-hidden="true">⌕</span>
+              <input
+                id={busquedaDiaInputId}
+                className="search-input"
+                type="text"
+                placeholder="Buscar en el día…"
+                value={busquedaDia}
+                onChange={(e) => setBusquedaDia(e.target.value)}
+              />
+            </div>
           </div>
-        )}
  
-        <div className="recibos-card">
-          <TablaRecibos
-            recibos={filtradosDia}
-            loading={loadingDay}
-            error={errorDay}
-            onVerDetalle={setSeleccion}
-            mostrarFecha={false}
-            emptyMsg="Sin recibos para esta fecha."
-          />
-          {!loadingDay && !errorDay && filtradosDia.length > 0 && (
-            <p className="tabla-footer">
-              Mostrando {filtradosDia.length} de {recibosDay.length} recibos · {fmtFecha(fecha)}
-            </p>
+          {!loadingDay && filtradosDia.length > 0 && (
+            <div className="resumen-strip">
+              <ResumenCard label="Recibos del día" value={filtradosDia.length} sub={fmtFecha(fecha)} />
+              <ResumenCard label="Total facturado"  value={fmt(totalDia)} />
+              <ResumenCard label="Total cobrado"    value={fmt(pagadoDia)} />
+              <ResumenCard
+                label="Diferencia"
+                value={fmt(totalDia - pagadoDia)}
+                sub={totalDia - pagadoDia > 0 ? "pendiente" : "al corriente"}
+              />
+            </div>
           )}
-        </div>
-      </section>
  
-      {/* RECIBOS DEL MES */}
-      <section className="recibos-section">
-        <div className="section-title-row">
-          <div>
-            <h2 className="section-title">Recibos del mes</h2>
-            <p className="section-sub">{fmtMes(fecha)}</p>
-          </div>
-          <div className="search-wrap">
-            <span className="search-icon">⌕</span>
-            <input
-              className="search-input"
-              type="text"
-              placeholder="Buscar en el mes…"
-              value={busquedaMes}
-              onChange={(e) => setBusquedaMes(e.target.value)}
+          <div className="recibos-card">
+            <TablaRecibos
+              recibos={filtradosDia}
+              loading={loadingDay}
+              error={errorDay}
+              onVerDetalle={setSeleccion}
+              mostrarFecha={false}
+              emptyMsg="Sin recibos para esta fecha."
+              caption={`Tabla de recibos del día ${fmtFecha(fecha)}`}
             />
+            {!loadingDay && !errorDay && filtradosDia.length > 0 && (
+              <p className="tabla-footer">
+                Mostrando {filtradosDia.length} de {recibosDay.length} recibos · {fmtFecha(fecha)}
+              </p>
+            )}
           </div>
-        </div>
- 
-        {/* Resumen del mes */}
-        {!loadingMes && filtradosMes.length > 0 && (
-          <div className="resumen-strip resumen-mes">
-            <ResumenCard label="Recibos del mes" value={filtradosMes.length} />
-            <ResumenCard label="Total facturado"  value={fmt(totalMes)} />
-            <ResumenCard label="Total cobrado"    value={fmt(pagadoMes)} />
-            <ResumenCard
-              label="Diferencia"
-              value={fmt(totalMes - pagadoMes)}
-              sub={totalMes - pagadoMes > 0 ? "pendiente" : "al corriente"}
-            />
+        </section>
+      )}
+
+      {vistaActiva === "mes" && (
+        <section
+          id={panelMesId}
+          className="recibos-section"
+          role="tabpanel"
+          aria-labelledby={tabMesId}
+        >
+          <div className="section-title-row">
+            <div>
+              <h2 id={recibosMesHeadingId} className="section-title">Recibos del mes</h2>
+              <p className="section-sub">{fmtMes(fecha)}</p>
+            </div>
+            <div className="search-wrap">
+              <label htmlFor={busquedaMesInputId} className="sr-only">Buscar recibos del mes</label>
+              <span className="search-icon" aria-hidden="true">⌕</span>
+              <input
+                id={busquedaMesInputId}
+                className="search-input"
+                type="text"
+                placeholder="Buscar en el mes…"
+                value={busquedaMes}
+                onChange={(e) => setBusquedaMes(e.target.value)}
+              />
+            </div>
           </div>
-        )}
- 
-        <div className="recibos-card">
-          <TablaRecibos
-            recibos={filtradosMes}
-            loading={loadingMes}
-            error={errorMes}
-            onVerDetalle={setSeleccion}
-            mostrarFecha={true}
-            emptyMsg="Sin recibos para este mes."
-          />
-          {!loadingMes && !errorMes && filtradosMes.length > 0 && (
-            <p className="tabla-footer">
-              Mostrando {filtradosMes.length} de {recibosMes.length} recibos · {fmtMes(fecha)}
-            </p>
+  
+          {!loadingMes && filtradosMes.length > 0 && (
+            <div className="resumen-strip resumen-mes">
+              <ResumenCard label="Recibos del mes" value={filtradosMes.length} />
+              <ResumenCard label="Total facturado"  value={fmt(totalMes)} />
+              <ResumenCard label="Total cobrado"    value={fmt(pagadoMes)} />
+              <ResumenCard
+                label="Diferencia"
+                value={fmt(totalMes - pagadoMes)}
+                sub={totalMes - pagadoMes > 0 ? "pendiente" : "al corriente"}
+              />
+            </div>
           )}
-        </div>
-      </section>
+ 
+          <div className="recibos-card">
+            <TablaRecibos
+              recibos={filtradosMes}
+              loading={loadingMes}
+              error={errorMes}
+              onVerDetalle={setSeleccion}
+              mostrarFecha={true}
+              emptyMsg="Sin recibos para este mes."
+              caption={`Tabla de recibos del mes ${fmtMes(fecha)}`}
+            />
+            {!loadingMes && !errorMes && filtradosMes.length > 0 && (
+              <p className="tabla-footer">
+                Mostrando {filtradosMes.length} de {recibosMes.length} recibos · {fmtMes(fecha)}
+              </p>
+            )}
+          </div>
+        </section>
+      )}
  
       {/* Panel de detalle */}
       <ReciboDetalle recibo={seleccion} onClose={() => setSeleccion(null)} />
-    </div>
+    </main>
   );
 }

@@ -1,16 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
-
 .navbar {
-  font-family: 'Montserrat', sans-serif;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
+  font-family: var(--font-sans);
+  background: var(--color-surface-card);
+  border-bottom: 1px solid var(--color-border);
   height: 120px;
   display: flex;
   align-items: center;
   padding: 0 32px;
 /*  padding: 0 32px; */
   gap: 32px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-navbar);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -34,8 +32,8 @@
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
-  font-family: 'Montserrat', sans-serif;
-  color: #374151;
+  font-family: inherit;
+  color: var(--color-text-secondary);
   text-decoration: none;
   cursor: pointer;
   border: none;
@@ -45,13 +43,13 @@
 }
 
 .link:hover {
-  background: #f3f4f6;
-  color: #111827;
+  background: var(--color-muted-surface);
+  color: var(--color-text-primary);
 }
 
 .linkActive {
-  background: #e0e7ff;
-  color: #1e3a8a;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
   font-weight: 600;
 }
 
@@ -79,7 +77,7 @@
 
 .settingsBtn:hover {
   background: #f3f4f6;
-  color: #374151;
+  color: var(--color-text-secondary);
 }
 
 .user {
@@ -376,7 +374,7 @@
   height: 22px;
   border-radius: 999px;
   background: #e5e7eb;
-  color: #374151;
+  color: var(--color-text-secondary);
   font-size: 12px;
   font-weight: 700;
   display: flex;

@@ -14,9 +14,17 @@ function StepIndicator({ currentStep, completedSteps, onGoTo }) {
     <aside className="sidebar">
       <div className="sidebar-brand">
         <div className="brand-icon">ASEB</div>
-        <span>Prerregistro</span>
+        <div className="sidebar-brand-text">
+          <span className="sidebar-brand-name">Asociación Espina Bífida</span>
+          <span className="sidebar-brand-sub">Prerregistro</span>
+        </div>
       </div>
-      <nav className="step-nav">
+
+      <div className="sidebar-welcome">
+        <p>Completa los 3 pasos para registrar a tu familiar o beneficiario.</p>
+      </div>
+
+      <nav className="step-nav" aria-label="Pasos del formulario">
         {STEPS.map((label, i) => {
           const state = completedSteps.includes(i)
             ? "completed"
@@ -29,24 +37,64 @@ function StepIndicator({ currentStep, completedSteps, onGoTo }) {
               key={i}
               className={`step-item step-${state} ${clickable ? "step-clickable" : ""}`}
               onClick={() => clickable && onGoTo(i)}
-              title={clickable ? `Editar: ${label}` : undefined}
+              role={clickable ? "button" : undefined}
+              tabIndex={clickable ? 0 : undefined}
+              onKeyDown={clickable ? (e) => e.key === "Enter" && onGoTo(i) : undefined}
+              aria-label={clickable ? `Editar paso ${i + 1}: ${label}` : undefined}
+              aria-current={state === "active" ? "step" : undefined}
             >
               <div className="step-dot">
                 {state === "completed" ? (
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                     <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 ) : (
-                  <span>{i + 1}</span>
+                  <span aria-hidden="true">{i + 1}</span>
                 )}
               </div>
-              <span className="step-label">{label}</span>
-              {clickable && <span className="step-edit-hint">editar</span>}
+              <div className="step-info">
+                <span className="step-label">{label}</span>
+                {state === "completed" && <span className="step-done-badge">Completado</span>}
+              </div>
             </div>
           );
         })}
       </nav>
+
+      <div className="sidebar-footer">
+        <p>¿Tienes dudas? Comunícate con nosotros antes de continuar.</p>
+      </div>
     </aside>
+  );
+}
+
+// Indicador de progreso horizontal para móvil
+function MobileStepBar({ currentStep, completedSteps }) {
+  return (
+    <div className="mobile-steps" aria-label="Progreso del formulario">
+      {STEPS.map((label, i) => {
+        const state = completedSteps.includes(i)
+          ? "completed"
+          : currentStep === i
+            ? "active"
+            : "pending";
+        return (
+          <div key={i} className={`mobile-step mobile-step--${state}`}>
+            <div className="mobile-step-dot">
+              {state === "completed" ? (
+                <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              ) : (
+                <span aria-hidden="true">{i + 1}</span>
+              )}
+            </div>
+            <span className="mobile-step-label">{label}</span>
+            {i < STEPS.length - 1 && <div className="mobile-step-line" />}
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -54,8 +102,8 @@ function StepIndicator({ currentStep, completedSteps, onGoTo }) {
 function SectionHeader({ icon, title, subtitle }) {
   return (
     <div className="section-header">
-      <div className="section-icon">{icon}</div>
-      <div>
+      {icon ? <div className="section-icon">{icon}</div> : null}
+      <div className="section-header-copy">
         <h2>{title}</h2>
         {subtitle && <p className="section-subtitle">{subtitle}</p>}
       </div>
@@ -95,7 +143,7 @@ function StepIdentidad({ savedData, onComplete }) {
 
   return (
     <div className="step-content">
-      <SectionHeader title="Identidad" subtitle="Ingresa el nombre completo del beneficiario." />
+      <SectionHeader title="Paso 1 — Identidad" subtitle="Ingresa el nombre completo de la persona que deseas registrar." />
       <div className="fields-grid">
         <Field label="Nombre(s)" required>
           <input
@@ -169,7 +217,7 @@ function StepDemografia({ savedData, onComplete, onBack }) {
 
   return (
     <div className="step-content">
-      <SectionHeader title="Datos Demográficos" subtitle="Información de identificación oficial." />
+      <SectionHeader title="Paso 2 — Datos de identificación" subtitle="Necesitamos estos datos para confirmar la identidad oficial del beneficiario." />
       <div className="fields-grid">
         <div className="row-2">
           <Field label="Fecha de nacimiento" required>
@@ -225,7 +273,7 @@ function StepDiagnostico({ savedData, onComplete, onBack, isSubmitting, submitEr
 
   return (
     <div className="step-content">
-      <SectionHeader title="Diagnóstico" subtitle="Selecciona uno o más tipos de Espina Bífida que apliquen." />
+      <SectionHeader title="Paso 3 — Diagnóstico médico" subtitle="Selecciona uno o más tipos de Espina Bífida que apliquen al beneficiario. Puedes elegir varias opciones." />
 
       <div className="checkbox-grid">
         {espinaBifidaOptions.map((opt) => (
@@ -259,7 +307,7 @@ function StepDiagnostico({ savedData, onComplete, onBack, isSubmitting, submitEr
           onClick={() => valid && onComplete({ espinaBifida: selected, otrosTexto: tieneOtros ? otrosTexto : "" })}
           disabled={!valid || isSubmitting}
         >
-          {isSubmitting ? "Guardando..." : "Registrarse ✓"}
+          {isSubmitting ? "Guardando..." : "Registrarse"}
         </button>
       </div>
     </div>
@@ -270,15 +318,23 @@ function StepDiagnostico({ savedData, onComplete, onBack, isSubmitting, submitEr
 function StepSuccess({ data }) {
   return (
     <div className="step-content success-screen">
-      <div className="success-icon">✓</div>
+      <div className="success-icon" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
       <h2>¡Prerregistro completado!</h2>
-      <p>
-        Los datos de{" "}
-        <strong>{data.identidad.nombre} {data.identidad.paterno}</strong>{" "}
-        han sido enviados correctamente.
+      <p className="success-name">
+        {data.identidad.nombre} {data.identidad.segundoNombre ? `${data.identidad.segundoNombre} ` : ""}{data.identidad.paterno} {data.identidad.materno}
       </p>
+      <p className="success-msg">
+        Tus datos han sido enviados correctamente. El personal de la asociación se comunicará contigo para completar el proceso de registro.
+      </p>
+      <div className="success-note">
+        <p>Guarda o toma captura de este mensaje como confirmación de tu prerregistro.</p>
+      </div>
       <button className="btn-primary" onClick={() => window.location.reload()}>
-        Nuevo registro
+        Registrar otra persona
       </button>
     </div>
   );
@@ -350,30 +406,39 @@ export default function Prerregistro() {
     <div className="prerregistro-container">
       <StepIndicator currentStep={step} completedSteps={completed} onGoTo={goTo} />
       <main className="main-content">
-        <div className="card">
-          {isDone ? (
-            <StepSuccess data={formData} />
-          ) : step === 0 ? (
-            <StepIdentidad
-              savedData={formData.identidad}
-              onComplete={(d) => advance(d, "identidad")}
-            />
-          ) : step === 1 ? (
-            <StepDemografia
-              savedData={formData.demografia}
-              onComplete={(d) => advance(d, "demografia")}
-              onBack={back}
-            />
-          ) : (
-            <StepDiagnostico
-              savedData={formData.diagnostico}
-              onComplete={handleFinalSubmit}
-              onBack={back}
-              isSubmitting={isSubmitting}
-              submitError={submitError}
-            />
-          )}
-        </div>
+        <section className="prerregistro-shell">
+          <header className="prerregistro-header">
+            <h1>Prerregistro de Beneficiario</h1>
+            <p>Completa la información en los 3 pasos para enviar la solicitud.</p>
+          </header>
+
+          <MobileStepBar currentStep={step} completedSteps={completed} />
+
+          <div className="card">
+            {isDone ? (
+              <StepSuccess data={formData} />
+            ) : step === 0 ? (
+              <StepIdentidad
+                savedData={formData.identidad}
+                onComplete={(d) => advance(d, "identidad")}
+              />
+            ) : step === 1 ? (
+              <StepDemografia
+                savedData={formData.demografia}
+                onComplete={(d) => advance(d, "demografia")}
+                onBack={back}
+              />
+            ) : (
+              <StepDiagnostico
+                savedData={formData.diagnostico}
+                onComplete={handleFinalSubmit}
+                onBack={back}
+                isSubmitting={isSubmitting}
+                submitError={submitError}
+              />
+            )}
+          </div>
+        </section>
       </main>
     </div>
   );
