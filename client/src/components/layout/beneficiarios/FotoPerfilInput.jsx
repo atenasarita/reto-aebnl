@@ -1,22 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { FaUpload } from 'react-icons/fa'
 
-
-const API_URL = "http://localhost:3000";
-
 function FotoPerfilInput({
     value, onChange, onError
 }){
     const fileInputRef = useRef(null);
     const[preview, setPreview] = useState('');
-    const[subiendo, setSubiendo] = useState(false);
 
     useEffect(() => {
-        if(value && typeof value === 'string'){
+        if (value?.preview){
+            setPreview(value.preview);
+        } else if (value && typeof value === "string"){
             setPreview(value);
         } else {
-            setPreview('');
+            setPreview("");
         }
+
     }, [value]);
 
     const handleOpenFileSelector = () => {
@@ -32,48 +31,14 @@ function FotoPerfilInput({
             return;
         }
         onError?.('');
-        setSubiendo(true);
 
         const localPreview = URL.createObjectURL(file);
         setPreview(localPreview);
 
-        try {
-            const token = localStorage.getItem('token');
-
-            const formData = new FormData();
-            formData.append('fotografia', file);
-
-            const response = await fetch(`${API_URL}/api/beneficiarios/upload-foto`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                body: formData
-            });
-
-            const data = await response.json();
-
-            // console.log('ruta devuelta:', data.ruta);
-            // console.log('url completa:', `http://localhost:3000${data.ruta}`);
-
-            if(!response.ok){
-                throw new Error(data.message || 'Error al subir la fotografia');
-            }
-            console.log("ruta: ", data.ruta);
-
-            // Guardar en el formaulario solo la ruta
-            onChange?.(data.ruta);
-            setPreview(data.ruta);
-
-        } catch(error) {
-            console.error('Error subiendo foto: ', error);
-            onError?.(error.message || 'No se pudo subir la fotografia');
-            setPreview('');
-        } finally {
-            setSubiendo(false);
-            URL.revokeObjectURL(localPreview);
-            e.target.value = "";
-        }
+        onChange?.({
+            file,
+            preview: localPreview
+        });
     };
 
     return(

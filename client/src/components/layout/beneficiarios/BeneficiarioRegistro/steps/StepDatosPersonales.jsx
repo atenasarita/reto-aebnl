@@ -1,6 +1,7 @@
 import { FaCalendar } from 'react-icons/fa';
 import { estadosMexico } from '../../../../../utils/beneficiarioConstants';
 
+
 function StepDatosPersonales({
   formData,
   fieldErrors,
@@ -10,7 +11,7 @@ function StepDatosPersonales({
   handleInputChange,
   handleBlur
 }) {
-  return (
+  const today = new Date().toISOString().split("T")[0];  return (
     <>
       <div className="section-block">
         <h2>Identidad</h2>
@@ -95,6 +96,7 @@ function StepDatosPersonales({
                 type="date"
                 name="fecha_nacimiento"
                 value={fechaNacimiento}
+                max={today}
                 onChange={(e) => setFechaNacimiento(e.target.value)}
               />
               <FaCalendar

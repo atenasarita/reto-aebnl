@@ -47,12 +47,17 @@ function BeneficiarioCard({ beneficiario, onView, onEdit, onCard, onDownloadPdf 
         <button className={styles.actionBtn} onClick={onDownloadPdf} title="Descargar PDF">
           <FiDownload />
         </button>
+
+        {/*  
         <button className={styles.actionBtn} onClick={onCard} title="Ver credencial">
           <BsCardText />
         </button>
         <button className={styles.actionBtn} onClick={onEdit} title="Editar">
           <FiEdit />
         </button>
+
+        */}
+        
         <button className={`${styles.actionBtn} ${styles.actionBtnView}`} onClick={onView} title="Ver detalle">
           <FiEye />
         </button>

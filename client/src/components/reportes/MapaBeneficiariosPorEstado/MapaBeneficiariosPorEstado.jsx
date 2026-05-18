@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import "./MapaBeneficiariosPorEstado.css";
 
@@ -29,8 +29,29 @@ function normalizeMatch(value) {
 
 const GEO_URL = `${import.meta.env.BASE_URL}geo/mexico-states.geojson`;
 
+/** react-simple-maps solo descifra TopoJSON por URL; con GeoJSON hay que pasar features como array (ver getFeatures en la lib). */
 export default function MapaBeneficiariosPorEstado({ distribucionEstado = [] }) {
   const [hover, setHover] = useState(null);
+  const [geoFeatures, setGeoFeatures] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(GEO_URL)
+      .then((res) => {
+        if (!res.ok) throw new Error(res.statusText);
+        return res.json();
+      })
+      .then((data) => {
+        const feats = Array.isArray(data) ? data : data?.features;
+        if (!cancelled && Array.isArray(feats)) setGeoFeatures(feats);
+      })
+      .catch((err) => {
+        console.error("[MapaBeneficiariosPorEstado] No se pudo cargar el GeoJSON:", err);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const byEstado = useMemo(() => {
     const map = new Map();
@@ -41,14 +62,14 @@ export default function MapaBeneficiariosPorEstado({ distribucionEstado = [] }) 
   }, [distribucionEstado]);
 
   const maxVal = useMemo(() => {
-    return distribucionEstado.reduce((m, r) => Math.max(m, r.value), 0);
+    return distribucionEstado.reduce((m, r) => Math.max(m, Number(r.value ?? 0)), 0);
   }, [distribucionEstado]);
 
   return (
     <div className="reporte-mxmap">
       <div className="reporte-mxmap-frame reporte-mxmap-frame--legend">
         <ComposableMap projection="geoMercator" projectionConfig={{ center: [-102, 23.5], scale: 1080 }} width={800} height={420}>
-          <Geographies geography={GEO_URL}>
+          <Geographies geography={geoFeatures}>
             {({ geographies }) =>
               geographies.map((geo) => {
                 const name = geo.properties?.name || "";

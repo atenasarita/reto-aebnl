@@ -43,7 +43,7 @@ function BeneficiarioGrid({ data, loading }) {
       
       const data = await res.json();
    
-      const resPadres = await fetch(`http://localhost:3000/api/beneficiarios/${id}/padres`, {
+      const resPadres = await fetch(`${API_URL}/api/beneficiarios/${id}/padres`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (resPadres.ok) {
@@ -96,7 +96,7 @@ function BeneficiarioGrid({ data, loading }) {
           <BeneficiarioCard
             key={b.id_beneficiario}
             beneficiario={b}
-            onView={() => handleView(b.id_beneficiario)} // ← fixed
+            onView={() => handleView(b.id_beneficiario)} 
             onEdit={() => console.log('editar', b.id_beneficiario)}
             onCard={() => console.log('credencial', b.id_beneficiario)}
             onDownloadPdf={() => handleDownloadPdf(b.id_beneficiario)}

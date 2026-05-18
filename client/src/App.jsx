@@ -17,13 +17,8 @@ import ReporteInventario from "./pages/reportes/ReporteInventario/ReporteInventa
 import ReporteAnual from "./pages/reportes/ReporteAnual/ReporteAnual";
 import ReportesMensual from "./pages/reportes/ReportesMensual/ReportesMensual";
 import ReportePersonalizado from "./pages/reportes/ReportePersonalizado/ReportePersonalizado";
-
-// Dashboard del tablero (elige UNA línea según tu estructura)
-// Si tu dashboard está en: client/src/pages/dashboard.jsx
 import Dashboard from "./pages/dashboard";
-
-// Si lo moviste a: client/src/pages/dashboard/Dashboard.jsx
-// import Dashboard from "./pages/dashboard/Dashboard";
+import RegistroServicios from "./pages/RegistroServicios/RegistroServicios";
 
 import "./App.css";
 
@@ -36,7 +31,7 @@ export default function App() {
 
         {/* Privadas dentro del layout (Navbar + etc) */}
         <Route element={<MainLayout />}>
-          {/* ✅ Este es el cambio clave: /dashboard usa TU tablero */}
+          {/* Dashboard */}
           <Route path="/dashboard" element={<Dashboard />} />
 
           {/* Beneficiarios */}
@@ -47,6 +42,10 @@ export default function App() {
 
           {/* Prerregistro */}
           <Route path="/prerregistro" element={<Prerregistro />} />
+
+          {/* Registro de Servicios */}
+          <Route path="/registro_servicios" element={<RegistroServicios />} />
+
 
           {/* Inventario */}
           <Route path="/inventario" element={<Inventario />} />
