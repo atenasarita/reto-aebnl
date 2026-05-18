@@ -14,7 +14,7 @@ async function login(page) {
 }
 
 test(
-  qase(4, 'HU - 003 - Alerta de renovación de membresía - Caso de prueba #HU003-1'),
+  qase(106, 'HU - 003 - Alerta de renovación de membresía - Caso de prueba #HU003-1'),
   async ({ page }) => {
     await login(page);
 
