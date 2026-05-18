@@ -18,7 +18,7 @@ import ReporteAnual from "./pages/reportes/ReporteAnual/ReporteAnual";
 import ReportesMensual from "./pages/reportes/ReportesMensual/ReportesMensual";
 import ReportePersonalizado from "./pages/reportes/ReportePersonalizado/ReportePersonalizado";
 import Dashboard from "./pages/dashboard";
-import RegistroServicios from "./pages/RegistroServicios/RegistroServicios";
+import RegistroServicios from "./pages/Servicios/RegistroServicios";
 
 import "./App.css";
 
