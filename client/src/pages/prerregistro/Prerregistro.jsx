@@ -1,17 +1,9 @@
 import { useState } from "react";
 import "../styles/Prerregistro.css";
 
-const espinaBifidaOptions = [
-  { value: 1, label: "Encefalocele" },
-  { value: 2, label: "Espina Bífida Oculta" },
-  { value: 3, label: "Hidrocefalia Congénita" },
-  { value: 4, label: "Lipo-Mielomeningocele" },
-  { value: 5, label: "Lipocele" },
-  { value: 6, label: "Médula Anclada" },
-  { value: 7, label: "Meningocele" },
-  { value: 8, label: "Mielomeningocele" },
-  { value: 9, label: "Otros" },
-];
+import { API_URL } from '../../utils/config';
+import {espinaBifidaOptions} from '../../utils/espinaBifidaTypes';
+
 
 const STEPS = ["Identidad", "Datos Demográficos", "Diagnóstico"];
 const soloLetras = (v) => v.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g, "");
@@ -292,8 +284,6 @@ function StepSuccess({ data }) {
   );
 }
 
-// Flujo de Prerregistro
-const API_BASE = (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) || "http://localhost:3000";
 
 export default function Prerregistro() {
   const [step, setStep] = useState(0);
@@ -336,7 +326,7 @@ export default function Prerregistro() {
     };
 
     try {
-      const res = await fetch(`${API_BASE}/api/preregistros`, {
+      const res = await fetch(`${API_URL}/api/preregistros`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

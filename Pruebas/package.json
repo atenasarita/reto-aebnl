@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test:qase:hu019": "QASE_MODE=testops QASE_TESTOPS_PROJECT=WS QASE_TESTOPS_PLAN_ID=2 QASE_TESTOPS_RUN_TITLE=\"Sprint 2 - HU 019 - Menu de Inicio - Automatizado\" npx playwright test test/Sprint2/test-menuInicio.spec.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

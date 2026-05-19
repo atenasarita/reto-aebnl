@@ -834,3 +834,71 @@
   font-weight: 700;
   color: #1e293b;
 }
+
+.preregistro-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-btn {
+  width: 46px;
+  height: 46px;
+  border: none;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+
+
+/* Active click */
+.icon-btn:active {
+  transform: scale(0.96);
+}
+
+/* ACCEPT */
+.icon-btn.accept {
+  background: #ecfdf3;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.icon-btn.accept:hover {
+  background: #16a34a;
+  color: white;
+}
+
+.icon-btn.reject {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.icon-btn.reject:hover {
+  background: #dc2626;
+  color: white;
+}
+
+.icon-btn.expand {
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #dbe4f0;
+}
+
+.icon-btn.expand:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.icon-btn.expand.open {
+  transform: rotate(180deg);
+}
+
+/* Icon sizing */
+.icon-btn svg {
+  width: 20px;
+  height: 20px;
+}

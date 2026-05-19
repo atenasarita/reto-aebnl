@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { API_URL } from '../utils/config'
+
 import {
   ArrowRight,
   CalendarDays,
@@ -16,7 +18,6 @@ import {
 } from "lucide-react";
 import "./styles/dashboard.css";
 
-const API_URL = "http://localhost:3000/api";
 
 const actions = [
   {
@@ -24,6 +25,7 @@ const actions = [
     subtitle: "Documentar nueva atención",
     icon: ClipboardPlus,
     variant: "primary",
+    to: "/registro_servicios",
   },
   {
     title: "Nuevo Beneficiario",
@@ -50,12 +52,27 @@ const actions = [
 
 function getAgendaTagClass(item) {
   const especialistaId = Number(item.id_especialista);
+  const especialistaNombre = String(item.especialista_nombre || "").toLowerCase();
 
-  if (especialistaId === 1) return "blue";
-  if (especialistaId === 2) return "purple";
-  if (especialistaId === 3) return "green";
-  if (especialistaId === 4) return "orange";
-  if (especialistaId === 5) return "red";
+  if (especialistaId === 26 || especialistaNombre.includes("laura")) {
+    return "blue";
+  }
+
+  if (especialistaId === 27 || especialistaNombre.includes("carlos")) {
+    return "purple";
+  }
+
+  if (especialistaId === 28 || especialistaNombre.includes("roberto")) {
+    return "green";
+  }
+
+  if (especialistaId === 29 || especialistaNombre.includes("luis")) {
+    return "orange";
+  }
+
+  if (especialistaId === 30 || especialistaNombre.includes("sofia")) {
+    return "red";
+  }
 
   return "blue";
 }
@@ -270,25 +287,28 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
                     <button
                       type="button"
                       className="icon-btn accept"
+                      aria-label="Aceptar preregistro"
                       onClick={() => onUpdateEstado(item.id_preregistro, "aceptado")}
                     >
-                      <Check size={24} />
+                      <Check />
                     </button>
 
                     <button
                       type="button"
                       className="icon-btn reject"
+                      aria-label="Rechazar preregistro"
                       onClick={() => onUpdateEstado(item.id_preregistro, "rechazado")}
                     >
-                      <X size={24} />
+                      <X />
                     </button>
 
                     <button
                       type="button"
                       className={`icon-btn expand ${isOpen ? "open" : ""}`}
+                      aria-label="Expandir detalles"
                       onClick={() => toggleItem(item.id_preregistro)}
                     >
-                      <ChevronDown size={24} />
+                      <ChevronDown />
                     </button>
                   </div>
                 </div>
@@ -317,6 +337,7 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [agendaItems, setAgendaItems] = useState([]);
   const [preregistroItems, setPreregistroItems] = useState([]);
   const [error, setError] = useState("");
@@ -338,7 +359,7 @@ export default function Dashboard() {
   }, [isAdministrador]);
 
   const fetchAgenda = async () => {
-    const res = await fetch(`${API_URL}/dashboard/agenda-hoy`, {
+    const res = await fetch(`${API_URL}/api/dashboard/agenda-hoy`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -354,7 +375,7 @@ export default function Dashboard() {
   };
 
   const fetchPreregistros = async () => {
-    const res = await fetch(`${API_URL}/dashboard/preregistro-pendientes`, {
+    const res = await fetch(`${API_URL}/api/dashboard/preregistro-pendientes`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -371,7 +392,7 @@ export default function Dashboard() {
 
   const onUpdateEstado = async (id, estado) => {
     try {
-      const res = await fetch(`${API_URL}/dashboard/preregistro/${id}/estado`, {
+      const res = await fetch(`${API_URL}/api/dashboard/preregistro/${id}/estado`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
