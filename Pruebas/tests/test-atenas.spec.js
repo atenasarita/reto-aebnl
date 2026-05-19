@@ -1,69 +1,102 @@
 import { test, expect } from '@playwright/test';
 import { qase } from 'playwright-qase-reporter';
 
-test(qase(120, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-1'), async ({ page }) => {
+async function loginAndGoToBeneficiarios(page) {
     await page.goto('http://localhost:5173/login');
-    await page.getByRole('textbox', { name: 'Usuario' }).click();
     await page.getByRole('textbox', { name: 'Usuario' }).fill('prueba1');
-    await page.getByRole('textbox', { name: '********' }).click();
     await page.getByRole('textbox', { name: '********' }).fill('admin1');
     await page.getByRole('button', { name: 'Iniciar Sesión' }).click();
-
     await page.getByRole('button', { name: 'Beneficiarios' }).click();
+    await expect(page.locator('[class*="_card_"]').first()).toBeVisible({ timeout: 8000 });
+}
 
-    await expect(page.locator('[class*="_card_"]').first()).toBeVisible();
+test(qase(120, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-1'), async ({ page }) => {
+    await loginAndGoToBeneficiarios(page);
 
     await page.locator('select.dropdown-select').selectOption('activo');
+    await page.locator('input.search-input').fill('Atenas');
+    await page.waitForTimeout(600);
 
-    await page.locator('input.search-input').fill('Atenas Arita Garcia');
+    const firstCard = page.locator('[class*="_card_"]').first();
+    await expect(firstCard).toBeVisible({ timeout: 8000 });
 
-    await expect(page.locator('[class*="_card_"]').first()).toBeVisible();
+    await expect(firstCard.locator('[class*="_badge_"]')).toHaveText('Activo');
+    await expect(firstCard.locator('[class*="_nombre_"]')).toContainText('Atenas');
 
-    await page.locator('button[title="Ver credencial"]').first().click();
+    await firstCard.locator('button[title="Ver detalle"]').click();
 
-    await expect(page.getByText('Juan Carlos López')).toBeVisible();
+    const detalle = page.locator('[class*="_modalBody_"]');
+    await expect(detalle).toBeVisible({ timeout: 8000 });
 
-    await expect(page.getByText(/vigencia|vigente|válido/i).first()).toBeVisible();
+    //verifica que usa el field correcto
+    await expect(
+        detalle.locator('[class*="_fieldLabel_"]').filter({ hasText: /^Nombre$/ })
+    ).toBeVisible();
 
+    await expect(
+        detalle.locator('[class*="_fieldValue_"]').filter({ hasText: /atenas/i })
+    ).toBeVisible();
 
-    await expect(page.getByText(/activo/i).first()).toBeVisible();
+    
+    await expect(
+        detalle.locator('[class*="_sectionLabel_"]').filter({ hasText: 'Vigencia de Membresía' })
+    ).toBeVisible();
+    await expect(
+        detalle.locator('[class*="_fieldLabel_"]').filter({ hasText: /^Desde$/ })
+    ).toBeVisible();
+    await expect(
+        detalle.locator('[class*="_fieldLabel_"]').filter({ hasText: /^Hasta$/ })
+    ).toBeVisible();
+
+    // cierra el detalle antes de seguir
+    await firstCard.locator('button[title="Ver detalle"]').click(); 
+    await page.locator('[class*="_closeBtn_"]').click();            
+    await expect(detalle).not.toBeVisible({ timeout: 3000 });
 
     const [download] = await Promise.all([
         page.waitForEvent('download'),
         page.locator('button[title="Descargar PDF"]').first().click(),
     ]);
-
     expect(download.suggestedFilename()).toMatch(/\.pdf$/i);
 });
 
 test(qase(121, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-2'), async ({ page }) => {
-    await page.goto('http://localhost:5173/login');
-    await page.getByRole('textbox', { name: 'Usuario' }).click();
-    await page.getByRole('textbox', { name: 'Usuario' }).fill('prueba1');
-    await page.getByRole('textbox', { name: '********' }).click();
-    await page.getByRole('textbox', { name: '********' }).fill('admin1');
-    await page.getByRole('button', { name: 'Iniciar Sesión' }).click();
-
-    await page.getByRole('button', { name: 'Beneficiarios' }).click();
-
-    await expect(page.locator('[class*="_card_"]').first()).toBeVisible();
+    await loginAndGoToBeneficiarios(page);
 
     await page.locator('select.dropdown-select').selectOption('inactivo');
+    await page.waitForTimeout(600);
 
-    await expect(page.locator('[class*="_card_"]').first()).toBeVisible();
+    const firstCard = page.locator('[class*="_card_"]').first();
+    await expect(firstCard).toBeVisible({ timeout: 8000 });
 
-    await page.locator('button[title="Ver credencial"]').first().click();
+    await expect(firstCard.locator('[class*="_badge_"]')).toHaveText('Inactivo');
+    await expect(firstCard.locator('[class*="_badge_"]')).not.toHaveText('Activo');
 
-    await expect(page.getByText(/inactivo/i).first()).toBeVisible();
+    await firstCard.locator('button[title="Ver detalle"]').click();
 
-    await expect(page.getByText(/^activo$/i)).not.toBeVisible();
+    const detalle = page.locator('[class*="_modalBody_"]');
+    await expect(detalle).toBeVisible({ timeout: 8000 });
 
-    await expect(page.getByText(/vigencia|vigente|válido/i).first()).toBeVisible();
+    await expect(
+        detalle.locator('[class*="_fieldValue_"]').first()
+    ).toBeVisible();
+
+    await expect(
+        detalle.locator('[class*="_sectionLabel_"]').filter({ hasText: 'Vigencia de Membresía' })
+    ).toBeVisible();
+    await expect(
+        detalle.locator('[class*="_fieldLabel_"]').filter({ hasText: /^Desde$/ })
+    ).toBeVisible();
+    await expect(
+        detalle.locator('[class*="_fieldLabel_"]').filter({ hasText: /^Hasta$/ })
+    ).toBeVisible();
+
+    await page.locator('[class*="_closeBtn_"]').click();
+    await expect(detalle).not.toBeVisible({ timeout: 3000 });
 
     const [download] = await Promise.all([
         page.waitForEvent('download'),
         page.locator('button[title="Descargar PDF"]').first().click(),
     ]);
-
     expect(download.suggestedFilename()).toMatch(/\.pdf$/i);
 });
