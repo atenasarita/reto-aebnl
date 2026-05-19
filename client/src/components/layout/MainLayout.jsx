@@ -13,6 +13,13 @@ const RUTAS_NAV = [
   { prefix: "/dashboard", label: "Tablero" },
 ];
 
+/** Rutas con layout propio full-bleed (sidebar / wizard): sin page-shell externo */
+const FULL_BLEED_PREFIXES = ["/prerregistro", "/registro_beneficiario"];
+
+function isFullBleedPath(pathname) {
+  return FULL_BLEED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
+
 function resolveActiveNavLabel(pathname) {
   for (const { prefix, label, exact } of RUTAS_NAV) {
     if (exact) {
@@ -48,11 +55,17 @@ function MainLayout() {
         avatar: null,
       };
 
+  const bleed = isFullBleedPath(pathname);
+
   return (
     <>
       <Navbar activeLink={activeLink} user={navbarUser} />
-      <main>
-        <Outlet />
+      <main className="layout-main">
+        {bleed ? <Outlet /> : (
+          <div className="page-shell">
+            <Outlet />
+          </div>
+        )}
       </main>
     </>
   );

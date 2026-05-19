@@ -1,37 +1,43 @@
 .inventario-pagina {
-  min-height: 100%;
-  background: #f8fafc;
-}
-
-.inventario-pagina .content-container {
-  margin: 32px 64px 48px;
+  min-height: 0;
+  width: 100%;
+  margin: 0;
+  color: var(--color-text-primary);
 }
 
 .inventario-encabezado {
   text-align: left;
-  margin-bottom: 28px;
 }
 
-.inventario-encabezado__titulo {
-  margin: 0 0 8px;
-  font-size: 36px;
-  font-weight: 600;
-  color: #0f172a;
-  line-height: 1.2;
+.inventario-encabezado.page-header {
+  margin-bottom: var(--space-6);
 }
 
-.inventario-encabezado__subtitulo {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 400;
-  color: #64748b;
-  line-height: 1.4;
+.inventario-bloque {
+  margin-bottom: var(--space-6);
+}
+
+/* Filtros: fila plana (sin caja tipo tarjeta), alineado al resto de listados */
+.inventario-bloque--filtros {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+.inventario-bloque--tabla {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-tile);
+  padding: 0;
+  overflow: hidden;
 }
 
 .inventario-estado {
-  margin: 16px 0;
+  margin: 0;
+  padding: 20px 24px;
   font-size: 15px;
-  color: #64748b;
+  color: var(--color-text-muted);
 }
 
 .inventario-estado--error {
@@ -43,23 +49,24 @@
 }
 
 .inventario-form__volver a {
-  color: #1e3b8a;
+  color: var(--color-brand);
   font-weight: 600;
   text-decoration: none;
   font-size: 15px;
 }
 
 .inventario-form__volver a:hover {
+  color: var(--color-brand-hover);
   text-decoration: underline;
 }
 
 .inventario-form {
   max-width: 720px;
-  background: #ffffff;
-  border-radius: 16px;
+  background: var(--color-surface-card);
+  border-radius: var(--radius-tile);
   padding: 28px 32px 32px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
-  border: 1px solid #e2e8f0;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border);
 }
 
 .inventario-form--modal {
@@ -95,7 +102,7 @@
 .inventario-form__field span {
   font-size: 13px;
   font-weight: 600;
-  color: #475569;
+  color: var(--color-text-secondary);
 }
 
 .inventario-form__field input,
@@ -111,8 +118,8 @@
 
 .inventario-form__field input:focus,
 .inventario-form__field select:focus {
-  outline: 2px solid #1e3b8a33;
-  border-color: #1e3b8a;
+  outline: 2px solid rgba(30, 64, 175, 0.25);
+  border-color: var(--color-brand);
 }
 
 .inventario-form__check {
@@ -129,7 +136,7 @@
 .inventario-form__hint {
   margin: 0;
   font-size: 14px;
-  color: #64748b;
+  color: var(--color-text-muted);
 }
 
 .inventario-form__acciones {
@@ -144,7 +151,7 @@
 .inventario-form__btnPri {
   min-height: 44px;
   padding: 0 22px;
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -153,23 +160,24 @@
 }
 
 .inventario-form__btnSec {
-  background: #ffffff;
-  border-color: #64748b;
-  color: #64748b;
+  background: var(--color-surface-card);
+  border-color: var(--color-text-muted);
+  color: var(--color-text-muted);
 }
 
 .inventario-form__btnSec:hover {
-  background: #f8fafc;
+  background: var(--color-surface-muted);
 }
 
 .inventario-form__btnPri {
-  background: #1e3b8a;
-  border-color: #1e3b8a;
-  color: #ffffff;
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+  color: var(--color-surface-card);
 }
 
 .inventario-form__btnPri:hover:not(:disabled) {
-  background: #172e6e;
+  background: var(--color-brand-hover);
+  border-color: var(--color-brand-hover);
 }
 
 .inventario-form__btnPri:disabled {

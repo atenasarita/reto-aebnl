@@ -1,17 +1,17 @@
 .reporte-personalizado-theme {
-  --rp-bg: #f6f6f8;
-  --rp-on-surface: #121317;
-  --rp-on-surface-variant: #666e85;
-  --rp-primary: #1e3b8a;
-  --rp-surface-bright: #ffffff;
-  --rp-outline-variant: #f1f1f4;
-  --rp-container-low: #f8fafc;
+  --rp-bg: var(--color-surface-page);
+  --rp-on-surface: var(--color-text-primary);
+  --rp-on-surface-variant: var(--color-text-muted);
+  --rp-primary: var(--color-brand);
+  --rp-surface-bright: var(--color-surface-card);
+  --rp-outline-variant: var(--color-border);
+  --rp-container-low: var(--color-surface-muted);
   --rp-error: #ba1a1a;
   --rp-radius-xl: 0.75rem;
   --rp-radius-2xl: 1rem;
   --rp-icon-soft-bg: rgba(30, 59, 138, 0.1);
-  --font-rp-head: "Plus Jakarta Sans", system-ui, sans-serif;
-  --font-rp-body: "Inter", system-ui, sans-serif;
+  --font-rp-head: var(--font-sans);
+  --font-rp-body: var(--font-sans);
 }
 
 .reporte-personalizado-shell .reporte-mxmap-hint {

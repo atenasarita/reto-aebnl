@@ -11,6 +11,7 @@ import PersonalizadoServiciosChartRow, {
 } from "../../../components/reportes/ReportePersonalizado/PersonalizadoServiciosChartRow/PersonalizadoServiciosChartRow";
 import PersonalizadoSinDatosState from "../../../components/reportes/ReportePersonalizado/PersonalizadoSinDatosState/PersonalizadoSinDatosState";
 import ReportePersonalizadoShell from "../../../components/reportes/ReportePersonalizado/ReportePersonalizadoShell/ReportePersonalizadoShell";
+import ReportesLoading from "../../../components/reportes/ReportesLoading/ReportesLoading";
 import {
   METRICA_DEMOGRAFICOS,
   METRICA_NUEVOS,
@@ -228,29 +229,35 @@ export default function ReportePersonalizado() {
       {hayDatos ? (
         <>
           <PersonalizadoResultadosDivider />
-          <PersonalizadoKpiSection metricas={metricas} data={data} />
-          {metricas.has(METRICA_SERVICIOS) ? (
-            <PersonalizadoServiciosChartRow
-              metricas={metricas}
-              serieServiciosVista={serieServiciosVista}
-              granularidadServicios={granularidadServicios}
-              tieneServiciosSerie={tieneServiciosSerie}
-              distribEstadoVista={distribEstadoVista}
-              rangoLegible={formatRangoLegible(aplicadoDesde, aplicadoHasta)}
-            />
-          ) : metricas.has(METRICA_DEMOGRAFICOS) ? (
-            <PersonalizadoSoloEstadosCard distribEstadoVista={distribEstadoVista} limit={12} />
-          ) : null}
-          {metricas.has(METRICA_DEMOGRAFICOS) ? (
-            <PersonalizadoDemograficosGrid
-              distribGeneroVista={distribGeneroVista}
-              distribEtapaVista={distribEtapaVista}
-              totalGeneroFiltrado={totalGeneroFiltrado}
-            />
-          ) : null}
           {loading ? (
-            <p className="reporte-general-loading">Cargando datos del periodo seleccionado...</p>
-          ) : null}
+            <ReportesLoading
+              message="Cargando datos del periodo seleccionado…"
+              className="reportes-loading--personalizado"
+            />
+          ) : (
+            <>
+              <PersonalizadoKpiSection metricas={metricas} data={data} />
+              {metricas.has(METRICA_SERVICIOS) ? (
+                <PersonalizadoServiciosChartRow
+                  metricas={metricas}
+                  serieServiciosVista={serieServiciosVista}
+                  granularidadServicios={granularidadServicios}
+                  tieneServiciosSerie={tieneServiciosSerie}
+                  distribEstadoVista={distribEstadoVista}
+                  rangoLegible={formatRangoLegible(aplicadoDesde, aplicadoHasta)}
+                />
+              ) : metricas.has(METRICA_DEMOGRAFICOS) ? (
+                <PersonalizadoSoloEstadosCard distribEstadoVista={distribEstadoVista} limit={12} />
+              ) : null}
+              {metricas.has(METRICA_DEMOGRAFICOS) ? (
+                <PersonalizadoDemograficosGrid
+                  distribGeneroVista={distribGeneroVista}
+                  distribEtapaVista={distribEtapaVista}
+                  totalGeneroFiltrado={totalGeneroFiltrado}
+                />
+              ) : null}
+            </>
+          )}
         </>
       ) : null}
     </ReportePersonalizadoShell>

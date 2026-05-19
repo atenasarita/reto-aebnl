@@ -3,7 +3,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
-  margin-bottom: 28px;
+  margin-bottom: 0;
   width: 100%;
   box-sizing: border-box;
 }
@@ -33,46 +33,15 @@
   flex: 0 0 auto;
 }
 
-/* Anula anchos fijos de .search-gestion / .dropdown-gestion solo en inventario */
+/* wrapper de búsqueda ocupa todo el ancho disponible en su celda flex */
 .barra :global(.searchbar-wrapper) {
   width: 100%;
   display: flex;
   align-items: center;
 }
 
-.barra :global(.search-gestion input) {
-  width: 100%;
-  max-width: 100%;
-  height: 44px;
-  padding: 0 14px 0 44px;
-  font-size: 15px;
-  font-weight: 500;
-  border-radius: 12px;
-  border: 1px solid #cbd5e1;
-  box-sizing: border-box;
-}
-
-.barra :global(.search-gestion)::placeholder,
-.barra :global(.search-gestion input::placeholder) {
-  font-size: 15px;
-  font-weight: 500;
-  color: #94a3b8;
-}
-
 .barra :global(.dropdown-wrapper) {
   width: 100%;
-}
-
-.barra :global(.dropdown-gestion select) {
-  width: 100%;
-  max-width: 100%;
-  height: 44px;
-  padding: 0 40px 0 14px;
-  font-size: 15px;
-  font-weight: 500;
-  border-radius: 12px;
-  border: 1px solid #cbd5e1;
-  box-sizing: border-box;
 }
 
 .btnSecundario,
