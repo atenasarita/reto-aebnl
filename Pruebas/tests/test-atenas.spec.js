@@ -21,7 +21,7 @@ test(qase(120, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-1')
 
     await page.locator('button[title="Ver credencial"]').first().click();
 
-    await expect(page.getByText('Juan Carlos López')).toBeVisible();
+    await expect(page.getByText('Maria Gonzalez Martinez')).toBeVisible();
 
     await expect(page.getByText(/vigencia|vigente|válido/i).first()).toBeVisible();
 
