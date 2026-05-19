@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { qase } from 'playwright-qase-reporter';
 
 // escenario positovo: credencial de beneficiario con membresía activa muestra información correcta
-test(qase(5, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-1'), async ({ page }) => {
+test(qase(120, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-1'), async ({ page }) => {
     await page.goto('http://localhost:5173/login');
     await page.getByRole('textbox', { name: 'Usuario' }).click();
     await page.getByRole('textbox', { name: 'Usuario' }).fill('prueba1');
@@ -38,7 +38,7 @@ test(qase(5, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-1'), 
 });
 
 // escenario negativo: credencial de beneficiario con membresía inactiva muestra información correcta y no muestra estatus activo
-test(qase(6, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-2'), async ({ page }) => {
+test(qase(121, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-2'), async ({ page }) => {
     await page.goto('http://localhost:5173/login');
     await page.getByRole('textbox', { name: 'Usuario' }).click();
     await page.getByRole('textbox', { name: 'Usuario' }).fill('prueba1');
