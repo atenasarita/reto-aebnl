@@ -20,6 +20,8 @@ import ReportePersonalizado from "./pages/reportes/ReportePersonalizado/ReporteP
 import Dashboard from "./pages/dashboard";
 import RegistroServicios from "./pages/Servicios/RegistroServicios";
 
+import Servicios from "./pages/Servicios/Servicios";
+
 import "./App.css";
 
 export default function App() {
@@ -45,6 +47,7 @@ export default function App() {
 
           {/* Registro de Servicios */}
           <Route path="/registro_servicios" element={<RegistroServicios />} />
+          <Route path="/servicios" element={<Servicios />} />
 
 
           {/* Inventario */}
