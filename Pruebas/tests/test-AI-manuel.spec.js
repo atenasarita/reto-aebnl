@@ -12,7 +12,7 @@ test.describe('Inicio de sesión (HU-002) — versión IA', () => {
     await page.getByRole('textbox', { name: '********' }).fill(contraseña);
   };
 
-  test('HU-002-1 — inicio de sesión exitoso redirige a beneficiarios', async ({
+  test(qase(111, 'HU-002-1 — inicio de sesión exitoso redirige a beneficiarios'), async ({
     page,
   }) => {
     await rellenarCredenciales(page, { usuario: 'prueba1', contraseña: 'admin1' });
@@ -21,7 +21,7 @@ test.describe('Inicio de sesión (HU-002) — versión IA', () => {
     await expect(page).toHaveURL(/\/beneficiarios/);
   });
 
-  test('HU-002-2 — credenciales incorrectas muestran mensaje de error', async ({
+  test(qase(112, 'HU-002-2 — credenciales incorrectas muestran mensaje de error'), async ({
     page,
   }) => {
     await rellenarCredenciales(page, { usuario: 'admin2', contraseña: 'prueba2' });

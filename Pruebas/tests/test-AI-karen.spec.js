@@ -20,7 +20,7 @@ function generarCURP() {
 
 const curp = generarCURP();
 
-test(qase(6, 'HU - 007 - Pre-Registro de Beneficiarios - Caso de Prueba #HU007-1'), async ({ page }) => {
+test(qase(108, 'HU - 007 - Pre-Registro de Beneficiarios - Caso de Prueba #HU007-1'), async ({ page }) => {
 
     await page.goto('http://localhost:5173/login');
 
@@ -67,7 +67,7 @@ test(qase(6, 'HU - 007 - Pre-Registro de Beneficiarios - Caso de Prueba #HU007-1
     await expect(successContainer).toBeVisible();
 });
 
-test(qase(8, 'HU - 007 - CURP con longitud inválida - Caso de Prueba #HU007-2'), async ({ page }) => {
+test(qase(110, 'HU - 007 - CURP con longitud inválida - Caso de Prueba #HU007-2'), async ({ page }) => {
 
     await page.goto('http://localhost:5173/login');
 

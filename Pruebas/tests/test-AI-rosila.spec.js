@@ -59,7 +59,7 @@ test.describe('Registro de Beneficiario IA', () => {
     await page.getByRole('button', { name: 'Aceptar' }).click();
   };
 
-  test('debería registrar un nuevo beneficiario exitosamente en Firefox', async ({ page }) => {
+  test(qase(113, 'debería registrar un nuevo beneficiario exitosamente en Firefox'), async ({ page }) => {
     test.skip(test.info().project.name !== 'firefox', 'Solo en Firefox');
 
     await fillBeneficiario(page, {
@@ -86,7 +86,7 @@ test.describe('Registro de Beneficiario IA', () => {
     });
   });
 
-  test('debería registrar un nuevo beneficiario exitosamente en Chromium', async ({ page }) => {
+  test(qase(113, 'debería registrar un nuevo beneficiario exitosamente en Chromium'), async ({ page }) => {
     test.skip(test.info().project.name !== 'chromium', 'Solo en Chromium');
 
     await fillBeneficiario(page, {
@@ -113,7 +113,7 @@ test.describe('Registro de Beneficiario IA', () => {
     });
   });
 
-  test('no debería registrar beneficiario con CURP duplicado CARL920202HDFRRNX2', async ({ page }) => {
+  test(qase(104, 'no debería registrar beneficiario con CURP duplicado CARL920202HDFRRNX2'), async ({ page }) => {
     await page.getByRole('button', { name: 'Nuevo Beneficiario' }).click();
     await page.locator('input[name="email"]').fill('duplicado2@test.com');
     await page.locator('input[name="telefono"]').fill('5512345603');

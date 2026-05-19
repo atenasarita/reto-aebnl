@@ -50,7 +50,7 @@ test.describe('Automatización de cambio de membresía', () => {
         // Asegurarnos de que el beneficiario 60 inicie como activo y con fecha adelantada
         await modificarFechaBD('restaurar', 60);
     });    
-    test(qase(13, 'HU-013 - 1 - Cambio automático de actividad de membresía a inactivo'), async ({ page }) => {
+    test(qase(109, 'HU-013 - 1 - Cambio automático de actividad de membresía a inactivo'), async ({ page }) => {
         await test.step('Paso 1: Ir a módulo Beneficiarios', async () => {
             // Iniciar sesión y navegar a beneficiarios
             await page.goto('http://localhost:5173/login');
@@ -106,7 +106,7 @@ test.describe('Automatización de cambio de membresía', () => {
         });
     });
 
-    test(qase(14, 'HU-013 - 2 - Cambio automático de actividad de membresía a inactivo'), async ({ page }) => {
+    test(qase(114, 'HU-013 - 2 - Cambio automático de actividad de membresía a inactivo'), async ({ page }) => {
         
         // Se restaura el inicio para asegurar que la fecha vigente sea mayor a HOY
         await modificarFechaBD('restaurar', 60);
