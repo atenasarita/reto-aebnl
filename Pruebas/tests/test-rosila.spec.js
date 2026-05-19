@@ -4,6 +4,7 @@ import { qase } from 'playwright-qase-reporter';
 // Prueba positiva
 test('Alta de beneficiarios', async({page}) => {
     qase.id(30);
+    test.skip(test.info().project.name !== 'chromium', 'Solo en Chromium');
 
     await page.goto('http://localhost:5173/login');
     await page.getByRole('textbox', { name: 'Usuario' }).click();
@@ -34,7 +35,7 @@ test('Alta de beneficiarios', async({page}) => {
 
     await test.step(`Capturar nombres`, async () => {
         await page.locator('input[name="nombres"]').click();
-        await page.locator('input[name="nombres"]').fill('Ramirovs');
+        await page.locator('input[name="nombres"]').fill('Gualt');
     });
 
     await test.step(`Capturar apellido paterno`, async () => {
@@ -53,7 +54,7 @@ test('Alta de beneficiarios', async({page}) => {
 
     await test.step(`Capturar CURP`, async () => {
         await page.getByRole('textbox', { name: 'XXXX000000XXXXXX00' }).click();
-        await page.getByRole('textbox', { name: 'XXXX000000XXXXXX00' }).fill('JULI000101HNLXXYTK');
+        await page.getByRole('textbox', { name: 'XXXX000000XXXXXX00' }).fill('GARL920202HDFRRNS9');
         
     });
 
@@ -141,11 +142,18 @@ test('Alta de beneficiarios', async({page}) => {
     await test.step(`Dar clic en Registrar`, async () => {
         await page.getByRole('button', { name: 'Registrar' }).click();
     });
+    await test.step(`Registro Exitoso`, async () => {
+       // Esperar el modal de éxito con el heading correcto
+        await expect(page.getByRole('heading', { name: 'Registro exitoso' })).toBeVisible();
+        await expect(page.getByText('El beneficiario fue registrado correctamente en el sistema.')).toBeVisible();
+        // Hacer clic en Aceptar para cerrar el modal
+        await page.getByRole('button', { name: 'Aceptar' }).click();
+    });
 });
 
 
 // Prueba negativa
-test('Alta de beneficiarios Negativa', async({page}) => {
+test('Alta de beneficiarios Negativa (CURP duplicado)', async({page}) => {
     qase.id(2);
     await page.goto('http://localhost:5173/login');
     await page.getByRole('textbox', { name: 'Usuario' }).click();
