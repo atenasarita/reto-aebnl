@@ -58,6 +58,14 @@ export interface CreateInventarioInput {
     activo?: InventarioActivoInput;
 }
 
+export interface UpdateInventarioInput {
+    clave: string;
+    nombre: string;
+    id_categoria: number;
+    unidad_medida: string;
+    precio: number;
+}
+
 export interface CreateVenta_inventarioInput {
     id_servicio_otorgado: number;
     id_inventario: number;

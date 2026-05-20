@@ -11,6 +11,40 @@ SELECT
     c.DESCRIPCION AS DESCRIPCION_CATEGORIA
 FROM Inventario i
 LEFT JOIN Objeto_categoria c ON c.ID_CATEGORIA = i.ID_CATEGORIA
+WHERE i.ACTIVO = 1
+`.trim();
+
+export const SELECT_INVENTARIO_BY_ID = `
+SELECT
+    i.ID_INVENTARIO,
+    i.CLAVE,
+    i.NOMBRE,
+    i.ID_CATEGORIA,
+    i.UNIDAD_MEDIDA,
+    i.PRECIO,
+    i.CANTIDAD,
+    i.ACTIVO
+FROM Inventario i
+WHERE i.ID_INVENTARIO = :id_inventario
+`.trim();
+
+export const UPDATE_INVENTARIO = `
+UPDATE Inventario
+SET
+    clave = :clave,
+    nombre = :nombre,
+    id_categoria = :id_categoria,
+    unidad_medida = :unidad_medida,
+    precio = :precio
+WHERE id_inventario = :id_inventario
+  AND activo = 1
+`.trim();
+
+export const SOFT_DELETE_INVENTARIO = `
+UPDATE Inventario
+SET activo = 0
+WHERE id_inventario = :id_inventario
+  AND activo = 1
 `.trim();
 
 export const SELECT_OBJETO_CATEGORIAS = `

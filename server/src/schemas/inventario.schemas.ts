@@ -35,3 +35,11 @@ export const registrarMovimientoInventarioApiSchema = z.object({
   id_servicio_otorgado: z.number().int().positive().nullable().optional(),
 });
 
+export const updateInventarioSchema = z.object({
+  clave: z.string().trim().min(1, 'clave es requerida').max(10),
+  nombre: z.string().trim().min(1, 'nombre es requerido').max(20),
+  id_categoria: z.number().int().positive(),
+  unidad_medida: z.string().trim().min(1, 'unidad_medida es requerida').max(20),
+  precio: z.number().nonnegative(),
+});
+

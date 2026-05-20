@@ -10,19 +10,34 @@ import {
     Movimientos_inventario,
     Objeto_categoria,
     RegistrarMovimientoInventarioInput,
+    UpdateInventarioInput,
 } from '../types/inventario.types';
 import {
     INSERT_INVENTARIO,
     INSERT_MOVIMIENTO_INVENTARIO,
     SELECT_CANTIDAD_INVENTARIO_FOR_UPDATE,
     SELECT_INVENTARIO,
+    SELECT_INVENTARIO_BY_ID,
     SELECT_OBJETO_CATEGORIAS,
     SELECT_PRODUCTOS_ESCASOS,
+    SOFT_DELETE_INVENTARIO,
+    UPDATE_INVENTARIO,
     UPDATE_INVENTARIO_CANTIDAD,
 } from './inventario.queries';
 import { getOutBindNumber } from '../utils/oracle.utils';
 
 type CantidadRow = { CANTIDAD: number };
+
+type InventarioRow = {
+    ID_INVENTARIO: number;
+    CLAVE: string;
+    NOMBRE: string;
+    ID_CATEGORIA: number;
+    UNIDAD_MEDIDA: string;
+    PRECIO: number;
+    CANTIDAD: number;
+    ACTIVO: InventarioActivo;
+};
 
 export class OracleInventarioRepository implements InventarioRepository {
     private readonly oracleConnection: OracleConnection;
@@ -83,6 +98,130 @@ export class OracleInventarioRepository implements InventarioRepository {
             return (result.rows ?? []) as Objeto_categoria[];
         } catch {
             throw new Error('Error al obtener categorías de inventario');
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
+        }
+    }
+
+    private mapRowToInventario(row: InventarioRow): Inventario {
+        return {
+            id_inventario: Number(row.ID_INVENTARIO),
+            clave: row.CLAVE,
+            nombre: row.NOMBRE,
+            id_categoria: Number(row.ID_CATEGORIA),
+            unidad_medida: row.UNIDAD_MEDIDA,
+            precio: Number(row.PRECIO),
+            cantidad: Number(row.CANTIDAD),
+            activo: row.ACTIVO === 0 ? 0 : 1,
+        };
+    }
+
+    private async fetchInventarioRowById(
+        connection: oracledb.Connection,
+        idInventario: number,
+    ): Promise<InventarioRow | null> {
+        const result = await connection.execute(
+            SELECT_INVENTARIO_BY_ID,
+            { id_inventario: idInventario },
+            { outFormat: oracledb.OUT_FORMAT_OBJECT },
+        );
+        const rows = result.rows as InventarioRow[] | undefined;
+        return rows?.[0] ?? null;
+    }
+
+    async updateInventario(
+        idInventario: number,
+        input: UpdateInventarioInput,
+    ): Promise<Inventario> {
+        let connection: oracledb.Connection | undefined;
+
+        try {
+            connection = await this.oracleConnection.getConnection();
+            const existing = await this.fetchInventarioRowById(connection, idInventario);
+            if (!existing || existing.ACTIVO !== 1) {
+                throw new NotFoundError('Producto de inventario no encontrado.');
+            }
+
+            const updateResult = await connection.execute(
+                UPDATE_INVENTARIO,
+                {
+                    id_inventario: idInventario,
+                    clave: input.clave,
+                    nombre: input.nombre,
+                    id_categoria: input.id_categoria,
+                    unidad_medida: input.unidad_medida,
+                    precio: input.precio,
+                },
+                { autoCommit: false },
+            );
+
+            if ((updateResult.rowsAffected ?? 0) < 1) {
+                await connection.rollback();
+                throw new NotFoundError('Producto de inventario no encontrado.');
+            }
+
+            const updated = await this.fetchInventarioRowById(connection, idInventario);
+            if (!updated) {
+                await connection.rollback();
+                throw new NotFoundError('Producto de inventario no encontrado.');
+            }
+
+            await connection.commit();
+            return this.mapRowToInventario(updated);
+        } catch (error: unknown) {
+            if (connection) {
+                await connection.rollback().catch(() => undefined);
+            }
+            if (error instanceof NotFoundError) {
+                throw error;
+            }
+            const err = error as { code?: string };
+            if (err?.code === 'ORA-00001') {
+                throw new ConflictError('Ya existe un producto con esa clave.');
+            }
+            if (err?.code === 'ORA-02291') {
+                throw new ValidationError('La categoría indicada no existe.');
+            }
+            throw new Error('Error al actualizar el producto en inventario');
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
+        }
+    }
+
+    async deleteInventario(idInventario: number): Promise<void> {
+        let connection: oracledb.Connection | undefined;
+
+        try {
+            connection = await this.oracleConnection.getConnection();
+            const existing = await this.fetchInventarioRowById(connection, idInventario);
+            if (!existing || existing.ACTIVO !== 1) {
+                throw new NotFoundError('Producto de inventario no encontrado.');
+            }
+
+            const deleteResult = await connection.execute(
+                SOFT_DELETE_INVENTARIO,
+                { id_inventario: idInventario },
+                { autoCommit: false },
+            );
+
+            if ((deleteResult.rowsAffected ?? 0) < 1) {
+                await connection.rollback();
+                throw new NotFoundError('Producto de inventario no encontrado.');
+            }
+
+            await connection.commit();
+        } catch (error) {
+            if (connection) {
+                await connection.rollback().catch(() => undefined);
+            }
+            if (error instanceof NotFoundError) {
+                throw error;
+            }
+            throw new Error('Error al eliminar el producto del inventario');
         } finally {
             if (connection) {
                 await connection.close();

@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
 import InventarioBarraAcciones from '../../components/layout/inventario/InventarioBarraAcciones/InventarioBarraAcciones'
 import InventarioMovimientoModal from '../../components/layout/inventario/InventarioMovimientoModal/InventarioMovimientoModal'
+import InventarioEditarProductoModal from '../../components/layout/inventario/InventarioEditarProductoModal/InventarioEditarProductoModal'
 import InventarioNuevoProductoModal from '../../components/layout/inventario/InventarioNuevoProductoModal/InventarioNuevoProductoModal'
 import InventarioTabla from '../../components/layout/inventario/InventarioTabla/InventarioTabla'
 import { useInventario } from '../../hooks/useInventario'
+import { deleteProductoInventario } from '../../services/inventarioService'
 import {
   buildCategoriaFilterOptions,
   filterInventarioTableRows,
@@ -27,6 +29,8 @@ export default function Inventario() {
   const [pagina, setPagina] = useState(1)
   const [modalNuevoProducto, setModalNuevoProducto] = useState(false)
   const [modalMovimiento, setModalMovimiento] = useState(false)
+  const [productoEditando, setProductoEditando] = useState(null)
+  const [borrandoId, setBorrandoId] = useState(null)
 
   const productosUi = useMemo(
     () => items.map(mapInventarioApiRowToTableRow),
@@ -97,6 +101,35 @@ export default function Inventario() {
     void fetchInventario()
   }
 
+  const handleEditarProducto = (id) => {
+    const raw = items.find((row) => String(row.ID_INVENTARIO) === String(id))
+    if (raw) setProductoEditando(raw)
+  }
+
+  const handleBorrarProducto = async (id) => {
+    const fila = productosUi.find((p) => p.id === String(id))
+    const etiqueta = fila?.nombre || fila?.clave || 'este producto'
+    if (
+      !window.confirm(
+        `¿Eliminar «${etiqueta}» del inventario?\n\nEl producto se desactivará y dejará de aparecer en el listado.`
+      )
+    ) {
+      return
+    }
+
+    setBorrandoId(String(id))
+    try {
+      await deleteProductoInventario(Number(id))
+      void fetchInventario()
+    } catch (err) {
+      window.alert(
+        err instanceof Error ? err.message : 'No se pudo eliminar el producto.'
+      )
+    } finally {
+      setBorrandoId(null)
+    }
+  }
+
   return (
     <div className="inventario-pagina">
       <header className="inventario-encabezado page-header">
@@ -142,6 +175,9 @@ export default function Inventario() {
             totalItems={total}
             itemsPorPagina={ITEMS_POR_PAGINA}
             onCambiarPagina={handleCambiarPagina}
+            onEditarProducto={handleEditarProducto}
+            onBorrarProducto={handleBorrarProducto}
+            accionesDeshabilitadas={borrandoId != null}
           />
         )}
       </section>
@@ -159,6 +195,13 @@ export default function Inventario() {
         items={items}
         loading={loading}
         loadError={error}
+      />
+
+      <InventarioEditarProductoModal
+        open={productoEditando != null}
+        producto={productoEditando}
+        onClose={() => setProductoEditando(null)}
+        onExito={handleTrasGuardar}
       />
     </div>
   )
