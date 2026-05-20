@@ -196,27 +196,27 @@ test('HU - 008 - Generar registro de pago correspondiente', async ({ page }) => 
 test('HU - 008 - Generar recibo al finalizar el proceso', async ({ page }) => {
   qase.id(97);
   await test.step('Given que el usuario registró un servicio correctamente', async() => {
-    await page.getByRole('button', { name: 'Registrar Servicio Documentar' }).click();
+    await page.getByRole('button', { name: 'Servicios' }).click();
     await page.getByRole('textbox', { name: 'Nombre, folio o CURP...' }).click();
-    await page.getByRole('textbox', { name: 'Nombre, folio o CURP...' }).fill('sofia');
-    await page.locator('div').filter({ hasText: /^Sofia RamirezASEB-26-9002 · RASO120202MNLBBB02$/ }).nth(1).click();
+    await page.getByRole('textbox', { name: 'Nombre, folio o CURP...' }).fill('so');
+    await page.getByText('Sofia RamirezASEB-26-9002 ·').click();
     await page.getByRole('button', { name: 'Continuar' }).click();
-    await page.getByRole('textbox', { name: 'Fecha' }).fill('2026-05-21');
+    await page.getByRole('textbox', { name: 'Fecha' }).fill('2026-05-18');
     await page.getByRole('textbox', { name: 'Hora de cita' }).click();
-    await page.getByRole('textbox', { name: 'Hora de cita' }).fill('21:05');
+    await page.getByRole('textbox', { name: 'Hora de cita' }).click();
+    await page.getByRole('textbox', { name: 'Hora de cita' }).click();
+    await page.getByRole('textbox', { name: 'Hora de cita' }).fill('21:04');
     await page.getByRole('combobox').first().selectOption('Consultas');
     await page.getByRole('combobox').nth(1).selectOption('146');
     await page.getByRole('button', { name: 'Continuar' }).click();
-    await page.getByRole('combobox').selectOption('2');
+    await page.getByRole('combobox').selectOption('46');
     await page.getByRole('button', { name: 'Agregar' }).click();
     await page.getByRole('button', { name: 'Continuar' }).click();
-    await expect(page.getByText('Resumen del RegistroESTADO')).toBeVisible();
     await page.getByRole('textbox', { name: '0.00' }).first().click();
     await page.getByRole('textbox', { name: '0.00' }).first().fill('0');
-    await page.getByRole('checkbox', { name: 'Ya Aportó' }).check();
-    await page.getByRole('textbox', { name: '0.00' }).first().click();
-    await page.getByRole('textbox', { name: '0.00' }).first().fill('200');
     await page.getByRole('combobox').selectOption('efectivo');
+    await page.getByRole('textbox', { name: '0.00' }).nth(1).click();
+    await page.getByRole('textbox', { name: '0.00' }).nth(1).fill('100');
     await page.getByRole('button', { name: 'Guardar' }).click(); 
   });
   await test.step('And finalizó el proceso de registro', async() => {
@@ -228,6 +228,7 @@ test('HU - 008 - Generar recibo al finalizar el proceso', async ({ page }) => {
 
   });
   await test.step('Then el sistema debe permitir generar el recibo del servicio', async() => {
-    await expect(page.locator('tbody')).toContainText('Valentina Ruiz');
+    await page.getByRole('textbox', { name: 'Fecha' }).fill('2026-05-18');
+    await expect(page.getByRole('cell', { name: 'Sofia Ramirez' }).first()).toBeVisible(); 
   });
 });

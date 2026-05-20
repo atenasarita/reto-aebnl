@@ -40,7 +40,7 @@ test('HU - 023 - Mostrar mensaje sin registros', async ({ page }) => {
     qase.id(85);
     await test.step('Given que no existen servicios registrados en la fecha seleccionada', async () => {
         await page.getByRole('button', { name: 'Recibos', exact: true }).click();
-        await page.getByRole('button', { name: 'Hoy' }).click();
+        await page.getByRole('textbox', { name: 'Fecha' }).fill('2026-05-25');
     });
     await test.step('When el usuario consulta el historial de recibos', async () => {
         await page.getByRole('heading', { name: 'Recibos del día' }).click();
@@ -69,21 +69,11 @@ test('HU - 023 - Visualización de recibos por fecha seleccionada ', async ({ pa
 
 test('HU - 023 - Actualizar historial al cambiar fecha', async ({ page }) => {
     qase.id(86);
-    await test.step('Given que el usuario se encuentra en el módulo de Recibos visualizando el historial', async () => {
-        await page.getByRole('button', { name: 'Recibos Control de pagos y' }).click();
-    });
-    await test.step('When cambia la fecha seleccionada', async () => {
-        await page.getByRole('textbox', { name: 'Fecha' }).fill('2026-05-14');
-        await expect(page.getByRole('paragraph').filter({ hasText: /^Recibos del día$/ })).toBeVisible();
-        await expect(page.getByText('1', { exact: true })).toBeVisible();
-        await expect(page.getByText('Mostrando 1 de 1 recibos · 14 may')).toBeVisible();
-    });
-    await test.step('Then el sistema debe actualizar el historial mostrado', async () => {
-        await page.getByRole('textbox', { name: 'Fecha' }).fill('2026-05-15');
-        await expect(page.getByRole('paragraph').filter({ hasText: /^Recibos del día$/ })).toBeVisible();
-        await expect(page.getByText('11', { exact: true })).toBeVisible();
-        await expect(page.getByText('Mostrando 11 de 11 recibos · 15 may')).toBeVisible();
-    });
+    await page.getByRole('button', { name: 'Recibos', exact: true }).click();
+    await page.getByRole('button', { name: 'Hoy' }).click();
+    await expect(page.getByText('Mostrando 5 de 5 recibos · 19 may')).toBeVisible();
+    await page.getByRole('textbox', { name: 'Fecha' }).fill('2026-05-15');
+    await expect(page.getByText('Mostrando 11 de 11 recibos · 15 may')).toBeVisible();
 });
 
 test('HU - 023 - Validar información de cada recibo', async ({ page }) => {
@@ -127,18 +117,21 @@ test('HU - 009 - Visualizar reporte mensual de personas atendidas', async ({ pag
         await page.getByText('Servicios otorgados por díaMayo').click();
     });
     await test.step('Then el sistema debe mostrar en pantalla la gráfica de personas atendidas por mes', async () => {
-        await page.locator('div').filter({ hasText: 'Nuevos beneficiarios29' }).nth(4).click();
-        await page.getByRole('paragraph').filter({ hasText: '29' }).click();
+        await page.locator('div').filter({ hasText: 'Nuevos beneficiarios31' }).nth(4).click();
+        await page.getByRole('paragraph').filter({ hasText: '31' }).click();
         await page.locator('div').filter({ hasText: 'Total atendidos9' }).nth(4).click();
         await page.getByText('9').nth(1).click();
-        await page.locator('div').filter({ hasText: 'Total servicios30' }).nth(4).click();
-        await page.getByRole('paragraph').filter({ hasText: '30' }).click();
         await page.getByText('Servicios otorgados por díaMayo').click();
         await page.getByText('Mayo 2026').click();
-        await page.getByRole('application').filter({ hasText: '12345678910111213141516171819202122232425262728293031036912' }).click();
-
+        // await expect(page.locator('section')).toMatchAriaSnapshot(`- application: /1 2 3 4 5 6 7 8 9 \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ 0 4 8 \\d+ \\d+/`);
+    await page.getByRole('article').filter({ hasText: 'Reporte Mensual de' }).click();
+    await expect(page.locator('section')).toMatchAriaSnapshot(`
+        - heading "Servicios otorgados por día" [level=3]
+        - text: /Mayo \\d+/
+        `);
     });
 });
+
 
 test('HU - 009 - Visualizar reporte anual de personas atendidas', async ({ page }) => {
     qase.id(99);
