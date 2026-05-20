@@ -3,6 +3,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { useEffect, useState } from "react";
 import DetalleCita from "./DetalleCita";
+import { API_URL } from "../../../utils/config";
 
 export default function CalendarioCitas() {
   const [eventos, setEventos] = useState([]);
@@ -28,7 +29,7 @@ export default function CalendarioCitas() {
 
   const obtenerCitas = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/citas");
+      const response = await fetch(`${API_URL}/api/citas`);
       const data = await response.json();
 
       const eventosporID = data.map((item) => ({

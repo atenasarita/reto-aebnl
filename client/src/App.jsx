@@ -51,6 +51,9 @@ export default function App() {
           {/* Inventario */}
           <Route path="/inventario" element={<Inventario />} />
 
+          {/* Citas */}
+          <Route path="/citas" element={<Citas />} />
+
 
             {/*Recibos  */}
           <Route path="/recibos" element={<Recibos />} />

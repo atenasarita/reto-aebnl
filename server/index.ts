@@ -16,9 +16,10 @@ import { errorMiddleware } from './src/middlewares/error.middleware';
 import dashboardRoutes from "./src/routes/dashboard.routes";
 import reportesRoutes from "./src/routes/reportes.routes";
 import especialistasRoutes from './src/routes/especialistas.routes';
+import citasRoutes from './src/routes/citas.routes';
+
 
 import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job';
-import citasRoutes from './src/routes/citas.routes.ts';
 
 
 // ── Wallet setup ──────────────────────────────────────────────
@@ -69,6 +70,10 @@ app.use('/api', serviciosRoutes)
 app.use('/api', especialistasRoutes);
 
 app.use(errorMiddleware);
+
+// app.get('/api/citas-test', (req, res) => {
+//   res.json({ ok: true });
+// });
 
 startMembresiaExpirationJob();
 
