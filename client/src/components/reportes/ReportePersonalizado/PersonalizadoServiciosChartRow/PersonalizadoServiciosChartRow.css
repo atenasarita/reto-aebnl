@@ -1,0 +1,14 @@
+.reporte-personalizado-side-placeholder .shadcn-card-content {
+  padding-top: 0.5rem;
+}
+
+.reporte-personalizado-chart-rango {
+  flex-shrink: 0;
+  max-width: min(100%, 22rem);
+  font-family: var(--font-rp-head, system-ui, sans-serif);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #475569;
+  text-align: right;
+}

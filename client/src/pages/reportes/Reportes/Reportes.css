@@ -1,0 +1,68 @@
+.reportes-page-layout {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.reportes-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.reportes-page-title {
+  text-align: left;
+}
+
+/* Iguala el bloque de cabecera al patrón de Inventario */
+.reportes-page-title.page-header {
+  margin-bottom: 0;
+}
+
+.reportes-page-content {
+  margin-top: var(--space-4);
+}
+
+.reportes-page-header-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.reportes-meta-btn {
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface-card);
+  color: var(--color-text-secondary);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.reportes-meta-btn:hover {
+  background: var(--color-surface-muted);
+  border-color: #cbd5e1;
+}
+
+@media (max-width: 700px) {
+  .reportes-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .reportes-page-header-meta {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .reportes-page-title .page-header-title {
+    font-size: 28px;
+  }
+}

@@ -6,18 +6,16 @@ function FotoPerfilInput({
 }){
     const fileInputRef = useRef(null);
     const[preview, setPreview] = useState('');
-    const[subiendo, setSubiendo] = useState(false);
 
     useEffect(() => {
-        if(value && typeof value === 'string'){
-            if(value.startsWith('/uploads/')){
-                setPreview(`http://localhost:3000${value}`);
-            } else {
-                setPreview(value);
-            }
+        if (value?.preview){
+            setPreview(value.preview);
+        } else if (value && typeof value === "string"){
+            setPreview(value);
         } else {
-            setPreview('');
+            setPreview("");
         }
+
     }, [value]);
 
     const handleOpenFileSelector = () => {
@@ -33,43 +31,14 @@ function FotoPerfilInput({
             return;
         }
         onError?.('');
-        setSubiendo(true);
 
-        try {
-            // Preview local
-            const localPreview = URL.createObjectURL(file);
-            setPreview(localPreview);
+        const localPreview = URL.createObjectURL(file);
+        setPreview(localPreview);
 
-            const token = localStorage.getItem('token');
-            const formData = new FormData();
-            formData.append('fotografia', file);
-
-            const response = await fetch('http://localhost:3000/api/beneficiarios/upload-foto', {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-                body: formData
-            });
-
-            const data = await response.json();
-            console.log('ruta devuelta:', data.ruta);
-            console.log('url completa:', `http://localhost:3000${data.ruta}`);
-
-            if(!response.ok){
-                throw new Error(data.message || 'Error al subir la fotografia');
-            }
-
-            // Guardar en el formaulario solo la ruta
-            onChange?.(data.ruta);
-
-        } catch(error) {
-            console.error('Error subiendo foto: ', error);
-            onError?.(error.message || 'No se pudo subir la fotografia');
-            setPreview('');
-        } finally {
-            setSubiendo(false);
-        }
+        onChange?.({
+            file,
+            preview: localPreview
+        });
     };
 
     return(

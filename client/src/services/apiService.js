@@ -1,5 +1,3 @@
-export const BASE_URL = 'http://localhost:3000'
-
 export function getAuthHeaders() {
   const token = localStorage.getItem('token')
   if (!token) {

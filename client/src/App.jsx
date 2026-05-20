@@ -10,15 +10,16 @@ import GestionBeneficiarios from "./pages/GestionBeneficiarios/GestionBeneficiar
 import Prerregistro from "./pages/prerregistro/Prerregistro";
 import Inventario from "./pages/inventario/Inventario";
 import RegistroBeneficiario from "./pages/registro_beneficiario/registro_beneficiario";
-import Recibos from './pages/Recibos/Recibos' ;
+import Recibos from './pages/Recibos/Recibos' 
+import Reportes from "./pages/reportes/Reportes/Reportes";
+import ReporteGeneral from "./pages/reportes/ReporteGeneral/ReporteGeneral";
+import ReporteInventario from "./pages/reportes/ReporteInventario/ReporteInventario";
+import ReporteAnual from "./pages/reportes/ReporteAnual/ReporteAnual";
+import ReportesMensual from "./pages/reportes/ReportesMensual/ReportesMensual";
+import ReportePersonalizado from "./pages/reportes/ReportePersonalizado/ReportePersonalizado";
 import Citas from './pages/Citas/AgendaCitas';
-
-// Dashboard del tablero (elige UNA línea según tu estructura)
-// Si tu dashboard está en: client/src/pages/dashboard.jsx
 import Dashboard from "./pages/dashboard";
-
-// Si lo moviste a: client/src/pages/dashboard/Dashboard.jsx
-// import Dashboard from "./pages/dashboard/Dashboard";
+import RegistroServicios from "./pages/RegistroServicios/RegistroServicios";
 
 import "./App.css";
 
@@ -31,7 +32,7 @@ export default function App() {
 
         {/* Privadas dentro del layout (Navbar + etc) */}
         <Route element={<MainLayout />}>
-          {/* ✅ Este es el cambio clave: /dashboard usa TU tablero */}
+          {/* Dashboard */}
           <Route path="/dashboard" element={<Dashboard />} />
 
           {/* Beneficiarios */}
@@ -43,15 +44,24 @@ export default function App() {
           {/* Prerregistro */}
           <Route path="/prerregistro" element={<Prerregistro />} />
 
+          {/* Registro de Servicios */}
+          <Route path="/registro_servicios" element={<RegistroServicios />} />
+
+
           {/* Inventario */}
           <Route path="/inventario" element={<Inventario />} />
 
 
             {/*Recibos  */}
           <Route path="/recibos" element={<Recibos />} />
-
-          {/* Citas */}
-          <Route path="/citas" element={<Citas />} />
+          <Route path="/reportes" element={<Reportes />}>
+            <Route index element={<Navigate to="general" replace />} />
+            <Route path="general" element={<ReporteGeneral />} />
+            <Route path="inventario" element={<ReporteInventario />} />
+            <Route path="mensual" element={<ReportesMensual />} />
+            <Route path="anual" element={<ReporteAnual />} />
+            <Route path="personalizado" element={<ReportePersonalizado />} />
+          </Route>
 
           {/* Default */}
           <Route path="/" element={<Navigate to="/login" replace />} />
