@@ -68,7 +68,7 @@ function FotoPerfilInput({
             type="button"
             className="link-button"
             onClick={handleOpenFileSelector}>
-                <FaUpload className="step-icon"/>Subir Fotografia
+                <FaUpload className="step-icon"/>   Subir Fotografia
             </button>
         </div>
     );
