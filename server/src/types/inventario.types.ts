@@ -49,7 +49,7 @@ export interface CreateObjeto_categoriaInput {
 }
 
 export interface CreateInventarioInput {
-    clave: string;
+    clave?: string;
     nombre: string;
     id_categoria: number;
     unidad_medida: string;

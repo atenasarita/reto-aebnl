@@ -4,6 +4,7 @@ import {
   getCategoriasInventario,
   updateProductoInventario,
 } from '../../../../services/inventarioService'
+import { propsFormularioValidacionEs } from '../../../../utils/validacionFormularioEs'
 import '../../../../pages/styles/Inventario.css'
 
 function formDesdeProducto(producto) {
@@ -119,17 +120,21 @@ export default function InventarioEditarProductoModal({
       title="Editar producto"
       subtitle="Actualiza los datos del producto. La existencia se modifica con «Registrar movimiento»."
     >
-      <form className="inventario-form inventario-form--modal" onSubmit={handleSubmit}>
+      <form
+        className="inventario-form inventario-form--modal"
+        onSubmit={handleSubmit}
+        {...propsFormularioValidacionEs}
+      >
         <div className="inventario-form__grid">
           <label className="inventario-form__field">
             <span>Clave única</span>
             <input
               name="clave"
               value={form.clave}
-              onChange={handleChange}
-              maxLength={10}
-              required
-              autoComplete="off"
+              readOnly
+              disabled
+              aria-readonly
+              title="La clave se asigna al crear el producto y no se puede cambiar"
             />
           </label>
           <label className="inventario-form__field">

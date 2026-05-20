@@ -9,7 +9,7 @@ export const createObjeto_categoriaSchema = z.object({
 });
 
 export const createInventarioSchema = z.object({
-  clave: z.string().trim().min(1, 'clave es requerida').max(10),
+  clave: z.string().trim().min(1).max(10).optional(),
   nombre: z.string().trim().min(1, 'nombre es requerido').max(20),
   id_categoria: z.number().int().positive(),
   unidad_medida: z.string().trim().min(1, 'unidad_medida es requerida').max(20),

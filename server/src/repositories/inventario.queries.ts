@@ -55,6 +55,32 @@ FROM Objeto_categoria oc
 ORDER BY oc.ID_CATEGORIA
 `.trim();
 
+export const SELECT_OBJETO_CATEGORIA_BY_ID = `
+SELECT
+    oc.ID_CATEGORIA,
+    oc.DESCRIPCION
+FROM Objeto_categoria oc
+WHERE oc.ID_CATEGORIA = :id_categoria
+`.trim();
+
+/** Bloquea la categoría mientras se asigna el siguiente número de clave. */
+export const SELECT_OBJETO_CATEGORIA_BY_ID_FOR_UPDATE = `
+SELECT
+    oc.ID_CATEGORIA,
+    oc.DESCRIPCION
+FROM Objeto_categoria oc
+WHERE oc.ID_CATEGORIA = :id_categoria
+FOR UPDATE
+`.trim();
+
+/** Claves activas de la categoría (para calcular el siguiente sufijo numérico). */
+export const SELECT_CLAVES_INVENTARIO_ACTIVAS_POR_CATEGORIA = `
+SELECT clave
+FROM Inventario
+WHERE id_categoria = :id_categoria
+  AND activo = 1
+`.trim();
+
 export const INSERT_INVENTARIO = `
 INSERT INTO Inventario (
     clave,

@@ -18,15 +18,29 @@ import {
     SELECT_CANTIDAD_INVENTARIO_FOR_UPDATE,
     SELECT_INVENTARIO,
     SELECT_INVENTARIO_BY_ID,
+    SELECT_CLAVES_INVENTARIO_ACTIVAS_POR_CATEGORIA,
+    SELECT_OBJETO_CATEGORIA_BY_ID_FOR_UPDATE,
     SELECT_OBJETO_CATEGORIAS,
     SELECT_PRODUCTOS_ESCASOS,
     SOFT_DELETE_INVENTARIO,
     UPDATE_INVENTARIO,
     UPDATE_INVENTARIO_CANTIDAD,
 } from './inventario.queries';
+import {
+    formatearClaveInventario,
+    prefijoClaveDesdeCategoria,
+    siguienteNumeroClaveInventario,
+} from '../utils/inventarioClave';
 import { getOutBindNumber } from '../utils/oracle.utils';
 
 type CantidadRow = { CANTIDAD: number };
+
+type CategoriaRow = {
+    ID_CATEGORIA: number;
+    DESCRIPCION: string | null;
+};
+
+type ClaveRow = { CLAVE: string };
 
 type InventarioRow = {
     ID_INVENTARIO: number;
@@ -229,49 +243,110 @@ export class OracleInventarioRepository implements InventarioRepository {
         }
     }
 
+    private async resolverClaveAlta(
+        connection: oracledb.Connection,
+        input: CreateInventarioInput,
+        desfaseSecuencia = 0,
+    ): Promise<string> {
+        const manual = input.clave?.trim();
+        if (manual) {
+            return manual;
+        }
+
+        const catLock = await connection.execute(
+            SELECT_OBJETO_CATEGORIA_BY_ID_FOR_UPDATE,
+            { id_categoria: input.id_categoria },
+            { outFormat: oracledb.OUT_FORMAT_OBJECT },
+        );
+        const catRows = catLock.rows as CategoriaRow[] | undefined;
+        if (!catRows?.length) {
+            throw new ValidationError('La categoría indicada no existe.');
+        }
+
+        const clavesResult = await connection.execute(
+            SELECT_CLAVES_INVENTARIO_ACTIVAS_POR_CATEGORIA,
+            { id_categoria: input.id_categoria },
+            { outFormat: oracledb.OUT_FORMAT_OBJECT },
+        );
+        const clavesRows = clavesResult.rows as ClaveRow[] | undefined;
+        const claves = (clavesRows ?? []).map((row) => row.CLAVE);
+        const prefijo = prefijoClaveDesdeCategoria(catRows[0].DESCRIPCION);
+        const numero = siguienteNumeroClaveInventario(claves, prefijo, desfaseSecuencia);
+
+        return formatearClaveInventario(prefijo, numero);
+    }
+
     async createInventario(input: CreateInventarioInput): Promise<Inventario> {
         let connection: oracledb.Connection | undefined;
         const cantidad = input.cantidad ?? 0;
         const activoNum: InventarioActivo = input.activo === '0' ? 0 : 1;
+        const maxIntentos = 5;
 
         try {
             connection = await this.oracleConnection.getConnection();
-            const result = await connection.execute(
-                INSERT_INVENTARIO,
-                {
-                    clave: input.clave,
-                    nombre: input.nombre,
-                    id_categoria: input.id_categoria,
-                    unidad_medida: input.unidad_medida,
-                    precio: input.precio,
-                    cantidad,
-                    activo: activoNum,
-                    id_inventario: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
-                },
-                { autoCommit: false },
+
+            for (let intento = 0; intento < maxIntentos; intento += 1) {
+                const clave = await this.resolverClaveAlta(connection, input, intento);
+
+                try {
+                    const result = await connection.execute(
+                        INSERT_INVENTARIO,
+                        {
+                            clave,
+                            nombre: input.nombre,
+                            id_categoria: input.id_categoria,
+                            unidad_medida: input.unidad_medida,
+                            precio: input.precio,
+                            cantidad,
+                            activo: activoNum,
+                            id_inventario: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
+                        },
+                        { autoCommit: false },
+                    );
+                    const outBinds = result.outBinds as { id_inventario: number[] | number };
+                    const idInventario = getOutBindNumber(outBinds.id_inventario);
+
+                    await connection.commit();
+
+                    return {
+                        id_inventario: idInventario,
+                        clave,
+                        nombre: input.nombre,
+                        id_categoria: input.id_categoria,
+                        unidad_medida: input.unidad_medida,
+                        precio: input.precio,
+                        cantidad,
+                        activo: activoNum,
+                    };
+                } catch (insertError: unknown) {
+                    const err = insertError as { code?: string };
+                    if (err?.code === 'ORA-00001' && !input.clave?.trim()) {
+                        await connection.rollback().catch(() => undefined);
+                        continue;
+                    }
+                    throw insertError;
+                }
+            }
+
+            throw new ConflictError(
+                'No se pudo asignar una clave única automática. Intenta de nuevo.',
             );
-            const outBinds = result.outBinds as { id_inventario: number[] | number };
-            const idInventario = getOutBindNumber(outBinds.id_inventario);
-
-            await connection.commit();
-
-            return {
-                id_inventario: idInventario,
-                clave: input.clave,
-                nombre: input.nombre,
-                id_categoria: input.id_categoria,
-                unidad_medida: input.unidad_medida,
-                precio: input.precio,
-                cantidad,
-                activo: activoNum,
-            };
         } catch (error: unknown) {
             if (connection) {
                 await connection.rollback().catch(() => undefined);
             }
+            if (
+                error instanceof ConflictError ||
+                error instanceof ValidationError
+            ) {
+                throw error;
+            }
             const err = error as { code?: string };
             if (err?.code === 'ORA-00001') {
                 throw new ConflictError('Ya existe un producto con esa clave.');
+            }
+            if (err?.code === 'ORA-02291') {
+                throw new ValidationError('La categoría indicada no existe.');
             }
             throw new Error('Error al crear el producto en inventario');
         } finally {

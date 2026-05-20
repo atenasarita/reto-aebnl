@@ -186,6 +186,7 @@ export default function Inventario() {
         open={modalNuevoProducto}
         onClose={() => setModalNuevoProducto(false)}
         onExito={handleTrasGuardar}
+        itemsInventario={items}
       />
 
       <InventarioMovimientoModal
