@@ -371,3 +371,112 @@ export async function getReportePeriodo(desde, hasta) {
   const data = await response.json();
   return normalizeReportePeriodo(data);
 }
+
+function mapTipoMovimientoLabel(tipo) {
+  const t = String(tipo ?? "").toLowerCase();
+  if (t === "salida") return "Salida";
+  if (t === "entrada") return "Entrada";
+  return tipo ? String(tipo) : "—";
+}
+
+function normalizeMovimientosPorDiaInventario(rows) {
+  if (!Array.isArray(rows)) return [];
+  return rows.map((item) => {
+    const fecha = String(item?.fecha ?? "");
+    return {
+      fecha,
+      diaLabel: fecha.length >= 10 ? fecha.slice(5) : fecha,
+      entradas: toNumber(item?.entradas),
+      salidas: toNumber(item?.salidas),
+      movimientos: toNumber(item?.movimientos),
+    };
+  });
+}
+
+function normalizeProductosPorCategoria(rows) {
+  if (!Array.isArray(rows)) return [];
+  const totalProductos = rows.reduce((acc, item) => acc + toNumber(item?.productos), 0);
+  return rows.map((item) => {
+    const value = toNumber(item?.productos);
+    return {
+      key: String(item?.id_categoria ?? item?.descripcion ?? ""),
+      label: String(item?.descripcion ?? "Sin categoría"),
+      value,
+      unidades: toNumber(item?.unidades),
+      valor: toNumber(item?.valor),
+      porcentaje: toPercent(value, totalProductos),
+    };
+  });
+}
+
+function normalizeHistorialInventario(rows) {
+  if (!Array.isArray(rows)) return [];
+  return rows.map((item) => ({
+    id: toNumber(item?.id_movimiento),
+    fecha: String(item?.fecha ?? ""),
+    clave: String(item?.clave ?? ""),
+    nombre: String(item?.nombre ?? ""),
+    tipo: String(item?.tipo_movimiento ?? ""),
+    tipoLabel: mapTipoMovimientoLabel(item?.tipo_movimiento),
+    cantidad: toNumber(item?.cantidad),
+    cantAnterior: toNumber(item?.cant_anterior),
+    cantNueva: toNumber(item?.cant_nueva),
+    motivo: String(item?.motivo ?? ""),
+    usuario: String(item?.usuario ?? "—"),
+  }));
+}
+
+function normalizeListaBajoStock(rows) {
+  if (!Array.isArray(rows)) return [];
+  return rows.map((item) => ({
+    id: toNumber(item?.id_inventario),
+    clave: String(item?.clave ?? ""),
+    nombre: String(item?.nombre ?? ""),
+    cantidad: toNumber(item?.cantidad),
+    unidadMedida: String(item?.unidad_medida ?? ""),
+    categoria: String(item?.descripcion_categoria ?? ""),
+  }));
+}
+
+function normalizeReporteInventario(payload) {
+  const periodo = payload?.periodo ?? {};
+  const productosPorCategoria = normalizeProductosPorCategoria(payload?.productos_por_categoria);
+
+  return {
+    periodo: {
+      desde: String(periodo.desde ?? ""),
+      hasta: String(periodo.hasta ?? ""),
+    },
+    articulosActivos: toNumber(payload?.articulos_activos),
+    productosBajoStock: toNumber(payload?.productos_bajo_stock),
+    valorInventario: toNumber(payload?.valor_inventario),
+    entradasUnidades: toNumber(payload?.entradas_unidades),
+    salidasUnidades: toNumber(payload?.salidas_unidades),
+    movimientosRegistrados: toNumber(payload?.movimientos_registrados),
+    productosPorCategoria,
+    movimientosPorDia: normalizeMovimientosPorDiaInventario(payload?.movimientos_por_dia),
+    historial: normalizeHistorialInventario(payload?.historial),
+    listaBajoStock: normalizeListaBajoStock(payload?.lista_productos_bajo_stock),
+  };
+}
+
+export async function getReporteInventario(desde, hasta) {
+  const params = new URLSearchParams({
+    desde: String(desde),
+    hasta: String(hasta),
+  });
+  const response = await fetch(
+    `${API_URL}/api/reportes/analytics/inventario?${params.toString()}`,
+    {
+      method: "GET",
+      headers: getAuthHeaders(),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response));
+  }
+
+  const data = await response.json();
+  return normalizeReporteInventario(data);
+}

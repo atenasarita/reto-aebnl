@@ -1,5 +1,6 @@
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
+import { useOutletContext } from "react-router-dom";
 import { UserCheck, UserMinus, Users, X } from "lucide-react";
 import { Card, CardContent, CardHeader } from "../../../components/ui/card";
 import { useReporteGeneral } from "../../../hooks/useReporteGeneral";
@@ -8,6 +9,11 @@ import DistribucionGeneroDonut from "../../../components/reportes/DistribucionGe
 import DistribucionEtapaVidaList from "../../../components/reportes/DistribucionEtapaVidaList/DistribucionEtapaVidaList";
 import IndicadorCard from "../../../components/reportes/IndicadorCard/IndicadorCard";
 import ReportesLoading from "../../../components/reportes/ReportesLoading/ReportesLoading";
+import {
+  buildCsvReporteGeneral,
+  exportTimestampSlug,
+  triggerCsvDownload,
+} from "../../../utils/reportesCsvExport";
 import "./ReporteGeneral.css";
 
 function formatNumber(value) {
@@ -15,6 +21,7 @@ function formatNumber(value) {
 }
 
 export default function ReporteGeneral() {
+  const { registerCsvExportHandler } = useOutletContext() || {};
   const estadosDialogRef = useRef(null);
   const { data, loading, error, refetch } = useReporteGeneral();
   const {
@@ -37,6 +44,15 @@ export default function ReporteGeneral() {
     () => distribucionEstado.reduce((acc, row) => acc + Number(row.value || 0), 0),
     [distribucionEstado],
   );
+
+  useEffect(() => {
+    if (!registerCsvExportHandler) return undefined;
+    registerCsvExportHandler(() => {
+      const csv = buildCsvReporteGeneral(data);
+      triggerCsvDownload(`reporte_general_${exportTimestampSlug()}.csv`, csv);
+    });
+    return () => registerCsvExportHandler(null);
+  }, [data, registerCsvExportHandler]);
 
   function openEstadosDialog() {
     estadosDialogRef.current?.showModal();

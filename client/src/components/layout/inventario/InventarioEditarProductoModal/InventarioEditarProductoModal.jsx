@@ -1,36 +1,46 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import InventarioModalShell from '../InventarioModalShell/InventarioModalShell'
 import {
-  createProductoInventario,
   getCategoriasInventario,
+  updateProductoInventario,
 } from '../../../../services/inventarioService'
-import { vistaPreviaClaveInventario } from '../../../../utils/inventarioClave'
 import { propsFormularioValidacionEs } from '../../../../utils/validacionFormularioEs'
 import '../../../../pages/styles/Inventario.css'
 
-const initialForm = {
-  nombre: '',
-  id_categoria: '',
-  unidad_medida: '',
-  precio: '',
-  cantidad: '0',
+function formDesdeProducto(producto) {
+  if (!producto) {
+    return {
+      clave: '',
+      nombre: '',
+      id_categoria: '',
+      unidad_medida: '',
+      precio: '',
+    }
+  }
+  return {
+    clave: producto.CLAVE ?? '',
+    nombre: producto.NOMBRE ?? '',
+    id_categoria: producto.ID_CATEGORIA != null ? String(producto.ID_CATEGORIA) : '',
+    unidad_medida: producto.UNIDAD_MEDIDA ?? '',
+    precio: producto.PRECIO != null ? String(producto.PRECIO) : '',
+  }
 }
 
-export default function InventarioNuevoProductoModal({
+export default function InventarioEditarProductoModal({
   open,
+  producto,
   onClose,
   onExito,
-  itemsInventario = [],
 }) {
   const [categorias, setCategorias] = useState([])
-  const [form, setForm] = useState(initialForm)
+  const [form, setForm] = useState(formDesdeProducto(null))
   const [loadingCats, setLoadingCats] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    if (!open) return
-    setForm(initialForm)
+    if (!open || !producto) return
+    setForm(formDesdeProducto(producto))
     setError(null)
     let cancelled = false
     setLoadingCats(true)
@@ -49,12 +59,7 @@ export default function InventarioNuevoProductoModal({
     return () => {
       cancelled = true
     }
-  }, [open])
-
-  const claveVistaPrevia = useMemo(
-    () => vistaPreviaClaveInventario(form.id_categoria, categorias, itemsInventario),
-    [categorias, form.id_categoria, itemsInventario]
-  )
+  }, [open, producto])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -67,31 +72,30 @@ export default function InventarioNuevoProductoModal({
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError(null)
+    const idInventario = Number(producto?.ID_INVENTARIO)
+    if (!Number.isFinite(idInventario) || idInventario < 1) {
+      setError('Producto no válido.')
+      return
+    }
     const idCat = Number(form.id_categoria)
     if (!Number.isFinite(idCat) || idCat < 1) {
       setError('Selecciona una categoría válida.')
       return
     }
     const precio = Number(form.precio)
-    const cantidad = Number(form.cantidad)
     if (!Number.isFinite(precio) || precio < 0) {
       setError('Indica un precio válido (número mayor o igual a 0).')
-      return
-    }
-    if (!Number.isFinite(cantidad) || cantidad < 0 || !Number.isInteger(cantidad)) {
-      setError('La cantidad inicial debe ser un entero mayor o igual a 0.')
       return
     }
 
     setSubmitting(true)
     try {
-      await createProductoInventario({
+      await updateProductoInventario(idInventario, {
+        clave: form.clave.trim(),
         nombre: form.nombre.trim(),
         id_categoria: idCat,
         unidad_medida: form.unidad_medida.trim(),
         precio,
-        cantidad,
-        activo: cantidad > 0 ? '1' : '0',
       })
       onExito?.()
       onClose()
@@ -102,11 +106,19 @@ export default function InventarioNuevoProductoModal({
     }
   }
 
+  if (!producto) return null
+
+  const existencia =
+    producto.CANTIDAD != null && producto.UNIDAD_MEDIDA
+      ? `${producto.CANTIDAD} ${producto.UNIDAD_MEDIDA}`.trim()
+      : String(producto.CANTIDAD ?? '—')
+
   return (
     <InventarioModalShell
       open={open}
       onClose={onClose}
-      title="Nuevo producto"
+      title="Editar producto"
+      subtitle="Actualiza los datos del producto. La existencia se modifica con «Registrar movimiento»."
     >
       <form
         className="inventario-form inventario-form--modal"
@@ -114,7 +126,18 @@ export default function InventarioNuevoProductoModal({
         {...propsFormularioValidacionEs}
       >
         <div className="inventario-form__grid">
-          <label className="inventario-form__field inventario-form__field--span2">
+          <label className="inventario-form__field">
+            <span>Clave única</span>
+            <input
+              name="clave"
+              value={form.clave}
+              readOnly
+              disabled
+              aria-readonly
+              title="La clave se asigna al crear el producto y no se puede cambiar"
+            />
+          </label>
+          <label className="inventario-form__field">
             <span>Nombre</span>
             <input
               name="nombre"
@@ -148,7 +171,6 @@ export default function InventarioNuevoProductoModal({
               value={form.unidad_medida}
               onChange={handleChange}
               maxLength={20}
-              placeholder="p. ej. pieza, caja, ml"
               required
             />
           </label>
@@ -165,29 +187,8 @@ export default function InventarioNuevoProductoModal({
             />
           </label>
           <label className="inventario-form__field">
-            <span>Cantidad inicial</span>
-            <input
-              name="cantidad"
-              type="number"
-              min="0"
-              step="1"
-              value={form.cantidad}
-              onChange={handleChange}
-            />
-          </label>
-          <label className="inventario-form__field">
-            <span>Clave (automática)</span>
-            <input
-              value={claveVistaPrevia || '—'}
-              readOnly
-              disabled
-              aria-readonly
-              title={
-                claveVistaPrevia
-                  ? 'Vista previa; se confirma al guardar'
-                  : 'Selecciona una categoría para ver la clave'
-              }
-            />
+            <span>Existencia actual</span>
+            <input value={existencia} readOnly disabled aria-readonly />
           </label>
         </div>
 
@@ -206,7 +207,7 @@ export default function InventarioNuevoProductoModal({
             className="inventario-form__btnPri"
             disabled={submitting || loadingCats || categorias.length === 0}
           >
-            {submitting ? 'Guardando…' : 'Guardar producto'}
+            {submitting ? 'Guardando…' : 'Guardar cambios'}
           </button>
         </div>
       </form>
