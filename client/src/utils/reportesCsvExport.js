@@ -181,13 +181,43 @@ export function buildCsvReportePersonalizado({
   return buildCsv(headers, rows);
 }
 
-export function buildCsvReporteInventarioStub() {
-  return buildCsv(
-    ["Sección", "Mensaje"],
-    [
-      ["Inventario", "Este apartado es una vista provisional; aún no hay tablas de métricas para exportar."],
-    ],
-  );
+/**
+ * Historial de movimientos de inventario (rango aplicado en la UI).
+ * @param {Array<object>} historial — filas normalizadas del reporte
+ * @param {string} desde YYYY-MM-DD
+ * @param {string} hasta YYYY-MM-DD
+ */
+export function buildCsvReporteInventarioHistorial(historial, desde, hasta) {
+  const headers = [
+    "Periodo desde",
+    "Periodo hasta",
+    "Fecha",
+    "Clave",
+    "Producto",
+    "Tipo",
+    "Cantidad",
+    "Stock anterior",
+    "Stock nuevo",
+    "Motivo",
+    "Usuario",
+  ];
+
+  /** @type {Array<Array<string|number>>} */
+  const rows = (historial || []).map((h) => [
+    desde,
+    hasta,
+    h.fecha ?? "",
+    h.clave ?? "",
+    h.nombre ?? "",
+    h.tipoLabel ?? h.tipo ?? "",
+    h.cantidad ?? 0,
+    h.cantAnterior ?? 0,
+    h.cantNueva ?? 0,
+    h.motivo ?? "",
+    h.usuario ?? "",
+  ]);
+
+  return buildCsv(headers, rows);
 }
 
 /**

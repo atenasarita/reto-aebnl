@@ -99,4 +99,56 @@ export interface BeneficiariosPorTipoEspina {
   conteo: number;
 }
 
+/** Reporte de inventario por rango de fechas */
+export interface InventarioProductoPorCategoria {
+  id_categoria: number;
+  descripcion: string;
+  productos: number;
+  unidades: number;
+  valor: number;
+}
+
+export interface InventarioMovimientosPorDia {
+  fecha: string;
+  entradas: number;
+  salidas: number;
+  movimientos: number;
+}
+
+export interface InventarioHistorialMovimiento {
+  id_movimiento: number;
+  fecha: string;
+  clave: string;
+  nombre: string;
+  tipo_movimiento: "entrada" | "salida";
+  cantidad: number;
+  cant_anterior: number;
+  cant_nueva: number;
+  motivo: string;
+  usuario: string;
+}
+
+export interface InventarioProductoBajoStock {
+  id_inventario: number;
+  clave: string;
+  nombre: string;
+  cantidad: number;
+  unidad_medida: string;
+  descripcion_categoria: string;
+}
+
+export interface ReporteInventario {
+  periodo: ReportePeriodo;
+  articulos_activos: number;
+  productos_bajo_stock: number;
+  valor_inventario: number;
+  entradas_unidades: number;
+  salidas_unidades: number;
+  movimientos_registrados: number;
+  productos_por_categoria: InventarioProductoPorCategoria[];
+  movimientos_por_dia: InventarioMovimientosPorDia[];
+  historial: InventarioHistorialMovimiento[];
+  lista_productos_bajo_stock: InventarioProductoBajoStock[];
+}
+
 
