@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useRegistroBeneficiario } from '../../hooks/useRegistroBeneficiario';
 import RegistroSidebar from '../../components/layout/beneficiarios/BeneficiarioRegistro/RegistroSidebar';
 import RegistroTopInfo from '../../components/layout/beneficiarios/BeneficiarioRegistro/RegistroTopInfo';
+import RegistroBottom from '../../components/layout/beneficiarios/BeneficiarioRegistro/RegistroBottomInfo';
 import StepDatosPersonales from '../../components/layout/beneficiarios/BeneficiarioRegistro/steps/StepDatosPersonales';
 import StepInformacionMedica from '../../components/layout/beneficiarios/BeneficiarioRegistro/steps/StepInformacionMedica';
 import StepDomicilio from '../../components/layout/beneficiarios/BeneficiarioRegistro/steps/StepDomicilio';
@@ -32,6 +33,7 @@ function RegistroBeneficiario() {
     setShowSuccessModal,
     setFechaNacimiento,
     handleInputChange,
+    handleFechaNacimientoChange,
     handleBlur,
     handleTipoEspinasChange,
     handleFotoChange,
@@ -55,6 +57,7 @@ function RegistroBeneficiario() {
             fechaNacimientoRef={fechaNacimientoRef}
             setFechaNacimiento={setFechaNacimiento}
             handleInputChange={handleInputChange}
+            handleFechaNacimientoChange={handleFechaNacimientoChange}
             handleBlur={handleBlur}
 
           />
@@ -111,15 +114,9 @@ function RegistroBeneficiario() {
             currentStep={currentStep}
             touchedSteps={touchedSteps}
             validateStep={validateStep}
-            loading={loading}
-            areAllStepsComplete={areAllStepsComplete}
-            onNext={handleNext}
-            onPrev={handlePrev}
-            onSubmit={handleSubmit}
-            onCancel={() => {
-              setShowCancelModal(true)
-            }}
           />
+
+
 
           <section className="form-card">
             <RegistroTopInfo
@@ -134,7 +131,20 @@ function RegistroBeneficiario() {
 
             {error && <div className="error-message">{error}</div>}
           </section>
+
+          
         </section>
+        <RegistroBottom
+            currentStep={currentStep}
+            loading={loading}
+            areAllStepsComplete={areAllStepsComplete}
+            onNext={handleNext}
+            onPrev={handlePrev}
+            onSubmit={handleSubmit}
+            onCancel={() => {
+              setShowCancelModal(true)
+            }}
+           />
       </main>
       <Modal
       isOpen={showCancelModal}
