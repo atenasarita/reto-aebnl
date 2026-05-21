@@ -5,12 +5,6 @@ function RegistroSidebar({
   currentStep,
   touchedSteps,
   validateStep,
-  loading,
-  areAllStepsComplete,
-  onNext,
-  onPrev,
-  onSubmit,
-  onCancel
 }) {
   return (
     <aside className="sidebar">
@@ -40,7 +34,7 @@ function RegistroSidebar({
         })}
       </ul>
 
-      <div className="sidebar-buttons">
+      {/* <div className="sidebar-buttons">
         {currentStep < registroSteps.length - 1 ? (
           <button className="btn btn-primary" onClick={onNext}>
             Continuar →
@@ -64,7 +58,7 @@ function RegistroSidebar({
         <button className="btn btn-danger" onClick={onCancel}>
           Cancelar
         </button>
-      </div>
+      </div> */}
     </aside>
   );
 }
