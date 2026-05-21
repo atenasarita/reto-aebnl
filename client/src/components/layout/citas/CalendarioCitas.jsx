@@ -69,6 +69,8 @@ export default function CalendarioCitas() {
         )
       }}
       eventClick={(info) => {
+        console.log("EVENTO COMPLETO:", info.event);
+        console.log("EXTENDED PROPS:", info.event.extendedProps);
         setCitaSeleccionada(info.event);
       }}
 

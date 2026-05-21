@@ -1,24 +1,36 @@
 export const citasQueries ={
-    getCitas: `
-        SELECT 
-            c.id_cita AS "id",
-            c.motivo AS "title",
-            TO_CHAR(c.fecha, 'YYYY-MM-DD') || 'T' ||
-            CASE 
-                WHEN LENGTH(c.hora) = 5 THEN c.hora || ':00'
-                ELSE c.hora
-            END AS "start",
-            c.id_beneficiario AS "idBeneficiario",
-            c.id_especialista AS "id_especialista",
-            e.nombre_completo AS "especialista",
-            c.id_catalogo_servicio AS "idServicio",
-            c.notas AS "notas",
-            c.estatus AS "estatus"
-        FROM citas c
-        JOIN especialistas e 
-            ON c.id_especialista = e.id_especialista
-        ORDER BY c.fecha DESC, c.hora DESC;
-    `.trim(),
+getCitas: `
+    SELECT 
+        c.id_cita AS "id",
+        c.motivo AS "title",
+        TO_CHAR(c.fecha, 'YYYY-MM-DD') || 'T' ||
+        CASE 
+            WHEN LENGTH(c.hora) = 5 THEN c.hora || ':00'
+            ELSE c.hora
+        END AS "start",
+
+        c.id_beneficiario AS "idBeneficiario",
+        c.id_especialista AS "id_especialista",
+        c.id_catalogo_servicio AS "idServicio",
+
+        e.nombre_completo AS "especialista",
+
+        cs.nombre AS "servicio",
+
+        b.nombres as "beneficiario",
+
+        c.notas AS "notas",
+        c.estatus AS "estatus"
+
+    FROM citas c
+    JOIN especialistas e 
+        ON c.id_especialista = e.id_especialista
+    JOIN catalogo_servicios cs
+        ON c.id_catalogo_servicio = cs.id_catalogo_servicio
+    JOIN identificadores b 
+        ON c.id_beneficiario = b.id_beneficiario
+    ORDER BY c.fecha DESC, c.hora DESC
+`.trim(),
 
     insertCita: `
     INSERT INTO citas (

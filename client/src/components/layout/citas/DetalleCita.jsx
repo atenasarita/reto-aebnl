@@ -14,10 +14,10 @@ export default function DetalleCita({cita, onClose}){
                     <p><strong>Motivo:</strong>{cita.title}</p>
                     <p><strong>Fecha y Hora:</strong>{cita.start?.toLocaleString()}</p>
 
-                    <p><strong>Beneficiario:</strong>{cita.extendedProps?.idBeneficiario}</p>
+                    <p><strong>Beneficiario:</strong>{cita.extendedProps?.beneficiario}</p>
                     <p><strong>Especialista:</strong>{cita.extendedProps?.especialista}</p>
 
-                    <p><strong>Servicio:</strong>{cita.extendedProps?.idServicio}</p>
+                    <p><strong>Servicio:</strong>{cita.extendedProps?.servicio}</p>
                     <p><strong>Estatus:</strong>{cita.extendedProps?.estatus}</p>
                     <p className="detalle-cita-notas">
                         <strong>Notas:</strong>{cita.extendedProps?.notas || "Sin notas"}
