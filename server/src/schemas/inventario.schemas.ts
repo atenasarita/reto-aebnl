@@ -9,7 +9,7 @@ export const createObjeto_categoriaSchema = z.object({
 });
 
 export const createInventarioSchema = z.object({
-  clave: z.string().trim().min(1, 'clave es requerida').max(10),
+  clave: z.string().trim().min(1).max(10).optional(),
   nombre: z.string().trim().min(1, 'nombre es requerido').max(20),
   id_categoria: z.number().int().positive(),
   unidad_medida: z.string().trim().min(1, 'unidad_medida es requerida').max(20),
@@ -33,5 +33,13 @@ export const registrarMovimientoInventarioApiSchema = z.object({
   motivo: z.string().trim().min(1, 'motivo es requerido').max(20),
   fecha: z.coerce.date().optional(),
   id_servicio_otorgado: z.number().int().positive().nullable().optional(),
+});
+
+export const updateInventarioSchema = z.object({
+  clave: z.string().trim().min(1, 'clave es requerida').max(10),
+  nombre: z.string().trim().min(1, 'nombre es requerido').max(20),
+  id_categoria: z.number().int().positive(),
+  unidad_medida: z.string().trim().min(1, 'unidad_medida es requerida').max(20),
+  precio: z.number().nonnegative(),
 });
 

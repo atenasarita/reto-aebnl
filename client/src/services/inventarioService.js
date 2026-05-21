@@ -54,6 +54,30 @@ export async function createProductoInventario(payload) {
   return response.json()
 }
 
+/* PATCH /api/inventario/:id */
+export async function updateProductoInventario(idInventario, payload) {
+  const response = await fetch(`${API_URL}/api/inventario/${idInventario}`, {
+    method: 'PATCH',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(payload),
+  })
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response))
+  }
+  return response.json()
+}
+
+/* DELETE /api/inventario/:id */
+export async function deleteProductoInventario(idInventario) {
+  const response = await fetch(`${API_URL}/api/inventario/${idInventario}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  })
+  if (!response.ok) {
+    throw new Error(await parseErrorMessage(response))
+  }
+}
+
 /* POST /api/inventario/movimientos */
 export async function registrarMovimientoInventario(payload) {
   const response = await fetch(`${API_URL}/api/inventario/movimientos`, {

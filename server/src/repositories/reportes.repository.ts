@@ -7,9 +7,14 @@ import {
   DistribucionBeneficiariosEstado,
   DistribucionEtapaVida,
   DistribucionPorGenero,
+  InventarioHistorialMovimiento,
+  InventarioMovimientosPorDia,
+  InventarioProductoBajoStock,
+  InventarioProductoPorCategoria,
   MesMetricasAnual,
   ReporteAllTimes,
   ReporteAnual,
+  ReporteInventario,
   ReporteMensual,
   ReporteRangoFechas,
   ServiciosPorDia,
@@ -178,6 +183,76 @@ function mapServiciosPorDia(
     });
   }
   return result;
+}
+
+function mapInventarioMovimientosPorRango(
+  rows: Record<string, unknown>[],
+  desde: string,
+  hasta: string
+): InventarioMovimientosPorDia[] {
+  const byFecha = new Map<
+    string,
+    { entradas: number; salidas: number; movimientos: number }
+  >();
+  rows.forEach((r) => {
+    const fecha = String(r.FECHA ?? r.fecha ?? "").slice(0, 10);
+    if (!fecha) return;
+    byFecha.set(fecha, {
+      entradas: num(r.ENTRADAS ?? r.entradas),
+      salidas: num(r.SALIDAS ?? r.salidas),
+      movimientos: num(r.MOVIMIENTOS ?? r.movimientos),
+    });
+  });
+
+  return eachDayInclusive(desde, hasta).map((fecha) => {
+    const row = byFecha.get(fecha);
+    return {
+      fecha,
+      entradas: row?.entradas ?? 0,
+      salidas: row?.salidas ?? 0,
+      movimientos: row?.movimientos ?? 0,
+    };
+  });
+}
+
+function mapInventarioPorCategoria(rows: Record<string, unknown>[]): InventarioProductoPorCategoria[] {
+  return rows.map((r) => ({
+    id_categoria: num(r.ID_CATEGORIA ?? r.id_categoria),
+    descripcion: String(r.DESCRIPCION ?? r.descripcion ?? "Sin categoría"),
+    productos: num(r.PRODUCTOS ?? r.productos),
+    unidades: num(r.UNIDADES ?? r.unidades),
+    valor: round2(num(r.VALOR ?? r.valor)),
+  }));
+}
+
+function mapInventarioHistorial(rows: Record<string, unknown>[]): InventarioHistorialMovimiento[] {
+  return rows.map((r) => {
+    const tipoRaw = String(r.TIPO_MOVIMIENTO ?? r.tipo_movimiento ?? "entrada").toLowerCase();
+    const tipo: "entrada" | "salida" = tipoRaw === "salida" ? "salida" : "entrada";
+    return {
+      id_movimiento: num(r.ID_MOVIMIENTO ?? r.id_movimiento),
+      fecha: String(r.FECHA ?? r.fecha ?? ""),
+      clave: String(r.CLAVE ?? r.clave ?? ""),
+      nombre: String(r.NOMBRE ?? r.nombre ?? ""),
+      tipo_movimiento: tipo,
+      cantidad: num(r.CANTIDAD ?? r.cantidad),
+      cant_anterior: num(r.CANT_ANTERIOR ?? r.cant_anterior),
+      cant_nueva: num(r.CANT_NUEVA ?? r.cant_nueva),
+      motivo: String(r.MOTIVO ?? r.motivo ?? ""),
+      usuario: String(r.USUARIO ?? r.usuario ?? "—"),
+    };
+  });
+}
+
+function mapInventarioBajoStock(rows: Record<string, unknown>[]): InventarioProductoBajoStock[] {
+  return rows.map((r) => ({
+    id_inventario: num(r.ID_INVENTARIO ?? r.id_inventario),
+    clave: String(r.CLAVE ?? r.clave ?? ""),
+    nombre: String(r.NOMBRE ?? r.nombre ?? ""),
+    cantidad: num(r.CANTIDAD ?? r.cantidad),
+    unidad_medida: String(r.UNIDAD_MEDIDA ?? r.unidad_medida ?? ""),
+    descripcion_categoria: String(r.DESCRIPCION_CATEGORIA ?? r.descripcion_categoria ?? ""),
+  }));
 }
 
 function mapServiciosPorRango(rows: Record<string, unknown>[], desde: string, hasta: string): ServiciosPorDia[] {
@@ -430,6 +505,65 @@ export class ReportesRepository implements IReportesRepository {
         beneficiarios_por_genero: mapDistribucionGenero(generoRows),
         beneficiarios_por_etapa_vida: mapDistribucionEtapaVida(etapaRows),
         beneficiarios_por_estado: mapDistribucionEstado(estadoRows),
+      };
+    } finally {
+      if (conn) await conn.close();
+    }
+  }
+
+  async getInventario(desde: string, hasta: string): Promise<ReporteInventario> {
+    let conn: oracledb.Connection | undefined;
+    try {
+      conn = await getConnection();
+
+      const tarjetasRes = await conn.execute(
+        reportesQueries.inventarioTarjetas,
+        { desde, hasta },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const categoriaRes = await conn.execute(
+        reportesQueries.inventarioPorCategoria,
+        {},
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const porDiaRes = await conn.execute(
+        reportesQueries.inventarioMovimientosPorDia,
+        { desde, hasta },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const historialRes = await conn.execute(
+        reportesQueries.inventarioHistorial,
+        { desde, hasta },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const bajoStockRes = await conn.execute(
+        reportesQueries.inventarioProductosBajoStock,
+        {},
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+
+      const tarjetasRow = (tarjetasRes.rows?.[0] as Record<string, unknown>) ?? {};
+      const categoriaRows = (categoriaRes.rows ?? []) as Record<string, unknown>[];
+      const porDiaRows = (porDiaRes.rows ?? []) as Record<string, unknown>[];
+      const historialRows = (historialRes.rows ?? []) as Record<string, unknown>[];
+      const bajoStockRows = (bajoStockRes.rows ?? []) as Record<string, unknown>[];
+
+      return {
+        periodo: { desde, hasta },
+        articulos_activos: num(tarjetasRow.ARTICULOS_ACTIVOS ?? tarjetasRow.articulos_activos),
+        productos_bajo_stock: num(
+          tarjetasRow.PRODUCTOS_BAJO_STOCK ?? tarjetasRow.productos_bajo_stock
+        ),
+        valor_inventario: round2(num(tarjetasRow.VALOR_INVENTARIO ?? tarjetasRow.valor_inventario)),
+        entradas_unidades: num(tarjetasRow.ENTRADAS_UNIDADES ?? tarjetasRow.entradas_unidades),
+        salidas_unidades: num(tarjetasRow.SALIDAS_UNIDADES ?? tarjetasRow.salidas_unidades),
+        movimientos_registrados: num(
+          tarjetasRow.MOVIMIENTOS_REGISTRADOS ?? tarjetasRow.movimientos_registrados
+        ),
+        productos_por_categoria: mapInventarioPorCategoria(categoriaRows),
+        movimientos_por_dia: mapInventarioMovimientosPorRango(porDiaRows, desde, hasta),
+        historial: mapInventarioHistorial(historialRows),
+        lista_productos_bajo_stock: mapInventarioBajoStock(bajoStockRows),
       };
     } finally {
       if (conn) await conn.close();
