@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import "./styles/CitasPop.css";
+import { API_URL } from "../../utils/config";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
+// const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const HORARIOS = [
   { label: "09:00 AM - 10:00 AM", hora: "09:00" },
@@ -59,7 +60,7 @@ function BuscadorBeneficiario({ value, onChange }) {
     if (q.length < 2) { setResultados([]); setAbierto(false); return; }
     setBuscando(true);
     try {
-      const res = await fetch(`${API_BASE}/api/buscar-beneficiarios?q=${encodeURIComponent(q)}`);
+      const res = await fetch(`${API_URL}/api/buscar-beneficiarios?q=${encodeURIComponent(q)}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
       // [{ id_beneficiario, nombres, apellido_paterno, folio, telefono, email }]
@@ -199,8 +200,8 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
       setCargandoCat(true);
       try {
         const [resEsp, resSer] = await Promise.all([
-          fetch(`${API_BASE}/api/especialistas`),
-          fetch(`${API_BASE}/api/catalogo-servicios`),
+          fetch(`${API_URL}/api/especialistas`),
+          fetch(`${API_URL}/api/catalogo-servicios`),
         ]);
 
         if (resEsp.ok) {
@@ -230,7 +231,7 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
       if (!cita?.extendedProps?.idBeneficiario) return;
       try {
         const res = await fetch(
-          `${API_BASE}/api/buscar-beneficiarios/${cita.extendedProps.idBeneficiario}`
+          `${API_URL}/api/buscar-beneficiarios/${cita.extendedProps.idBeneficiario}`
         );
         if (!res.ok) throw new Error();
         const data = await res.json();
@@ -278,8 +279,8 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
 
       const url =
         modo === "editar"
-          ? `${API_BASE}/api/citas/${cita.id}`
-          : `${API_BASE}/api/citas`;
+          ? `${API_URL}/api/citas/${cita.id}`
+          : `${API_URL}/api/citas`;
 
       const method =
         modo === "editar"
