@@ -3,7 +3,7 @@ import { qase } from 'playwright-qase-reporter';
 
 test('HU - 019 - Redirigir al módulo de registro de beneficiario', async ({ page }) => {
     qase.id(62);
-  await page.goto('https://aebnl.netlify.app');
+  await page.goto('http://localhost:5173/login');
   await page.getByRole('textbox', { name: 'Usuario' }).click();
   await page.getByRole('textbox', { name: 'Usuario' }).fill('prueba1');
   await page.getByRole('textbox', { name: '********' }).click();
