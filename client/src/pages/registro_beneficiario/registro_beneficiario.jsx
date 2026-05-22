@@ -10,7 +10,6 @@ import StepInformacionMedica from '../../components/layout/beneficiarios/Benefic
 import StepDomicilio from '../../components/layout/beneficiarios/BeneficiarioRegistro/steps/StepDomicilio';
 import StepMembresia from '../../components/layout/beneficiarios/BeneficiarioRegistro/steps/StepMembresia';
 import { useState } from 'react';
-
 import Modal from '../../components/layout/beneficiarios/BeneficiarioRegistro/BeneficiarioModal/RegistroPopUps';
 
 function RegistroBeneficiario() {
@@ -43,7 +42,8 @@ function RegistroBeneficiario() {
     handlePrev,
     handleSubmit,
     validateStep,
-    areAllStepsComplete
+    areAllStepsComplete,
+    beneficiarioCreado
   } = useRegistroBeneficiario(navigate);
 
   const renderCurrentStep = () => {
@@ -166,7 +166,12 @@ function RegistroBeneficiario() {
       confirmText="Aceptar"
       onConfirm={() => {
         setShowSuccessModal(false);
-        navigate('/beneficiarios');
+
+        navigate('/beneficiarios', {
+          state: {
+            beneficiarioCreado
+          }
+        });
       }}
       />
   </div>

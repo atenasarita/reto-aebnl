@@ -16,6 +16,7 @@ export function useRegistroBeneficiario(navigate) {
   const [formData, setFormData] = useState(initialFormData(fechaRegistro));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [beneficiarioCreado, setBeneficiarioCreado] = useState(null);
 
   const fechaNacimientoRef = useRef(null);
   const fechaMembresiaRef = useRef(null);
@@ -244,7 +245,9 @@ export function useRegistroBeneficiario(navigate) {
         fechaNacimiento
       );
 
-      await createBeneficiario(payload, token);
+      // await createBeneficiario(payload, token);
+      const beneficiarioCreado = await createBeneficiario(payload, token);
+      setBeneficiarioCreado(beneficiarioCreado);
       setFormData(prev => ({
         ...prev,
         fotografiaFile: null,
@@ -297,5 +300,6 @@ export function useRegistroBeneficiario(navigate) {
     handleSubmit,
     validateStep: stepIsComplete,
     areAllStepsComplete,
+    beneficiarioCreado,
   };
 }

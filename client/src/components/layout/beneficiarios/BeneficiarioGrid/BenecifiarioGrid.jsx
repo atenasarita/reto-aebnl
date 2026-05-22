@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import BeneficiarioCard from '../BeneficiarioCard/BeneficiarioCard'
 import styles from './BeneficiarioGrid.module.css'
 import Pagination from '../../../ui/Pagination'
@@ -12,8 +12,9 @@ import { API_URL } from '../../../../utils/config'
 
 const ITEMS_PER_PAGE = 8
 
-function BeneficiarioGrid({ data, loading }) {
+function BeneficiarioGrid({ data, loading, beneficiarioCreadoId }) {
   const [currentPage, setCurrentPage] = useState(1)
+  const openedCreatedBeneficiario = useRef(false);
 
   useEffect(() => {
     setCurrentPage(1)
@@ -29,6 +30,19 @@ function BeneficiarioGrid({ data, loading }) {
     const data = await res.json()
     setSelected(data)
   }
+
+  useEffect(() => {
+    if(!beneficiarioCreadoId || openedCreatedBeneficiario.current || loading) return;
+
+    const existenEnData = data.some(
+      b => b.id_beneficiario === beneficiarioCreadoId
+    );
+
+    if(!existenEnData) return;
+
+    openedCreatedBeneficiario.current = true;
+    handleView(beneficiarioCreadoId);
+  }, [beneficiarioCreadoId, data, loading])
 
   async function handleDownloadPdf(id) {
     try {
@@ -71,6 +85,9 @@ function BeneficiarioGrid({ data, loading }) {
       dias_para_vencer: b.dias_para_vencer,
     }
   })
+
+
+ 
 
   const paginated = normalized.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
