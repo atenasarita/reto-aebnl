@@ -12,7 +12,7 @@ test.beforeEach(async ({ page }) => {
   await expect(page.locator('[class*="_card_"]').first()).toBeVisible({ timeout: 8000 });
 });
 
-test(qase(120, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-1'), async ({ page }) => {
+test(qase(107, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-1'), async ({ page }) => {
   // Filtrar por estatus activo y buscar por nombre
   await page.locator('select.dropdown-select').selectOption('activo');
   await page.locator('input.search-input').fill('Atenas');
@@ -61,7 +61,7 @@ test(qase(120, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-1')
   expect(download.suggestedFilename()).toMatch(/\.pdf$/i);
 });
 
-test(qase(121, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-2'), async ({ page }) => {
+test(qase(127, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-2'), async ({ page }) => {
   // Filtrar por estatus inactivo
   await page.locator('select.dropdown-select').selectOption('inactivo');
   await page.waitForTimeout(600);

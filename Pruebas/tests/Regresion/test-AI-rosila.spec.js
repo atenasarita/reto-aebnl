@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+const { qase } = require('playwright-qase-reporter');
 
 test.describe('Registro de Beneficiario IA', () => {
   test.beforeEach(async ({ page }) => {

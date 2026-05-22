@@ -59,7 +59,7 @@ test(qase(108, 'HU - 007 - Pre-Registro de Beneficiarios - Caso de Prueba #HU007
     await page.getByText('Espina Bífida Oculta').click();
 
     // Registro
-    await page.getByRole('button', { name: 'Registrarse ✓' }).click();
+    await page.getByRole('button', { name: 'Registrarse' }).click();
 
     // Validar pantalla de éxito
     const successContainer = page.locator('.step-content.success-screen');
@@ -117,5 +117,5 @@ test(qase(110, 'HU - 007 - CURP con longitud inválida - Caso de Prueba #HU007-2
     await expect(page.locator('label:nth-child(7) > .checkbox-card-mark')).toBeVisible();
 
     await page.locator('label:nth-child(7) > .checkbox-card-mark').click();
-    await page.getByRole('button', { name: 'Registrarse ✓' }).click();
+    await page.getByRole('button', { name: 'Registrarse' }).click();
 });
