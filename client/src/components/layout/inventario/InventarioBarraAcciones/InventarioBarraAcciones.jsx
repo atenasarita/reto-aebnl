@@ -30,7 +30,7 @@ function InventarioBarraAcciones({
       />
 
       <Dropdown
-        className={`dropdown-gestion ${styles.filtroCategoria}`}
+        className={`dropdown-gestion ${styles.filtro}`}
         options={opcionesCategoria}
         value={categoria}
         onChange={onCategoriaChange}
@@ -43,23 +43,25 @@ function InventarioBarraAcciones({
         onChange={onOrdenCantidadChange}
       />
 
-      <button
-        type="button"
-        className={styles.btnSecundario}
-        onClick={onNuevoProducto}
-      >
-        <FiPlus size={22} aria-hidden />
-        <span>Nuevo Producto</span>
-      </button>
+      <div className={styles.grupoAcciones}>
+        <button
+          type="button"
+          className={styles.btnSecundario}
+          onClick={onNuevoProducto}
+        >
+          <FiPlus size={20} aria-hidden />
+          <span>Nuevo Producto</span>
+        </button>
 
-      <button
-        type="button"
-        className={styles.btnPrimario}
-        onClick={onRegistrarMovimiento}
-      >
-        <FiPlus size={22} aria-hidden />
-        <span>Registrar Movimiento</span>
-      </button>
+        <button
+          type="button"
+          className={styles.btnPrimario}
+          onClick={onRegistrarMovimiento}
+        >
+          <FiPlus size={20} aria-hidden />
+          <span>Registrar Movimiento</span>
+        </button>
+      </div>
     </div>
   )
 }

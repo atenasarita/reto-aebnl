@@ -1,0 +1,22 @@
+.reporte-personalizado-results-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.5rem 0 0;
+}
+
+.reporte-personalizado-results-divider::before,
+.reporte-personalizado-results-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--rp-outline-variant);
+}
+
+.reporte-personalizado-results-divider-text {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rp-on-surface-variant);
+}

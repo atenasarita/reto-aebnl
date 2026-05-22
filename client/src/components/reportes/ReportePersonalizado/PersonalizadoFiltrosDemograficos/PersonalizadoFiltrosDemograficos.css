@@ -1,0 +1,137 @@
+.reporte-personalizado-dem-columns {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1024px) {
+  .reporte-personalizado-dem-columns {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.reporte-personalizado-dem-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-bottom: 1px solid var(--rp-outline-variant);
+}
+
+@media (min-width: 1024px) {
+  .reporte-personalizado-dem-col {
+    border-bottom: none;
+    border-right: 1px solid var(--rp-outline-variant);
+  }
+
+  .reporte-personalizado-dem-col:last-child {
+    border-right: none;
+  }
+}
+
+.reporte-personalizado-dem-col-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid rgba(241, 241, 244, 0.8);
+  background: rgba(248, 250, 252, 0.45);
+}
+
+.reporte-personalizado-dem-col-head-icon {
+  flex-shrink: 0;
+  color: var(--rp-primary);
+}
+
+.reporte-personalizado-dem-col-title {
+  margin: 0;
+  font-family: var(--font-rp-head);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--rp-on-surface-variant);
+}
+
+.reporte-personalizado-dem-col-body {
+  padding: 0.875rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.reporte-personalizado-dem-col-body--grow {
+  flex: 1;
+  min-height: 0;
+}
+
+.reporte-personalizado-dem-check {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.45rem 0.35rem;
+  margin: 0 -0.35rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--rp-on-surface);
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.reporte-personalizado-dem-check:hover {
+  background: var(--rp-container-low);
+}
+
+.reporte-personalizado-dem-check:hover span {
+  color: var(--rp-primary);
+}
+
+.reporte-personalizado-dem-check input {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  accent-color: var(--rp-primary);
+  flex-shrink: 0;
+}
+
+.reporte-personalizado-dem-estados-scroll {
+  max-height: 12rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding-right: 0;
+  margin: -0.125rem 0 0.5rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.reporte-personalizado-dem-estados-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+.reporte-personalizado-dem-empty {
+  margin: 0;
+}
+
+.reporte-personalizado-dem-hint-panel {
+  padding: 0.75rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px dashed rgba(30, 59, 138, 0.25);
+  background: rgba(30, 59, 138, 0.05);
+}
+
+.reporte-personalizado-dem-hint-panel--muted {
+  margin-top: 0.375rem;
+  border-style: solid;
+  border-color: rgba(30, 59, 138, 0.15);
+}
+
+.reporte-personalizado-dem-hint-text {
+  margin: 0;
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--rp-on-surface-variant);
+}

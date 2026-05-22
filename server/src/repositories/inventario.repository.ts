@@ -147,7 +147,10 @@ export class OracleInventarioRepository implements InventarioRepository {
         idUsuario: number,
     ): Promise<Movimientos_inventario> {
         let connection: oracledb.Connection | undefined;
-        const fecha = input.fecha ?? new Date();
+        const fecha =
+            input.fecha != null && !Number.isNaN(new Date(input.fecha).getTime())
+                ? new Date(input.fecha)
+                : new Date();
         const idServicioOtorgado = input.id_servicio_otorgado ?? null;
 
         try {
@@ -222,8 +225,11 @@ export class OracleInventarioRepository implements InventarioRepository {
             const err = error as { code?: string };
             if (err?.code === 'ORA-02291') {
                 throw new ValidationError(
-                    'El servicio otorgado indicado no existe o no es válido.',
+                    'Referencia inválida (producto, usuario o servicio no encontrado).',
                 );
+            }
+            if (err?.code === 'ORA-01861') {
+                throw new ValidationError('La fecha del movimiento no es válida.');
             }
             throw new Error('Error al registrar el movimiento de inventario');
         } finally {

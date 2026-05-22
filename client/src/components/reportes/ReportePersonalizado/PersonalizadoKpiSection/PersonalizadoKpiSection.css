@@ -1,0 +1,11 @@
+.reporte-personalizado-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.125rem;
+}
+
+@media (max-width: 960px) {
+  .reporte-personalizado-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}

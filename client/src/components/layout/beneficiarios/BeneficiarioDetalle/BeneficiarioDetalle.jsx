@@ -33,11 +33,7 @@ function BeneficiarioDetalle({ beneficiario }) {
     : valvula === 0 || valvula === '0' || valvula === false ? 'No'
     : '—';
   
-    const fotoURL = fotografia ?
-    fotografia.startsWith('/uploads/')
-    ? `http://localhost:3000${fotografia}`
-    :fotografia
-    :null;
+    const fotoURL = fotografia || null;
 
   return (
     <div className={styles.modalBody}>

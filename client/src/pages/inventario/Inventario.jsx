@@ -99,14 +99,16 @@ export default function Inventario() {
 
   return (
     <div className="inventario-pagina">
-      <div className="content-container">
-        <header className="inventario-encabezado">
-          <h1 className="inventario-encabezado__titulo">Inventario General</h1>
-          <p className="inventario-encabezado__subtitulo">
-            Gestión de productos e insumos médicos.
-          </p>
-        </header>
+      <header className="inventario-encabezado page-header">
+        <h1 className="page-header-title inventario-encabezado__titulo">
+          Inventario General
+        </h1>
+        <p className="page-header-subtitle inventario-encabezado__subtitulo">
+          Gestión de productos e insumos médicos.
+        </p>
+      </header>
 
+      <section className="inventario-bloque inventario-bloque--filtros" aria-label="Filtros y acciones de inventario">
         <InventarioBarraAcciones
           onBusqueda={handleBusqueda}
           categoria={categoria}
@@ -117,6 +119,9 @@ export default function Inventario() {
           onNuevoProducto={() => setModalNuevoProducto(true)}
           onRegistrarMovimiento={() => setModalMovimiento(true)}
         />
+      </section>
+
+      <section className="inventario-bloque inventario-bloque--tabla" aria-label="Listado de inventario">
 
         {loading && (
           <p className="inventario-estado" role="status">
@@ -139,7 +144,7 @@ export default function Inventario() {
             onCambiarPagina={handleCambiarPagina}
           />
         )}
-      </div>
+      </section>
 
       <InventarioNuevoProductoModal
         open={modalNuevoProducto}

@@ -1,0 +1,206 @@
+import { useState } from "react";
+import { Plus, Trash2 } from "lucide-react";
+
+import { useProductos } from "../../../hooks/useProductos";
+
+import Dropdown from "../../ui/Dropdown";  
+import Button from "../../ui/Button";
+
+import "../../../pages/styles/BusquedaBeneficiarioVista.css"
+
+export default function StepInsumos({ insumos, setInsumos }) {
+  const { productos, loading, error } = useProductos();
+  const [productoSelec, setProductoSelec] = useState("");
+  const [cantidad, setCantidad] = useState(1);
+  const [errorStock, setErrorStock] = useState("");
+
+  const agregarInsumo = () => {
+    setErrorStock("");
+    if (!productoSelec) return;
+    const prod = productos.find((p) => p.id === parseInt(productoSelec));
+    if (!prod) return;
+
+    const existe = insumos.find((i) => i.id === prod.id);
+    const cantidadActual = existe ? existe.cantidad : 0;
+    const cantidadNueva = cantidadActual + cantidad;
+
+    if (cantidadNueva > prod.stock) {
+      setErrorStock(`Solo hay ${prod.stock} unidades disponibles de ${prod.nombre}`);
+      return;
+    }
+
+    if (existe) {
+      setInsumos(
+        insumos.map((i) =>
+          i.id === prod.id ? { ...i, cantidad: cantidadNueva } : i
+        )
+      );
+    } else {
+      setInsumos([...insumos, { ...prod, cantidad }]);
+    }
+
+    setProductoSelec("");
+    setCantidad(1);
+  };
+
+  const eliminarInsumo = (id) => {
+    setErrorStock("");
+    setInsumos(insumos.filter((i) => i.id !== id));
+  };
+
+  const actualizarCantidad = (id, nuevaCantidad) => {
+    setErrorStock("");
+    if (nuevaCantidad < 1) return;
+    const prod = productos.find((p) => p.id === id);
+    if (prod && nuevaCantidad > prod.stock) {
+      setErrorStock(`Solo hay ${prod.stock} unidades disponibles de ${prod.nombre}`);
+      return;
+    }
+    setInsumos(
+      insumos.map((i) => (i.id === id ? { ...i, cantidad: nuevaCantidad } : i))
+    );
+  };
+
+  const subtotal = insumos.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
+
+  const productoOptions = productos.map(p => ({
+    label: `${p.nombre} (${p.stock} disp.)`,
+    value: String(p.id)
+  }));
+
+  if (loading) return <p>Cargando productos…</p>;
+  if (error)   return <p>Error al cargar productos.</p>;
+  
+  return (
+    <div className='panel'>
+
+      <div className='insumoAddRow'>
+        <div className='field' style={{ flex: 2 }}>
+          <label className='fieldLabel'>Producto</label>
+          <Dropdown
+            className='dropdown-servicios'
+            options={[{ label: "Seleccionar...", value: "" }, ...productoOptions]}
+            value={productoSelec}  
+            onChange={(val) => { setProductoSelec(val); setErrorStock(""); }}
+          />
+        </div>
+
+        <div className='field' style={{ flex: 1 }}>
+          <label className='fieldLabel'>Cantidad</label>
+          <input
+            type="number"
+            className='input'
+            min={1}
+            max={
+              productoSelec
+                ? productos.find((p) => p.id === parseInt(productoSelec))?.stock
+                : undefined
+            }
+            value={cantidad}
+            onChange={(e) => { setCantidad(parseInt(e.target.value) || 1); setErrorStock(""); }}
+          />
+        </div>
+
+        <div className='field' style={{ flex: 1 }}>
+          <label className='fieldLabel'>Precio unitario</label>
+          <input
+            type="text"
+            className='input'
+            readOnly
+            value={
+              productoSelec
+                ? `$${productos.find((p) => p.id === parseInt(productoSelec))?.precio ?? ""}`  
+                : ""
+            }
+            placeholder="—"
+          />
+        </div>
+
+        <Button
+          className='btnPrimary'
+          iconLeft={<Plus size={16} style={{ margin: '4px 0 0' }} />}
+          onClick={agregarInsumo}
+          disabled={!productoSelec}
+        >
+          Agregar
+        </Button>
+      </div>
+
+      {/* Mensaje de error stock */}
+      {errorStock && (
+        <p style={{
+          color: '#dc2626',
+          fontSize: 13,
+          fontWeight: 600,
+          margin: '8px 0 0',
+          padding: '8px 12px',
+          background: '#fee2e2',
+          borderRadius: 8,
+          border: '1px solid #fca5a5',
+        }}>
+          {errorStock}
+        </p>
+      )}
+
+      <table className='insumoTable'>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+            <th>Subtotal</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {insumos.length === 0 ? (
+            <tr>
+              <td colSpan={5} className='insumoEmpty'>
+                Sin productos agregados
+              </td>
+            </tr>
+          ) : (
+            insumos.map((i) => (
+              <tr key={i.id}>
+                <td>{i.nombre}</td>
+                <td>
+                  <input
+                    type="number"
+                    className='inputQty'
+                    min={1}
+                    max={productos.find((p) => p.id === i.id)?.stock}
+                    value={i.cantidad}
+                    onChange={(e) =>
+                      actualizarCantidad(i.id, parseInt(e.target.value) || 1)
+                    }
+                  />
+                </td>
+                <td>${i.precio.toFixed(2)}</td>
+                <td>${(i.precio * i.cantidad).toFixed(2)}</td>
+                <td>
+                  <button
+                    className='btnDanger'
+                    onClick={() => eliminarInsumo(i.id)}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+        {insumos.length > 0 && (
+          <tfoot>
+            <tr>
+              <td colSpan={3} style={{ textAlign: "right", fontWeight: 600 }}>
+                Total
+              </td>
+              <td style={{ fontWeight: 700 }}>${subtotal.toFixed(2)}</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        )}
+      </table>
+    </div>
+  );
+}

@@ -7,6 +7,8 @@ import BeneficiarioGrid from '../../components/layout/beneficiarios/Beneficiario
 import { FiUserPlus, FiSearch } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 
+import { API_URL } from '../../utils/config'
+
 
 // 1. Fix ESTATUS_OPTIONS — lowercase to match API
 const ESTATUS_OPTIONS = [
@@ -36,7 +38,7 @@ function GestionBeneficiarios() {
     setError('')
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:3000/api/beneficiarios', {
+      const response = await fetch(`${API_URL}/api/beneficiarios`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
@@ -90,7 +92,7 @@ function GestionBeneficiarios() {
     setError('')
     try {
       const token = localStorage.getItem('token')
-      const response = await fetch(`http://localhost:3000/api/beneficiarios/folio/${query.trim()}`, {
+      const response = await fetch(`${API_URL}/api/beneficiarios/folio/${query.trim()}`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
@@ -113,39 +115,41 @@ function GestionBeneficiarios() {
   }
 
   return (
-    <main>
-      <div className='content-container'>
-        <div className='description'>
-          <h1 className='title'>Gestion de Beneficiarios</h1>
-          <h2 className='subtitle'>Administra los beneficiarios, estatus y diagnostico</h2>
-        </div>
+    <div className="gestion-beneficiarios">
+      <div className='description page-header'>
+        <h1 className='page-header-title'>Gestion de Beneficiarios</h1>
+        <p className='page-header-subtitle'>Administra los beneficiarios, estatus y diagnostico</p>
+      </div>
 
         <div className='filter-bar'>
-          <Dropdown
-            className='dropdown-gestion'
-            options={ESTATUS_OPTIONS}
-            value={estatus}
-            onChange={(val) => setEstatus(val)}
-          />
+          <div className='filter-bar__group filter-bar__group--filters'>
+            <Dropdown
+              className='dropdown-gestion'
+              options={ESTATUS_OPTIONS}
+              value={estatus}
+              onChange={(val) => setEstatus(val)}
+            />
 
-          <SearchBar
-            icon={<FiSearch />}
-            className='search-gestion'
-            onSearch={setQuery}          // just update query, useEffect does the rest
-            debounceMs={250}
-          />
-          <Button className='buscar-beneficiarios-btn' onClick={handleBuscar}>
-            Buscar
-          </Button>
+            <SearchBar
+              icon={<FiSearch />}
+              className='search-gestion'
+              onSearch={setQuery}
+              debounceMs={250}
+            />
+            <Button className='buscar-beneficiarios-btn' onClick={handleBuscar}>
+              Buscar
+            </Button>
+          </div>
 
-  
-          <Button
-            className='nuevo-beneficiario-btn'
-            iconLeft={<FiUserPlus style={{ margin: '4px 0 0' }} />}
-            onClick={() => navigate('/registro_beneficiario')}
-          >
-            Nuevo Beneficiario
-          </Button>
+          <div className='filter-bar__group filter-bar__group--primary'>
+            <Button
+              className='nuevo-beneficiario-btn'
+              iconLeft={<FiUserPlus aria-hidden />}
+              onClick={() => navigate('/registro_beneficiario')}
+            >
+              Nuevo Beneficiario
+            </Button>
+          </div>
         </div>
 
         {error && <p className='error-msg'>{error}</p>}
@@ -153,8 +157,7 @@ function GestionBeneficiarios() {
         <div className='main-grid-beneficiarios'>
           <BeneficiarioGrid data={filtered} loading={loading} />
         </div>
-      </div>
-    </main>
+    </div>
   )
 }
 

@@ -1,7 +1,8 @@
 #root {
   margin: 0;
-  text-align: center;
   width: 100%;
+  min-height: 100vh;
+  text-align: initial;
 }
 
 .logo {

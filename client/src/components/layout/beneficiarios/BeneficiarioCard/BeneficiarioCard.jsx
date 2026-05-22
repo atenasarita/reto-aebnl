@@ -1,6 +1,6 @@
 import styles from './BeneficiarioCard.module.css'
 import { BsCardText } from "react-icons/bs";
-import { FiEdit, FiEye } from "react-icons/fi";
+import { FiEdit, FiEye, FiDownload } from "react-icons/fi";
 
 
 function getInitials(name) {
@@ -12,7 +12,7 @@ function getInitials(name) {
     .toUpperCase()
 }
 
-function BeneficiarioCard({ beneficiario, onView, onEdit, onCard }) {
+function BeneficiarioCard({ beneficiario, onView, onEdit, onCard, onDownloadPdf }) {
   const { nombre, folio, diagnostico, estatus, dias_para_vencer } = beneficiario
 
   const showVenceBadge = dias_para_vencer !== undefined && dias_para_vencer !== null && dias_para_vencer >= 0 && dias_para_vencer <= 7;
@@ -44,12 +44,20 @@ function BeneficiarioCard({ beneficiario, onView, onEdit, onCard }) {
             {dias_para_vencer === 0 ? 'Vence hoy' : `Vence en ${dias_para_vencer} día${dias_para_vencer === 1 ? '' : 's'}`}
           </span>
         )}
+        <button className={styles.actionBtn} onClick={onDownloadPdf} title="Descargar PDF">
+          <FiDownload />
+        </button>
+
+        {/*  
         <button className={styles.actionBtn} onClick={onCard} title="Ver credencial">
           <BsCardText />
         </button>
         <button className={styles.actionBtn} onClick={onEdit} title="Editar">
           <FiEdit />
         </button>
+
+        */}
+        
         <button className={`${styles.actionBtn} ${styles.actionBtnView}`} onClick={onView} title="Ver detalle">
           <FiEye />
         </button>

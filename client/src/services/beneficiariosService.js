@@ -1,7 +1,7 @@
-const API_URL = 'http://localhost:3000/api/beneficiarios';
+import { API_URL } from '../utils/config'
 
 export async function fetchSiguienteFolio(token) {
-  const response = await fetch(`${API_URL}/siguiente-folio`, {
+  const response = await fetch(`${API_URL}/api/beneficiarios/siguiente-folio`, {
     headers: {
       Authorization: `Bearer ${token}`
     }
@@ -17,7 +17,7 @@ export async function fetchSiguienteFolio(token) {
 }
 
 export async function createBeneficiario(payload, token) {
-  const response = await fetch(API_URL, {
+  const response = await fetch(`${API_URL}/api/beneficiarios`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

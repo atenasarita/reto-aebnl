@@ -1,0 +1,15 @@
+/* Toggle de serie en cabecera del gráfico anual */
+.reporte-anual-trend-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 700px) {
+  .reporte-mensual-trend-header .reporte-anual-trend-controls {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
