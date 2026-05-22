@@ -17,6 +17,7 @@ import ReporteInventario from "./pages/reportes/ReporteInventario/ReporteInventa
 import ReporteAnual from "./pages/reportes/ReporteAnual/ReporteAnual";
 import ReportesMensual from "./pages/reportes/ReportesMensual/ReportesMensual";
 import ReportePersonalizado from "./pages/reportes/ReportePersonalizado/ReportePersonalizado";
+import Citas from './pages/Citas/AgendaCitas';
 import Dashboard from "./pages/dashboard";
 import RegistroServicios from "./pages/RegistroServicios/RegistroServicios";
 
@@ -49,7 +50,12 @@ export default function App() {
 
           {/* Inventario */}
           <Route path="/inventario" element={<Inventario />} />
-            
+
+          {/* Citas */}
+          <Route path="/citas" element={<Citas />} />
+
+
+            {/*Recibos  */}
           <Route path="/recibos" element={<Recibos />} />
           <Route path="/reportes" element={<Reportes />}>
             <Route index element={<Navigate to="general" replace />} />
@@ -59,6 +65,9 @@ export default function App() {
             <Route path="anual" element={<ReporteAnual />} />
             <Route path="personalizado" element={<ReportePersonalizado />} />
           </Route>
+
+          {/* Citas */}
+          <Route path="/citas" element={<Citas />} />
 
           {/* Default */}
           <Route path="/" element={<Navigate to="/login" replace />} />
