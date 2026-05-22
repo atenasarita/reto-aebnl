@@ -1,3 +1,4 @@
+import InventarioAccionesFila from '../InventarioAccionesFila/InventarioAccionesFila'
 import InventarioFilaProducto from '../InventarioFilaProducto/InventarioFilaProducto'
 import InventarioPaginacion from '../InventarioPaginacion/InventarioPaginacion'
 import styles from './InventarioTabla.module.css'
@@ -17,6 +18,9 @@ function InventarioTabla({
   totalItems,
   itemsPorPagina,
   onCambiarPagina,
+  onEditarProducto,
+  onBorrarProducto,
+  accionesDeshabilitadas = false,
 }) {
   return (
     <section className={styles.envoltorio} aria-label="Tabla de inventario">
@@ -39,6 +43,13 @@ function InventarioTabla({
               clave={item.clave}
               cantidad={item.cantidad}
               precio={item.precio}
+              acciones={
+                <InventarioAccionesFila
+                  deshabilitado={accionesDeshabilitadas}
+                  onEditar={() => onEditarProducto?.(item.id)}
+                  onBorrar={() => onBorrarProducto?.(item.id)}
+                />
+              }
             />
           ))}
         </div>

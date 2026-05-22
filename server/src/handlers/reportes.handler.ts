@@ -62,6 +62,27 @@ export class ReportesHandler {
     }
   };
 
+  getInventario = async (req: Request, res: Response) => {
+    const desde = req.query.desde as string;
+    const hasta = req.query.hasta as string;
+    if (!desde || !hasta || !esFechaValida(desde) || !esFechaValida(hasta)) {
+      return res
+        .status(400)
+        .json({ message: "Parámetros desde y hasta requeridos con formato YYYY-MM-DD." });
+    }
+    if (Date.parse(desde) > Date.parse(hasta)) {
+      return res.status(400).json({ message: "La fecha desde no puede ser posterior a hasta." });
+    }
+
+    try {
+      const data = await this.controller.getInventario(desde, hasta);
+      return res.json(data);
+    } catch (err: unknown) {
+      console.error("[reportes] inventario:", err);
+      return res.status(500).json({ message: "Error al obtener reporte de inventario." });
+    }
+  };
+
   getAnual = async (req: Request, res: Response) => {
     const anioRaw = Number(req.query.anio);
     if (!Number.isInteger(anioRaw) || anioRaw < 1900 || anioRaw > 2100) {

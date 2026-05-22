@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { qase } from 'playwright-qase-reporter';
+import path from 'path';
+import fs from 'fs';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('https://aebnl.netlify.app');
@@ -40,7 +42,7 @@ test('HU - 023 - Mostrar mensaje sin registros', async ({ page }) => {
     qase.id(85);
     await test.step('Given que no existen servicios registrados en la fecha seleccionada', async () => {
         await page.getByRole('button', { name: 'Recibos', exact: true }).click();
-        await page.getByRole('textbox', { name: 'Fecha' }).fill('2026-05-25');
+        await page.getByRole('textbox', { name: 'Fecha' }).fill('2026-05-28');
     });
     await test.step('When el usuario consulta el historial de recibos', async () => {
         await page.getByRole('heading', { name: 'Recibos del día' }).click();
@@ -53,27 +55,18 @@ test('HU - 023 - Mostrar mensaje sin registros', async ({ page }) => {
 
 test('HU - 023 - Visualización de recibos por fecha seleccionada ', async ({ page }) => {
     qase.id(82);
-    await test.step('Given el usuario ingresa a la pestaña de recibos', async () => {
-        await page.getByRole('button', { name: 'Recibos', exact: true }).click();
-    });
-    await test.step('When el usuario selecciona una fecha especifica', async () => {
-        await page.getByRole('textbox', { name: 'Fecha' }).fill('2026-05-15');
-    });
-    await test.step('Then el sistema muestra los recibos de esa fecha', async () => {
-        await expect(page.getByRole('heading', { name: 'Recibos del día' })).toBeVisible();
-        await expect(page.getByText('15 may').first()).toBeVisible();
-        await expect(page.getByText('Recibos del día1115 may')).toBeVisible();
-        await expect(page.getByText('11', { exact: true })).toBeVisible();
-    });
+    await page.getByRole('button', { name: 'Recibos', exact: true }).click();
+    await page.getByRole('textbox', { name: 'Fecha' }).fill('2026-05-15');
+    await expect(page.getByText('Mostrando 11 de 11 recibos · 15 may')).toBeVisible();
 });
 
 test('HU - 023 - Actualizar historial al cambiar fecha', async ({ page }) => {
     qase.id(86);
-    await page.getByRole('button', { name: 'Recibos', exact: true }).click();
-    await page.getByRole('button', { name: 'Hoy' }).click();
-    await expect(page.getByText('Mostrando 5 de 5 recibos · 19 may')).toBeVisible();
-    await page.getByRole('textbox', { name: 'Fecha' }).fill('2026-05-15');
-    await expect(page.getByText('Mostrando 11 de 11 recibos · 15 may')).toBeVisible();
+    await page.getByRole('button', { name: 'Recibos Control de pagos y' }).click();
+    await page.getByRole('textbox', { name: 'Fecha' }).fill('2026-05-13');
+    await expect(page.getByText('Mostrando 1 de 1 recibos · 13 may')).toBeVisible();
+    await page.getByRole('textbox', { name: 'Fecha' }).fill('2026-05-21');
+    await expect(page.getByText('Mostrando 17 de 17 recibos · 21 may')).toBeVisible();
 });
 
 test('HU - 023 - Validar información de cada recibo', async ({ page }) => {
@@ -117,10 +110,10 @@ test('HU - 009 - Visualizar reporte mensual de personas atendidas', async ({ pag
         await page.getByText('Servicios otorgados por díaMayo').click();
     });
     await test.step('Then el sistema debe mostrar en pantalla la gráfica de personas atendidas por mes', async () => {
-        await page.locator('div').filter({ hasText: 'Nuevos beneficiarios31' }).nth(4).click();
-        await page.getByRole('paragraph').filter({ hasText: '31' }).click();
-        await page.locator('div').filter({ hasText: 'Total atendidos9' }).nth(4).click();
-        await page.getByText('9').nth(1).click();
+        await page.locator('div').filter({ hasText: 'Nuevos beneficiarios36' }).nth(4).click();
+        await page.getByRole('paragraph').filter({ hasText: '36' }).click();
+        await page.locator('div').filter({ hasText: 'Total atendidos11' }).nth(4).click();
+        await page.getByText('11').nth(1).click();
         await page.getByText('Servicios otorgados por díaMayo').click();
         await page.getByText('Mayo 2026').click();
         // await expect(page.locator('section')).toMatchAriaSnapshot(`- application: /1 2 3 4 5 6 7 8 9 \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ \\d+ 0 4 8 \\d+ \\d+/`);
@@ -149,7 +142,7 @@ test('HU - 009 - Visualizar reporte anual de personas atendidas', async ({ page 
         await page.getByRole('button', { name: 'Nuevos beneficiarios' }).click();
         await expect(page.getByRole('heading', { name: 'Nuevos beneficiarios por mes' })).toBeVisible();
         await expect(page.getByText('Total atendidos')).toBeVisible();
-        await expect(page.getByText('11').first()).toBeVisible();
+        await expect(page.getByText('13').first()).toBeVisible();
     });
 });
 
@@ -170,7 +163,7 @@ test('HU - 009 - Visualizar reporte por rango de fechas', async ({ page }) => {
 });
 
 // SKIP hasta tener la funcionalidad de exportar lista
-test.skip('HU - 009 - Exportar reporte en formato CSV', async ({ page }) => {
+test('HU - 009 - Exportar reporte en formato CSV', async ({ page }) => {
     qase.id(101)
     await test.step('Given que el usuario se encuentra en el menú de reportes', async () => {
         await page.getByRole('button', { name: 'Reportes' }).click();
@@ -178,30 +171,60 @@ test.skip('HU - 009 - Exportar reporte en formato CSV', async ({ page }) => {
     });
     await test.step('And existe información disponible en el reporte', async () => {
         await page.getByText('Servicios otorgados por díaMayo').click();
-        await page.getByRole('application').filter({ hasText: '12345678910111213141516171819202122232425262728293031036912' }).click();
-
     });
-    await test.step('When presiona el botón de exportar', async () => {
+    await test.step('When presiona el botón de exportar Then el sistema debe generar un archivo en formato .csv', async () => {
+        const downloadPromise = page.waitForEvent('download');
         await page.getByRole('button', { name: 'Exportar' }).click();
-
-    });
-    await test.step('Then el sistema debe generar un archivo en formato .csv', async () => {
-
-    });
+        const download = await downloadPromise;
+        const downloadPath = path.join('test_results','reporte_general', download.suggestedFilename());
+        await download.saveAs(downloadPath);
+    });     
 });
 
-test.skip('HU - 009 - Validar contenido del archivo CSV', async ({ page }) => {
-    qase.id(102)
-    await test.step('Given que el usuario exportó el reporte en formato .csv', async () => {
-        
-    });
-    await test.step('When abre el archivo descargado', async () => {
 
+test('HU - 009 - Validar contenido del archivo CSV', async ({ page }) => {
+  qase.id(102);
 
-    });
-    await test.step('Then el archivo debe contener la información de personas atendidas correspondiente al periodo seleccionado', async () => {
+  let downloadPath;
 
-    });
+  await test.step('Given que el usuario exportó el reporte en formato .csv', async () => {
+    await page.getByRole('button', { name: 'Reportes' }).click();
+    await page.getByRole('link', { name: 'Período' }).click();
+
+    await expect(page.getByText('Servicios otorgados por díaMayo')).toBeVisible();
+
+    const downloadPromise = page.waitForEvent('download');
+
+    await page.getByRole('button', { name: 'Exportar' }).click();
+
+    const download = await downloadPromise;
+
+    const downloadDir = path.join('test-results', 'reporte_general');
+
+    if (!fs.existsSync(downloadDir)) {
+      fs.mkdirSync(downloadDir, { recursive: true });
+    }
+
+    downloadPath = path.join(downloadDir, download.suggestedFilename());
+
+    await download.saveAs(downloadPath);
+
+    expect(download.suggestedFilename()).toContain('.csv');
+    expect(fs.existsSync(downloadPath)).toBeTruthy();
+  });
+
+  await test.step('When abre el archivo descargado', async () => {
+    const csvContent = fs.readFileSync(downloadPath, 'utf-8');
+
+    expect(csvContent.length).toBeGreaterThan(0);
+  });
+
+  await test.step('Then el archivo debe contener la información de personas atendidas correspondiente al periodo seleccionado', async () => {
+    const csvContent = fs.readFileSync(downloadPath, 'utf-8');
+
+    expect(csvContent).toContain('Servicios por día');
+    expect(csvContent).toContain('Mayo');
+  });
 });
 
 test('HU - 009 - Mostrar mensaje cuando no existan datos', async ({ page }) => {

@@ -63,6 +63,60 @@ export class InventarioHandler {
         }
     };
 
+    updateInventario = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const idInventario = Number(req.params.id_inventario);
+            if (!Number.isFinite(idInventario) || idInventario < 1) {
+                res.status(400).json({ message: 'ID de inventario inválido.' });
+                return;
+            }
+
+            const inventario = await this.controller.updateInventario(idInventario, req.body);
+            res.status(200).json(inventario);
+        } catch (error) {
+            if (error instanceof NotFoundError) {
+                res.status(404).json({ message: error.message });
+                return;
+            }
+
+            if (error instanceof ConflictError) {
+                res.status(409).json({ message: error.message });
+                return;
+            }
+
+            if (error instanceof ValidationError) {
+                res.status(400).json({ message: error.message });
+                return;
+            }
+
+            res.status(500).json({
+                message: 'Error al actualizar el producto en inventario',
+            });
+        }
+    };
+
+    deleteInventario = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const idInventario = Number(req.params.id_inventario);
+            if (!Number.isFinite(idInventario) || idInventario < 1) {
+                res.status(400).json({ message: 'ID de inventario inválido.' });
+                return;
+            }
+
+            await this.controller.deleteInventario(idInventario);
+            res.status(204).send();
+        } catch (error) {
+            if (error instanceof NotFoundError) {
+                res.status(404).json({ message: error.message });
+                return;
+            }
+
+            res.status(500).json({
+                message: 'Error al eliminar el producto del inventario',
+            });
+        }
+    };
+
     registrarMovimientoInventario = async (req: Request, res: Response): Promise<void> => {
         try {
             const idUsuario = (req as any).user?.id_usuario;

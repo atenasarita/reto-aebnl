@@ -45,7 +45,7 @@ export const initialFormData = (fechaRegistro) => ({
   madre_telefono: '',
   madre_telefono_casa: '',
   madre_telefono_trabajo: '',
-  alergias: 'Ninguna',
+  alergias: '',
   tipo_sanguineo: '',
   valvula: false,
   hospital: '',

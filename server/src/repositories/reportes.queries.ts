@@ -216,4 +216,93 @@ export const reportesQueries = {
       END
     ORDER BY 1
   `,
+
+  inventarioTarjetas: `
+    SELECT
+      (SELECT COUNT(*) FROM INVENTARIO WHERE ACTIVO = 1) AS articulos_activos,
+      (SELECT COUNT(*) FROM INVENTARIO WHERE ACTIVO = 1 AND CANTIDAD <= 10) AS productos_bajo_stock,
+      (SELECT NVL(SUM(PRECIO * CANTIDAD), 0) FROM INVENTARIO WHERE ACTIVO = 1) AS valor_inventario,
+      (SELECT NVL(SUM(m.CANTIDAD), 0)
+       FROM Movimientos_inventario m
+       WHERE LOWER(TRIM(m.TIPO_MOVIMIENTO)) = 'entrada'
+         AND TRUNC(m.FECHA) BETWEEN TO_DATE(:desde, 'YYYY-MM-DD') AND TO_DATE(:hasta, 'YYYY-MM-DD')
+      ) AS entradas_unidades,
+      (SELECT NVL(SUM(m.CANTIDAD), 0)
+       FROM Movimientos_inventario m
+       WHERE LOWER(TRIM(m.TIPO_MOVIMIENTO)) = 'salida'
+         AND TRUNC(m.FECHA) BETWEEN TO_DATE(:desde, 'YYYY-MM-DD') AND TO_DATE(:hasta, 'YYYY-MM-DD')
+      ) AS salidas_unidades,
+      (SELECT COUNT(*)
+       FROM Movimientos_inventario m
+       WHERE TRUNC(m.FECHA) BETWEEN TO_DATE(:desde, 'YYYY-MM-DD') AND TO_DATE(:hasta, 'YYYY-MM-DD')
+      ) AS movimientos_registrados
+    FROM DUAL
+  `,
+
+  inventarioPorCategoria: `
+    SELECT
+      i.ID_CATEGORIA AS id_categoria,
+      NVL(TRIM(c.DESCRIPCION), 'Sin categoría') AS descripcion,
+      COUNT(*) AS productos,
+      NVL(SUM(i.CANTIDAD), 0) AS unidades,
+      NVL(SUM(i.PRECIO * i.CANTIDAD), 0) AS valor
+    FROM INVENTARIO i
+    LEFT JOIN Objeto_categoria c ON c.ID_CATEGORIA = i.ID_CATEGORIA
+    WHERE i.ACTIVO = 1
+    GROUP BY i.ID_CATEGORIA, NVL(TRIM(c.DESCRIPCION), 'Sin categoría')
+    ORDER BY valor DESC, descripcion ASC
+  `,
+
+  inventarioMovimientosPorDia: `
+    SELECT
+      TO_CHAR(TRUNC(m.FECHA), 'YYYY-MM-DD') AS fecha,
+      SUM(CASE WHEN LOWER(TRIM(m.TIPO_MOVIMIENTO)) = 'entrada' THEN m.CANTIDAD ELSE 0 END) AS entradas,
+      SUM(CASE WHEN LOWER(TRIM(m.TIPO_MOVIMIENTO)) = 'salida' THEN m.CANTIDAD ELSE 0 END) AS salidas,
+      COUNT(*) AS movimientos
+    FROM Movimientos_inventario m
+    WHERE TRUNC(m.FECHA) BETWEEN TO_DATE(:desde, 'YYYY-MM-DD') AND TO_DATE(:hasta, 'YYYY-MM-DD')
+    GROUP BY TRUNC(m.FECHA)
+    ORDER BY TRUNC(m.FECHA)
+  `,
+
+  inventarioHistorial: `
+    SELECT *
+    FROM (
+      SELECT
+        m.ID_MOVIMIENTO AS id_movimiento,
+        TO_CHAR(m.FECHA, 'YYYY-MM-DD HH24:MI') AS fecha,
+        i.CLAVE AS clave,
+        i.NOMBRE AS nombre,
+        LOWER(TRIM(m.TIPO_MOVIMIENTO)) AS tipo_movimiento,
+        m.CANTIDAD AS cantidad,
+        m.CANT_ANTERIOR AS cant_anterior,
+        m.CANT_NUEVA AS cant_nueva,
+        NVL(TRIM(m.MOTIVO), '') AS motivo,
+        NVL(TRIM(u.USUARIO), '—') AS usuario
+      FROM Movimientos_inventario m
+      INNER JOIN INVENTARIO i ON i.ID_INVENTARIO = m.ID_INVENTARIO
+      LEFT JOIN Usuarios u ON u.ID_USUARIO = m.ID_USUARIO
+      WHERE TRUNC(m.FECHA) BETWEEN TO_DATE(:desde, 'YYYY-MM-DD') AND TO_DATE(:hasta, 'YYYY-MM-DD')
+      ORDER BY m.FECHA DESC
+    )
+    WHERE ROWNUM <= 500
+  `,
+
+  inventarioProductosBajoStock: `
+    SELECT *
+    FROM (
+      SELECT
+        i.ID_INVENTARIO AS id_inventario,
+        i.CLAVE AS clave,
+        i.NOMBRE AS nombre,
+        i.CANTIDAD AS cantidad,
+        i.UNIDAD_MEDIDA AS unidad_medida,
+        NVL(TRIM(c.DESCRIPCION), 'Sin categoría') AS descripcion_categoria
+      FROM INVENTARIO i
+      LEFT JOIN Objeto_categoria c ON c.ID_CATEGORIA = i.ID_CATEGORIA
+      WHERE i.ACTIVO = 1 AND i.CANTIDAD <= 10
+      ORDER BY i.CANTIDAD ASC, i.NOMBRE ASC
+    )
+    WHERE ROWNUM <= 50
+  `,
 };

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import InventarioModalShell from '../InventarioModalShell/InventarioModalShell'
 import { registrarMovimientoInventario } from '../../../../services/inventarioService'
+import { propsFormularioValidacionEs } from '../../../../utils/validacionFormularioEs'
 import '../../../../pages/styles/Inventario.css'
 
 export default function InventarioMovimientoModal({
@@ -89,7 +90,11 @@ export default function InventarioMovimientoModal({
       )}
 
       {!loading && !loadError && (
-        <form className="inventario-form inventario-form--modal" onSubmit={handleSubmit}>
+        <form
+          className="inventario-form inventario-form--modal"
+          onSubmit={handleSubmit}
+          {...propsFormularioValidacionEs}
+        >
           <div className="inventario-form__grid">
             <label className="inventario-form__field inventario-form__field--span2">
               <span>Producto</span>
