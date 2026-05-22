@@ -19,7 +19,7 @@ test.describe('Inicio de sesión (HU-002) — versión IA', () => {
     await rellenarCredenciales(page, { usuario: 'prueba1', contraseña: 'admin1' });
     await page.getByRole('button', { name: 'Iniciar Sesión' }).click();
 
-    await expect(page).toHaveURL(/\/beneficiarios/);
+    await expect(page).toHaveURL(/\/dashboard/);
   });
 
   test(qase(112, 'HU-002-2 — credenciales incorrectas muestran mensaje de error'), async ({
