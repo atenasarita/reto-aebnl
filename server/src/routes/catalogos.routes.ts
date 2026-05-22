@@ -10,6 +10,6 @@ router.get("/especialistas", getEspecialistas);
 router.get("/catalogo-servicios", getCatalogoServicios);
 
 // GET /api/beneficiarios?q=texto  
-router.get("/beneficiarios", searchBeneficiarios);
+router.get("/buscar-beneficiarios", searchBeneficiarios);
 
 export default router;

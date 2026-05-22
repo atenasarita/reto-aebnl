@@ -69,4 +69,3 @@ getCitas: `
     `.trim()
 }
 
-// TODO Modificar cita

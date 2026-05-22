@@ -37,7 +37,6 @@ function Field({ label, required, hint, children }) {
 }
 
 function InfoChip({ icon, label, value }) {
-  if (!value) return null;
   return (
     <div className="cp-chip">
       <span className="cp-chip-icon">{icon}</span>
@@ -60,7 +59,7 @@ function BuscadorBeneficiario({ value, onChange }) {
     if (q.length < 2) { setResultados([]); setAbierto(false); return; }
     setBuscando(true);
     try {
-      const res = await fetch(`${API_BASE}/api/beneficiarios?q=${encodeURIComponent(q)}`);
+      const res = await fetch(`${API_BASE}/api/buscar-beneficiarios?q=${encodeURIComponent(q)}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
       // [{ id_beneficiario, nombres, apellido_paterno, folio, telefono, email }]
@@ -206,16 +205,16 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
 
         if (resEsp.ok) {
           const espData = await resEsp.json();
-          // [{ id_especialista, nombre_completo, especialidad? }]
           setEspecialistas(espData);
-          if (espData.length > 0) setEspecialista(String(espData[0].id_especialista));
+          if (modo === "crear" && espData.length > 0)
+            setEspecialista(String(espData[0].id_especialista));
         }
 
         if (resSer.ok) {
           const serData = await resSer.json();
-          // [{ id_catalogo_servicio, nombre }]
           setServicios(serData);
-          if (serData.length > 0) setServicio(String(serData[0].id_catalogo_servicio));
+          if (modo === "crear" && serData.length > 0)
+            setServicio(String(serData[0].id_catalogo_servicio));
         }
       } catch {
         setError("No se pudieron cargar los catálogos. Recarga la página.");
@@ -231,7 +230,7 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
       if (!cita?.extendedProps?.idBeneficiario) return;
       try {
         const res = await fetch(
-          `${API_BASE}/api/beneficiarios/${cita.extendedProps.idBeneficiario}`
+          `${API_BASE}/api/buscar-beneficiarios/${cita.extendedProps.idBeneficiario}`
         );
         if (!res.ok) throw new Error();
         const data = await res.json();
@@ -335,12 +334,12 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
             <InfoChip
               icon="📞"
               label="Teléfono de contacto"
-              value={beneficiario.telefono ? `+52 ${beneficiario.telefono}` : null}
+              value={beneficiario.telefono ? `+52 ${beneficiario.telefono}` : "No disponible"}
             />
             <InfoChip
               icon="✉️"
               label="Correo electrónico"
-              value={beneficiario.email}
+              value={beneficiario.email || "No disponible"}
             />
           </div>
         )}
