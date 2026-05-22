@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+const { qase } = require('playwright-qase-reporter');
 
 test.describe('Registro de Beneficiario IA', () => {
   test.beforeEach(async ({ page }) => {
@@ -69,7 +70,7 @@ test.describe('Registro de Beneficiario IA', () => {
       apellidoPaterno: 'Pérez',
       apellidoMaterno: 'López',
       fechaNacimiento: '1990-01-01',
-      curp: 'JUAP900101HDFRRNT0',
+      curp: 'JUAP900101HDFRRNTP',
       genero: 'masculino',
       estadoNacimiento: 'Jalisco',
       contactoNombre: 'María Pérez',
@@ -96,7 +97,7 @@ test.describe('Registro de Beneficiario IA', () => {
       apellidoPaterno: 'Rodríguez',
       apellidoMaterno: 'Martínez',
       fechaNacimiento: '1992-02-02',
-      curp: 'CARL920202HDFRRNS0',
+      curp: 'CARL920202HDFRRNSE',
       genero: 'femenino',
       estadoNacimiento: 'Jalisco',
       contactoNombre: 'Ana Martínez',

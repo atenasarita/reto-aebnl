@@ -1,15 +1,15 @@
 const { test, expect } = require('@playwright/test');
 import { qase } from 'playwright-qase-reporter';
 const path = require('path');
-const dotenv = require(path.resolve(__dirname, '../../server/node_modules/dotenv'));
-const oracledb = require(path.resolve(__dirname, '../../server/node_modules/oracledb'));
+const dotenv = require(path.resolve(__dirname, '../../../server/node_modules/dotenv'));
+const oracledb = require(path.resolve(__dirname, '../../../server/node_modules/oracledb'));
 
         // Cargar variables de entorno del servidor
-dotenv.config({ path: path.resolve(__dirname, '../../server/.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../../server/.env') });
 
 // Función local para manipular la BD
 async function modificarFechaBD(action, idBeneficiario) {
-    const walletPath = path.resolve(__dirname, '../../server', process.env.ORACLE_WALLET_PATH || 'Wallet_clasedb');
+    const walletPath = path.resolve(__dirname, '../../../server', process.env.ORACLE_WALLET_PATH || 'Wallet_clasedb');
     process.env.TNS_ADMIN = process.env.ORACLE_TNS_ADMIN || walletPath;
 
     let conn;

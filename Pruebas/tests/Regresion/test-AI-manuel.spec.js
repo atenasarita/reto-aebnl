@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+const { qase } = require('playwright-qase-reporter');
 
 test.describe('Inicio de sesión (HU-002) — versión IA', () => {
   const BASE = 'http://localhost:5173';
