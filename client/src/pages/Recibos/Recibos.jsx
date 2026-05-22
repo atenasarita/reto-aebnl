@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useId, useRef } from "react";
 import "../styles/Recibos.css";
 
 import { API_URL } from '../../utils/config'
+import { todayDate } from '../../utils/dateTime';
 
 const fmt = (n) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(n ?? 0);
@@ -19,7 +20,7 @@ const fmtMes = (iso) => {
 };
 
 
-const hoy = () => new Date().toISOString().split("T")[0];
+const hoy = () => todayDate();
 
 // Loader
 function Skeleton({ rows = 4 }) {

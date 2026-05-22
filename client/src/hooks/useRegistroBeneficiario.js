@@ -5,13 +5,14 @@ import { validateField, validateStep, validateStepFields } from '../utils/benefi
 import { buildBeneficiarioPayload } from '../utils/beneficiarioPayload';
 import { fetchSiguienteFolio, createBeneficiario } from '../services/beneficiariosService';
 import { API_URL } from '../utils/config';
+import { todayDate } from '../utils/dateTime';
 
 export function useRegistroBeneficiario(navigate) {
   const [currentStep, setCurrentStep] = useState(0);
   const [folio, setFolio] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [touchedSteps, setTouchedSteps] = useState([]);
-  const [fechaRegistro] = useState(new Date().toISOString().split('T')[0]);
+  const [fechaRegistro] = useState(todayDate());
   const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [formData, setFormData] = useState(initialFormData(fechaRegistro));
   const [loading, setLoading] = useState(false);

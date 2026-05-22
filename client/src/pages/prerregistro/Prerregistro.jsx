@@ -4,6 +4,7 @@ import "../styles/Prerregistro.css";
 import { API_URL } from '../../utils/config';
 import {espinaBifidaOptions} from '../../utils/espinaBifidaTypes';
 import { limpiarSoloLetras, validarCURP } from "../../utils/validator";
+import { todayDate } from '../../utils/dateTime';
 
 
 const STEPS = ["Identidad", "Datos Demográficos", "Diagnóstico"];
@@ -219,6 +220,7 @@ function StepDemografia({ savedData, onComplete, onBack }) {
   const [curp, setCurp] = useState(d.curp || "");
 
   const valid = fecha && genero && validarCURP(curp);
+  const today = todayDate();
 
   return (
     <div className="step-content">
@@ -226,7 +228,7 @@ function StepDemografia({ savedData, onComplete, onBack }) {
       <div className="fields-grid">
         <div className="row-2">
           <Field label="Fecha de nacimiento" required>
-            <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} />
+            <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} max={today} />
           </Field>
           <Field label="Género" required>
             <select value={genero} onChange={(e) => setGenero(e.target.value)}>
