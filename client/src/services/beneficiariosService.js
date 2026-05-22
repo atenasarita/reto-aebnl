@@ -54,3 +54,22 @@ export async function fetchPadresBeneficiario(idBeneficiario, token) {
 
   return data;
 }
+
+export async function updateBeneficiario(idBeneficiario, payload, token) {
+  const response = await fetch(`${API_URL}/api/beneficiarios/${idBeneficiario}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Error al actualizar beneficiario');
+  }
+
+  return data;
+}

@@ -2,64 +2,89 @@ import { useState, useEffect } from 'react'
 import BeneficiarioCard from '../BeneficiarioCard/BeneficiarioCard'
 import styles from './BeneficiarioGrid.module.css'
 import Pagination from '../../../ui/Pagination'
-// import BeneficiarioDetalle from '../BeneficiarioDetalle/BeneficiarioDetalle'
 import BeneficiarioModal from '../BeneficiarioDetalle/BeneficiarioModal'
-import { espinaBifidaOptions } from '../../../../utils/espinaBifidaTypes'
 import { downloadBeneficiarioPdf } from '../../../../utils/pdfFormatMembresia'
-
 import { API_URL } from '../../../../utils/config'
-
 
 const ITEMS_PER_PAGE = 8
 
-function BeneficiarioGrid({ data, loading }) {
+function BeneficiarioGrid({ data, loading, onRefresh }) {
   const [currentPage, setCurrentPage] = useState(1)
+  const [selected, setSelected] = useState(null)
+  const [openInEditMode, setOpenInEditMode] = useState(false)
 
   useEffect(() => {
     setCurrentPage(1)
   }, [data])
 
-  const [selected, setSelected] = useState(null)
-
-  async function handleView(id) {
+  async function fetchBeneficiarioById(id) {
     const token = localStorage.getItem('token')
     const res = await fetch(`${API_URL}/api/beneficiarios/${id}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` }
     })
-    const data = await res.json()
-    setSelected(data)
+
+    if (!res.ok) {
+      throw new Error('No se pudo obtener la información del beneficiario.')
+    }
+
+    return await res.json()
+  }
+
+  async function handleView(id) {
+    try {
+      const beneficiario = await fetchBeneficiarioById(id)
+      setSelected(beneficiario)
+      setOpenInEditMode(false)
+    } catch (error) {
+      console.error('Error al abrir detalle:', error)
+      alert('No se pudo abrir el detalle del beneficiario.')
+    }
+  }
+
+  async function handleEdit(id) {
+    try {
+      const beneficiario = await fetchBeneficiarioById(id)
+      setSelected(beneficiario)
+      setOpenInEditMode(true)
+    } catch (error) {
+      console.error('Error al abrir edición:', error)
+      alert('No se pudo abrir la edición del beneficiario.')
+    }
   }
 
   async function handleDownloadPdf(id) {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token')
+
       const res = await fetch(`${API_URL}/api/beneficiarios/${id}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      
+        headers: { Authorization: `Bearer ${token}` }
+      })
+
       if (!res.ok) {
-        throw new Error('No se pudo obtener la información del beneficiario.');
+        throw new Error('No se pudo obtener la información del beneficiario.')
       }
-      
-      const data = await res.json();
-   
+
+      const beneficiario = await res.json()
+
       const resPadres = await fetch(`${API_URL}/api/beneficiarios/${id}/padres`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+        headers: { Authorization: `Bearer ${token}` }
+      })
+
       if (resPadres.ok) {
-        data.padres = await resPadres.json();
+        beneficiario.padres = await resPadres.json()
       }
-      downloadBeneficiarioPdf(data, id);
+
+      downloadBeneficiarioPdf(beneficiario, id)
     } catch (error) {
-      console.error('Error al descargar el PDF:', error);
-      alert('Error al descargar el archivo PDF.');
+      console.error('Error al descargar el PDF:', error)
+      alert('Error al descargar el archivo PDF.')
     }
   }
 
   const normalized = data.map((b) => {
     const diagnosticoTexto =
       b.tipo_espina && b.tipo_espina.length > 0
-        ? b.tipo_espina.map(tipo => tipo.nombre).join(', ')
+        ? b.tipo_espina.map((tipo) => tipo.nombre).join(', ')
         : 'Sin diagnóstico'
 
     return {
@@ -77,17 +102,21 @@ function BeneficiarioGrid({ data, loading }) {
     currentPage * ITEMS_PER_PAGE
   )
 
-  if (loading) return (
-    <div className={styles.state}>
-      <span className={styles.stateText}>Cargando...</span>
-    </div>
-  )
+  if (loading) {
+    return (
+      <div className={styles.state}>
+        <span className={styles.stateText}>Cargando...</span>
+      </div>
+    )
+  }
 
-  if (!loading && data.length === 0) return (
-    <div className={styles.state}>
-      <span className={styles.stateText}>No se encontraron beneficiarios.</span>
-    </div>
-  )
+  if (!loading && data.length === 0) {
+    return (
+      <div className={styles.state}>
+        <span className={styles.stateText}>No se encontraron beneficiarios.</span>
+      </div>
+    )
+  }
 
   return (
     <>
@@ -96,8 +125,8 @@ function BeneficiarioGrid({ data, loading }) {
           <BeneficiarioCard
             key={b.id_beneficiario}
             beneficiario={b}
-            onView={() => handleView(b.id_beneficiario)} 
-            onEdit={() => console.log('editar', b.id_beneficiario)}
+            onView={() => handleView(b.id_beneficiario)}
+            onEdit={() => handleEdit(b.id_beneficiario)}
             onCard={() => console.log('credencial', b.id_beneficiario)}
             onDownloadPdf={() => handleDownloadPdf(b.id_beneficiario)}
           />
@@ -114,7 +143,12 @@ function BeneficiarioGrid({ data, loading }) {
       {selected && (
         <BeneficiarioModal
           beneficiario={selected}
-          onClose={() => setSelected(null)}
+          onClose={() => {
+            setSelected(null)
+            setOpenInEditMode(false)
+          }}
+          startInEditMode={openInEditMode}
+          onUpdated={onRefresh}
         />
       )}
     </>
