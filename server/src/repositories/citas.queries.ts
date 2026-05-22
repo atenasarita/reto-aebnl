@@ -52,7 +52,20 @@ getCitas: `
      :notas,
      :estatus
      )
-    `.trim()     
+    `.trim(),
+    
+    updateCita: `
+    UPDATE citas
+    SET
+        id_beneficiario = :id_beneficiario,
+        fecha = :fecha,
+        hora = :hora,
+        id_especialista = :id_especialista,
+        id_catalogo_servicio = :id_catalogo_servicio,
+        motivo = :motivo,
+        notas = :notas,
+        estatus = :estatus
+    WHERE id_cita = :id_cita
+    `.trim()
 }
 
-// TODO Modificar cita
