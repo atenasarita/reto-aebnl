@@ -120,25 +120,32 @@ function BeneficiarioGrid({ data, loading, onRefresh }) {
 
   return (
     <>
-      <div className={styles.grid}>
-        {paginated.map((b) => (
-          <BeneficiarioCard
-            key={b.id_beneficiario}
-            beneficiario={b}
-            onView={() => handleView(b.id_beneficiario)}
-            onEdit={() => handleEdit(b.id_beneficiario)}
-            onCard={() => console.log('credencial', b.id_beneficiario)}
-            onDownloadPdf={() => handleDownloadPdf(b.id_beneficiario)}
-          />
+      <div key={`page-${currentPage}`} className={styles.grid}>
+        {paginated.map((b, index) => (
+          <div
+            key={`${currentPage}-${b.id_beneficiario}`}
+            className={styles.cardEntrance}
+            style={{ animationDelay: `${index * 0.06}s` }}
+          >
+            <BeneficiarioCard
+              beneficiario={b}
+              onView={() => handleView(b.id_beneficiario)}
+              onEdit={() => handleEdit(b.id_beneficiario)}
+              onCard={() => console.log('credencial', b.id_beneficiario)}
+              onDownloadPdf={() => handleDownloadPdf(b.id_beneficiario)}
+            />
+          </div>
         ))}
       </div>
 
-      <Pagination
-        currentPage={currentPage}
-        totalItems={normalized.length}
-        itemsPerPage={ITEMS_PER_PAGE}
-        onPageChange={setCurrentPage}
-      />
+      <div className={styles.paginationEntrance} key={`pagination-${currentPage}`}>
+        <Pagination
+          currentPage={currentPage}
+          totalItems={normalized.length}
+          itemsPerPage={ITEMS_PER_PAGE}
+          onPageChange={setCurrentPage}
+        />
+      </div>
 
       {selected && (
         <BeneficiarioModal

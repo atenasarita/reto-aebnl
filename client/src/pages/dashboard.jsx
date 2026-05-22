@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import "./styles/dashboard.css";
 
-
 const actions = [
   {
     title: "Registrar Servicio",
@@ -142,15 +141,15 @@ function getTimelineStatusClass(item) {
 function AgendaCard({ agendaItems }) {
   if (!agendaItems.length) {
     return (
-      <section className="agenda-panel">
+      <section className="agenda-panel fade-in-panel">
         <div className="panel-header">
           <h2>Agenda del Día</h2>
           <p>Gestión de citas y flujo de pacientes para hoy.</p>
         </div>
 
-          <div className="empty-panel-state">
-            <CalendarDays size={28} strokeWidth={1.75} />
-            <h3>Sin citas para hoy</h3>
+        <div className="empty-panel-state">
+          <CalendarDays size={42} />
+          <h3>Sin citas para hoy</h3>
           <p>No hay registros de agenda para la fecha actual.</p>
         </div>
       </section>
@@ -158,15 +157,19 @@ function AgendaCard({ agendaItems }) {
   }
 
   return (
-    <section className="agenda-panel">
+    <section className="agenda-panel fade-in-panel">
       <div className="panel-header">
         <h2>Agenda del Día</h2>
         <p>Gestión de citas y flujo de pacientes para hoy.</p>
       </div>
 
       <div className="agenda-timeline">
-        {agendaItems.map((item) => (
-          <div className="agenda-row" key={item.id_cita}>
+        {agendaItems.map((item, index) => (
+          <div
+            className="agenda-row fade-in-up"
+            key={item.id_cita}
+            style={{ animationDelay: `${index * 0.06}s` }}
+          >
             <div className={`timeline-line ${getTimelineStatusClass(item)}`}>
               <div className={`timeline-dot ${getTimelineStatusClass(item)}`}></div>
             </div>
@@ -182,7 +185,7 @@ function AgendaCard({ agendaItems }) {
                     />
                   ) : (
                     <div className="agenda-avatar placeholder">
-                      <User size={22} strokeWidth={1.75} />
+                      <User size={34} />
                     </div>
                   )}
 
@@ -215,7 +218,7 @@ function AgendaCard({ agendaItems }) {
                 <div className="agenda-note-left">
                   {item.motivo ? (
                     <>
-                      <Info size={14} strokeWidth={2} />
+                      <Info size={16} />
                       <span>{item.motivo}</span>
                     </>
                   ) : (
@@ -243,27 +246,28 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
   };
 
   return (
-    <section className="preregistro-panel">
+    <section className="preregistro-panel fade-in-panel">
       <div className="preregistro-header">
-        <h2>Personas en pre-registro</h2>
-        <div className="pending-badge">{preregistroItems.length} pendientes</div>
+        <h2>PERSONAS EN PRE-REGISTRO</h2>
+        <div className="pending-badge">{preregistroItems.length} Pendientes</div>
       </div>
 
       <div className="preregistro-list">
         {!preregistroItems.length ? (
           <div className="empty-side-state">
-            <User size={26} strokeWidth={1.75} />
+            <User size={40} />
             <h3>Sin pendientes</h3>
             <p>No hay personas en pre-registro por ahora.</p>
           </div>
         ) : (
-          preregistroItems.map((item) => {
+          preregistroItems.map((item, index) => {
             const isOpen = openId === item.id_preregistro;
 
             return (
               <div
-                className={`preregistro-card-wrapper ${isOpen ? "open" : ""}`}
+                className={`preregistro-card-wrapper ${isOpen ? "open" : ""} fade-in-up`}
                 key={item.id_preregistro}
+                style={{ animationDelay: `${index * 0.06}s` }}
               >
                 <div
                   className="preregistro-item"
@@ -271,7 +275,7 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
                 >
                   <div className="preregistro-left">
                     <div className="preregistro-avatar">
-                      <User size={18} strokeWidth={1.75} />
+                      <User size={24} />
                     </div>
 
                     <div className="preregistro-text">
@@ -337,7 +341,6 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
 }
 
 export default function Dashboard() {
-  const navigate = useNavigate();
   const [agendaItems, setAgendaItems] = useState([]);
   const [preregistroItems, setPreregistroItems] = useState([]);
   const [error, setError] = useState("");
@@ -429,7 +432,7 @@ export default function Dashboard() {
   return (
     <div className="dashboard-page">
       <main className="dashboard-main">
-        <section className="dashboard-actions">
+        <section className="dashboard-actions fade-in-panel">
           {visibleActions.map((action) => (
             <ActionCard key={action.title} {...action} />
           ))}
@@ -437,7 +440,7 @@ export default function Dashboard() {
 
         <section className="dashboard-lower-grid">
           {error ? (
-            <section className="agenda-panel">
+            <section className="agenda-panel fade-in-panel">
               <div className="empty-panel-state">
                 <p>{error}</p>
               </div>
