@@ -66,6 +66,9 @@ export default function App() {
             <Route path="personalizado" element={<ReportePersonalizado />} />
           </Route>
 
+          {/* Citas */}
+          <Route path="/citas" element={<Citas />} />
+
           {/* Default */}
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Route>

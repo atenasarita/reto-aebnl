@@ -3,11 +3,13 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { useEffect, useState } from "react";
 import DetalleCita from "./DetalleCita";
+import CitasPop from "../../ui/CitasPop";
 import { API_URL } from "../../../utils/config";
 
 export default function CalendarioCitas() {
   const [eventos, setEventos] = useState([]);
   const [citaSeleccionada, setCitaSeleccionada] = useState(null);
+  const [popupAbierto, setPopupAbierto] = useState(false);
 
   useEffect(() => {
     obtenerCitas();
@@ -78,7 +80,7 @@ export default function CalendarioCitas() {
         nuevaCita: {
           text: "+ Nueva Cita",
           click: () => {
-            console.log("Abrir nueva cita");
+            setPopupAbierto(true);
           },
         },
       }}
@@ -102,10 +104,19 @@ export default function CalendarioCitas() {
       } 
       }
     />
-    <DetalleCita
-      cita={citaSeleccionada}
-      onClose={() => setCitaSeleccionada(null)}
-    />
+      <DetalleCita
+        cita={citaSeleccionada}
+        onClose={() => setCitaSeleccionada(null)}
+        onRefresh={obtenerCitas}
+      />
+      <CitasPop
+        open={popupAbierto}
+        onClose={() => setPopupAbierto(false)}
+        onSuccess={() => {
+          setPopupAbierto(false);
+          obtenerCitas();
+        }}
+      />
     </>
   );
 }
