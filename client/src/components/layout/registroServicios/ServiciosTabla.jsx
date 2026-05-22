@@ -4,10 +4,11 @@ import Pagination from '../../ui/Pagination'
 import styles from '../inventario/InventarioTabla/InventarioTabla.module.css'
 
 const COLUMNAS = [
-  { id: 'categoria', etiqueta: 'CATEGORÍA' },
-  { id: 'nombre',    etiqueta: 'NOMBRE' },
-  { id: 'precio',    etiqueta: 'PRECIO' },
-  { id: 'acciones',  etiqueta: 'ACCIONES' }, 
+  { id: 'beneficiario', etiqueta: 'BENEFICIARIO' },
+  { id: 'nombre',       etiqueta: 'SERVICIO' },
+  { id: 'categoria',    etiqueta: 'CATEGORÍA' },
+  { id: 'cuotaTotal',   etiqueta: 'CUOTA TOTAL' },
+  { id: 'acciones',     etiqueta: '' },
 ]
 
 export default function ServiciosTabla({
@@ -16,9 +17,10 @@ export default function ServiciosTabla({
   totalItems,
   itemsPorPagina,
   onCambiarPagina,
+  onVerDetalle,
 }) {
   return (
-    <section className={styles.envoltorio} aria-label="Tabla de servicios">
+    <section className={styles.envoltorio} aria-label="Historial de servicios otorgados">
       <div className={styles.marco}>
         <div className={styles.cabecera} role="rowgroup">
           <div className={styles.filaCabecera} role="row">
@@ -37,9 +39,19 @@ export default function ServiciosTabla({
             filas.map((item) => (
               <InventarioFilaProducto
                 key={item.id}
-                categoria={item.categoria}
+                categoria={item.beneficiario}
                 nombre={item.nombre}
-                precio={item.precioFormateado}
+                clave={item.categoria}
+                cantidad={item.cuotaTotalFormateado}
+                acciones={
+                  <button
+                    className="inventario-form__btnSec"
+                    onClick={() => onVerDetalle(item)}
+                    aria-label={`Ver detalle de ${item.nombre}`}
+                  >
+                    Ver detalle
+                  </button>
+                }
               />
             ))
           )}

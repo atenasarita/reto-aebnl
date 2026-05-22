@@ -1,33 +1,116 @@
 import { useMemo, useState } from 'react'
 import ServiciosNuevoServicioModal from './ServiciosNuevoServicioModal'
 import ServiciosTabla from '../../components/layout/registroServicios/ServiciosTabla'
+import ServiciosDetalleModal from '../../components/layout/registroServicios/Serviciosdetallemodal'
 
-// Datos placeholder — reemplaza con tu hook/servicio real
-const SERVICIOS_PLACEHOLDER = [
-  { id: 1, nombre: 'Consulta general',    categoria: 'Consultas',      precio: 350 },
-  { id: 2, nombre: 'Hemograma completo',  categoria: 'Laboratorio',    precio: 220 },
-  { id: 3, nombre: 'Rayos X tórax',       categoria: 'Estudios',       precio: 480 },
-  { id: 4, nombre: 'Fisioterapia lumbar', categoria: 'Rehabilitación', precio: 600 },
-  { id: 5, nombre: 'Terapia de lenguaje', categoria: 'Terapia',        precio: 500 },
-  { id: 6, nombre: 'Curacion de herida',  categoria: 'Procedimiento',  precio: 180 },
+// Placeholder — reemplaza con tu hook/servicio real que consulte SERVICIOS_FINANCIEROS
+const HISTORIAL_PLACEHOLDER = [
+  {
+    id: 1,
+    beneficiario:  'María García López',
+    nombre:        'Consulta general',
+    categoria:     'Consultas',
+    metodoPago:    'Efectivo',
+    montoServicio: 350,
+    montoInventario: 0,
+    descuento:     0,
+    cuotaTotal:    350,
+    montoPagado:   350,
+    yaAporto:      1,
+  },
+  {
+    id: 2,
+    beneficiario:  'Carlos Pérez Ruiz',
+    nombre:        'Hemograma completo',
+    categoria:     'Laboratorio',
+    metodoPago:    'Tarjeta',
+    montoServicio: 220,
+    montoInventario: 50,
+    descuento:     20,
+    cuotaTotal:    250,
+    montoPagado:   250,
+    yaAporto:      1,
+  },
+  {
+    id: 3,
+    beneficiario:  'Ana Martínez',
+    nombre:        'Rayos X tórax',
+    categoria:     'Estudios',
+    metodoPago:    'Transferencia',
+    montoServicio: 480,
+    montoInventario: 0,
+    descuento:     0,
+    cuotaTotal:    480,
+    montoPagado:   0,
+    yaAporto:      0,
+  },
+  {
+    id: 4,
+    beneficiario:  'Luis Hernández',
+    nombre:        'Fisioterapia lumbar',
+    categoria:     'Rehabilitación',
+    metodoPago:    'Efectivo',
+    montoServicio: 600,
+    montoInventario: 100,
+    descuento:     50,
+    cuotaTotal:    650,
+    montoPagado:   650,
+    yaAporto:      1,
+  },
+  {
+    id: 5,
+    beneficiario:  'Sofía Torres',
+    nombre:        'Terapia de lenguaje',
+    categoria:     'Terapia',
+    metodoPago:    'Efectivo',
+    montoServicio: 500,
+    montoInventario: 0,
+    descuento:     0,
+    cuotaTotal:    500,
+    montoPagado:   250,
+    yaAporto:      0,
+  },
+  {
+    id: 6,
+    beneficiario:  'Roberto Díaz',
+    nombre:        'Curación de herida',
+    categoria:     'Procedimiento',
+    metodoPago:    'Tarjeta',
+    montoServicio: 180,
+    montoInventario: 80,
+    descuento:     0,
+    cuotaTotal:    260,
+    montoPagado:   260,
+    yaAporto:      1,
+  },
 ]
 
 const ITEMS_POR_PAGINA = 5
 
-function mapServicioToFila(s) {
+function fmt(num) {
+  if (num == null) return null
+  return `$${Number(num).toFixed(2)}`
+}
+
+function mapFila(s) {
   return {
     ...s,
-    precioFormateado: `$${Number(s.precio).toFixed(2)}`,
+    montoServicioFormateado:   fmt(s.montoServicio),
+    montoInventarioFormateado: fmt(s.montoInventario),
+    descuentoFormateado:       fmt(s.descuento),
+    cuotaTotalFormateado:      fmt(s.cuotaTotal),
+    montoPagadoFormateado:     fmt(s.montoPagado),
   }
 }
 
 export default function Servicios() {
-  const [servicios, setServicios] = useState(SERVICIOS_PLACEHOLDER)
+  const [historial]             = useState(HISTORIAL_PLACEHOLDER)
   const [categoriasExtras, setCategoriasExtras] = useState([])
   const [consulta, setConsulta] = useState('')
   const [categoriaFiltro, setCategoriaFiltro] = useState('')
-  const [pagina, setPagina] = useState(1)
+  const [pagina, setPagina]     = useState(1)
   const [modalServicio, setModalServicio] = useState(false)
+  const [detalleItem, setDetalleItem]     = useState(null)
 
   const todasCategorias = [
     'Consultas', 'Estudios', 'Laboratorio', 'Procedimiento',
@@ -37,40 +120,28 @@ export default function Servicios() {
 
   const filtrados = useMemo(() => {
     const q = consulta.toLowerCase()
-    return servicios.filter((s) => {
+    return historial.filter((s) => {
       const matchCat = !categoriaFiltro || s.categoria === categoriaFiltro
       const matchTexto =
         !q ||
         s.nombre.toLowerCase().includes(q) ||
+        s.beneficiario.toLowerCase().includes(q) ||
         s.categoria.toLowerCase().includes(q)
       return matchCat && matchTexto
     })
-  }, [servicios, consulta, categoriaFiltro])
+  }, [historial, consulta, categoriaFiltro])
 
-  const total = filtrados.length
+  const total        = filtrados.length
   const totalPaginas = Math.max(1, Math.ceil(total / ITEMS_POR_PAGINA))
   const paginaSegura = Math.min(pagina, totalPaginas)
 
   const filasPagina = useMemo(() => {
     const start = (paginaSegura - 1) * ITEMS_POR_PAGINA
-    return filtrados.slice(start, start + ITEMS_POR_PAGINA).map(mapServicioToFila)
+    return filtrados.slice(start, start + ITEMS_POR_PAGINA).map(mapFila)
   }, [filtrados, paginaSegura])
 
-  const handleBusqueda = (e) => { setConsulta(e.target.value); setPagina(1) }
+  const handleBusqueda  = (e) => { setConsulta(e.target.value); setPagina(1) }
   const handleCategoria = (e) => { setCategoriaFiltro(e.target.value); setPagina(1) }
-
-  const handleNuevaCategoria = (nombre) => {
-    setCategoriasExtras((prev) => [...prev, nombre])
-  }
-
-  const handleExitoServicio = () => {
-    // TODO: void fetchServicios()
-  }
-
-  const handleExitoTipo = (nombreCategoria) => {
-    handleNuevaCategoria(nombreCategoria)
-    // TODO: void fetchCategorias()
-  }
 
   return (
     <div className="inventario-pagina">
@@ -79,19 +150,19 @@ export default function Servicios() {
           Servicios otorgados
         </h1>
         <p className="page-header-subtitle inventario-encabezado__subtitulo">
-          Catálogo de servicios médicos registrados.
+          Historial de servicios financieros registrados.
         </p>
       </header>
 
       <section
         className="inventario-bloque inventario-bloque--filtros"
-        aria-label="Filtros y acciones de servicios"
+        aria-label="Filtros y acciones"
       >
         <div className="inventario-barra-acciones">
           <input
             type="text"
             className="inventario-barra-acciones__busqueda"
-            placeholder="Buscar servicio…"
+            placeholder="Buscar por beneficiario o servicio…"
             value={consulta}
             onChange={handleBusqueda}
           />
@@ -111,13 +182,12 @@ export default function Servicios() {
           >
             + Nuevo servicio
           </button>
-          
         </div>
       </section>
 
       <section
         className="inventario-bloque inventario-bloque--tabla"
-        aria-label="Listado de servicios"
+        aria-label="Historial de servicios"
       >
         <ServiciosTabla
           filas={filasPagina}
@@ -127,18 +197,24 @@ export default function Servicios() {
           onCambiarPagina={(nueva) =>
             setPagina(Math.min(Math.max(1, nueva), totalPaginas))
           }
+          onVerDetalle={setDetalleItem}
         />
       </section>
 
       <ServiciosNuevoServicioModal
         open={modalServicio}
         onClose={() => setModalServicio(false)}
-        onExito={handleExitoServicio}
-        serviciosExistentes={servicios}
+        onExito={() => { /* TODO: void fetchHistorial() */ }}
+        serviciosExistentes={historial}
         categoriasExtras={categoriasExtras}
-        onNuevaCategoria={handleNuevaCategoria}
+        onNuevaCategoria={(cat) => setCategoriasExtras((p) => [...p, cat])}
       />
 
+      <ServiciosDetalleModal
+        open={!!detalleItem}
+        onClose={() => setDetalleItem(null)}
+        servicio={detalleItem}
+      />
     </div>
   )
 }
