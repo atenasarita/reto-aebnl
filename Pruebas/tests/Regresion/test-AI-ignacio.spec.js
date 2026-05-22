@@ -57,13 +57,14 @@ test.describe('Automatización de cambio de membresía', () => {
             await page.getByRole('textbox', { name: 'Usuario' }).fill('prueba1');
             await page.getByRole('textbox', { name: '********' }).fill('admin1');
             await page.getByRole('button', { name: 'Iniciar Sesión' }).click();
+            await page.getByRole('button', { name: 'Beneficiarios' }).click();
             await page.waitForURL('**/beneficiarios');
         });
 
         const targetBeneficiario = 'Maria Gonzalez';
         
         await test.step('Paso 2: Localizar beneficiario con membresía vencida', async () => {
-            await page.getByRole('textbox', { name: 'Buscar por nombre, folio o CURP...' }).fill(targetBeneficiario);
+            await page.getByRole('textbox', { name: ' ' }).fill(targetBeneficiario);
             await page.waitForTimeout(2000);
             const card = page.locator('div[class*="card"]', { hasText: targetBeneficiario });
             await expect(card).toBeVisible();
@@ -84,7 +85,7 @@ test.describe('Automatización de cambio de membresía', () => {
         });
 
         await test.step('Paso 4: Validar estado en tarjeta del beneficiario', async () => {
-            await page.getByRole('textbox', { name: 'Buscar por nombre, folio o CURP...' }).fill(targetBeneficiario);
+            await page.getByRole('textbox', { name: ' ' }).fill(targetBeneficiario);
             await page.waitForTimeout(2000);
             const card = page.locator('div[class*="card"]', { hasText: targetBeneficiario });
             await expect(card).toBeVisible();
@@ -116,13 +117,14 @@ test.describe('Automatización de cambio de membresía', () => {
             await page.getByRole('textbox', { name: 'Usuario' }).fill('prueba1');
             await page.getByRole('textbox', { name: '********' }).fill('admin1');
             await page.getByRole('button', { name: 'Iniciar Sesión' }).click();
+            await page.getByRole('button', { name: 'Beneficiarios' }).click();
             await page.waitForURL('**/beneficiarios');
         });
 
         const targetBeneficiario = 'Sofia Ramirez';
         
         await test.step('Paso 2: Localizar beneficiario con membresía no vencida', async () => {
-            await page.getByRole('textbox', { name: 'Buscar por nombre, folio o CURP...' }).fill(targetBeneficiario);
+            await page.getByRole('textbox', { name: ' ' }).fill(targetBeneficiario);
             await page.waitForTimeout(2000);
             const card = page.locator('div[class*="card"]', { hasText: targetBeneficiario });
             await expect(card).toBeVisible();
@@ -139,7 +141,7 @@ test.describe('Automatización de cambio de membresía', () => {
         });
 
         await test.step('Paso 4: Validar estado en tarjeta del beneficiario', async () => {
-            await page.getByRole('textbox', { name: 'Buscar por nombre, folio o CURP...' }).fill(targetBeneficiario);
+            await page.getByRole('textbox', { name: ' ' }).fill(targetBeneficiario);
             await page.waitForTimeout(2000);
             const card = page.locator('div[class*="card"]', { hasText: targetBeneficiario });
             await expect(card).toBeVisible();

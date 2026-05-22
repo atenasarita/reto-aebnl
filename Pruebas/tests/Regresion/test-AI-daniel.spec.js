@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
   await page.getByRole('textbox', { name: '********' }).fill('admin1');
   await page.getByRole('button', { name: 'Iniciar Sesión' }).click();
 
-  await page.getByRole('button', { name: '6' }).click();
+  await page.getByRole('button', { name: '7' }).click();
   await page.getByRole('button', { name: 'Terminación de una membresía' }).click();
 
   await expect(page.getByRole('combobox')).toBeVisible({ timeout: 8000 });
