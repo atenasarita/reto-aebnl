@@ -20,7 +20,6 @@ import citasRoutes from './src/routes/citas.routes';
 
 
 import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job';
-import citasRoutes from './src/routes/citas.routes.ts';
 import catalogosRouter from './src/routes/catalogos.routes.js';
 
 
