@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getAgendaTagClass } from "../utils/agendaUtils";
 
 import { API_URL } from '../utils/config'
 
@@ -50,32 +51,6 @@ const actions = [
   },
 ];
 
-function getAgendaTagClass(item) {
-  const especialistaId = Number(item.id_especialista);
-  const especialistaNombre = String(item.especialista_nombre || "").toLowerCase();
-
-  if (especialistaId === 26 || especialistaNombre.includes("laura")) {
-    return "blue";
-  }
-
-  if (especialistaId === 27 || especialistaNombre.includes("carlos")) {
-    return "purple";
-  }
-
-  if (especialistaId === 28 || especialistaNombre.includes("roberto")) {
-    return "green";
-  }
-
-  if (especialistaId === 29 || especialistaNombre.includes("luis")) {
-    return "orange";
-  }
-
-  if (especialistaId === 30 || especialistaNombre.includes("sofia")) {
-    return "red";
-  }
-
-  return "blue";
-}
 
 function ActionCard({ title, subtitle, icon, variant, fullRow, to }) {
   const Icon = icon;

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import DetalleCita from "./DetalleCita";
 import CitasPop from "../../ui/CitasPop";
 import { API_URL } from "../../../utils/config";
+import { getAgendaTagClass } from "../../../utils/agendaUtils";
 
 export default function CalendarioCitas() {
   const [eventos, setEventos] = useState([]);
@@ -15,19 +16,6 @@ export default function CalendarioCitas() {
     obtenerCitas();
   }, []);
 
-  function getAgendaTagClass(item) {
-  const especialistaId = Number(item.id_especialista);
-
-  if (especialistaId === 1) return "blue";
-  if (especialistaId === 2) return "purple";
-  if (especialistaId === 3) return "green";
-  if (especialistaId === 4) return "orange";
-  if (especialistaId === 5) return "red";
-
-  return "blue";
-  }
-
-  
 
   const obtenerCitas = async () => {
     try {
