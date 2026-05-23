@@ -1,5 +1,6 @@
 import { FaCalendar } from 'react-icons/fa';
 import { estadosMexico } from '../../../../../utils/beneficiarioConstants';
+import { todayDate } from '../../../../../utils/dateTime';
 
 
 function StepDatosPersonales({
@@ -12,7 +13,8 @@ function StepDatosPersonales({
   handleFechaNacimientoChange,
   handleBlur
 }) {
-  const today = new Date().toISOString().split("T")[0];  return (
+  const today = todayDate();
+  return (
     <>
       <div className="section-block">
         <h2>Identidad</h2>

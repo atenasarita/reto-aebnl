@@ -3,10 +3,11 @@ import "../styles/Prerregistro.css";
 
 import { API_URL } from '../../utils/config';
 import {espinaBifidaOptions} from '../../utils/espinaBifidaTypes';
+import { limpiarSoloLetras, validarCURP } from "../../utils/validator";
+import { todayDate } from '../../utils/dateTime';
 
 
 const STEPS = ["Identidad", "Datos Demográficos", "Diagnóstico"];
-const soloLetras = (v) => v.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g, "");
 
 // Indicador de la sección en que se encuentra
 function StepIndicator({ currentStep, completedSteps, onGoTo }) {
@@ -133,12 +134,17 @@ function StepIdentidad({ savedData, onComplete }) {
   const [materno, setMaterno] = useState(d.materno || "");
 
   const valid =
-    nombre.trim() && paterno.trim() && materno.trim() &&
+    nombre.trim() && 
+    paterno.trim() && 
+    materno.trim() &&
     (!tieneSegundo || segundoNombre.trim());
 
   const handleSubmit = () => {
     if (!valid) return;
-    onComplete({ nombre, segundoNombre: tieneSegundo ? segundoNombre : "", paterno, materno });
+    onComplete({ nombre, 
+      segundoNombre: tieneSegundo ? segundoNombre : "", 
+      paterno, 
+      materno });
   };
 
   return (
@@ -150,7 +156,7 @@ function StepIdentidad({ savedData, onComplete }) {
             type="text"
             placeholder="Ej. Aldo"
             value={nombre}
-            onChange={(e) => setNombre(soloLetras(e.target.value))}
+            onChange={(e) => setNombre(limpiarSoloLetras(e.target.value))}
           />
         </Field>
 
@@ -173,7 +179,7 @@ function StepIdentidad({ savedData, onComplete }) {
               type="text"
               placeholder="Ej. Pablo"
               value={segundoNombre}
-              onChange={(e) => setSegundoNombre(soloLetras(e.target.value))}
+              onChange={(e) => setSegundoNombre(limpiarSoloLetras(e.target.value))}
             />
           </Field>
         )}
@@ -184,7 +190,7 @@ function StepIdentidad({ savedData, onComplete }) {
               type="text"
               placeholder="Ej. Flores"
               value={paterno}
-              onChange={(e) => setPaterno(soloLetras(e.target.value))}
+              onChange={(e) => setPaterno(limpiarSoloLetras(e.target.value))}
             />
           </Field>
           <Field label="Apellido Materno" required>
@@ -192,7 +198,7 @@ function StepIdentidad({ savedData, onComplete }) {
               type="text"
               placeholder="Ej. González"
               value={materno}
-              onChange={(e) => setMaterno(soloLetras(e.target.value))}
+              onChange={(e) => setMaterno(limpiarSoloLetras(e.target.value))}
             />
           </Field>
         </div>
@@ -213,7 +219,8 @@ function StepDemografia({ savedData, onComplete, onBack }) {
   const [genero, setGenero] = useState(d.genero || "");
   const [curp, setCurp] = useState(d.curp || "");
 
-  const valid = fecha && genero && curp.trim().length === 18;
+  const valid = fecha && genero && validarCURP(curp);
+  const today = todayDate();
 
   return (
     <div className="step-content">
@@ -221,7 +228,7 @@ function StepDemografia({ savedData, onComplete, onBack }) {
       <div className="fields-grid">
         <div className="row-2">
           <Field label="Fecha de nacimiento" required>
-            <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} />
+            <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} max={today} />
           </Field>
           <Field label="Género" required>
             <select value={genero} onChange={(e) => setGenero(e.target.value)}>
@@ -238,7 +245,7 @@ function StepDemografia({ savedData, onComplete, onBack }) {
             placeholder="XXXX000000XXXXXX00"
             maxLength={18}
             value={curp}
-            onChange={(e) => setCurp(e.target.value.toUpperCase())}
+            onChange={(e) => setCurp(e.target.value.toUpperCase().slice(0, 18))}
           />
           <span className="field-hint">{curp.length}/18 caracteres</span>
         </Field>
