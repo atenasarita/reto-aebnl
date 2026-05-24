@@ -576,3 +576,36 @@
 @media (max-width: 420px) {
   .resumen-strip { grid-template-columns: 1fr; }
 }
+
+/* Animaciones elegantes para recibos */
+.recibos-fade-panel {
+  opacity: 0;
+  animation: recibosFadePanel 0.35s ease forwards;
+}
+
+@keyframes recibosFadePanel {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.recibos-fade-up {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: recibosFadeUp 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: opacity, transform;
+}
+
+@keyframes recibosFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

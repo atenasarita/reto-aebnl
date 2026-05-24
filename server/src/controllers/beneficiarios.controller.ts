@@ -59,4 +59,7 @@ export class BeneficiariosController {
     async getMembresiasProximas() {
         return await this.repository.getMembresiasProximas();
     }
+    async updateBeneficiario(id_beneficiario: number, input: any): Promise<void> {
+        return this.repository.updateBeneficiario(id_beneficiario, input);
+    }
 }

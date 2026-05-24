@@ -12,15 +12,19 @@ const fmtFecha = (iso) => {
   const d = new Date(iso + "T12:00:00");
   return d.toLocaleDateString("es-MX", { day: "2-digit", month: "short", year: "numeric" });
 };
- 
+
 const fmtMes = (iso) => {
   if (!iso) return "";
   const d = new Date(iso + "T12:00:00");
   return d.toLocaleDateString("es-MX", { month: "long", year: "numeric" });
 };
 
+<<<<<<< HEAD
 
 const hoy = () => todayDate();
+=======
+const hoy = () => new Date().toISOString().split("T")[0];
+>>>>>>> editar-beneficiario
 
 // Loader
 function Skeleton({ rows = 4 }) {
@@ -37,7 +41,7 @@ function Skeleton({ rows = 4 }) {
 function PagoBadge({ metodo }) {
   const map = {
     efectivo: { label: "Efectivo", cls: "badge-efectivo" },
-    tarjeta:  { label: "Tarjeta",  cls: "badge-tarjeta" },
+    tarjeta: { label: "Tarjeta", cls: "badge-tarjeta" },
     donacion: { label: "Donación", cls: "badge-donacion" },
   };
   const { label, cls } = map[metodo] ?? { label: metodo, cls: "" };
@@ -85,7 +89,6 @@ function ReciboDetalle({ recibo, onClose }) {
         aria-describedby={dialogDescId}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="detalle-header">
           <div>
             <p className="detalle-folio">Folio #{recibo.id_servicio_otorgado}</p>
@@ -97,7 +100,6 @@ function ReciboDetalle({ recibo, onClose }) {
           <button ref={closeBtnRef} className="btn-close" onClick={onClose} aria-label="Cerrar detalle del recibo">✕</button>
         </div>
 
-        {/* Inventario */}
         {recibo.items_inventario?.length > 0 && (
           <section className="detalle-section">
             <h3 className="detalle-section-title">Artículos de inventario</h3>
@@ -124,7 +126,6 @@ function ReciboDetalle({ recibo, onClose }) {
           </section>
         )}
 
-        {/* Resumen financiero */}
         <section className="detalle-section">
           <h3 className="detalle-section-title">Resumen financiero</h3>
           <div className="detalle-financiero">
@@ -165,9 +166,12 @@ function ReciboDetalle({ recibo, onClose }) {
 }
 
 // Tabla de recibos
-function ReciboRow({ recibo, onVerDetalle, mostrarFecha = false }) {
+function ReciboRow({ recibo, onVerDetalle, mostrarFecha = false, index = 0 }) {
   return (
-    <tr className="recibo-row">
+    <tr
+      className="recibo-row recibos-fade-up"
+      style={{ animationDelay: `${index * 0.05}s` }}
+    >
       <th scope="row" className="td-folio">#{recibo.id_servicio_otorgado}</th>
       <td>{recibo.beneficiario}</td>
       <td>{recibo.servicio}</td>
@@ -194,9 +198,12 @@ function ReciboRow({ recibo, onVerDetalle, mostrarFecha = false }) {
 }
 
 // Resumen
-function ResumenCard({ label, value, sub }) {
+function ResumenCard({ label, value, sub, index = 0 }) {
   return (
-    <div className="resumen-card">
+    <div
+      className="resumen-card recibos-fade-up"
+      style={{ animationDelay: `${index * 0.06}s` }}
+    >
       <p className="resumen-label">{label}</p>
       <p className="resumen-value">{value}</p>
       {sub && <p className="resumen-sub">{sub}</p>}
@@ -213,13 +220,14 @@ function TablaRecibos({
   mostrarFecha = false,
   emptyMsg,
   caption,
+  animationKey,
 }) {
   if (loading) return <Skeleton rows={4} />;
-  if (error)   return <div className="estado-msg estado-error">⚠ {error}</div>;
+  if (error) return <div className="estado-msg estado-error">⚠ {error}</div>;
   if (!recibos.length) return <div className="estado-msg">{emptyMsg}</div>;
- 
+
   return (
-    <div className="table-wrap">
+    <div className="table-wrap recibos-fade-panel">
       <table className="recibos-table">
         <caption className="sr-only">{caption}</caption>
         <thead>
@@ -235,13 +243,14 @@ function TablaRecibos({
             <th>Detalles</th>
           </tr>
         </thead>
-        <tbody>
-          {recibos.map((r) => (
+        <tbody key={animationKey}>
+          {recibos.map((r, index) => (
             <ReciboRow
-              key={r.id_servicio_otorgado}
+              key={`${animationKey}-${r.id_servicio_otorgado}-${index}`}
               recibo={r}
               onVerDetalle={onVerDetalle}
               mostrarFecha={mostrarFecha}
+              index={index}
             />
           ))}
         </tbody>
@@ -265,21 +274,21 @@ export default function Recibos() {
   const tabDiaRef = useRef(null);
   const tabMesRef = useRef(null);
 
-  const [fecha,        setFecha]        = useState(hoy());
-  const [busquedaDia,  setBusquedaDia]  = useState("");
-  const [busquedaMes,  setBusquedaMes]  = useState("");
-  const [vistaActiva,  setVistaActiva]  = useState("dia");
- 
-  const [recibosDay,   setRecibosDay]   = useState([]);
-  const [loadingDay,   setLoadingDay]   = useState(false);
-  const [errorDay,     setErrorDay]     = useState("");
- 
-  const [recibosMes,   setRecibosMes]   = useState([]);
-  const [loadingMes,   setLoadingMes]   = useState(false);
-  const [errorMes,     setErrorMes]     = useState("");
- 
-  const [seleccion,    setSeleccion]    = useState(null);
- 
+  const [fecha, setFecha] = useState(hoy());
+  const [busquedaDia, setBusquedaDia] = useState("");
+  const [busquedaMes, setBusquedaMes] = useState("");
+  const [vistaActiva, setVistaActiva] = useState("dia");
+
+  const [recibosDay, setRecibosDay] = useState([]);
+  const [loadingDay, setLoadingDay] = useState(false);
+  const [errorDay, setErrorDay] = useState("");
+
+  const [recibosMes, setRecibosMes] = useState([]);
+  const [loadingMes, setLoadingMes] = useState(false);
+  const [errorMes, setErrorMes] = useState("");
+
+  const [seleccion, setSeleccion] = useState(null);
+
   const cargarDia = useCallback(async (f) => {
     setLoadingDay(true); setErrorDay("");
     try {
@@ -290,7 +299,7 @@ export default function Recibos() {
       setErrorDay(e.message || "No se pudo cargar."); setRecibosDay([]);
     } finally { setLoadingDay(false); }
   }, []);
- 
+
   const cargarMes = useCallback(async (f) => {
     setLoadingMes(true);
     setErrorMes("");
@@ -303,37 +312,36 @@ export default function Recibos() {
       setErrorMes(e.message || "No se pudo cargar."); setRecibosMes([]);
     } finally { setLoadingMes(false); }
   }, []);
- 
+
   useEffect(() => {
     cargarDia(fecha);
     cargarMes(fecha);
   }, [fecha, cargarDia, cargarMes]);
 
   const normalizar = (str) =>
-  (str || "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
- 
-  // Filtros
+    (str || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim();
+
   const filtrarRecibos = (lista, q) => {
-  if (!q) return lista;
-  const s = normalizar(q);
-  return lista.filter((r) =>
-    normalizar(r.beneficiario).includes(s) ||
-    normalizar(r.servicio).includes(s) ||
-    normalizar(String(r.id_servicio_otorgado)).includes(s)
-  );
-};
- 
+    if (!q) return lista;
+    const s = normalizar(q);
+    return lista.filter((r) =>
+      normalizar(r.beneficiario).includes(s) ||
+      normalizar(r.servicio).includes(s) ||
+      normalizar(String(r.id_servicio_otorgado)).includes(s)
+    );
+  };
+
   const filtradosDia = filtrarRecibos(recibosDay, busquedaDia);
   const filtradosMes = filtrarRecibos(recibosMes, busquedaMes);
- 
-  const totalDia    = filtradosDia.reduce((s, r) => s + Number(r.financiero?.cuota_total  ?? 0), 0);
-  const pagadoDia   = filtradosDia.reduce((s, r) => s + Number(r.financiero?.monto_pagado ?? 0), 0);
-  const totalMes    = filtradosMes.reduce((s, r) => s + Number(r.financiero?.cuota_total  ?? 0), 0);
-  const pagadoMes   = filtradosMes.reduce((s, r) => s + Number(r.financiero?.monto_pagado ?? 0), 0);
+
+  const totalDia = filtradosDia.reduce((s, r) => s + Number(r.financiero?.cuota_total ?? 0), 0);
+  const pagadoDia = filtradosDia.reduce((s, r) => s + Number(r.financiero?.monto_pagado ?? 0), 0);
+  const totalMes = filtradosMes.reduce((s, r) => s + Number(r.financiero?.cuota_total ?? 0), 0);
+  const pagadoMes = filtradosMes.reduce((s, r) => s + Number(r.financiero?.monto_pagado ?? 0), 0);
 
   const onTabsKeyDown = (event) => {
     if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
@@ -355,10 +363,10 @@ export default function Recibos() {
     if (nextView === "dia") tabDiaRef.current?.focus();
     if (nextView === "mes") tabMesRef.current?.focus();
   };
- 
+
   return (
     <main className="recibos-page" aria-labelledby="recibos-page-title">
-      <header className="recibos-header page-header">
+      <header className="recibos-header page-header recibos-fade-panel">
         <div className="recibos-heading">
           <h1 id="recibos-page-title" className="page-header-title">Recibos</h1>
           <p className="page-header-subtitle">Registro de servicios y cobros</p>
@@ -376,7 +384,7 @@ export default function Recibos() {
         </div>
       </header>
 
-      <div className="recibos-tabs-wrap">
+      <div className="recibos-tabs-wrap recibos-fade-panel">
         <p id={tabsHintId} className="sr-only">
           Usa las flechas izquierda y derecha para cambiar entre recibos del día y del mes.
         </p>
@@ -415,13 +423,14 @@ export default function Recibos() {
           </button>
         </div>
       </div>
- 
+
       {vistaActiva === "dia" && (
         <section
           id={panelDiaId}
-          className="recibos-section"
+          className="recibos-section recibos-fade-panel"
           role="tabpanel"
           aria-labelledby={tabDiaId}
+          key={`dia-${fecha}-${busquedaDia}`}
         >
           <div className="section-title-row">
             <div>
@@ -441,21 +450,22 @@ export default function Recibos() {
               />
             </div>
           </div>
- 
+
           {!loadingDay && filtradosDia.length > 0 && (
             <div className="resumen-strip">
-              <ResumenCard label="Recibos del día" value={filtradosDia.length} sub={fmtFecha(fecha)} />
-              <ResumenCard label="Total facturado"  value={fmt(totalDia)} />
-              <ResumenCard label="Total cobrado"    value={fmt(pagadoDia)} />
+              <ResumenCard label="Recibos del día" value={filtradosDia.length} sub={fmtFecha(fecha)} index={0} />
+              <ResumenCard label="Total facturado" value={fmt(totalDia)} index={1} />
+              <ResumenCard label="Total cobrado" value={fmt(pagadoDia)} index={2} />
               <ResumenCard
                 label="Diferencia"
                 value={fmt(totalDia - pagadoDia)}
                 sub={totalDia - pagadoDia > 0 ? "pendiente" : "al corriente"}
+                index={3}
               />
             </div>
           )}
- 
-          <div className="recibos-card">
+
+          <div className="recibos-card recibos-fade-panel">
             <TablaRecibos
               recibos={filtradosDia}
               loading={loadingDay}
@@ -464,6 +474,7 @@ export default function Recibos() {
               mostrarFecha={false}
               emptyMsg="Sin recibos para esta fecha."
               caption={`Tabla de recibos del día ${fmtFecha(fecha)}`}
+              animationKey={`dia-${fecha}-${busquedaDia}-${filtradosDia.length}`}
             />
             {!loadingDay && !errorDay && filtradosDia.length > 0 && (
               <p className="tabla-footer">
@@ -477,9 +488,10 @@ export default function Recibos() {
       {vistaActiva === "mes" && (
         <section
           id={panelMesId}
-          className="recibos-section"
+          className="recibos-section recibos-fade-panel"
           role="tabpanel"
           aria-labelledby={tabMesId}
+          key={`mes-${fecha}-${busquedaMes}`}
         >
           <div className="section-title-row">
             <div>
@@ -499,21 +511,22 @@ export default function Recibos() {
               />
             </div>
           </div>
-  
+
           {!loadingMes && filtradosMes.length > 0 && (
             <div className="resumen-strip resumen-mes">
-              <ResumenCard label="Recibos del mes" value={filtradosMes.length} />
-              <ResumenCard label="Total facturado"  value={fmt(totalMes)} />
-              <ResumenCard label="Total cobrado"    value={fmt(pagadoMes)} />
+              <ResumenCard label="Recibos del mes" value={filtradosMes.length} index={0} />
+              <ResumenCard label="Total facturado" value={fmt(totalMes)} index={1} />
+              <ResumenCard label="Total cobrado" value={fmt(pagadoMes)} index={2} />
               <ResumenCard
                 label="Diferencia"
                 value={fmt(totalMes - pagadoMes)}
                 sub={totalMes - pagadoMes > 0 ? "pendiente" : "al corriente"}
+                index={3}
               />
             </div>
           )}
- 
-          <div className="recibos-card">
+
+          <div className="recibos-card recibos-fade-panel">
             <TablaRecibos
               recibos={filtradosMes}
               loading={loadingMes}
@@ -522,6 +535,7 @@ export default function Recibos() {
               mostrarFecha={true}
               emptyMsg="Sin recibos para este mes."
               caption={`Tabla de recibos del mes ${fmtMes(fecha)}`}
+              animationKey={`mes-${fecha}-${busquedaMes}-${filtradosMes.length}`}
             />
             {!loadingMes && !errorMes && filtradosMes.length > 0 && (
               <p className="tabla-footer">
@@ -531,8 +545,7 @@ export default function Recibos() {
           </div>
         </section>
       )}
- 
-      {/* Panel de detalle */}
+
       <ReciboDetalle recibo={seleccion} onClose={() => setSeleccion(null)} />
     </main>
   );
