@@ -5,17 +5,19 @@ import { validateField, validateStep, validateStepFields } from '../utils/benefi
 import { buildBeneficiarioPayload } from '../utils/beneficiarioPayload';
 import { fetchSiguienteFolio, createBeneficiario } from '../services/beneficiariosService';
 import { API_URL } from '../utils/config';
+import { todayDate } from '../utils/dateTime';
 
 export function useRegistroBeneficiario(navigate) {
   const [currentStep, setCurrentStep] = useState(0);
   const [folio, setFolio] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [touchedSteps, setTouchedSteps] = useState([]);
-  const [fechaRegistro] = useState(new Date().toISOString().split('T')[0]);
+  const [fechaRegistro] = useState(todayDate());
   const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [formData, setFormData] = useState(initialFormData(fechaRegistro));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [beneficiarioCreado, setBeneficiarioCreado] = useState(null);
 
   const fechaNacimientoRef = useRef(null);
   const fechaMembresiaRef = useRef(null);
@@ -244,7 +246,9 @@ export function useRegistroBeneficiario(navigate) {
         fechaNacimiento
       );
 
-      await createBeneficiario(payload, token);
+      // await createBeneficiario(payload, token);
+      const beneficiarioCreado = await createBeneficiario(payload, token);
+      setBeneficiarioCreado(beneficiarioCreado);
       setFormData(prev => ({
         ...prev,
         fotografiaFile: null,
@@ -297,5 +301,6 @@ export function useRegistroBeneficiario(navigate) {
     handleSubmit,
     validateStep: stepIsComplete,
     areAllStepsComplete,
+    beneficiarioCreado,
   };
 }

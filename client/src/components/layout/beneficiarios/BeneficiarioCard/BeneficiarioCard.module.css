@@ -14,7 +14,6 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* ── Header ── */
 .header {
   display: flex;
   align-items: center;
@@ -58,7 +57,6 @@
   font-weight: 400;
 }
 
-/* ── Badge ── */
 .badge {
   font-size: 12px;
   font-weight: 500;
@@ -77,7 +75,6 @@
   color: #6b7280;
 }
 
-/* ── Diagnostico ── */
 .diagnostico {
   display: flex;
   flex-direction: column;
@@ -99,7 +96,6 @@
   line-height: 1.4;
 }
 
-/* ── Actions ── */
 .actions {
   display: flex;
   justify-content: flex-end;
@@ -146,4 +142,13 @@
 .actionBtnView:hover {
   background: #eff6ff;
   color: #2563eb;
+}
+
+.actionBtnEdit {
+  color: #2563eb;
+}
+
+.actionBtnEdit:hover {
+  background: #eff6ff;
+  color: #1d4ed8;
 }
