@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import BeneficiarioCard from '../BeneficiarioCard/BeneficiarioCard'
 import styles from './BeneficiarioGrid.module.css'
 import Pagination from '../../../ui/Pagination'
@@ -8,16 +8,10 @@ import { API_URL } from '../../../../utils/config'
 
 const ITEMS_PER_PAGE = 8
 
-<<<<<<< HEAD
-function BeneficiarioGrid({ data, loading, beneficiarioCreadoId }) {
-  const [currentPage, setCurrentPage] = useState(1)
-  const openedCreatedBeneficiario = useRef(false);
-=======
 function BeneficiarioGrid({ data, loading, onRefresh }) {
   const [currentPage, setCurrentPage] = useState(1)
   const [selected, setSelected] = useState(null)
   const [openInEditMode, setOpenInEditMode] = useState(false)
->>>>>>> editar-beneficiario
 
   useEffect(() => {
     setCurrentPage(1)
@@ -57,19 +51,6 @@ function BeneficiarioGrid({ data, loading, onRefresh }) {
       alert('No se pudo abrir la edición del beneficiario.')
     }
   }
-
-  useEffect(() => {
-    if(!beneficiarioCreadoId || openedCreatedBeneficiario.current || loading) return;
-
-    const existenEnData = data.some(
-      b => b.id_beneficiario === beneficiarioCreadoId
-    );
-
-    if(!existenEnData) return;
-
-    openedCreatedBeneficiario.current = true;
-    handleView(beneficiarioCreadoId);
-  }, [beneficiarioCreadoId, data, loading])
 
   async function handleDownloadPdf(id) {
     try {
@@ -115,9 +96,6 @@ function BeneficiarioGrid({ data, loading, onRefresh }) {
       dias_para_vencer: b.dias_para_vencer,
     }
   })
-
-
- 
 
   const paginated = normalized.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
