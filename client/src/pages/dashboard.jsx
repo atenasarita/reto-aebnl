@@ -36,6 +36,7 @@ const actions = [
     subtitle: "Gestionar horario médico",
     icon: CalendarDays,
     variant: "accent",
+    to: "/citas",
   },
   {
     title: "Recibos",
