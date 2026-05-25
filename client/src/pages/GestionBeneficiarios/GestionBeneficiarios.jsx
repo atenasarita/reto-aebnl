@@ -36,7 +36,6 @@ function GestionBeneficiarios() {
   async function fetchBeneficiarios() {
     setLoading(true)
     setError('')
-
     try {
       const token = localStorage.getItem('token')
       const response = await fetch(`${API_URL}/api/beneficiarios`, {
@@ -52,19 +51,16 @@ function GestionBeneficiarios() {
         throw new Error(data.message || 'Error al cargar beneficiarios')
       }
 
-      const dataOrdenada = beneficiarioEditId
-        ? [
-            ...data.filter(
-              (b) => b.id_beneficiario === Number(beneficiarioEditId)
-            ),
-            ...data.filter(
-              (b) => b.id_beneficiario !== Number(beneficiarioEditId)
-            ),
-          ]
-        : data
+      setAll(data)
 
-      setAll(dataOrdenada)
-      setFiltered(dataOrdenada)
+      if (beneficiarioEditId) {
+        const soloBeneficiarioEditado = data.filter(
+          (b) => b.id_beneficiario === Number(beneficiarioEditId)
+        )
+        setFiltered(soloBeneficiarioEditado)
+      } else {
+        setFiltered(data)
+      }
     } catch (err) {
       setError(err.message || 'Error de conexión')
     } finally {
@@ -74,6 +70,14 @@ function GestionBeneficiarios() {
 
   useEffect(() => {
     let result = all
+
+    if (beneficiarioEditId && !query.trim() && !estatus) {
+      result = all.filter(
+        (b) => b.id_beneficiario === Number(beneficiarioEditId)
+      )
+      setFiltered(result)
+      return
+    }
 
     if (query.trim()) {
       const q = query.toLowerCase()
@@ -99,9 +103,17 @@ function GestionBeneficiarios() {
     }
 
     setFiltered(result)
-  }, [query, estatus, all])
+  }, [query, estatus, all, beneficiarioEditId])
+
+  function clearEditQuery() {
+    const nextParams = new URLSearchParams(searchParams)
+    nextParams.delete('edit')
+    setSearchParams(nextParams)
+  }
 
   async function handleBuscar() {
+    clearEditQuery()
+
     if (!query.trim()) {
       fetchBeneficiarios()
       return
@@ -131,12 +143,6 @@ function GestionBeneficiarios() {
     } finally {
       setLoading(false)
     }
-  }
-
-  function clearEditQuery() {
-    const nextParams = new URLSearchParams(searchParams)
-    nextParams.delete('edit')
-    setSearchParams(nextParams)
   }
 
   return (
