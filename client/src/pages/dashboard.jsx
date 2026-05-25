@@ -1,9 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAgendaTagClass } from "../utils/agendaUtils";
-
-import { API_URL } from '../utils/config'
-
+import { API_URL } from "../utils/config";
 import {
   ArrowRight,
   CalendarDays,
@@ -50,21 +47,14 @@ const actions = [
   },
 ];
 
-
 function ActionCard({ title, subtitle, icon, variant, fullRow, to }) {
   const Icon = icon;
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    if (to) {
-      navigate(to);
-    }
-  };
-
   return (
     <button
       type="button"
-      onClick={handleClick}
+      onClick={() => to && navigate(to)}
       className={`action-card action-card-${variant} ${fullRow ? "action-card-full" : ""}`}
       style={{ cursor: to ? "pointer" : "default" }}
     >
@@ -84,9 +74,21 @@ function ActionCard({ title, subtitle, icon, variant, fullRow, to }) {
   );
 }
 
+function getAgendaTagClass(item) {
+  const especialistaId = Number(item.id_especialista);
+  const especialistaNombre = String(item.especialista_nombre || "").toLowerCase();
+
+  if (especialistaId === 26 || especialistaNombre.includes("laura")) return "blue";
+  if (especialistaId === 27 || especialistaNombre.includes("carlos")) return "purple";
+  if (especialistaId === 28 || especialistaNombre.includes("roberto")) return "green";
+  if (especialistaId === 29 || especialistaNombre.includes("luis")) return "orange";
+  if (especialistaId === 30 || especialistaNombre.includes("sofia")) return "red";
+
+  return "blue";
+}
+
 function formatHora12(hora) {
   if (!hora) return "";
-
   const [rawHours, rawMinutes] = hora.split(":");
   const hours = Number(rawHours);
   const minutes = rawMinutes ?? "00";
@@ -104,12 +106,10 @@ function getTimelineStatusClass(item) {
 
   const citaDate = new Date(`${item.fecha}T${item.hora}:00`);
   const now = new Date();
-  const diffMs = citaDate.getTime() - now.getTime();
-  const diffHours = diffMs / (1000 * 60 * 60);
+  const diffHours = (citaDate.getTime() - now.getTime()) / (1000 * 60 * 60);
 
   if (diffHours < 0) return "past";
   if (diffHours <= 2) return "soon";
-
   return "future";
 }
 
@@ -213,7 +213,7 @@ function AgendaCard({ agendaItems }) {
   );
 }
 
-function PreregistroCard({ preregistroItems, onUpdateEstado }) {
+function PreregistroCard({ preregistroItems, onAceptar, onRechazar }) {
   const [openId, setOpenId] = useState(null);
 
   const toggleItem = (id) => {
@@ -267,7 +267,7 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
                       type="button"
                       className="icon-btn accept"
                       aria-label="Aceptar preregistro"
-                      onClick={() => onUpdateEstado(item.id_preregistro, "aceptado")}
+                      onClick={() => onAceptar(item)}
                     >
                       <Check />
                     </button>
@@ -276,7 +276,7 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
                       type="button"
                       className="icon-btn reject"
                       aria-label="Rechazar preregistro"
-                      onClick={() => onUpdateEstado(item.id_preregistro, "rechazado")}
+                      onClick={() => onRechazar(item.id_preregistro)}
                     >
                       <X />
                     </button>
@@ -294,16 +294,9 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
 
                 {isOpen && (
                   <div className="preregistro-details">
-                    <div>
-                      <strong>CURP:</strong> {item.curp || "No registrada"}
-                    </div>
-                    <div>
-                      <strong>Género:</strong> {item.genero || "No registrado"}
-                    </div>
-                    <div>
-                      <strong>Fecha de nacimiento:</strong>{" "}
-                      {item.fecha_nacimiento || "No registrada"}
-                    </div>
+                    <div><strong>CURP:</strong> {item.curp || "No registrada"}</div>
+                    <div><strong>Género:</strong> {item.genero || "No registrado"}</div>
+                    <div><strong>Fecha de nacimiento:</strong> {item.fecha_nacimiento || "No registrada"}</div>
                   </div>
                 )}
               </div>
@@ -315,10 +308,45 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
   );
 }
 
+function PerfilIncompletoModal({ open, onClose, onEditarAhora, nombre }) {
+  if (!open) return null;
+
+  return (
+    <div className="custom-modal-overlay" onClick={onClose}>
+      <div className="custom-modal-card" onClick={(e) => e.stopPropagation()}>
+        <h3>Perfil incompleto</h3>
+        <p>
+          {nombre
+            ? `El preregistro de ${nombre} fue aceptado correctamente.`
+            : "El preregistro fue aceptado correctamente."}
+        </p>
+        <p>
+          El perfil todavía tiene información pendiente por completar. ¿Te gustaría editarlo ahora?
+        </p>
+
+        <div className="custom-modal-actions">
+          <button type="button" className="btn-secondary-modal" onClick={onClose}>
+            Dejarlo por ahora
+          </button>
+          <button type="button" className="btn-primary-modal" onClick={onEditarAhora}>
+            Editar ahora
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
+  const navigate = useNavigate();
+
   const [agendaItems, setAgendaItems] = useState([]);
   const [preregistroItems, setPreregistroItems] = useState([]);
   const [error, setError] = useState("");
+
+  const [perfilModalOpen, setPerfilModalOpen] = useState(false);
+  const [nuevoBeneficiarioId, setNuevoBeneficiarioId] = useState(null);
+  const [nuevoBeneficiarioNombre, setNuevoBeneficiarioNombre] = useState("");
 
   const token = localStorage.getItem("token");
 
@@ -338,9 +366,7 @@ export default function Dashboard() {
 
   const fetchAgenda = async () => {
     const res = await fetch(`${API_URL}/api/dashboard/agenda-hoy`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
 
     const data = await res.json();
@@ -354,9 +380,7 @@ export default function Dashboard() {
 
   const fetchPreregistros = async () => {
     const res = await fetch(`${API_URL}/api/dashboard/preregistro-pendientes`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
 
     const data = await res.json();
@@ -368,27 +392,71 @@ export default function Dashboard() {
     setPreregistroItems(data);
   };
 
-  const onUpdateEstado = async (id, estado) => {
+  const aceptarPreregistro = async (preregistro) => {
     try {
-      const res = await fetch(`${API_URL}/api/dashboard/preregistro/${id}/estado`, {
+      const res = await fetch(`${API_URL}/api/dashboard/preregistro/${preregistro.id_preregistro}/estado`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ estado }),
+        body: JSON.stringify({ estado: "aceptado" }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || "Error al actualizar preregistro");
+        throw new Error(data.message || "Error al aceptar preregistro");
+      }
+
+      await fetchPreregistros();
+
+      setNuevoBeneficiarioId(data.id_beneficiario ?? null);
+      setNuevoBeneficiarioNombre(preregistro?.nombre_completo ?? "");
+      setPerfilModalOpen(true);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const rechazarPreregistro = async (idPreregistro) => {
+    try {
+      const res = await fetch(`${API_URL}/api/dashboard/preregistro/${idPreregistro}/estado`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ estado: "rechazado" }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Error al rechazar preregistro");
       }
 
       await fetchPreregistros();
     } catch (err) {
       alert(err.message);
     }
+  };
+
+  const handleEditarAhora = () => {
+    setPerfilModalOpen(false);
+
+    if (nuevoBeneficiarioId) {
+      navigate(`/beneficiarios?edit=${nuevoBeneficiarioId}`);
+      return;
+    }
+
+    navigate("/beneficiarios");
+  };
+
+  const handleCerrarModalPerfil = () => {
+    setPerfilModalOpen(false);
+    setNuevoBeneficiarioId(null);
+    setNuevoBeneficiarioNombre("");
   };
 
   useEffect(() => {
@@ -425,12 +493,20 @@ export default function Dashboard() {
               <AgendaCard agendaItems={agendaItems} />
               <PreregistroCard
                 preregistroItems={preregistroItems}
-                onUpdateEstado={onUpdateEstado}
+                onAceptar={aceptarPreregistro}
+                onRechazar={rechazarPreregistro}
               />
             </>
           )}
         </section>
       </main>
+
+      <PerfilIncompletoModal
+        open={perfilModalOpen}
+        onClose={handleCerrarModalPerfil}
+        onEditarAhora={handleEditarAhora}
+        nombre={nuevoBeneficiarioNombre}
+      />
     </div>
   );
-}
+} 

@@ -5,32 +5,30 @@ import Dropdown from '../../components/ui/Dropdown'
 import Button from '../../components/ui/Button'
 import BeneficiarioGrid from '../../components/layout/beneficiarios/BeneficiarioGrid/BenecifiarioGrid'
 import { FiUserPlus, FiSearch } from 'react-icons/fi'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { API_URL } from '../../utils/config'
 
-
-// 1. Fix ESTATUS_OPTIONS — lowercase to match API
 const ESTATUS_OPTIONS = [
-  { label: 'Todos',         value: ''               },
-  { label: 'Activo',        value: 'activo'         }, 
-  { label: 'Inactivo',      value: 'inactivo'       }, 
-  { label: 'Por vencer',    value: 'por-vencer'     },
+  { label: 'Todos', value: '' },
+  { label: 'Activo', value: 'activo' },
+  { label: 'Inactivo', value: 'inactivo' },
+  { label: 'Por vencer', value: 'por-vencer' },
 ]
 
-
-
 function GestionBeneficiarios() {
-  const [all, setAll]           = useState([])   // raw list from API
-  const [filtered, setFiltered] = useState([])   // what the grid shows
-  const [query, setQuery]       = useState('')
-  const [estatus, setEstatus]   = useState('')   // '' = show all
-  const [loading, setLoading]   = useState(false)
-  const [error, setError]       = useState('')
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [all, setAll] = useState([])
+  const [filtered, setFiltered] = useState([])
+  const [query, setQuery] = useState('')
+  const [estatus, setEstatus] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const beneficiarioCreadoId = location.state?.beneficiarioCreado?.id_beneficiario;
+  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const beneficiarioEditId = searchParams.get('edit')
+
   useEffect(() => {
     fetchBeneficiarios()
   }, [])
@@ -38,12 +36,13 @@ function GestionBeneficiarios() {
   async function fetchBeneficiarios() {
     setLoading(true)
     setError('')
+
     try {
       const token = localStorage.getItem('token')
       const response = await fetch(`${API_URL}/api/beneficiarios`, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       })
 
@@ -53,17 +52,16 @@ function GestionBeneficiarios() {
         throw new Error(data.message || 'Error al cargar beneficiarios')
       }
 
-      const dataOrdenada = beneficiarioCreadoId
+      const dataOrdenada = beneficiarioEditId
         ? [
-          ...data.filter(
-            b => b.id_beneficiario === beneficiarioCreadoId
-          ),
-          ...data.filter(
-            b => b.id_beneficiario !== beneficiarioCreadoId
-          )
-        ]
+            ...data.filter(
+              (b) => b.id_beneficiario === Number(beneficiarioEditId)
+            ),
+            ...data.filter(
+              (b) => b.id_beneficiario !== Number(beneficiarioEditId)
+            ),
+          ]
         : data
-
 
       setAll(dataOrdenada)
       setFiltered(dataOrdenada)
@@ -79,17 +77,24 @@ function GestionBeneficiarios() {
 
     if (query.trim()) {
       const q = query.toLowerCase()
-      result = result.filter(b =>
-        `${b.identificadores.nombres} ${b.identificadores.apellido_paterno}`.toLowerCase().includes(q) ||
-        b.folio.toLowerCase().includes(q)   
+      result = result.filter(
+        (b) =>
+          `${b.identificadores.nombres} ${b.identificadores.apellido_paterno}`.toLowerCase().includes(q) ||
+          b.folio.toLowerCase().includes(q)
       )
     }
 
     if (estatus) {
       if (estatus === 'por-vencer') {
-        result = result.filter(b => b.dias_para_vencer !== undefined && b.dias_para_vencer !== null && b.dias_para_vencer >= 0 && b.dias_para_vencer <= 7)
+        result = result.filter(
+          (b) =>
+            b.dias_para_vencer !== undefined &&
+            b.dias_para_vencer !== null &&
+            b.dias_para_vencer >= 0 &&
+            b.dias_para_vencer <= 7
+        )
       } else {
-        result = result.filter(b => b.estado === estatus) 
+        result = result.filter((b) => b.estado === estatus)
       }
     }
 
@@ -98,18 +103,19 @@ function GestionBeneficiarios() {
 
   async function handleBuscar() {
     if (!query.trim()) {
-      fetchBeneficiarios() 
+      fetchBeneficiarios()
       return
     }
 
     setLoading(true)
     setError('')
+
     try {
       const token = localStorage.getItem('token')
       const response = await fetch(`${API_URL}/api/beneficiarios/folio/${query.trim()}`, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       })
 
@@ -119,58 +125,72 @@ function GestionBeneficiarios() {
         throw new Error(data.message || 'No se encontró el beneficiario')
       }
 
-      // endpoint returns a single object, wrap in array for the grid
       setFiltered(Array.isArray(data) ? data : [data])
     } catch (err) {
-      setError(err.message)
+      setError(err.message || 'Error al buscar beneficiario')
     } finally {
       setLoading(false)
     }
   }
 
+  function clearEditQuery() {
+    const nextParams = new URLSearchParams(searchParams)
+    nextParams.delete('edit')
+    setSearchParams(nextParams)
+  }
+
   return (
     <div className="gestion-beneficiarios">
-      <div className='description page-header'>
-        <h1 className='page-header-title'>Gestion de Beneficiarios</h1>
-        <p className='page-header-subtitle'>Administra los beneficiarios, estatus y diagnostico</p>
+      <div className="description page-header">
+        <h1 className="page-header-title">Gestion de Beneficiarios</h1>
+        <p className="page-header-subtitle">
+          Administra los beneficiarios, estatus y diagnostico
+        </p>
       </div>
 
-        <div className='filter-bar'>
-          <div className='filter-bar__group filter-bar__group--filters'>
-            <Dropdown
-              className='dropdown-gestion'
-              options={ESTATUS_OPTIONS}
-              value={estatus}
-              onChange={(val) => setEstatus(val)}
-            />
+      <div className="filter-bar">
+        <div className="filter-bar__group filter-bar__group--filters">
+          <Dropdown
+            className="dropdown-gestion"
+            options={ESTATUS_OPTIONS}
+            value={estatus}
+            onChange={(val) => setEstatus(val)}
+          />
 
-            <SearchBar
-              icon={<FiSearch />}
-              className='search-gestion'
-              onSearch={setQuery}
-              debounceMs={250}
-            />
-            <Button className='buscar-beneficiarios-btn' onClick={handleBuscar}>
-              Buscar
-            </Button>
-          </div>
+          <SearchBar
+            icon={<FiSearch />}
+            className="search-gestion"
+            onSearch={setQuery}
+            debounceMs={250}
+          />
 
-          <div className='filter-bar__group filter-bar__group--primary'>
-            <Button
-              className='nuevo-beneficiario-btn'
-              iconLeft={<FiUserPlus aria-hidden />}
-              onClick={() => navigate('/registro_beneficiario')}
-            >
-              Nuevo Beneficiario
-            </Button>
-          </div>
+          <Button className="buscar-beneficiarios-btn" onClick={handleBuscar}>
+            Buscar
+          </Button>
         </div>
 
-        {error && <p className='error-msg'>{error}</p>}
-
-        <div className='main-grid-beneficiarios'>
-          <BeneficiarioGrid data={filtered} loading={loading} />
+        <div className="filter-bar__group filter-bar__group--primary">
+          <Button
+            className="nuevo-beneficiario-btn"
+            iconLeft={<FiUserPlus aria-hidden />}
+            onClick={() => navigate('/registro_beneficiario')}
+          >
+            Nuevo Beneficiario
+          </Button>
         </div>
+      </div>
+
+      {error && <p className="error-msg">{error}</p>}
+
+      <div className="main-grid-beneficiarios">
+        <BeneficiarioGrid
+          data={filtered}
+          loading={loading}
+          onRefresh={fetchBeneficiarios}
+          beneficiarioEditId={beneficiarioEditId ? Number(beneficiarioEditId) : null}
+          clearEditQuery={clearEditQuery}
+        />
+      </div>
     </div>
   )
 }
