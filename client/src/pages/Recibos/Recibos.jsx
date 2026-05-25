@@ -19,12 +19,7 @@ const fmtMes = (iso) => {
   return d.toLocaleDateString("es-MX", { month: "long", year: "numeric" });
 };
 
-<<<<<<< HEAD
-
 const hoy = () => todayDate();
-=======
-const hoy = () => new Date().toISOString().split("T")[0];
->>>>>>> editar-beneficiario
 
 // Loader
 function Skeleton({ rows = 4 }) {
