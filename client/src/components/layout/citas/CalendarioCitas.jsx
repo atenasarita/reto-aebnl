@@ -6,6 +6,7 @@ import DetalleCita from "./DetalleCita";
 import CitasPop from "../../ui/CitasPop";
 import { API_URL } from "../../../utils/config";
 import { getAgendaTagClass } from "../../../utils/agendaUtils";
+import { todayDate } from "../../../utils/dateTime";
 
 export default function CalendarioCitas() {
   const [eventos, setEventos] = useState([]);
@@ -37,6 +38,8 @@ export default function CalendarioCitas() {
   return (
     <>
     <FullCalendar
+      timeZone="local"
+      initialDate={todayDate()}
       plugins={[dayGridPlugin, timeGridPlugin]}
       initialView="dayGridMonth"
       locale='es'
