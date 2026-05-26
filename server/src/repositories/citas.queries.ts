@@ -17,7 +17,9 @@ getCitas: `
 
         cs.nombre AS "servicio",
 
-        b.nombres as "beneficiario",
+        b.nombres || ' ' || b.apellido_paterno || ' ' || b.apellido_materno AS "beneficiario",
+        b.telefono         AS "telefonoBeneficiario",
+        b.email            AS "emailBeneficiario",
 
         c.notas AS "notas",
         c.estatus AS "estatus"
@@ -44,7 +46,7 @@ getCitas: `
     estatus
     ) VALUES (
      :id_beneficiario,
-     :fecha,
+     TO_DATE(:fecha, 'YYYY-MM-DD'),
      :hora,
      :id_especialista,
      :id_catalogo_servicio,
@@ -58,7 +60,7 @@ getCitas: `
     UPDATE citas
     SET
         id_beneficiario = :id_beneficiario,
-        fecha = :fecha,
+        fecha = TO_DATE(:fecha, 'YYYY-MM-DD'),
         hora = :hora,
         id_especialista = :id_especialista,
         id_catalogo_servicio = :id_catalogo_servicio,

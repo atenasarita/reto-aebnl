@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import "./styles/CitasPop.css";
 import { API_URL } from "../../utils/config";
+import { todayDate } from "../../utils/dateTime";
 
-// const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const HORARIOS = [
   { label: "09:00 AM - 10:00 AM", hora: "09:00" },
@@ -16,11 +16,16 @@ const HORARIOS = [
 
 const ESTADOS = ["programada", "completada", "cancelada"];
 
-const hoy = () => {
-  const d = new Date();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${d.getFullYear()}-${mm}-${dd}`;
+const getDateFromCalendar = (cita) => {
+  if (cita?.startStr) return cita.startStr.split("T")[0];
+  if (typeof cita?.start === "string") return cita.start.split("T")[0];
+  return todayDate();
+};
+
+const getTimeFromCalendar = (cita) => {
+  if (cita?.startStr) return cita.startStr.split("T")[1]?.slice(0, 5);
+  if (typeof cita?.start === "string") return cita.start.split("T")[1]?.slice(0, 5);
+  return HORARIOS[0].hora;
 };
 
 // Componentes compartidos
@@ -158,16 +163,10 @@ function EstadoPicker({ value, onChange }) {
 // Formulario
 function CitasForm({ onClose, onSuccess, cita, modo }) {
   const [beneficiario, setBeneficiario] = useState(null);
-  const [fecha, setFecha] = useState(
-    cita?.start
-      ? new Date(cita.start).toISOString().split("T")[0]
-      : hoy()
-  );
-  const [horario, setHorario] = useState(
-    cita?.start
-      ? new Date(cita.start).toTimeString().slice(0, 5)
-      : HORARIOS[0].hora
-  );
+  const [fecha, setFecha] = useState(getDateFromCalendar(cita));
+
+  const [horario, setHorario] = useState(getTimeFromCalendar(cita));
+
   const [especialista, setEspecialista] = useState(
     cita?.extendedProps?.id_especialista
       ? String(cita.extendedProps.id_especialista)
@@ -227,35 +226,19 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
   }, []);
 
   useEffect(() => {
-    const cargarBeneficiario = async () => {
-      if (!cita?.extendedProps?.idBeneficiario) return;
-      try {
-        const res = await fetch(
-          `${API_URL}/api/buscar-beneficiarios/${cita.extendedProps.idBeneficiario}`
-        );
-        if (!res.ok) throw new Error();
-        const data = await res.json();
+    if (modo !== "editar" || !cita?.extendedProps?.idBeneficiario) return;
 
-        setBeneficiario({
-          id_beneficiario: data.id_beneficiario,
-          folio: data.folio,
-          nombres: data.identificadores?.nombres ?? "",
-          apellido_paterno: data.identificadores?.apellido_paterno ?? "",
-          apellido_materno: data.identificadores?.apellido_materno ?? "",
-          telefono: data.identificadores?.telefono ?? null,
-          email: data.identificadores?.email ?? null,
-        });
-      } catch (e) {
-        console.error("Error cargando beneficiario", e);
-      }
-    };
-
-    if (modo === "editar") {
-      cargarBeneficiario();
-    }
+    setBeneficiario({
+      id_beneficiario: cita.extendedProps.idBeneficiario,
+      folio: "",
+      nombres: cita.extendedProps.beneficiario ?? "",
+      apellido_paterno: cita.extendedProps.apellidoPaterno ?? "",
+      telefono: cita.extendedProps.telefonoBeneficiario ?? null,
+      email: cita.extendedProps.emailBeneficiario ?? null,
+    });
   }, [cita, modo]);
 
-  const valido = beneficiario && fecha && horario && especialista && servicio;
+  const valido = beneficiario && fecha && horario && especialista && servicio && motivo;
 
   // Se guardan los datos
   const handleGuardar = async () => {
@@ -270,10 +253,11 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
       id_catalogo_servicio: Number(servicio),
       fecha,
       hora: horario,
-      motivo: motivo || null,
+      motivo: motivo,
       notas: notas || null,
       estatus: estado,
     };
+    console.log("PAYLOAD CITA:", payload);
 
     try {
 
@@ -358,7 +342,7 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
               className="cp-input"
               type="date"
               value={fecha}
-              min={hoy()}
+              min={todayDate()}
               onChange={(e) => setFecha(e.target.value)}
             />
           </Field>
@@ -412,7 +396,7 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
           </Field>
         </div>
 
-        <Field label="Motivo">
+        <Field label="Motivo" required>
           <input
             className="cp-input"
             type="text"
@@ -464,7 +448,7 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
         >
           {guardando
             ? <><span className="cp-spinner-sm" /> Guardando…</>
-            : <><span>✓</span> Confirmar Cita</>
+            : (modo === "editar" ? <>✓ Guardar Cambios</> : <>✓ Confirmar Cita</>)
           }
         </button>
       </footer>
