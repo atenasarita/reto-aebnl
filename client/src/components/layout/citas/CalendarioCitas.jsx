@@ -15,11 +15,6 @@ export default function CalendarioCitas() {
 
   useEffect(() => {
     obtenerCitas();
-    // TODO borrar
-    console.log("Zona horaria del navegador:", Intl.DateTimeFormat().resolvedOptions().timeZone);
-    console.log("Fecha local navegador:", new Date().toString());
-    console.log("Fecha ISO UTC:", new Date().toISOString());
-
   }, []);
 
 

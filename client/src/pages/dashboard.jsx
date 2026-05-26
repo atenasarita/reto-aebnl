@@ -358,25 +358,11 @@ export default function Dashboard() {
   const fetchAgenda = async () => {
     const hoyFrontend = todayDate();
 
-    console.log("DASHBOARD timezone navegador:", Intl.DateTimeFormat().resolvedOptions().timeZone);
-    console.log("DASHBOARD fecha local todayDate():", hoyFrontend);
-    console.log("DASHBOARD new Date local:", new Date().toString());
-    console.log("DASHBOARD new Date UTC:", new Date().toISOString());
-
     const res = await fetch(`${API_URL}/api/dashboard/agenda-hoy`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
     const data = await res.json();
-
-    console.log("DASHBOARD agenda recibida:", data);
-    console.log("DASHBOARD fechas recibidas:", data.map((item) => ({
-      id: item.id_cita,
-      fecha: item.fecha,
-      hora: item.hora,
-      localInterpretada: new Date(`${item.fecha}T${item.hora}:00`).toString(),
-      utcInterpretada: new Date(`${item.fecha}T${item.hora}:00`).toISOString(),
-    })));
 
     if (!res.ok) {
       throw new Error(data.message || "Error al cargar agenda");
