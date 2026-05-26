@@ -227,35 +227,19 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
   }, []);
 
   useEffect(() => {
-    const cargarBeneficiario = async () => {
-      if (!cita?.extendedProps?.idBeneficiario) return;
-      try {
-        const res = await fetch(
-          `${API_URL}/api/buscar-beneficiarios/${cita.extendedProps.idBeneficiario}`
-        );
-        if (!res.ok) throw new Error();
-        const data = await res.json();
+    if (modo !== "editar" || !cita?.extendedProps?.idBeneficiario) return;
 
-        setBeneficiario({
-          id_beneficiario: data.id_beneficiario,
-          folio: data.folio,
-          nombres: data.identificadores?.nombres ?? "",
-          apellido_paterno: data.identificadores?.apellido_paterno ?? "",
-          apellido_materno: data.identificadores?.apellido_materno ?? "",
-          telefono: data.identificadores?.telefono ?? null,
-          email: data.identificadores?.email ?? null,
-        });
-      } catch (e) {
-        console.error("Error cargando beneficiario", e);
-      }
-    };
-
-    if (modo === "editar") {
-      cargarBeneficiario();
-    }
+    setBeneficiario({
+      id_beneficiario: cita.extendedProps.idBeneficiario,
+      folio: "",
+      nombres: cita.extendedProps.beneficiario ?? "",
+      apellido_paterno: cita.extendedProps.apellidoPaterno ?? "",
+      telefono: cita.extendedProps.telefonoBeneficiario ?? null,
+      email: cita.extendedProps.emailBeneficiario ?? null,
+    });
   }, [cita, modo]);
 
-  const valido = beneficiario && fecha && horario && especialista && servicio;
+  const valido = beneficiario && fecha && horario && especialista && servicio && motivo;
 
   // Se guardan los datos
   const handleGuardar = async () => {
@@ -270,7 +254,7 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
       id_catalogo_servicio: Number(servicio),
       fecha,
       hora: horario,
-      motivo: motivo || null,
+      motivo: motivo,
       notas: notas || null,
       estatus: estado,
     };
@@ -412,7 +396,7 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
           </Field>
         </div>
 
-        <Field label="Motivo">
+        <Field label="Motivo" required>
           <input
             className="cp-input"
             type="text"
@@ -464,7 +448,7 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
         >
           {guardando
             ? <><span className="cp-spinner-sm" /> Guardando…</>
-            : <><span>✓</span> Confirmar Cita</>
+            : (modo === "editar" ? <>✓ Guardar Cambios</> : <>✓ Confirmar Cita</>)
           }
         </button>
       </footer>

@@ -17,7 +17,9 @@ getCitas: `
 
         cs.nombre AS "servicio",
 
-        b.nombres as "beneficiario",
+        b.nombres || ' ' || b.apellido_paterno || ' ' || b.apellido_materno AS "beneficiario",
+        b.telefono         AS "telefonoBeneficiario",
+        b.email            AS "emailBeneficiario",
 
         c.notas AS "notas",
         c.estatus AS "estatus"

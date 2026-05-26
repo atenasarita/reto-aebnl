@@ -1,6 +1,6 @@
 
 export const especialistasQueries = {
- // Obtiene a los especialistas
+  // Obtiene a los especialistas
   getEspecialistas: `
     SELECT
       e.id_especialista,
@@ -11,7 +11,7 @@ export const especialistasQueries = {
     ORDER BY e.nombre_completo ASC
   `.trim(),
 
- // Obtiene los servicios
+  // Obtiene los servicios
   getCatalogoServicios: `
     SELECT
       id_catalogo_servicio,
@@ -24,25 +24,36 @@ export const especialistasQueries = {
 
   // Busca beneficiarios por nombre o folio
   searchBeneficiarios: `
-    SELECT
-      b.id_beneficiario,
-      b.folio,
-      i.nombres,
-      i.apellido_paterno,
-      i.apellido_materno,
-      i.telefono,
-      i.email
-    FROM beneficiario b
-    JOIN identificadores i ON i.id_beneficiario = b.id_beneficiario
-    WHERE b.estado = 'activo'
-      AND (
-        UPPER(i.nombres || ' ' || i.apellido_paterno || ' ' || i.apellido_materno)
-          LIKE UPPER('%' || :q || '%')
-        OR UPPER(b.folio) LIKE UPPER('%' || :q || '%')
+  SELECT
+    b.id_beneficiario,
+    b.folio,
+    i.nombres,
+    i.apellido_paterno,
+    i.apellido_materno,
+    i.telefono,
+    i.email
+  FROM beneficiario b
+  JOIN identificadores i ON i.id_beneficiario = b.id_beneficiario
+  WHERE b.estado = 'activo'
+    AND (
+      REGEXP_LIKE(
+        TRANSLATE(
+          UPPER(i.nombres || ' ' || i.apellido_paterno || ' ' || i.apellido_materno),
+          'ÁÉÍÓÚÀÈÌÒÙÄËÏÖÜÑ',
+          'AEIOUAEIOUAEIOUN'
+        ),
+        TRANSLATE(
+          UPPER(:q),
+          'ÁÉÍÓÚÀÈÌÒÙÄËÏÖÜÑ',
+          'AEIOUAEIOUAEIOUN'
+        ),
+        'i'
       )
-    ORDER BY i.apellido_paterno, i.nombres
-    FETCH FIRST 10 ROWS ONLY
-  `.trim(),
+      OR UPPER(b.folio) LIKE UPPER('%' || :q || '%')
+    )
+  ORDER BY i.apellido_paterno, i.nombres
+  FETCH FIRST 10 ROWS ONLY
+`.trim(),
 
   // Actualizar una cita existente
   updateCita: `
