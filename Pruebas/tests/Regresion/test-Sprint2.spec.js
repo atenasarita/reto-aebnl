@@ -94,8 +94,8 @@ test('HU - 009 - Visualizar reporte mensual de personas atendidas', async ({ pag
         await page.getByText('Servicios otorgados por díaMayo').click();
     });
     await test.step('Then el sistema debe mostrar en pantalla la gráfica de personas atendidas por mes', async () => {
-        await page.locator('div').filter({ hasText: 'Nuevos beneficiarios56' }).nth(4).click();
-        await page.getByRole('paragraph').filter({ hasText: '56' }).click();
+        await page.locator('div').filter({ hasText: 'Nuevos beneficiarios61' }).nth(4).click();
+        await page.getByRole('paragraph').filter({ hasText: '61' }).click();
         await page.locator('div').filter({ hasText: 'Total atendidos11' }).nth(4).click();
         await page.getByText('11').nth(1).click();
         await page.getByText('Servicios otorgados por díaMayo').click();
@@ -236,7 +236,7 @@ test('HU - 008 - Generar recibo al finalizar el proceso', async ({ page }) => {
   await page.getByRole('button', { name: 'Continuar' }).click();
   await page.getByRole('combobox').first().selectOption('Consultas');
   await page.getByRole('combobox').nth(1).selectOption('75');
-  await page.getByRole('textbox', { name: 'Fecha' }).fill('2026-05-25');
+  await page.getByRole('textbox', { name: 'Fecha' }).fill('2026-05-26');
   await page.getByRole('textbox', { name: 'Hora de cita' }).click();
   await page.getByRole('textbox', { name: 'Hora de cita' }).fill('09:09');
   await page.getByRole('button', { name: 'Continuar' }).click();

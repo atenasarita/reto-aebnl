@@ -12,8 +12,9 @@ function generarCURP() {
 
   return (
     rand(letras, 4) +   // iniciales
-    fecha +             // fecha nacimiento
-    rand(letras, 6) +   // entidad + consonantes
+    fecha + 
+    rand("HM", 1) +     // fecha nacimiento
+    rand(letras, 5) +   // entidad + consonantes
     rand(numeros, 2)    // homoclave
   );
 }

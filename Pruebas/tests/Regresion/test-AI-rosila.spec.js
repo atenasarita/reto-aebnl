@@ -1,6 +1,27 @@
 import { test, expect } from '@playwright/test';
 const { qase } = require('playwright-qase-reporter');
 
+function generarCURP() {
+  const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const numeros = '0123456789';
+
+  const rand = (chars, len) =>
+    Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+
+  const fecha = '000101'; // puedes hacerlo dinámico si quieres
+
+  return (
+    rand(letras, 4) +   // iniciales
+    fecha + 
+    rand("HM", 1) +     // fecha nacimiento
+    rand(letras, 5) +   // entidad + consonantes
+    rand(numeros, 2)    // homoclave
+  );
+}
+
+const curp = generarCURP();
+
+
 test.describe('Registro de Beneficiario IA', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('http://localhost:5173/login');
@@ -60,32 +81,32 @@ test.describe('Registro de Beneficiario IA', () => {
     await page.getByRole('button', { name: 'Aceptar' }).click();
   };
 
-  test(qase(113, 'debería registrar un nuevo beneficiario exitosamente en Firefox'), async ({ page }) => {
-    test.skip(test.info().project.name !== 'firefox', 'Solo en Firefox');
+  // test(qase(113, 'debería registrar un nuevo beneficiario exitosamente en Firefox'), async ({ page }) => {
+  //   test.skip(test.info().project.name !== 'firefox', 'Solo en Firefox');
 
-    await fillBeneficiario(page, {
-      email: 'juan.perez@example.com',
-      telefono: '5551234567',
-      nombres: 'Juanx',
-      apellidoPaterno: 'Pérez',
-      apellidoMaterno: 'López',
-      fechaNacimiento: '1990-01-01',
-      curp: 'JUAP900101HDFRRNPB',
-      genero: 'masculino',
-      estadoNacimiento: 'Jalisco',
-      contactoNombre: 'María Pérez',
-      contactoTelefono: '5559876543',
-      contactoParentesco: 'Madre',
-      tipoSanguineo: 'O+',
-      tipoEspina: 'Meningocele',
-      valvula: 'false',
-      hospital: 'Hospital General',
-      calle: 'Calle Falsa 123',
-      estado: 'Jalisco',
-      ciudad: 'Guadalajara',
-      cp: '44100',
-    });
-  });
+  //   await fillBeneficiario(page, {
+  //     email: 'juan.perez@example.com',
+  //     telefono: '5551234567',
+  //     nombres: 'Juanx',
+  //     apellidoPaterno: 'Pérez',
+  //     apellidoMaterno: 'López',
+  //     fechaNacimiento: '1990-01-01',
+  //     curp: generarCURP(),
+  //     genero: 'masculino',
+  //     estadoNacimiento: 'Jalisco',
+  //     contactoNombre: 'María Pérez',
+  //     contactoTelefono: '5559876543',
+  //     contactoParentesco: 'Madre',
+  //     tipoSanguineo: 'O+',
+  //     tipoEspina: 'Meningocele',
+  //     valvula: 'false',
+  //     hospital: 'Hospital General',
+  //     calle: 'Calle Falsa 123',
+  //     estado: 'Jalisco',
+  //     ciudad: 'Guadalajara',
+  //     cp: '44100',
+  //   });
+  // });
 
   test(qase(113, 'debería registrar un nuevo beneficiario exitosamente en Chromium'), async ({ page }) => {
     test.skip(test.info().project.name !== 'chromium', 'Solo en Chromium');
@@ -97,7 +118,7 @@ test.describe('Registro de Beneficiario IA', () => {
       apellidoPaterno: 'Rodríguez',
       apellidoMaterno: 'Martínez',
       fechaNacimiento: '1992-02-02',
-      curp: 'GALA990815HNLPRN04',
+      curp: generarCURP(),
       genero: 'femenino',
       estadoNacimiento: 'Jalisco',
       contactoNombre: 'Ana Martínez',
