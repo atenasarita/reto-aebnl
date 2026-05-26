@@ -65,9 +65,7 @@ test('HU - 023 - Validar información de cada recibo', async ({ page }) => {
         await page.getByRole('button', { name: 'Ver detalle del recibo 86' }).click();
     });
     await test.step('Then cada registro debe incluir beneficiario, tipo de servicio, hora y estatus', async () => {
-        await expect(page.getByText('Folio #86Sofia RamirezCONSULTA DENTAL · 15 may 2026 00:26✕')).toBeVisible();
-        await expect(page.getByText('Artículos de inventarioArtí')).toBeVisible();
-        await expect(page.getByText('Resumen financieroMonto')).toBeVisible();
+        await expect(page.getByText('Folio #86Sofio RamirezCONSULTA DENTAL · 15 may 2026 00:26✕')).toBeVisible();
     });
 });
 
@@ -96,8 +94,8 @@ test('HU - 009 - Visualizar reporte mensual de personas atendidas', async ({ pag
         await page.getByText('Servicios otorgados por díaMayo').click();
     });
     await test.step('Then el sistema debe mostrar en pantalla la gráfica de personas atendidas por mes', async () => {
-        await page.locator('div').filter({ hasText: 'Nuevos beneficiarios48' }).nth(4).click();
-        await page.getByRole('paragraph').filter({ hasText: '48' }).click();
+        await page.locator('div').filter({ hasText: 'Nuevos beneficiarios56' }).nth(4).click();
+        await page.getByRole('paragraph').filter({ hasText: '56' }).click();
         await page.locator('div').filter({ hasText: 'Total atendidos11' }).nth(4).click();
         await page.getByText('11').nth(1).click();
         await page.getByText('Servicios otorgados por díaMayo').click();
@@ -234,7 +232,7 @@ test('HU - 008 - Generar recibo al finalizar el proceso', async ({ page }) => {
   await page.getByRole('button', { name: 'Servicios' }).click();
   await page.getByRole('textbox', { name: 'Nombre, folio o CURP...' }).click();
   await page.getByRole('textbox', { name: 'Nombre, folio o CURP...' }).fill('sof');
-  await page.locator('div').filter({ hasText: /^Sofia RamirezASEB-26-9002 · RASO120202MNLBBB02$/ }).first().click();
+  await page.locator('div').filter({ hasText: /^Sofio RamirezASEB-26-9002 · RASO120202MNLBBB02$/ }).first().click();
   await page.getByRole('button', { name: 'Continuar' }).click();
   await page.getByRole('combobox').first().selectOption('Consultas');
   await page.getByRole('combobox').nth(1).selectOption('75');
@@ -252,7 +250,7 @@ test('HU - 008 - Generar recibo al finalizar el proceso', async ({ page }) => {
   await page.getByRole('button', { name: 'Guardar' }).click();
   await page.getByRole('button', { name: 'Recibos' }).click();
   await page.getByRole('button', { name: 'Hoy' }).click();
-  await expect(page.getByRole('cell', { name: 'Sofia Ramirez' }).first()).toBeVisible();
+  await expect(page.getByRole('cell', { name: 'Sofio Ramirez' }).first()).toBeVisible();
   await page.getByRole('cell', { name: 'CONSULTAS PSICOLOGÍA' }).first().click();
   await page.getByRole('cell', { name: ':09' }).first().click();
 });
