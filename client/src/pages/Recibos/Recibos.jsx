@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useId, useRef } from "react";
 import "../styles/Recibos.css";
+import PropTypes from "prop-types";
 
 import { API_URL } from '../../utils/config'
 import { todayDate } from '../../utils/dateTime';
@@ -32,6 +33,10 @@ function Skeleton({ rows = 4 }) {
   );
 }
 
+Skeleton.propTypes = {
+  rows: PropTypes.number,
+};
+
 // Método de pago
 function PagoBadge({ metodo }) {
   const map = {
@@ -41,6 +46,10 @@ function PagoBadge({ metodo }) {
   };
   const { label, cls } = map[metodo] ?? { label: metodo, cls: "" };
   return <span className={`badge ${cls}`}>{label}</span>;
+}
+
+PagoBadge.propTypes = {
+  metodo: PropTypes.oneOf(["Efectivo", "Tarjeta", "Donación"]).isRequired,
 }
 
 // Detalles
