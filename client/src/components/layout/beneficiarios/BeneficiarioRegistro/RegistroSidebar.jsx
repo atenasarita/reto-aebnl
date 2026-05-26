@@ -5,12 +5,6 @@ function RegistroSidebar({
   currentStep,
   touchedSteps,
   validateStep,
-  loading,
-  areAllStepsComplete,
-  onNext,
-  onPrev,
-  onSubmit,
-  onCancel
 }) {
   return (
     <aside className="sidebar">
@@ -19,13 +13,12 @@ function RegistroSidebar({
           const isComplete = validateStep(index);
           const isTouched = touchedSteps.includes(index);
 
+          const stepState =
+            index === currentStep ? 'active' :
+            index < currentStep ? 'completed' : '';
+
           return (
-            <li
-              key={index}
-              className={`step ${
-                index === currentStep ? 'active' : index < currentStep ? 'completed' : ''
-              }`}
-            >
+            <li key={index} className={`step ${stepState}`}>
               {isTouched ? (
                 isComplete ? (
                   <FaCheckCircle className="step-icon success" />
@@ -33,7 +26,7 @@ function RegistroSidebar({
                   <FaExclamationCircle className="step-icon warning" />
                 )
               ) : (
-                <step.icon className="step-icon" />
+                <span className="step-dot">{index + 1}</span>
               )}
               {step.label}
             </li>
@@ -41,10 +34,10 @@ function RegistroSidebar({
         })}
       </ul>
 
-      <div className="sidebar-buttons">
+      {/* <div className="sidebar-buttons">
         {currentStep < registroSteps.length - 1 ? (
           <button className="btn btn-primary" onClick={onNext}>
-            Continuar
+            Continuar →
           </button>
         ) : (
           <button
@@ -58,14 +51,14 @@ function RegistroSidebar({
 
         {currentStep > 0 && (
           <button className="btn btn-secondary" onClick={onPrev}>
-            Anterior
+            ← Anterior
           </button>
         )}
 
         <button className="btn btn-danger" onClick={onCancel}>
           Cancelar
         </button>
-      </div>
+      </div> */}
     </aside>
   );
 }

@@ -58,7 +58,7 @@ export const especialistasQueries = {
   // Actualizar una cita existente
   updateCita: `
     UPDATE citas SET
-      fecha                = :fecha,
+      fecha                = TO_DATE(:fecha, 'YYYY-MM-DD'),
       hora                 = :hora,
       id_especialista      = :id_especialista,
       id_catalogo_servicio = :id_catalogo_servicio,

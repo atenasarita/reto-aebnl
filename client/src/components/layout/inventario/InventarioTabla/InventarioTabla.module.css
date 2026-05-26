@@ -31,6 +31,10 @@
   text-transform: uppercase;
 }
 
+.celdaCabecera:last-child {
+  text-align: center;
+}
+
 .cuerpo {
   min-height: 120px;
 }

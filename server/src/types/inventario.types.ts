@@ -49,13 +49,21 @@ export interface CreateObjeto_categoriaInput {
 }
 
 export interface CreateInventarioInput {
-    clave: string;
+    clave?: string;
     nombre: string;
     id_categoria: number;
     unidad_medida: string;
     precio: number;
     cantidad?: number;
     activo?: InventarioActivoInput;
+}
+
+export interface UpdateInventarioInput {
+    clave: string;
+    nombre: string;
+    id_categoria: number;
+    unidad_medida: string;
+    precio: number;
 }
 
 export interface CreateVenta_inventarioInput {

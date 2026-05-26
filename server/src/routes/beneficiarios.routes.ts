@@ -12,6 +12,7 @@ import {
 } from '../schemas/beneficiarios.schemas';
 import { uploadFoto } from '../middlewares/upload.middleware';
 import { subirFotoACloudinary } from '../services/cloudinary.service';
+
 const router = Router();
 
 const beneficiarioRepository = new OracleBeneficiarioRepository();
@@ -60,6 +61,13 @@ router.get(
   beneficiariosHandler.getPadresByBeneficiarioId
 );
 
+router.put(
+  '/beneficiarios/:id_beneficiario',
+  authenticateJWT,
+  authorizeRoles('administrador', 'operador'),
+  beneficiariosHandler.updateBeneficiario
+);
+
 router.post(
   '/beneficiarios',
   authenticateJWT,
@@ -99,8 +107,8 @@ router.post(
   uploadFoto.single('fotografia'),
   async (req, res) => {
     try {
-      if(!req.file){
-        return res.status(400).json({ message: 'No se recibio nunguna foto'});
+      if (!req.file) {
+        return res.status(400).json({ message: 'No se recibio nunguna foto' });
       }
 
       const resultado = await subirFotoACloudinary(req.file);
@@ -110,8 +118,8 @@ router.post(
         publicId: resultado.publicId,
         nombre: resultado.nombre,
       });
-    } catch (error){
-      console.error('Error subiendo foto a Cloudinary',error);
+    } catch (error) {
+      console.error('Error subiendo foto a Cloudinary', error);
       return res.status(500).json({
         message: 'Error al subir la foto',
       });

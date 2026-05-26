@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import "./styles/CitasPop.css";
 import { API_URL } from "../../utils/config";
+import { todayDate } from "../../utils/dateTime";
 
-// const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const HORARIOS = [
   { label: "09:00 AM - 10:00 AM", hora: "09:00" },
@@ -16,11 +16,16 @@ const HORARIOS = [
 
 const ESTADOS = ["programada", "completada", "cancelada"];
 
-const hoy = () => {
-  const d = new Date();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${d.getFullYear()}-${mm}-${dd}`;
+const getDateFromCalendar = (cita) => {
+  if (cita?.startStr) return cita.startStr.split("T")[0];
+  if (typeof cita?.start === "string") return cita.start.split("T")[0];
+  return todayDate();
+};
+
+const getTimeFromCalendar = (cita) => {
+  if (cita?.startStr) return cita.startStr.split("T")[1]?.slice(0, 5);
+  if (typeof cita?.start === "string") return cita.start.split("T")[1]?.slice(0, 5);
+  return HORARIOS[0].hora;
 };
 
 // Componentes compartidos
@@ -158,16 +163,10 @@ function EstadoPicker({ value, onChange }) {
 // Formulario
 function CitasForm({ onClose, onSuccess, cita, modo }) {
   const [beneficiario, setBeneficiario] = useState(null);
-  const [fecha, setFecha] = useState(
-    cita?.start
-      ? new Date(cita.start).toISOString().split("T")[0]
-      : hoy()
-  );
-  const [horario, setHorario] = useState(
-    cita?.start
-      ? new Date(cita.start).toTimeString().slice(0, 5)
-      : HORARIOS[0].hora
-  );
+  const [fecha, setFecha] = useState(getDateFromCalendar(cita));
+
+  const [horario, setHorario] = useState(getTimeFromCalendar(cita));
+
   const [especialista, setEspecialista] = useState(
     cita?.extendedProps?.id_especialista
       ? String(cita.extendedProps.id_especialista)
@@ -258,6 +257,7 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
       notas: notas || null,
       estatus: estado,
     };
+    console.log("PAYLOAD CITA:", payload);
 
     try {
 
@@ -342,7 +342,7 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
               className="cp-input"
               type="date"
               value={fecha}
-              min={hoy()}
+              min={todayDate()}
               onChange={(e) => setFecha(e.target.value)}
             />
           </Field>

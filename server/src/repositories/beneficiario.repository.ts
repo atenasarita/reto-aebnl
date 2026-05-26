@@ -529,6 +529,108 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         }
     }
 
+    async updateBeneficiario(id_beneficiario: number, input: any): Promise<void> {
+        let connection: oracledb.Connection | undefined;
+
+        try {
+            connection = await this.oracleConnection.getConnection();
+
+            await connection.execute(
+                `
+                UPDATE IDENTIFICADORES
+                SET
+                    NOMBRES = :nombres,
+                    APELLIDO_PATERNO = :apellido_paterno,
+                    APELLIDO_MATERNO = :apellido_materno,
+                    CURP = :curp,
+                    FECHA_NACIMIENTO = TO_DATE(:fecha_nacimiento, 'YYYY-MM-DD'),
+                    ESTADO_NACIMIENTO = :estado_nacimiento,
+                    TELEFONO = :telefono,
+                    EMAIL = :email
+                WHERE ID_BENEFICIARIO = :id_beneficiario
+                `,
+                {
+                    nombres: input.nombres,
+                    apellido_paterno: input.apellido_paterno,
+                    apellido_materno: input.apellido_materno,
+                    curp: input.CURP,
+                    fecha_nacimiento: input.fecha_nacimiento,
+                    estado_nacimiento: input.estado_nacimiento,
+                    telefono: input.telefono,
+                    email: input.email,
+                    id_beneficiario
+                },
+                { autoCommit: false }
+            );
+
+            await connection.execute(
+                `
+                UPDATE BENEFICIARIO
+                SET GENERO = :genero
+                WHERE ID_BENEFICIARIO = :id_beneficiario
+                `,
+                {
+                    genero: input.genero,
+                    id_beneficiario
+                },
+                { autoCommit: false }
+            );
+
+            await connection.execute(
+                `
+                UPDATE DATOS_MEDICOS
+                SET
+                    CONTACTO_NOMBRE = :contacto_nombre,
+                    CONTACTO_TELEFONO = :contacto_telefono,
+                    CONTACTO_PARENTESCO = :contacto_parentesco,
+                    TIPO_SANGUINEO = :tipo_sanguineo,
+                    HOSPITAL = :hospital
+                WHERE ID_BENEFICIARIO = :id_beneficiario
+                `,
+                {
+                    contacto_nombre: input.contacto_nombre,
+                    contacto_telefono: input.contacto_telefono,
+                    contacto_parentesco: input.contacto_parentesco,
+                    tipo_sanguineo: input.tipo_sanguineo,
+                    hospital: input.hospital,
+                    id_beneficiario
+                },
+                { autoCommit: false }
+            );
+
+            await connection.execute(
+                `
+                UPDATE DIRECCION
+                SET
+                    DOMICILIO_CALLE = :domicilio_calle,
+                    DOMICILIO_CIUDAD = :domicilio_ciudad,
+                    DOMICILIO_ESTADO = :domicilio_estado,
+                    DOMICILIO_CP = :domicilio_cp
+                WHERE ID_BENEFICIARIO = :id_beneficiario
+                `,
+                {
+                    domicilio_calle: input.domicilio_calle,
+                    domicilio_ciudad: input.domicilio_ciudad,
+                    domicilio_estado: input.domicilio_estado,
+                    domicilio_cp: input.domicilio_cp,
+                    id_beneficiario
+                },
+                { autoCommit: false }
+            );
+
+            await connection.commit();
+        } catch (error) {
+            if (connection) {
+                await connection.rollback();
+            }
+            throw error;
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
+        }
+    }
+
     private async insertIdentificadores(
         connection: oracledb.Connection,
         id_beneficiario: number,
@@ -667,9 +769,6 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         const fechaFin = addDays(addMonthsKeepingCalendar(fechaInicio, meses), -1);
         const precioTotal = Number((input.precio_mensual * input.meses).toFixed(2));
         const estadoMembresia = fechaFin >= startOfDay(new Date()) ? 'activa' : 'vencida';
-        // console.log('input.fecha_inicio:', input.fecha_inicio);
-        // console.log('fechaInicio:', fechaInicio);
-        // console.log('fechaFin:', fechaFin);
 
         await connection.execute(
             INSERT_MEMBRESIA,
