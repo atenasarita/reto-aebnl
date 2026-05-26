@@ -29,7 +29,6 @@ export default function DetalleCita({cita, onClose, onRefresh}){
                     </p>
                 </div>
                 
-                {/* TODO funcionalidad de boton modificar */}
                 <button className="modificar-cita-btn"
                     onClick={() => {
                         setPopupAbierto(true);
@@ -48,6 +47,7 @@ export default function DetalleCita({cita, onClose, onRefresh}){
                 onSuccess={() => {
                     setPopupAbierto(false);
                     onRefresh?.();
+                    onClose?.();
                 }}
             />
         </>
