@@ -71,7 +71,7 @@ function Navbar({
     },
     {
       key: "preregistros",
-      title: "Prerregistros nuevos",
+      title: "Pre-registros nuevos",
       text: "Visualiza nuevas solicitudes pendientes.",
       count: 0,
       to: "/dashboard",
@@ -165,11 +165,11 @@ function Navbar({
           },
           {
             key: "preregistros",
-            title: "Prerregistros nuevos",
+            title: "Preregistros nuevos",
             text:
               preregistrosCount > 0
-                ? `${preregistrosCount} prerregistro(s) pendiente(s).`
-                : "Sin nuevos prerregistros pendientes.",
+                ? `${preregistrosCount} preregistro(s) pendiente(s).`
+                : "Sin nuevos preregistros pendientes.",
             count: preregistrosCount,
             to: "/dashboard",
           },

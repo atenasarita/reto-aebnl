@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../styles/Prerregistro.css";
+import "../styles/Preregistro.css";
 
 import { API_URL } from '../../utils/config';
 import {espinaBifidaOptions} from '../../utils/espinaBifidaTypes';
@@ -17,7 +17,7 @@ function StepIndicator({ currentStep, completedSteps, onGoTo }) {
         <div className="brand-icon">ASEB</div>
         <div className="sidebar-brand-text">
           <span className="sidebar-brand-name">Asociación Espina Bífida</span>
-          <span className="sidebar-brand-sub">Prerregistro</span>
+          <span className="sidebar-brand-sub">Preregistro</span>
         </div>
       </div>
 
@@ -330,7 +330,7 @@ function StepSuccess({ data }) {
           <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
-      <h2>¡Prerregistro completado!</h2>
+      <h2>¡Preregistro completado!</h2>
       <p className="success-name">
         {data.identidad.nombre} {data.identidad.segundoNombre ? `${data.identidad.segundoNombre} ` : ""}{data.identidad.paterno} {data.identidad.materno}
       </p>
@@ -338,7 +338,7 @@ function StepSuccess({ data }) {
         Tus datos han sido enviados correctamente. El personal de la asociación se comunicará contigo para completar el proceso de registro.
       </p>
       <div className="success-note">
-        <p>Guarda o toma captura de este mensaje como confirmación de tu prerregistro.</p>
+        <p>Guarda o toma captura de este mensaje como confirmación de tu preregistro.</p>
       </div>
       <button className="btn-primary" onClick={() => window.location.reload()}>
         Registrar otra persona
@@ -348,7 +348,7 @@ function StepSuccess({ data }) {
 }
 
 
-export default function Prerregistro() {
+export default function Preregistro() {
   const [step, setStep] = useState(0);
   const [completed, setCompleted] = useState([]);
   const [formData, setFormData] = useState({});
@@ -410,12 +410,12 @@ export default function Prerregistro() {
   };
 
   return (
-    <div className="prerregistro-container">
+    <div className="preregistro-container">
       <StepIndicator currentStep={step} completedSteps={completed} onGoTo={goTo} />
       <main className="main-content">
-        <section className="prerregistro-shell">
-          <header className="prerregistro-header">
-            <h1>Prerregistro de Beneficiario</h1>
+        <section className="preregistro-shell">
+          <header className="preregistro-header">
+            <h1>Preregistro de Beneficiario</h1>
             <p>Completa la información en los 3 pasos para enviar la solicitud.</p>
           </header>
 

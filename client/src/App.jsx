@@ -8,7 +8,7 @@ import Login from "./pages/login/login";
 
 // Páginas internas (main)
 import GestionBeneficiarios from "./pages/GestionBeneficiarios/GestionBeneficiarios";
-import Prerregistro from "./pages/prerregistro/Prerregistro";
+import Preregistro from "./pages/preregistro/Preregistro";
 import Inventario from "./pages/inventario/Inventario";
 import RegistroBeneficiario from "./pages/registro_beneficiario/registro_beneficiario";
 import Recibos from './pages/Recibos/Recibos' 
@@ -30,7 +30,7 @@ export default function App() {
       <Routes>
         {/* Públicas */}
         <Route path="/login" element={<Login />} />
-        <Route path="/prerregistro" element={<Prerregistro />} />
+        <Route path="/preregistro" element={<Preregistro />} />
 
         {/* Privadas: requieren sesión activa */}
         <Route element={<RequireAuth />}>

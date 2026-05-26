@@ -39,7 +39,7 @@ export async function crearPreregistro(req: Request, res: Response): Promise<voi
     res.status(201).json({
       id_preregistro: nuevo.id_preregistro,
       estado:         nuevo.estado,
-      mensaje:        "Prerregistro creado exitosamente.",
+      mensaje:        "Preregistro creado exitosamente.",
     });
   } catch (err) {
     console.error("[preregistros] Error al crear:", err);
@@ -70,7 +70,7 @@ export async function obtenerPreregistro(req: Request, res: Response): Promise<v
   try {
     const registro = await repo.obtenerPorId(id);
     if (!registro) {
-      res.status(404).json({ message: "Prerregistro no encontrado." });
+      res.status(404).json({ message: "Preregistro no encontrado." });
       return;
     }
     res.json(registro);
