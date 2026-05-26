@@ -10,7 +10,6 @@ import { API_URL } from '../../../utils/config'
 const NAV_LINKS = [
   { label: "Inicio", to: "/dashboard" },
   { label: "Beneficiarios", to: "/beneficiarios" },
-  { label: "Prerregistro", to: "/prerregistro" },
   { label: "Servicios", to: "/registro_servicios" },
   { label: "Inventario", to: "/inventario" },
   { label: "Citas", to: "/citas" },
@@ -75,7 +74,7 @@ function Navbar({
       title: "Prerregistros nuevos",
       text: "Visualiza nuevas solicitudes pendientes.",
       count: 0,
-      to: "/prerregistro",
+      to: "/dashboard",
     },
   ]);
 

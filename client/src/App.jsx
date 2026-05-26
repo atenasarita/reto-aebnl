@@ -27,8 +27,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Pública */}
+        {/* Públicas */}
         <Route path="/login" element={<Login />} />
+        <Route path="/prerregistro" element={<Prerregistro />} />
 
         {/* Privadas dentro del layout (Navbar + etc) */}
         <Route element={<MainLayout />}>
@@ -40,9 +41,6 @@ export default function App() {
 
           {/* Registro de Nuevo Beneficiario */}
           <Route path="/registro_beneficiario" element={<RegistroBeneficiario /> }/>
-
-          {/* Prerregistro */}
-          <Route path="/prerregistro" element={<Prerregistro />} />
 
           {/* Registro de Servicios */}
           <Route path="/registro_servicios" element={<RegistroServicios />} />

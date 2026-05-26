@@ -4,7 +4,6 @@ import Navbar from "./Navbar/Navbar";
 const RUTAS_NAV = [
   { prefix: "/registro_beneficiario", label: "Beneficiarios", exact: true },
   { prefix: "/beneficiarios", label: "Beneficiarios" },
-  { prefix: "/prerregistro", label: "Prerregistro" },
   { prefix: "/registro_servicios", label: "Servicios" },
   { prefix: "/inventario", label: "Inventario" },
   { prefix: "/citas", label: "Citas" },
@@ -14,7 +13,7 @@ const RUTAS_NAV = [
 ];
 
 /** Rutas con layout propio full-bleed (sidebar / wizard): sin page-shell externo */
-const FULL_BLEED_PREFIXES = ["/prerregistro", "/registro_beneficiario"];
+const FULL_BLEED_PREFIXES = ["/registro_beneficiario"];
 
 function isFullBleedPath(pathname) {
   return FULL_BLEED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
