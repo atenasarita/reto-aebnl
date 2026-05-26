@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom'
 import { API_URL } from '../../utils/config'
 
 
-// 1. Fix ESTATUS_OPTIONS — lowercase to match API
 const ESTATUS_OPTIONS = [
   { label: 'Todos',         value: ''               },
   { label: 'Activo',        value: 'activo'         }, 
@@ -18,13 +17,11 @@ const ESTATUS_OPTIONS = [
   { label: 'Por vencer',    value: 'por-vencer'     },
 ]
 
-
-
 function GestionBeneficiarios() {
-  const [all, setAll]           = useState([])   // raw list from API
-  const [filtered, setFiltered] = useState([])   // what the grid shows
+  const [all, setAll]           = useState([])   
+  const [filtered, setFiltered] = useState([])  
   const [query, setQuery]       = useState('')
-  const [estatus, setEstatus]   = useState('')   // '' = show all
+  const [estatus, setEstatus]   = useState('')   
   const [loading, setLoading]   = useState(false)
   const [error, setError]       = useState('')
   const navigate = useNavigate();

@@ -2,7 +2,6 @@ import Dropdown from '../../ui/Dropdown'
 import SearchBar from '../../ui/SearchBar' 
 import "../../../pages/styles/BusquedaBeneficiarioVista.css"
 
-/** Valores internos; el servidor los traduce a efectivo|tarjeta|donacion para Oracle. */
 const METODOS_PAGO = [
   { label: "Efectivo", value: "efectivo" },
   { label: "Transferencia", value: "transferencia" },
@@ -24,7 +23,7 @@ export default function StepFinanzas({
   const totalNum = parseFloat(total) || 0;
   const pagadoNum = parseFloat(montoPagado) || 0;
   const descuentoNum = parseFloat(descuento) || 0;
-  const totalConDescuento = Math.max(0, totalNum - descuentoNum);
+  const totalConDescuento = parseFloat(totalNum - descuentoNum);
   const saldo = totalConDescuento - pagadoNum;
 
   const metodoOptions = [
@@ -37,7 +36,19 @@ export default function StepFinanzas({
 
       {/* Aportación */}
       <div className='field' style={{ marginBottom: 20 }}>
-        <label className='fieldLabel'>Aportación de la familia</label>
+
+        <div className='field' style={{ maxWidth: 220, marginBottom: 20 }}>
+          <label className='fieldLabel'>Aporte de la Asociación</label>
+          <SearchBar
+            placeholder="0.00"
+            value={String(descuento ?? '')}
+            onChange={(val) => setDescuento(val)}
+            debounceMs={0}
+            className="search-finanzas"
+          />
+        </div>
+
+      <label className='fieldLabel'>Aportación de la familia</label>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <SearchBar
             placeholder="0.00"
@@ -72,16 +83,7 @@ export default function StepFinanzas({
       </div>
 
       {/* Descuento */}
-      <div className='field' style={{ maxWidth: 220, marginBottom: 20 }}>
-        <label className='fieldLabel'>Descuento ($)</label>
-        <SearchBar
-          placeholder="0.00"
-          value={String(descuento ?? '')}
-          onChange={(val) => setDescuento(val)}
-          debounceMs={0}
-          className="search-finanzas"
-        />
-      </div>
+      
 
       {/* Resumen */}
       <div className='finanzasResumen'>
