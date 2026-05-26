@@ -284,33 +284,60 @@ export default function Recibos() {
 
   const [seleccion, setSeleccion] = useState(null);
 
-  const cargarDia = useCallback(async (f) => {
-    setLoadingDay(true); setErrorDay("");
+  const cargarDia = useCallback(async (f, signal) => {
+    setLoadingDay(true);
+    setErrorDay("");
+
     try {
-      const res = await fetch(`${API_URL}/api/recibos?fecha=${f}`);
+      const res = await fetch(`${API_URL}/api/recibos?fecha=${f}`, { signal });
+
       if (!res.ok) throw new Error(`Error ${res.status}`);
-      setRecibosDay(await res.json());
+
+      const data = await res.json();
+      setRecibosDay(data);
     } catch (e) {
-      setErrorDay(e.message || "No se pudo cargar."); setRecibosDay([]);
-    } finally { setLoadingDay(false); }
+      if (e.name === "AbortError") return;
+
+      setErrorDay(e.message || "No se pudo cargar.");
+      setRecibosDay([]);
+    } finally {
+      if (!signal.aborted) {
+        setLoadingDay(false);
+      }
+    }
   }, []);
 
-  const cargarMes = useCallback(async (f) => {
+  const cargarMes = useCallback(async (f, signal) => {
     setLoadingMes(true);
     setErrorMes("");
+
     try {
       const mes = f.slice(0, 7);
-      const res = await fetch(`${API_URL}/api/recibos/resumen-mes?fecha=${mes}`);
+      const res = await fetch(`${API_URL}/api/recibos/resumen-mes?fecha=${mes}`, { signal });
+
       if (!res.ok) throw new Error(`Error ${res.status}`);
-      setRecibosMes(await res.json());
+
+      const data = await res.json();
+      setRecibosMes(data);
     } catch (e) {
-      setErrorMes(e.message || "No se pudo cargar."); setRecibosMes([]);
-    } finally { setLoadingMes(false); }
+      if (e.name === "AbortError") return;
+
+      setErrorMes(e.message || "No se pudo cargar.");
+      setRecibosMes([]);
+    } finally {
+      if (!signal.aborted) {
+        setLoadingMes(false);
+      }
+    }
   }, []);
 
   useEffect(() => {
-    cargarDia(fecha);
-    cargarMes(fecha);
+    const controller = new AbortController();
+
+    cargarDia(fecha, controller.signal);
+    cargarMes(fecha, controller.signal);
+
+    return () => controller.abort();
   }, [fecha, cargarDia, cargarMes]);
 
   const normalizar = (str) =>

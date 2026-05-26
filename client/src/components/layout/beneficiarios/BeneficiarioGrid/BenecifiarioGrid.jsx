@@ -8,7 +8,13 @@ import { API_URL } from '../../../../utils/config'
 
 const ITEMS_PER_PAGE = 8
 
-function BeneficiarioGrid({ data, loading, onRefresh }) {
+function BeneficiarioGrid({
+  data,
+  loading,
+  onRefresh,
+  beneficiarioEditId = null,
+  clearEditQuery
+}) {
   const [currentPage, setCurrentPage] = useState(1)
   const [selected, setSelected] = useState(null)
   const [openInEditMode, setOpenInEditMode] = useState(false)
@@ -51,6 +57,16 @@ function BeneficiarioGrid({ data, loading, onRefresh }) {
       alert('No se pudo abrir la edición del beneficiario.')
     }
   }
+
+  useEffect(() => {
+    if (!beneficiarioEditId || loading) return
+
+    handleEdit(beneficiarioEditId)
+
+    if (clearEditQuery) {
+      clearEditQuery()
+    }
+  }, [beneficiarioEditId, loading])
 
   async function handleDownloadPdf(id) {
     try {

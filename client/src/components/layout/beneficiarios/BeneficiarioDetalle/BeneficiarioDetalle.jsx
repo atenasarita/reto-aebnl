@@ -20,7 +20,12 @@ function formatInputDate(dateStr) {
   return String(dateStr).split('T')[0]
 }
 
-function BeneficiarioDetalle({ beneficiario, startInEditMode = false, onUpdated }) {
+function BeneficiarioDetalle({
+  beneficiario,
+  startInEditMode = false,
+  onUpdated,
+  onClose
+}) {
   const {
     id_beneficiario,
     folio,
@@ -151,7 +156,7 @@ function BeneficiarioDetalle({ beneficiario, startInEditMode = false, onUpdated 
     }))
   }
 
-  const handleCancel = () => {
+  const resetForm = () => {
     setFormData({
       nombres: nombres || '',
       apellido_paterno: apellido_paterno || '',
@@ -172,7 +177,10 @@ function BeneficiarioDetalle({ beneficiario, startInEditMode = false, onUpdated 
       domicilio_estado: domicilio_estado || '',
       domicilio_cp: domicilio_cp || ''
     })
+  }
 
+  const handleCancel = () => {
+    resetForm()
     setIsEditing(false)
   }
 
@@ -197,10 +205,14 @@ function BeneficiarioDetalle({ beneficiario, startInEditMode = false, onUpdated 
         throw new Error(data.message || 'Error al actualizar beneficiario')
       }
 
-      setIsEditing(false)
-
       if (onUpdated) {
         await onUpdated()
+      }
+
+      setIsEditing(false)
+
+      if (onClose) {
+        onClose()
       }
     } catch (error) {
       alert(error.message)
