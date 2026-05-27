@@ -10,7 +10,7 @@ async function getConnection(): Promise<oracledb.Connection> {
 }
 
 export class DashboardRepository {
-  async getAgendaHoy() {
+  async getAgendaHoy(fecha: string) {
     let conn: oracledb.Connection | undefined;
 
     try {
@@ -18,7 +18,7 @@ export class DashboardRepository {
 
       const result = await conn.execute(
         dashboardQueries.getAgendaHoy,
-        {},
+        { fecha },
         { outFormat: oracledb.OUT_FORMAT_OBJECT }
       );
 

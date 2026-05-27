@@ -7,8 +7,8 @@ export class DashboardController {
     this.repository = repository;
   }
 
-  async getAgendaHoy() {
-    return this.repository.getAgendaHoy();
+  async getAgendaHoy(fecha: string) {
+    return this.repository.getAgendaHoy(fecha);
   }
 
   async getPreregistroPendientes() {
