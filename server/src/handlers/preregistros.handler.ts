@@ -63,7 +63,7 @@ export async function obtenerPreregistro(req: Request, res: Response): Promise<v
   const id = Number(req.params.id);
 
   if (isNaN(id)) {
-    res.status(400).json({ message: "ID inválido." });
+    res.status(400).json({ message: "ID de prerregistro inválido." });
     return;
   }
 
