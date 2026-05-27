@@ -4,7 +4,8 @@ import { FaUser, FaLock } from 'react-icons/fa';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { API_URL } from '../../utils/config'
+import { API_URL } from '../../utils/config';
+import { saveSession } from '../../utils/auth';
 
 
 function Login() {
@@ -38,8 +39,7 @@ function Login() {
         throw new Error(data.message || 'Usuario o contraseña incorrectos');
       }
 
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      saveSession(data.token, data.user);
 
       navigate(redirectTo, { replace: true });
     } catch (error) {

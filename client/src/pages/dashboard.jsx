@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../utils/config";
+import { getStoredUser, getValidToken, handleUnauthorizedResponse } from "../utils/auth";
 import { getAgendaTagClass } from "../utils/agendaUtils";
 import { todayDate } from "../utils/dateTime";
 
@@ -339,14 +340,8 @@ export default function Dashboard() {
   const [nuevoBeneficiarioId, setNuevoBeneficiarioId] = useState(null);
   const [nuevoBeneficiarioNombre, setNuevoBeneficiarioNombre] = useState("");
 
-  const token = localStorage.getItem("token");
-
-  let storedUser = null;
-  try {
-    storedUser = JSON.parse(localStorage.getItem("user") || "null");
-  } catch (error) {
-    storedUser = null;
-  }
+  const token = getValidToken();
+  const storedUser = getStoredUser();
 
   const isAdministrador = storedUser?.rol === "administrador";
 
@@ -362,6 +357,8 @@ export default function Dashboard() {
     const res = await fetch(`${API_URL}/api/dashboard/agenda-hoy?fecha=${hoyFrontend}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
+
+    if (handleUnauthorizedResponse(res)) return;
 
     const data = await res.json();
 
@@ -385,6 +382,8 @@ export default function Dashboard() {
       headers: { Authorization: `Bearer ${token}` },
     });
 
+    if (handleUnauthorizedResponse(res)) return;
+
     const data = await res.json();
 
     if (!res.ok) {
@@ -404,6 +403,8 @@ export default function Dashboard() {
         },
         body: JSON.stringify({ estado: "aceptado" }),
       });
+
+      if (handleUnauthorizedResponse(res)) return;
 
       const data = await res.json();
 
@@ -431,6 +432,8 @@ export default function Dashboard() {
         },
         body: JSON.stringify({ estado: "rechazado" }),
       });
+
+      if (handleUnauthorizedResponse(res)) return;
 
       const data = await res.json();
 

@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar/Navbar";
+import { getStoredUser } from "../../utils/auth";
 
 const RUTAS_NAV = [
   { prefix: "/registro_beneficiario", label: "Beneficiarios", exact: true },
@@ -34,13 +35,7 @@ function MainLayout() {
   const { pathname } = useLocation();
   const activeLink = resolveActiveNavLabel(pathname);
 
-  let storedUser = null;
-
-  try {
-    storedUser = JSON.parse(localStorage.getItem("user") || "null");
-  } catch (error) {
-    storedUser = null;
-  }
+  const storedUser = getStoredUser();
 
   const navbarUser = storedUser
     ? {
