@@ -10,7 +10,6 @@ import { API_URL } from '../../../utils/config'
 const NAV_LINKS = [
   { label: "Inicio", to: "/dashboard" },
   { label: "Beneficiarios", to: "/beneficiarios" },
-  { label: "Prerregistro", to: "/prerregistro" },
   { label: "Servicios", to: "/registro_servicios" },
   { label: "Inventario", to: "/inventario" },
   { label: "Citas", to: "/citas" },
@@ -72,10 +71,10 @@ function Navbar({
     },
     {
       key: "preregistros",
-      title: "Prerregistros nuevos",
+      title: "Pre-registros nuevos",
       text: "Visualiza nuevas solicitudes pendientes.",
       count: 0,
-      to: "/prerregistro",
+      to: "/dashboard",
     },
   ]);
 
@@ -166,11 +165,11 @@ function Navbar({
           },
           {
             key: "preregistros",
-            title: "Prerregistros nuevos",
+            title: "Preregistros nuevos",
             text:
               preregistrosCount > 0
-                ? `${preregistrosCount} prerregistro(s) pendiente(s).`
-                : "Sin nuevos prerregistros pendientes.",
+                ? `${preregistrosCount} preregistro(s) pendiente(s).`
+                : "Sin nuevos preregistros pendientes.",
             count: preregistrosCount,
             to: "/dashboard",
           },
