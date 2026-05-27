@@ -2,7 +2,7 @@ import '../styles/login.css';
 import logo from '../../assets/espina.png';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { API_URL } from '../../utils/config'
 
@@ -15,6 +15,8 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = location.state?.from?.pathname || '/dashboard';
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -39,7 +41,7 @@ function Login() {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
-      navigate('/dashboard');
+      navigate(redirectTo, { replace: true });
     } catch (error) {
       setError(error.message || 'Error de conexión');
     } finally {

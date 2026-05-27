@@ -1,13 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import MainLayout from "./components/layout/MainLayout";
+import RequireAuth from "./components/auth/RequireAuth";
 
 // Auth / públicas
 import Login from "./pages/login/login";
 
 // Páginas internas (main)
 import GestionBeneficiarios from "./pages/GestionBeneficiarios/GestionBeneficiarios";
-import Prerregistro from "./pages/prerregistro/Prerregistro";
+import Preregistro from "./pages/preregistro/Preregistro";
 import Inventario from "./pages/inventario/Inventario";
 import RegistroBeneficiario from "./pages/registro_beneficiario/registro_beneficiario";
 import Recibos from './pages/Recibos/Recibos' 
@@ -27,11 +28,13 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Pública */}
+        {/* Públicas */}
         <Route path="/login" element={<Login />} />
+        <Route path="/preregistro" element={<Preregistro />} />
 
-        {/* Privadas dentro del layout (Navbar + etc) */}
-        <Route element={<MainLayout />}>
+        {/* Privadas: requieren sesión activa */}
+        <Route element={<RequireAuth />}>
+          <Route element={<MainLayout />}>
           {/* Dashboard */}
           <Route path="/dashboard" element={<Dashboard />} />
 
@@ -40,9 +43,6 @@ export default function App() {
 
           {/* Registro de Nuevo Beneficiario */}
           <Route path="/registro_beneficiario" element={<RegistroBeneficiario /> }/>
-
-          {/* Prerregistro */}
-          <Route path="/prerregistro" element={<Prerregistro />} />
 
           {/* Registro de Servicios */}
           <Route path="/registro_servicios" element={<RegistroServicios />} />
@@ -70,7 +70,8 @@ export default function App() {
           <Route path="/citas" element={<Citas />} />
 
           {/* Default */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          </Route>
         </Route>
 
         {/* Catch-all */}

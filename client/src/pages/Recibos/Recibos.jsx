@@ -26,8 +26,11 @@ const hoy = () => todayDate();
 function Skeleton({ rows = 4 }) {
   return (
     <div className="skeleton-wrap" role="status" aria-live="polite" aria-label="Cargando recibos">
-      {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="skeleton-row" style={{ animationDelay: `${i * 0.07}s` }} />
+        {Array.from({ length: rows }, (_, i) => (
+        <div key={`skeleton-row-${i}`}
+          className="skeleton-row"
+          style={{ animationDelay: `${i * 0.07}s` }}
+        />
       ))}
     </div>
   );
