@@ -356,13 +356,22 @@ export default function Dashboard() {
   }, [isAdministrador]);
 
   const fetchAgenda = async () => {
+
     const hoyFrontend = todayDate();
 
-    const res = await fetch(`${API_URL}/api/dashboard/agenda-hoy`, {
+    const res = await fetch(`${API_URL}/api/dashboard/agenda-hoy?fecha=${hoyFrontend}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
     const data = await res.json();
+
+    // console.log("API_URL:", API_URL);
+    // console.log("Agenda response:", data);
+    // console.log("Es arreglo:", Array.isArray(data));
+    // console.log("Total citas:", Array.isArray(data) ? data.length : "No es arreglo");
+
+    // console.log("Fecha enviada desde el front:", hoyFrontend);
+    // console.log("URL agenda:", `${API_URL}/api/dashboard/agenda-hoy?fecha=${hoyFrontend}`);
 
     if (!res.ok) {
       throw new Error(data.message || "Error al cargar agenda");
