@@ -48,6 +48,8 @@ export default function CalendarioCitas() {
       events={eventos}
       dayMaxEvents={3}
       moreLinkText={(num) => `+ ${num} más`}
+      moreLinkClick="popover"
+
       eventContent={(eventInfo) => {
         const clase = eventInfo.event.classNames?.[0] || "blue";
         return (
@@ -62,8 +64,6 @@ export default function CalendarioCitas() {
         )
       }}
       eventClick={(info) => {
-        console.log("EVENTO COMPLETO:", info.event);
-        console.log("EXTENDED PROPS:", info.event.extendedProps);
         setCitaSeleccionada(info.event);
       }}
 
