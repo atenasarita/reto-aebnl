@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import MainLayout from "./components/layout/MainLayout";
 import RequireAuth from "./components/auth/RequireAuth";
+import RedirectIfAuth from "./components/auth/RedirectIfAuth";
 
 // Auth / públicas
 import Login from "./pages/login/login";
@@ -29,7 +30,14 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* Públicas */}
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={
+            <RedirectIfAuth>
+              <Login />
+            </RedirectIfAuth>
+          }
+        />
         <Route path="/preregistro" element={<Preregistro />} />
 
         {/* Privadas: requieren sesión activa */}
