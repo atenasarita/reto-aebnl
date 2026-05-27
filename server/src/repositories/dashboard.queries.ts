@@ -22,7 +22,7 @@ export const dashboardQueries = {
       ON e.id_especialista = c.id_especialista
     LEFT JOIN CATALOGO_SERVICIOS cs
       ON cs.id_catalogo_servicio = c.id_catalogo_servicio
-    WHERE TRUNC(c.fecha) = TRUNC(CURRENT_DATE)
+    WHERE TRUNC(c.fecha) = TO_DATE(:fecha, 'YYYY-MM-DD')
     ORDER BY c.hora
 `,
 
