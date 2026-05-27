@@ -23,10 +23,12 @@ export default function CalendarioCitas() {
       const response = await fetch(`${API_URL}/api/citas`);
       const data = await response.json();
 
-      const eventosporID = data.map((item) => ({
-      ...item,
-      classNames: [getAgendaTagClass(item)]
-      }));
+      const eventosporID = data.map((item) => {
+        return {
+          ...item,
+          classNames: [getAgendaTagClass(item)],
+        };
+      });
       setEventos(eventosporID);
     } catch(error){
       console.error("Error: ", error);
