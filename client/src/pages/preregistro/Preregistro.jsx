@@ -460,11 +460,8 @@ function AssociationPanel() {
           alt="Asociación de Espina Bífida de Nuevo León, A.B.P."
           className="preregistro-assoc-logo"
         />
-        <h1 className="preregistro-assoc-title">Preregistro de Familias</h1>
-        <p className="preregistro-assoc-subtitle">
-          Da el primer paso para que tu familia reciba apoyo médico y humano
-          especializado.
-        </p>
+
+ 
       </div>
 
       <div className="preregistro-assoc-body">
