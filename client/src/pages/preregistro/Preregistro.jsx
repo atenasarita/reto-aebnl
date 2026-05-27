@@ -1,13 +1,20 @@
 import { useState } from "react";
 import {
+  Accessibility,
   ArrowLeft,
   ArrowRight,
+  Bone,
+  Brain,
+  Droplets,
   Globe,
+  Hand,
   Headset,
+  Heart,
   Mail,
   MapPin,
   Phone,
   Send,
+  Stethoscope,
 } from "lucide-react";
 import { FaFacebook, FaInstagram } from "react-icons/fa";
 import "../styles/Preregistro.css";
@@ -30,94 +37,28 @@ const CONTACT = {
   email: "espinabifidanl@yahoo.com.mx",
 };
 
-function ContactFooter() {
-  return (
-    <footer className="preregistro-footer">
-      <div className="preregistro-footer-inner">
-        <div className="preregistro-footer-brand">
-          <h2>Asociación de Espina Bífida de Nuevo León, A.B.P.</h2>
-          <p>
-            Somos una asociación dedicada a brindar servicios de asistencia en
-            salud a personas con espina bífida desde 1993.
-          </p>
-          <a
-            href={CONTACT.website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="preregistro-footer-website"
-          >
-            <Globe size={18} />
-            espinabifida.org.mx
-          </a>
-        </div>
+const MEDICAL_AREAS = [
+  { icon: Brain, label: "Neurocirugía" },
+  { icon: Bone, label: "Ortopedia" },
+  { icon: Hand, label: "Cir. plástica reconstructiva" },
+  { icon: Droplets, label: "Urología" },
+  { icon: Heart, label: "Psicología" },
+  { icon: Accessibility, label: "Rehabilitación" },
+  { icon: Stethoscope, label: "Gastroenterología" },
+];
 
-        <div className="preregistro-footer-contact">
-          <h3>Contacto</h3>
-          <ul className="preregistro-footer-list">
-            <li>
-              <MapPin size={18} aria-hidden="true" />
-              <a
-                href={CONTACT.mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {CONTACT.address}
-              </a>
-            </li>
-            <li>
-              <Phone size={18} aria-hidden="true" />
-              <a href={CONTACT.phoneHref}>{CONTACT.phone}</a>
-            </li>
-            <li>
-              <Mail size={18} aria-hidden="true" />
-              <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
-            </li>
-          </ul>
-        </div>
-
-        <div className="preregistro-footer-social-block">
-          <h3>Síguenos</h3>
-          <div className="preregistro-footer-social">
-            <a
-              href={CONTACT.facebook}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Facebook de AEBNL"
-              className="preregistro-social-btn"
-            >
-              <FaFacebook size={20} />
-            </a>
-            <a
-              href={CONTACT.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Instagram de AEBNL"
-              className="preregistro-social-btn"
-            >
-              <FaInstagram size={20} />
-            </a>
-          </div>
-          <p className="preregistro-footer-help">
-            ¿Tienes dudas sobre el preregistro? Comunícate con nosotros.
-          </p>
-        </div>
-      </div>
-
-      <div className="preregistro-footer-bottom">
-        <p>
-          © {new Date().getFullYear()} Asociación de Espina Bífida de Nuevo León,
-          A.B.P. Todos los derechos reservados.
-        </p>
-      </div>
-    </footer>
-  );
-}
+const PREREGISTRO_STEPS = [
+  "Identidad del beneficiario",
+  "Datos oficiales (CURP, fecha de nacimiento)",
+  "Diagnóstico de espina bífida",
+];
 
 const STEPS = [
   { key: "identidad", label: "Identidad" },
   { key: "datos", label: "Datos" },
   { key: "diagnostico", label: "Diagnóstico" },
 ];
+
 
 function StepIndicator({ currentStep }) {
   const progress =
@@ -490,6 +431,117 @@ function SuccessScreen({ data, onReset }) {
   );
 }
 
+function MedicalAreasSection() {
+  return (
+    <section className="preregistro-assoc-areas" aria-label="Áreas médicas">
+      <h4>Áreas médicas</h4>
+      <p>Vinculamos a familias con especialistas en:</p>
+      <ul className="preregistro-assoc-areas-grid">
+        {MEDICAL_AREAS.map(({ icon: Icon, label }) => (
+          <li key={label}>
+            <span className="preregistro-assoc-area-icon" aria-hidden="true">
+              <Icon size={18} />
+            </span>
+            <span>{label}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function AssociationPanel() {
+  return (
+    <aside className="preregistro-assoc-panel" aria-label="Sobre la asociación">
+      {/* Cabecera con logo + título */}
+      <div className="preregistro-assoc-header">
+        <img
+          src={logo}
+          alt="Asociación de Espina Bífida de Nuevo León, A.B.P."
+          className="preregistro-assoc-logo"
+        />
+        <h1 className="preregistro-assoc-title">Preregistro de Familias</h1>
+        <p className="preregistro-assoc-subtitle">
+          Da el primer paso para que tu familia reciba apoyo médico y humano
+          especializado.
+        </p>
+      </div>
+
+      <div className="preregistro-assoc-body">
+      {/* Stats */}
+      <div className="preregistro-assoc-stats">
+        <div className="preregistro-assoc-stat">
+          <span className="preregistro-assoc-stat-num">+1,167</span>
+          <span className="preregistro-assoc-stat-label">familias integradas</span>
+        </div>
+        <div className="preregistro-assoc-stat-divider" aria-hidden="true" />
+        <div className="preregistro-assoc-stat">
+          <span className="preregistro-assoc-stat-num">30+</span>
+          <span className="preregistro-assoc-stat-label">años apoyando</span>
+        </div>
+      </div>
+
+      {/* Descripción */}
+      <p className="preregistro-assoc-desc">
+        Somos una asociación única en México dedicada a brindar servicios de
+        asistencia en salud a personas con espina bífida desde 1993.
+      </p>
+
+
+
+      <MedicalAreasSection />
+
+
+      <div className="preregistro-assoc-contact-block">
+        <h4>Contáctanos</h4>
+        <a href={CONTACT.phoneHref} className="preregistro-assoc-contact-item">
+          <Phone size={17} aria-hidden="true" />
+          {CONTACT.phone}
+        </a>
+        <a href={`mailto:${CONTACT.email}`} className="preregistro-assoc-contact-item">
+          <Mail size={17} aria-hidden="true" />
+          {CONTACT.email}
+        </a>
+        <a
+          href={CONTACT.mapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="preregistro-assoc-contact-item"
+        >
+          <MapPin size={17} aria-hidden="true" />
+          {CONTACT.address}
+        </a>
+
+      </div>
+
+      {/* Social */}
+      <div className="preregistro-assoc-social">
+        <a
+          href={CONTACT.facebook}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Facebook AEBNL"
+          className="preregistro-assoc-social-btn"
+        >
+          <FaFacebook size={20} />
+          Facebook
+        </a>
+        <a
+          href={CONTACT.instagram}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Instagram AEBNL"
+          className="preregistro-assoc-social-btn"
+        >
+          <FaInstagram size={20} />
+          Instagram
+        </a>
+      </div>
+      </div>
+    </aside>
+  );
+}
+
 export default function Preregistro() {
   const [step, setStep] = useState(0);
   const [completed, setCompleted] = useState([]);
@@ -564,22 +616,10 @@ export default function Preregistro() {
 
   return (
     <div className="preregistro-page">
-      <main className="preregistro-main">
-        <header className="preregistro-hero">
-          <img
-            src={logo}
-            alt="Asociación de Espina Bífida de Nuevo León, A.B.P."
-            className="preregistro-logo"
-          />
-          <span className="preregistro-badge">Unidos por un mejor futuro</span>
-          <h1>Preregistro de Familias</h1>
-          <p>
-            Completa los 3 pasos para registrar a tu familiar o beneficiario y
-            recibir el apoyo especializado que merece.
-          </p>
-        </header>
+      <div className="preregistro-split">
+        <AssociationPanel />
 
-        <div className="preregistro-content">
+        <div className="preregistro-split-form">
           <div className="preregistro-card">
             {!isDone && <StepIndicator currentStep={step} />}
 
@@ -609,9 +649,7 @@ export default function Preregistro() {
             </div>
           </div>
         </div>
-      </main>
-
-      <ContactFooter />
+      </div>
 
       <a
         href={CONTACT.phoneHref}
