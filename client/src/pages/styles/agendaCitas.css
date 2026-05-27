@@ -259,3 +259,15 @@
   border-left-color: var(--cp-red, #dc2626);
   color: #7f1d1d;
 }
+
+.custom-event-card.teal {
+  background: #ccfbf1;
+  border-left: 4px solid #14b8a6;
+  color: #115e59;
+}
+
+.custom-event-card.pink {
+  background: #fce7f3;
+  border-left: 4px solid #ec4899;
+  color: #831843;
+}
