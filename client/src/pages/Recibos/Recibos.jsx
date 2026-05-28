@@ -1,4 +1,7 @@
 import { useState, useEffect, useCallback, useId, useRef } from "react";
+import { useSearchParams } from 'react-router-dom'
+
+
 import "../styles/Recibos.css";
 
 import { API_URL } from '../../utils/config'
@@ -278,6 +281,9 @@ export default function Recibos() {
   const [errorMes,     setErrorMes]     = useState("");
  
   const [seleccion,    setSeleccion]    = useState(null);
+
+  const [searchParams, setSearchParams] = useSearchParams()
+
  
   const cargarDia = useCallback(async (f) => {
     setLoadingDay(true); setErrorDay("");
@@ -307,6 +313,25 @@ export default function Recibos() {
     cargarDia(fecha);
     cargarMes(fecha);
   }, [fecha, cargarDia, cargarMes]);
+
+  useEffect(() => {
+    const folioParam = searchParams.get('folio')
+    if (!folioParam) return
+  
+    const todas = [...recibosDay, ...recibosMes]
+    const encontrado = todas.find(
+      (r) => String(r.id_servicio_otorgado) === String(folioParam)
+    )
+    if (encontrado) {
+      setSeleccion(encontrado)
+      // Limpia el param de la URL sin recargar
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev)
+        next.delete('folio')
+        return next
+      })
+    }
+  }, [searchParams, recibosDay, recibosMes, setSearchParams])
 
   const normalizar = (str) =>
   (str || "")
