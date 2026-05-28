@@ -378,17 +378,19 @@ export default function Recibos() {
           <h1 id="recibos-page-title" className="page-header-title">Recibos</h1>
           <p className="page-header-subtitle">Registro de servicios y cobros</p>
         </div>
-        <div className="fecha-wrap">
-          <label htmlFor={fechaInputId} className="fecha-label">Fecha</label>
-          <input
-            id={fechaInputId}
-            className="fecha-input"
-            type="date"
-            value={fecha}
-            onChange={(e) => setFecha(e.target.value)}
-          />
-          <button className="btn-hoy" onClick={() => setFecha(hoy())}>Hoy</button>
-        </div>
+        {vistaActiva !== "rango" && (
+          <div className="fecha-wrap">
+            <label htmlFor={fechaInputId} className="fecha-label"> Fecha </label>
+            <input
+              id={fechaInputId}
+              className="fecha-input"
+              type="date"
+              value={fecha}
+              onChange={(e) => setFecha(e.target.value)}
+            />
+            <button className="btn-hoy" onClick={() => setFecha(hoy())}> Hoy </button>
+          </div>
+        )}
       </header>
 
       <div className="recibos-tabs-wrap recibos-fade-panel">
