@@ -40,7 +40,7 @@ export async function createBeneficiario(payload, token) {
 }
 
 export async function fetchPadresBeneficiario(idBeneficiario, token) {
-  const response = await fetch(`${API_URL}/${idBeneficiario}/padres`, {
+  const response = await fetch(`${API_URL}/api/beneficiarios/${idBeneficiario}/padres`, {
     headers: {
       Authorization: `Bearer ${token}`
     }
