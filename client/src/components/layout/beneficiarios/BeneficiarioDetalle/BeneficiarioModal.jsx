@@ -28,12 +28,14 @@ function BeneficiarioModal({
           <button className={styles.closeBtn} onClick={onClose}>✕</button>
         </div>
 
-        <BeneficiarioDetalle
-          beneficiario={beneficiario}
-          startInEditMode={startInEditMode}
-          onUpdated={onUpdated}
-          onClose={onClose}
+        {activeTab === 'datos_generales' && (
+          <BeneficiarioDetalle
+            beneficiario={beneficiario}
+            startInEditMode={startInEditMode}
+            onUpdated={onUpdated}
+            onClose={onClose}
           />
+        )}
 
         {activeTab === 'historial_asociado' && (
           <HistorialAsociado beneficiario={beneficiario} />
