@@ -105,7 +105,7 @@ function getTimelineStatusClass(item) {
   return "future";
 }
 
-function AgendaCard({ agendaItems }) {
+function AgendaCard({ agendaItems, onEditCita }) {
   if (!agendaItems.length) {
     return (
       <section className="agenda-panel fade-in-panel">
@@ -131,75 +131,84 @@ function AgendaCard({ agendaItems }) {
       </div>
 
       <div className="agenda-timeline">
-        {agendaItems.map((item, index) => (
-          <div
-            className="agenda-row fade-in-up"
-            key={item.id_cita}
-            style={{ animationDelay: `${index * 0.06}s` }}
-          >
-            <div className={`timeline-line ${getTimelineStatusClass(item)}`}>
-              <div className={`timeline-dot ${getTimelineStatusClass(item)}`}></div>
-            </div>
+        {agendaItems.map((item, index) => {
+          const citaId = item.id_cita ?? item.id ?? `cita-${index}`;
 
-            <div className="agenda-item-card">
-              <div className="agenda-item-top">
-                <div className="agenda-profile">
-                  {item.fotografia ? (
-                    <img
-                      src={item.fotografia}
-                      alt={item.nombre_completo}
-                      className="agenda-avatar"
-                    />
-                  ) : (
-                    <div className="agenda-avatar placeholder">
-                      <User size={34} />
+          return (
+            <div
+              className="agenda-row fade-in-up"
+              key={citaId}
+              style={{ animationDelay: `${index * 0.06}s` }}
+            >
+              <div className={`timeline-line ${getTimelineStatusClass(item)}`}>
+                <div className={`timeline-dot ${getTimelineStatusClass(item)}`} />
+              </div>
+
+              <div className="agenda-item-card">
+                <div className="agenda-item-top">
+                  <div className="agenda-profile">
+                    {item.fotografia ? (
+                      <img
+                        src={item.fotografia}
+                        alt={item.nombre_completo}
+                        className="agenda-avatar"
+                      />
+                    ) : (
+                      <div className="agenda-avatar placeholder">
+                        <User size={34} />
+                      </div>
+                    )}
+
+                    <div className="agenda-profile-text">
+                      <div className={`agenda-tag ${getAgendaTagClass(item)}`}>
+                        {formatHora12(item.hora)} • {item.servicio_nombre || "Servicio"}
+                      </div>
+
+                      <h3>{item.nombre_completo || "Beneficiario sin nombre"}</h3>
+                      <p>
+                        {item.especialista_nombre || "Especialista"} • {item.folio || "Sin folio"}
+                      </p>
                     </div>
-                  )}
+                  </div>
 
-                  <div className="agenda-profile-text">
-                    <div className={`agenda-tag ${getAgendaTagClass(item)}`}>
-                      {formatHora12(item.hora)} • {item.servicio_nombre || "Servicio"}
-                    </div>
+                  <div className="agenda-actions">
+                    <button
+                      type="button"
+                      className={`agenda-btn ${getTimelineStatusClass(item) === "past" ? "muted" : "primary"}`}
+                    >
+                      {item.estatus || "Pendiente"}
+                    </button>
 
-                    <h3>{item.nombre_completo || "Beneficiario sin nombre"}</h3>
-                    <p>
-                      {item.especialista_nombre || "Especialista"} • {item.folio || "Sin folio"}
-                    </p>
+                    <button
+                      type="button"
+                      className="agenda-btn secondary"
+                      onClick={() => onEditCita(citaId)}
+                    >
+                      Modificar
+                    </button>
                   </div>
                 </div>
 
-                <div className="agenda-actions">
-                  <button
-                    type="button"
-                    className={`agenda-btn ${getTimelineStatusClass(item) === "past" ? "muted" : "primary"}`}
-                  >
-                    {item.estatus || "Pendiente"}
-                  </button>
-                  <button type="button" className="agenda-btn secondary">
-                    Ver Historial
-                  </button>
-                </div>
-              </div>
+                <div className="agenda-item-bottom">
+                  <div className="agenda-note-left">
+                    {item.motivo ? (
+                      <>
+                        <Info size={16} />
+                        <span>{item.motivo}</span>
+                      </>
+                    ) : (
+                      <span>Sin motivo registrado</span>
+                    )}
+                  </div>
 
-              <div className="agenda-item-bottom">
-                <div className="agenda-note-left">
-                  {item.motivo ? (
-                    <>
-                      <Info size={16} />
-                      <span>{item.motivo}</span>
-                    </>
-                  ) : (
-                    <span>Sin motivo registrado</span>
-                  )}
-                </div>
-
-                <div className="agenda-note-right">
-                  {item.notas ? <span>{item.notas}</span> : <span>Sin notas</span>}
+                  <div className="agenda-note-right">
+                    {item.notas ? <span>{item.notas}</span> : <span>Sin notas</span>}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
@@ -351,7 +360,6 @@ export default function Dashboard() {
   }, [isAdministrador]);
 
   const fetchAgenda = async () => {
-
     const hoyFrontend = todayDate();
 
     const res = await fetch(`${API_URL}/api/dashboard/agenda-hoy?fecha=${hoyFrontend}`, {
@@ -361,14 +369,6 @@ export default function Dashboard() {
     if (handleUnauthorizedResponse(res)) return;
 
     const data = await res.json();
-
-    // console.log("API_URL:", API_URL);
-    // console.log("Agenda response:", data);
-    // console.log("Es arreglo:", Array.isArray(data));
-    // console.log("Total citas:", Array.isArray(data) ? data.length : "No es arreglo");
-
-    // console.log("Fecha enviada desde el front:", hoyFrontend);
-    // console.log("URL agenda:", `${API_URL}/api/dashboard/agenda-hoy?fecha=${hoyFrontend}`);
 
     if (!res.ok) {
       throw new Error(data.message || "Error al cargar agenda");
@@ -495,7 +495,10 @@ export default function Dashboard() {
             </section>
           ) : (
             <>
-              <AgendaCard agendaItems={agendaItems} />
+              <AgendaCard
+                agendaItems={agendaItems}
+                onEditCita={(idCita) => navigate(`/citas?edit=${idCita}`)}
+              />
               <PreregistroCard
                 preregistroItems={preregistroItems}
                 onAceptar={aceptarPreregistro}
@@ -514,4 +517,4 @@ export default function Dashboard() {
       />
     </div>
   );
-} 
+}
