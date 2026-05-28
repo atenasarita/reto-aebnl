@@ -144,8 +144,12 @@
 .step-icon.success { color: #4ade80; }
 .step-icon.warning { color: #fbbf24; }
 
-
+/* Botones de CONTINUAR, CANCELAR, ANTERIOR */
 .registro-bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 50;
+
   width: 100%;
   padding: 28px 32px 36px;
   border-top: 1px solid var(--border);
@@ -165,7 +169,7 @@
 .registro-bottom-buttons .btn {
   width: auto;
   min-width: 130px;
-  height: 56px;
+  height: 48px;
 }
 
 .registro-bottom-buttons .btn-danger {
@@ -247,34 +251,9 @@
 }
 
 .btn-secondary:hover {
-  background: rgba(255,255,255,0.14);
-  color: white;
+  background: rgba(7, 64, 113, 0.229);
+  color: rgba(0, 64, 98, 0.36);
 }
-
-.btn-danger {
-  background: transparent;
-  color: rgba(255,255,255,0.4);
-  height: 36px;
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 500;
-  font-family: var(--font);
-  cursor: pointer;
-  width: 100%;
-  transition: background 0.18s, color 0.18s, border-color 0.18s;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.btn-danger:hover {
-  background: rgba(239,68,68,0.12);
-  color: #fca5a5;
-  border-color: rgba(239,68,68,0.3);
-}
-
 
 .form-card {
   background: var(--surface);
