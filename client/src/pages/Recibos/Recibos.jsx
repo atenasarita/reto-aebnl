@@ -324,7 +324,7 @@ export default function Recibos() {
     )
     if (encontrado) {
       setSeleccion(encontrado)
-      // Limpia el param de la URL sin recargar
+
       setSearchParams((prev) => {
         const next = new URLSearchParams(prev)
         next.delete('folio')

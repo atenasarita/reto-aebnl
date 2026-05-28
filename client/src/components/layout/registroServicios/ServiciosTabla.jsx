@@ -6,13 +6,6 @@ function fmt(num) {
   return `$${Number(num).toFixed(2)}`
 }
 
-function fmtFecha(fecha) {
-  if (!fecha) return '—'
-  return new Date(fecha).toLocaleDateString('es-MX', {
-    day: '2-digit', month: 'short', year: 'numeric',
-  })
-}
-
 function Skeleton({ rows = 4 }) {
   return (
     <div className="skeleton-wrap" role="status" aria-live="polite" aria-label="Cargando servicios">
@@ -23,7 +16,7 @@ function Skeleton({ rows = 4 }) {
   )
 }
 
-function ServicioRow({ servicio, onVerDetalle, onVerRecibo, mostrarFecha }) {
+function ServicioRow({ servicio, onVerDetalle, onVerRecibo }) {
   return (
     <tr className="recibo-row servicios-page">
       <th scope="row" className="td-folio">#{servicio.id}</th>
@@ -70,7 +63,7 @@ export default function ServiciosTabla({
 
   return (
     <>
-      <div className="table-wrap">
+      <div className="servicios-table-wrap">
         <table className="servicios-table">
           <thead>
             <tr>

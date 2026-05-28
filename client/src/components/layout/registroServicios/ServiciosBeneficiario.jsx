@@ -1,5 +1,10 @@
 import { useState, useMemo } from 'react'
 import styles from './ServiciosBeneficiario.module.css'
+import '../../../pages/styles/Servicios.css'
+
+import SearchBar from '../../ui/SearchBar'
+import { FiSearch } from 'react-icons/fi'
+
 
 function fmt(num) {
   if (num == null) return '—'
@@ -10,7 +15,6 @@ export default function ServiciosBeneficiario({ historial = [], onVerDetalle }) 
   const [query, setQuery] = useState('')
   const [seleccionado, setSeleccionado] = useState(null)
 
-  // Nombres únicos para el autocomplete
   const sugerencias = useMemo(() => {
     if (query.trim().length < 2) return []
     const q = query.toLowerCase()
@@ -35,26 +39,23 @@ export default function ServiciosBeneficiario({ historial = [], onVerDetalle }) 
     setQuery(nombre)
   }
 
-  const handleChange = (e) => {
-    setQuery(e.target.value)
+  const handleChange = (val) => {
+    setQuery(val)
     setSeleccionado(null)
   }
 
   return (
-    <section className={styles.seccion}>
-      <h2 className={styles.titulo}>Obtén el historial por beneficiario</h2>
-
+    <section>
       <div className={styles.buscadorWrap}>
         <div className={styles.inputWrap}>
-          <span className={styles.icono}>🔍</span>
-          <input
-            className={styles.input}
-            type="text"
-            placeholder="Buscar beneficiario…"
-            value={query}
-            onChange={handleChange}
-            autoComplete="off"
-          />
+          <SearchBar
+              icon={<FiSearch />}
+              className={styles.input}
+              placeholder="Buscar beneficiario…"
+              value={query}
+              onChange={handleChange}
+              autoComplete="off"
+            />
           {query && (
             <button
               className={styles.limpiar}
@@ -67,7 +68,7 @@ export default function ServiciosBeneficiario({ historial = [], onVerDetalle }) 
         </div>
 
         {sugerencias.length > 0 && !seleccionado && (
-          <ul className={styles.dropdown}>
+          <ul className='lista'>
             {sugerencias.map((s) => (
               <li key={s.beneficiario}>
                 <button
@@ -83,23 +84,23 @@ export default function ServiciosBeneficiario({ historial = [], onVerDetalle }) 
       </div>
 
       {seleccionado && serviciosBeneficiario.length > 0 && (
-        <div className={styles.tarjeta}>
-          <div className={styles.tarjetaHeader}>
+        <div className='beneficiario-card'>
+          <div>
             <div>
-              <p className={styles.tarjetaNombre}>{seleccionado}</p>
-              <p className={styles.tarjetaSub}>
+              <p>{seleccionado}</p>
+              <p>
                 {serviciosBeneficiario.length} servicio{serviciosBeneficiario.length !== 1 ? 's' : ''} registrado{serviciosBeneficiario.length !== 1 ? 's' : ''}
               </p>
             </div>
-            <div className={styles.tarjetaStats}>
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>Total acumulado</span>
-                <span className={styles.statValor}>
+            <div>
+              <div>
+                <span>Total acumulado</span>
+                <span>
                   {fmt(serviciosBeneficiario.reduce((acc, s) => acc + (s.cuotaTotal ?? 0), 0))}
                 </span>
               </div>
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>Total pagado</span>
+              <div>
+                <span>Total pagado</span>
                 <span className={styles.statValor}>
                   {fmt(serviciosBeneficiario.reduce((acc, s) => acc + (s.montoPagado ?? 0), 0))}
                 </span>
@@ -107,19 +108,19 @@ export default function ServiciosBeneficiario({ historial = [], onVerDetalle }) 
             </div>
           </div>
 
-          <ul className={styles.lista}>
+          <ul className='lista'>
             {serviciosBeneficiario.map((s) => (
-              <li key={s.id} className={styles.listaItem}>
-                <div className={styles.listaLeft}>
-                  <span className={styles.listaFolio}>#{s.id}</span>
+              <li key={s.id} className='listaItem'>
+                <div className='listaLeft'>
+                  <span className='listaFolio'>#{s.id}</span>
                   <div>
-                    <p className={styles.listaNombre}>{s.nombre}</p>
-                    <p className={styles.listaCat}>{s.categoria}</p>
+                    <p className='listaNombre'>{s.nombre}</p>
+                    <p className='listaCat'>{s.categoria}</p>
                   </div>
                 </div>
-                <div className={styles.listaRight}>
-                  <span className={styles.listaMonto}>{fmt(s.cuotaTotal)}</span>
-                  <span className={`${styles.listaEstado} ${s.yaAporto ? styles.pagado : styles.pendiente}`}>
+                <div className='listaRight'>
+                  <span className='listaMonto'>{fmt(s.cuotaTotal)}</span>
+                  <span className={`listaEstado ${s.yaAporto ? 'pagado' : 'pendiente'}`}>
                     {s.yaAporto ? 'Pagado' : 'Pendiente'}
                   </span>
                   <button

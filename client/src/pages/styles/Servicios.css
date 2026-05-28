@@ -4,11 +4,24 @@
   --blue-soft:     #dbeafe;
 }
 
+.servicios-page-header{
+  display: flex;
+  align-items: center;
+  margin: 20px;
+  justify-content: space-between;
+}
+
+.servicios-acciones{
+  display: flex;
+  gap: 10px;
+}
+
 .servicios-barra-acciones{
   display: flex;
   justify-content: start;
   align-items: center;
   margin-bottom: 20px;
+  flex-direction: row;
 }
 
 .btn-ver {
@@ -65,6 +78,11 @@
   background-color: white;
 }
 
+.servicios-table-wrap {
+  overflow-y: scroll;
+  max-height: 400px;
+}
+
 .servicios-table th {
   padding: 16px 20px;
   text-align: left;
@@ -93,4 +111,62 @@
   margin-bottom: 20px;
   padding: 20px;
   border-radius: var(--space-5);
+}
+
+
+.beneficiario-card {
+  background-color: aqua;
+}
+
+.lista {
+  list-style: none;
+}
+
+
+.listaItem:last-child {
+  border-bottom: none;
+}
+
+.listaLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.listaFolio {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  font-variant-numeric: tabular-nums;
+  min-width: 28px;
+}
+
+.listaNombre {
+  font-size: 14px;
+  color: var(--color-text-primary);
+}
+
+.listaCat {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-top: 1px;
+}
+
+.listaRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.listaMonto {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.listaEstado {
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: var(--border-radius-md);
+  font-weight: 500;
 }
