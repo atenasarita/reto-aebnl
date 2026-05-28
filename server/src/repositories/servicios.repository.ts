@@ -98,8 +98,6 @@ export class ServicioRepository {
   }
 
   async registrarServicio(input: RegistrarServicioInput) {
-    console.log("INPUT COMPLETO:");
-    console.log(JSON.stringify(input, null, 2));
 
     let connection: oracledb.Connection | undefined;
 
