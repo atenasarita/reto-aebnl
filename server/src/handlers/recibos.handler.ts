@@ -54,12 +54,31 @@ export async function listarRecibosMes(req: Request, res: Response): Promise<voi
   }
 }
 
+// GET /api/recibos/rango-fechas?desde=YYYY-MM-DD&hasta=YYYY-MM-DD
+export async function listarRecibosRango(req: Request, res: Response): Promise<void> {
+  const desde = (req.query.desde as string);
+  const hasta = (req.query.hasta as string);
+
+  if (!esFechaValida(desde) || !esFechaValida(hasta)) {
+    res.status(400).json({ message: "Formato de fecha inválido. Usa YYYY-MM-DD." });
+    return;
+  }
+
+  try {
+    const recibos = await repo.listarRecibosRango(desde, hasta);
+    res.json(recibos);
+  } catch (err) {
+    console.error("[recibos] Error al listar rango:", err);
+    res.status(500).json({ message: "Error interno del servidor." });
+  }
+}
+
 // GET /api/recibos/:id
 export async function obtenerRecibo(req: Request, res: Response): Promise<void> {
   const id = Number(req.params.id);
 
   if (isNaN(id)) {
-    res.status(400).json({ message: "ID inválido." });
+    res.status(400).json({ message: "ID de recibo inválido." });
     return;
   }
 
