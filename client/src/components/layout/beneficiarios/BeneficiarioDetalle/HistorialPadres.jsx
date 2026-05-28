@@ -24,7 +24,11 @@ function HistorialPadres({ beneficiario }) {
   }, [beneficiario]);
 
   if (loading) {
-    return <div className={styles.modalBody}><p>Cargando información...</p></div>;
+    return (
+      <div className={styles.modalBody} style={{ display: 'flex', justifyContent: 'center', padding: '100px 0', width: '100%' }}>
+        <p style={{ color: '#64748b', fontWeight: '500', fontSize: '1.1rem' }}>Cargando información...</p>
+      </div>
+    );
   }
 
   const padre = padres.find(p => p.tipo_padre?.toLowerCase() === 'padre') || {};
