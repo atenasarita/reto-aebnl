@@ -11,7 +11,7 @@ import Dropdown from '../../components/ui/Dropdown'
 import '../styles/Servicios.css'
 
 const HISTORIAL_PLACEHOLDER = [
-  { id:1, beneficiario:'María García López',  nombre:'Consulta general',    categoria:'Consultas',     metodoPago:'Efectivo',      montoServicio:350, montoInventario:0,   descuento:0,  cuotaTotal:350, montoPagado:350, yaAporto:1 },
+  { id:145, beneficiario:'María García López',  nombre:'Consulta general',    categoria:'Consultas',     metodoPago:'Efectivo',      montoServicio:350, montoInventario:0,   descuento:0,  cuotaTotal:350, montoPagado:350, yaAporto:1 },
   { id:2, beneficiario:'Carlos Pérez Ruiz',   nombre:'Hemograma completo',  categoria:'Laboratorio',   metodoPago:'Tarjeta',        montoServicio:220, montoInventario:50,  descuento:20, cuotaTotal:250, montoPagado:250, yaAporto:1 },
   { id:3, beneficiario:'Ana Martínez',        nombre:'Rayos X tórax',       categoria:'Estudios',      metodoPago:'Transferencia',  montoServicio:480, montoInventario:0,   descuento:0,  cuotaTotal:480, montoPagado:0,   yaAporto:0 },
   { id:4, beneficiario:'Luis Hernández',      nombre:'Fisioterapia lumbar', categoria:'Rehabilitación',metodoPago:'Efectivo',       montoServicio:600, montoInventario:100, descuento:50, cuotaTotal:650, montoPagado:650, yaAporto:1 },
@@ -59,8 +59,6 @@ export default function Servicios() {
  
       <section className="inventario-bloque inventario-bloque--filtros" aria-label="Filtros y acciones">
         <div className="inventario-barra-acciones">
-          
-          
           <button className="inventario-form__btnSec" onClick={() => setModalServicio(true)}>
             + Nuevo servicio
           </button>
@@ -69,34 +67,33 @@ export default function Servicios() {
           </button>
         </div>
       </section>
-         <div className='consultas-filtros-contenedor'>
-            <section  aria-label="Historial de servicios">
-                <div className="servicios-barra-acciones"> 
-                  <SearchBar
-                    className="inventario-barra-acciones__busqueda"
-                    placeholder="Buscar por servicio…"
-                    value={consulta}
-                    onChange={(val) => setConsulta(val)}
-                  />
 
-                  <Dropdown
-                    className="inventario-barra-acciones__select"
-                    value={categoriaFiltro}
-                    onChange={(val) => setCategoriaFiltro(val)}
-                    options={[
-                      { label: 'Todas las categorías', value: '' },
-                      ...todasCategorias.map((c) => ({ label: c, value: c })),
-                    ]}
-                  />
-
-                </div>
-                <ServiciosTabla
-                  filas={filtrados}
-                  onVerDetalle={setDetalleItem}
-                  onVerRecibo={(item) => navigate(`/recibo/${item.id}`)}
-                />  
-            </section>
-         </div>
+      <div className='consultas-filtros-contenedor'>
+        <section aria-label="Historial de servicios">
+          <div className="servicios-barra-acciones"> 
+            <SearchBar
+              className="inventario-barra-acciones__busqueda"
+              placeholder="Buscar por servicio…"
+              value={consulta}
+              onChange={(val) => setConsulta(val)}
+            />
+            <Dropdown
+              className="inventario-barra-acciones__select"
+              value={categoriaFiltro}
+              onChange={(val) => setCategoriaFiltro(val)}
+              options={[
+                { label: 'Todas las categorías', value: '' },
+                ...todasCategorias.map((c) => ({ label: c, value: c })),
+              ]}
+            />
+          </div>
+          <ServiciosTabla
+            filas={filtrados}
+            onVerDetalle={setDetalleItem}
+            onVerRecibo={(item) => navigate(`/recibos?folio=${item.id}`)}
+          />  
+        </section>
+      </div>
 
       <section className="inventario-bloque" aria-label="Historial por beneficiario">
         <ServiciosBeneficiario
