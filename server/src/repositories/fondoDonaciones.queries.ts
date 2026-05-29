@@ -21,7 +21,6 @@ export const INSERT_MOVIMIENTO_FONDO = `
     ORIGEN_TIPO,
     ORIGEN_NOMBRE,
     CONCEPTO,
-    REQUIERE_REVISION,
     ID_SERVICIO_OTORGADO,
     ID_USUARIO,
     MOTIVO
@@ -33,7 +32,6 @@ export const INSERT_MOVIMIENTO_FONDO = `
     :origen_tipo,
     :origen_nombre,
     :concepto,
-    :requiere_revision,
     :id_servicio_otorgado,
     :id_usuario,
     :motivo
@@ -59,7 +57,6 @@ export const SELECT_MOVIMIENTOS_FONDO = `
       m.ORIGEN_TIPO,
       m.ORIGEN_NOMBRE,
       m.CONCEPTO,
-      m.REQUIERE_REVISION,
       m.ID_SERVICIO_OTORGADO,
       m.ID_USUARIO,
       TO_CHAR(m.FECHA, 'YYYY-MM-DD HH24:MI') AS FECHA,

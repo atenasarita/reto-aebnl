@@ -16,7 +16,6 @@ export interface MovimientoFondoDonacion {
   origen_tipo: OrigenDonacionTipo | null;
   origen_nombre: string | null;
   concepto: string | null;
-  requiere_revision: boolean;
   id_servicio_otorgado: number | null;
   id_usuario: number | null;
   fecha: string;
@@ -37,5 +36,3 @@ export interface RegistrarEgresoInput {
   id_usuario: number;
   motivo?: string;
 }
-
-export const UMBRAL_DONACION_REVISION = 10_000;

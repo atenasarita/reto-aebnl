@@ -1,179 +1,163 @@
-.donaciones-page {
-  padding: var(--space-6);
-  max-width: 1200px;
-  margin: 0 auto;
+/* Complementos sobre Recibos.css + BusquedaBeneficiarioVista.css */
+
+/* Recibos anula margin del page-header; aquí no hay tabs, hay que recuperarlo */
+.donaciones-page .recibos-header.page-header {
+  margin-bottom: var(--space-6);
 }
 
-.donaciones-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--space-6);
-  margin-bottom: var(--space-8);
-  flex-wrap: wrap;
+.donaciones-resumen-strip {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
 }
 
-.donaciones-saldo-card {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-4) var(--space-6);
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: var(--radius-tile);
-}
-
-.donaciones-saldo-label {
-  margin: 0;
-  font-size: 13px;
-  color: #166534;
-  font-weight: 600;
-}
-
-.donaciones-saldo-value {
-  margin: 4px 0 0;
-  font-size: 24px;
-  font-weight: 700;
-  color: #14532d;
-}
-
-.donaciones-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-  gap: var(--space-6);
-}
-
-@media (max-width: 900px) {
-  .donaciones-grid {
+@media (max-width: 768px) {
+  .donaciones-resumen-strip {
     grid-template-columns: 1fr;
   }
 }
 
-.donaciones-form-card,
-.donaciones-historial-card {
-  padding: var(--space-6);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-tile);
-  background: var(--color-surface-card);
+.donaciones-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 400px) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
 }
 
-.donaciones-form-card h2,
-.donaciones-historial-card h2 {
-  margin: 0 0 var(--space-2);
-  font-size: 18px;
+@media (max-width: 960px) {
+  .donaciones-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
-.donaciones-form-sub {
-  margin: 0 0 var(--space-4);
-  color: var(--color-text-muted);
-  font-size: 14px;
+.donaciones-layout .recibos-section {
+  margin-bottom: 0;
 }
 
-.donaciones-alerta {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 12px;
-  margin-bottom: var(--space-4);
-  background: #fffbeb;
-  border: 1px solid #fcd34d;
-  border-radius: 8px;
-  color: #92400e;
-  font-size: 14px;
+.donaciones-tabs-wrap {
+  margin-bottom: 0;
 }
 
 .donaciones-form {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-}
-
-.donaciones-field label {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text-primary);
+  font-family: var(--font);
 }
 
 .donaciones-textarea {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 14px;
+  min-height: 96px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid #cbd5e1;
+  border-radius: var(--radius-control);
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--color-surface-card);
   resize: vertical;
+  transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
 }
 
-.donaciones-error {
-  color: #dc2626;
-  font-size: 14px;
-  margin: 0;
+.donaciones-textarea::placeholder {
+  font-weight: 400;
+  font-size: 15px;
+  color: #94a3b8;
+}
+
+.donaciones-textarea:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.14);
+}
+
+.donaciones-char-count {
+  margin: var(--space-2) 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: right;
+  letter-spacing: 0.02em;
 }
 
 .donaciones-exito {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #166534;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--green-soft);
+  border: 1px solid #bbf7d0;
+  color: var(--green);
+  font-family: var(--font);
   font-size: 14px;
   font-weight: 600;
+  line-height: 1.45;
 }
 
-.donaciones-historial-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-4);
+.donaciones-btn-refresh:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.donaciones-empty {
-  color: var(--color-text-muted);
+.donaciones-col-concepto {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.donaciones-monto--abono {
+  font-weight: 700;
+  color: var(--green);
+  font-family: var(--font-mono);
   font-size: 14px;
 }
 
-.donaciones-table-wrap {
-  overflow-x: auto;
+.donaciones-monto--egreso {
+  font-weight: 700;
+  color: #991b1b;
+  font-family: var(--font-mono);
+  font-size: 14px;
 }
 
-.donaciones-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-.donaciones-table th,
-.donaciones-table td {
-  padding: 10px 8px;
-  border-bottom: 1px solid var(--color-border);
-  text-align: left;
-}
-
-.donaciones-table .text-right {
-  text-align: right;
-}
-
-.donaciones-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 600;
-  margin-right: 4px;
-}
-
-.donaciones-badge--abono {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.donaciones-badge--egreso {
-  background: #fee2e2;
+.badge-egreso {
+  background: var(--red-soft);
   color: #991b1b;
 }
 
-.donaciones-badge--revision {
-  background: #fef3c7;
-  color: #92400e;
+.donaciones-skeleton-value {
+  height: 24px;
+  width: 120px;
+  margin-top: var(--space-2);
+  border-radius: var(--radius-card);
+  background: linear-gradient(90deg, #e9edf5 25%, #f4f6fb 50%, #e9edf5 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.donaciones-page .estado-msg {
+  padding: var(--space-8) var(--space-6);
+  font-family: var(--font);
+  font-size: 14px;
+}
+
+.donaciones-page .estado-error {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.donaciones-spin {
+  animation: donaciones-spin 0.8s linear infinite;
+}
+
+@keyframes donaciones-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

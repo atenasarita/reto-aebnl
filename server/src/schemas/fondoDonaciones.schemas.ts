@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { UMBRAL_DONACION_REVISION } from '../types/fondoDonaciones.types';
 
 export const origenDonacionTipoSchema = z.enum(['marca', 'familia']);
 
@@ -22,5 +21,3 @@ export const registrarServicioFinanzasSchema = z.object({
   },
   { message: 'La suma de aportación familiar y donación no puede exceder el total a pagar' }
 );
-
-export { UMBRAL_DONACION_REVISION };

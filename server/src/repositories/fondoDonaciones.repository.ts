@@ -5,7 +5,6 @@ import {
   MovimientoFondoDonacion,
   RegistrarAbonoInput,
   RegistrarEgresoInput,
-  UMBRAL_DONACION_REVISION,
 } from '../types/fondoDonaciones.types';
 import {
   INSERT_MOVIMIENTO_FONDO,
@@ -30,7 +29,6 @@ type MovimientoRow = {
   ORIGEN_TIPO: string | null;
   ORIGEN_NOMBRE: string | null;
   CONCEPTO: string | null;
-  REQUIERE_REVISION: number;
   ID_SERVICIO_OTORGADO: number | null;
   ID_USUARIO: number | null;
   FECHA: string;
@@ -47,7 +45,6 @@ function mapMovimiento(row: MovimientoRow): MovimientoFondoDonacion {
     origen_tipo: (row.ORIGEN_TIPO as MovimientoFondoDonacion['origen_tipo']) ?? null,
     origen_nombre: row.ORIGEN_NOMBRE,
     concepto: row.CONCEPTO,
-    requiere_revision: row.REQUIERE_REVISION === 1,
     id_servicio_otorgado: row.ID_SERVICIO_OTORGADO,
     id_usuario: row.ID_USUARIO,
     fecha: row.FECHA,
@@ -105,7 +102,6 @@ export class FondoDonacionesRepository {
       origen_tipo: null,
       origen_nombre: null,
       concepto: null,
-      requiere_revision: 0,
       id_servicio_otorgado: input.id_servicio_otorgado,
       id_usuario: input.id_usuario,
       motivo: input.motivo ?? 'Pago de servicio con fondo de donaciones',
@@ -169,7 +165,6 @@ export class FondoDonacionesRepository {
 
       const { id_fondo, saldo } = await this.lockFondo(connection);
       const saldoNuevo = saldo + input.monto;
-      const requiereRevision = input.monto > UMBRAL_DONACION_REVISION ? 1 : 0;
 
       const result = await connection.execute(
         INSERT_MOVIMIENTO_FONDO,
@@ -181,7 +176,6 @@ export class FondoDonacionesRepository {
           origen_tipo: input.origen_tipo,
           origen_nombre: input.origen_nombre,
           concepto: input.concepto,
-          requiere_revision: requiereRevision,
           id_servicio_otorgado: null,
           id_usuario: input.id_usuario,
           motivo: 'Abono al fondo de donaciones',
@@ -208,7 +202,6 @@ export class FondoDonacionesRepository {
         origen_tipo: input.origen_tipo,
         origen_nombre: input.origen_nombre,
         concepto: input.concepto,
-        requiere_revision: requiereRevision === 1,
         id_servicio_otorgado: null,
         id_usuario: input.id_usuario,
         fecha: new Date().toISOString(),
