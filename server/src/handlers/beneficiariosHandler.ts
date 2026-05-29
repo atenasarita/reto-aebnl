@@ -69,6 +69,11 @@ export class BeneficiariosHandler {
   createBeneficiario = async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body as CreateBeneficiarioInput;
 
+    // console.log("1 BODY ORIGINAL:", JSON.stringify(req.body, null, 2));
+    // console.log("1 fecha_ingreso original:", req.body.fecha_ingreso);
+    // console.log("1 fecha_nacimiento original:", req.body.identificadores?.fecha_nacimiento);
+    // console.log("1 fecha_inicio original:", req.body.membresia?.fecha_inicio);
+
     try {
       const beneficiario = await this.beneficiariosController.createBeneficiario(payload);
       return res.status(201).json(beneficiario);

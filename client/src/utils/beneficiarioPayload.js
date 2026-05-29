@@ -1,6 +1,6 @@
 export function buildBeneficiarioPayload(formData, fechaRegistro, fechaNacimiento) {
   return {
-    fecha_ingreso: new Date(fechaRegistro),
+    fecha_ingreso: fechaRegistro,
     genero: formData.genero,
     tipo_espinas: formData.tipo_espinas,
     identificadores: {
@@ -8,7 +8,7 @@ export function buildBeneficiarioPayload(formData, fechaRegistro, fechaNacimient
       nombres: formData.nombres,
       apellido_paterno: formData.apellido_paterno,
       apellido_materno: formData.apellido_materno,
-      fecha_nacimiento: new Date(fechaNacimiento),
+      fecha_nacimiento: fechaNacimiento,
       estado_nacimiento: formData.estado_nacimiento,
       fotografia: formData.fotografia,
       telefono: formData.telefono,
@@ -50,7 +50,7 @@ export function buildBeneficiarioPayload(formData, fechaRegistro, fechaNacimient
       domicilio_estado: formData.domicilio_estado
     },
     membresia: {
-      fecha_inicio: new Date(formData.fecha_inicio_membresia),
+      fecha_inicio: formData.fecha_inicio_membresia,
       meses: Number(formData.meses_membresia),
       precio_mensual: 0,
       metodo_pago: 'donacion'

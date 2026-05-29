@@ -5,7 +5,7 @@ import Dropdown from '../../components/ui/Dropdown'
 import Button from '../../components/ui/Button'
 import BeneficiarioGrid from '../../components/layout/beneficiarios/BeneficiarioGrid/BenecifiarioGrid'
 import { FiUserPlus, FiSearch } from 'react-icons/fi'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom'
 
 import { API_URL } from '../../utils/config'
 
@@ -26,9 +26,12 @@ function GestionBeneficiarios() {
   const [error, setError] = useState('')
 
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const beneficiarioEditId = searchParams.get('edit')
+
+  const beneficiarioCreadoId = location.state?.beneficiarioCreado?.id_beneficiario;
 
   useEffect(() => {
     fetchBeneficiarios()
@@ -52,7 +55,19 @@ function GestionBeneficiarios() {
         throw new Error(data.message || 'Error al cargar beneficiarios')
       }
 
-      setAll(data)
+      const dataOrdenada = beneficiarioCreadoId
+        ? [
+          ...data.filter(
+            b => b.id_beneficiario === beneficiarioCreadoId
+          ),
+          ...data.filter(
+            b => b.id_beneficiario !== beneficiarioCreadoId
+          )
+        ]
+        : data
+
+
+      setAll(dataOrdenada)
 
       if (beneficiarioEditId) {
         const soloBeneficiarioEditado = data.filter(
@@ -60,7 +75,7 @@ function GestionBeneficiarios() {
         )
         setFiltered(soloBeneficiarioEditado)
       } else {
-        setFiltered(data)
+        setFiltered(dataOrdenada)
       }
     } catch (err) {
       setError(err.message || 'Error de conexión')
