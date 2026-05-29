@@ -38,6 +38,19 @@ import {
 } from '../types/beneficiarios.types';
 import { CreateMembresiaInput } from '../types/membresias.types';
 
+function formatDateOnly(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+function parseDateOnly(fecha: string): Date {
+  const [year, month, day] = fecha.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
 type BeneficiarioDetalleRow = {
     ID_BENEFICIARIO: number;
     FOLIO: string;
@@ -413,6 +426,13 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
             const folio = input.folio ?? (await generateNextBeneficiarioFolio(connection));
             const estado: Beneficiario['estado'] = 'inactivo';
 
+            // console.log("BIND fecha_ingreso:", input.fecha_ingreso);
+            // console.log("BIND fecha_nacimiento:", input.identificadores.fecha_nacimiento);
+            // console.log("BIND fecha_inicio:", input.membresia?.fecha_inicio);
+            // console.log("TIPO fecha_ingreso:", typeof input.fecha_ingreso);
+            // console.log("TIPO fecha_nacimiento:", typeof input.identificadores.fecha_nacimiento);
+            // console.log("TIPO fecha_inicio:", typeof input.membresia?.fecha_inicio);
+
             const result = await connection.execute(
                 INSERT_BENEFICIARIO,
                 {
@@ -765,22 +785,31 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         input: CreateMembresiaInput,
     ): Promise<Beneficiario['estado']> {
         const meses = input.meses;
-        const fechaInicio = startOfDay(input.fecha_inicio ?? new Date());
-        const fechaFin = addDays(addMonthsKeepingCalendar(fechaInicio, meses), -1);
+
+        const fechaInicioString = input.fecha_inicio ?? formatDateOnly(new Date());
+
+        const fechaInicioDate = parseDateOnly(fechaInicioString);
+        const fechaFinDate = addMonthsKeepingCalendar(fechaInicioDate, meses);
+        fechaFinDate.setDate(fechaFinDate.getDate() - 1);
+
+        const fechaFinString = formatDateOnly(fechaFinDate);
+
+        const hoy = parseDateOnly(formatDateOnly(new Date()));
+
         const precioTotal = Number((input.precio_mensual * input.meses).toFixed(2));
-        const estadoMembresia = fechaFin >= startOfDay(new Date()) ? 'activa' : 'vencida';
+        const estadoMembresia = fechaFinDate >= hoy ? 'activa' : 'vencida';
 
         await connection.execute(
-            INSERT_MEMBRESIA,
-            {
-                id_beneficiario,
-                precio: precioTotal,
-                fecha_inicio: fechaInicio,
-                fecha_fin: fechaFin,
-                estado: estadoMembresia,
-                metodo_pago: input.metodo_pago,
-            },
-            { autoCommit: false },
+        INSERT_MEMBRESIA,
+        {
+            id_beneficiario,
+            precio: precioTotal,
+            fecha_inicio: fechaInicioString,
+            fecha_fin: fechaFinString,
+            estado: estadoMembresia,
+            metodo_pago: input.metodo_pago,
+        },
+        { autoCommit: false },
         );
 
         return estadoMembresia === 'activa' ? 'activo' : 'inactivo';
