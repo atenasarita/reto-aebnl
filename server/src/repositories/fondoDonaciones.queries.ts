@@ -1,0 +1,79 @@
+export const SELECT_FONDO_FOR_UPDATE = `
+  SELECT ID_FONDO, SALDO
+  FROM FONDO_DONACIONES
+  WHERE ROWNUM = 1
+  FOR UPDATE
+`;
+
+export const UPDATE_FONDO_SALDO = `
+  UPDATE FONDO_DONACIONES
+  SET SALDO = :saldo,
+      FECHA_ACTUALIZACION = SYSDATE
+  WHERE ID_FONDO = :id_fondo
+`;
+
+export const INSERT_MOVIMIENTO_FONDO = `
+  INSERT INTO MOVIMIENTOS_FONDO_DONACIONES (
+    TIPO_MOVIMIENTO,
+    MONTO,
+    SALDO_ANTERIOR,
+    SALDO_NUEVO,
+    ORIGEN_TIPO,
+    ORIGEN_NOMBRE,
+    CONCEPTO,
+    REQUIERE_REVISION,
+    ID_SERVICIO_OTORGADO,
+    ID_USUARIO,
+    MOTIVO
+  ) VALUES (
+    :tipo_movimiento,
+    :monto,
+    :saldo_anterior,
+    :saldo_nuevo,
+    :origen_tipo,
+    :origen_nombre,
+    :concepto,
+    :requiere_revision,
+    :id_servicio_otorgado,
+    :id_usuario,
+    :motivo
+  )
+  RETURNING ID_MOVIMIENTO INTO :id_movimiento
+`;
+
+export const SELECT_SALDO_FONDO = `
+  SELECT ID_FONDO, SALDO, TO_CHAR(FECHA_ACTUALIZACION, 'YYYY-MM-DD HH24:MI') AS FECHA_ACTUALIZACION
+  FROM FONDO_DONACIONES
+  WHERE ROWNUM = 1
+`;
+
+export const SELECT_MOVIMIENTOS_FONDO = `
+  SELECT *
+  FROM (
+    SELECT
+      m.ID_MOVIMIENTO,
+      m.TIPO_MOVIMIENTO,
+      m.MONTO,
+      m.SALDO_ANTERIOR,
+      m.SALDO_NUEVO,
+      m.ORIGEN_TIPO,
+      m.ORIGEN_NOMBRE,
+      m.CONCEPTO,
+      m.REQUIERE_REVISION,
+      m.ID_SERVICIO_OTORGADO,
+      m.ID_USUARIO,
+      TO_CHAR(m.FECHA, 'YYYY-MM-DD HH24:MI') AS FECHA,
+      m.MOTIVO
+    FROM MOVIMIENTOS_FONDO_DONACIONES m
+    ORDER BY m.FECHA DESC, m.ID_MOVIMIENTO DESC
+  )
+  WHERE ROWNUM <= :limite
+`;
+
+export const SELECT_MONTO_DONACION_POR_SERVICIO = `
+  SELECT NVL(MONTO, 0) AS MONTO
+  FROM MOVIMIENTOS_FONDO_DONACIONES
+  WHERE ID_SERVICIO_OTORGADO = :id_servicio_otorgado
+    AND TIPO_MOVIMIENTO = 'egreso'
+  AND ROWNUM = 1
+`;

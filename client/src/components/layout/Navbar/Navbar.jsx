@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { label: "Inicio", to: "/dashboard" },
   { label: "Beneficiarios", to: "/beneficiarios" },
   { label: "Servicios", to: "/registro_servicios" },
+  { label: "Donaciones", to: "/donaciones" },
   { label: "Inventario", to: "/inventario" },
   { label: "Citas", to: "/citas" },
   { label: "Reportes", to: "/reportes" },

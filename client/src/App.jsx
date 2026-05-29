@@ -22,6 +22,7 @@ import ReportePersonalizado from "./pages/reportes/ReportePersonalizado/ReporteP
 import Citas from './pages/Citas/AgendaCitas';
 import Dashboard from "./pages/dashboard";
 import RegistroServicios from "./pages/RegistroServicios/RegistroServicios";
+import Donaciones from "./pages/Donaciones/Donaciones";
 
 import "./App.css";
 
@@ -54,6 +55,9 @@ export default function App() {
 
           {/* Registro de Servicios */}
           <Route path="/registro_servicios" element={<RegistroServicios />} />
+
+          {/* Fondo de Donaciones */}
+          <Route path="/donaciones" element={<Donaciones />} />
 
 
           {/* Inventario */}

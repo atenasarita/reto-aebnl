@@ -21,9 +21,9 @@ export const INSERT_VENTA_INVENTARIO = `
 
 export const INSERT_SERVICIO_FINANCIERO = `
   INSERT INTO SERVICIOS_FINANCIEROS 
-    (ID_SERVICIO_OTORGADO, MONTO_SERVICIO, MONTO_INVENTARIO, DESCUENTO, CUOTA_TOTAL, MONTO_PAGADO, METODO_PAGO, YA_APORTO)
+    (ID_SERVICIO_OTORGADO, MONTO_SERVICIO, MONTO_INVENTARIO, DESCUENTO, CUOTA_TOTAL, MONTO_PAGADO, MONTO_DONACION, METODO_PAGO, YA_APORTO)
   VALUES 
-    (:id_servicio_otorgado, :monto_servicio, :monto_inventario, :descuento, :cuota_total, :monto_pagado, :metodo_pago, :ya_aporto)
+    (:id_servicio_otorgado, :monto_servicio, :monto_inventario, :descuento, :cuota_total, :monto_pagado, :monto_donacion, :metodo_pago, :ya_aporto)
 `;
 
 export const SELECT_CANTIDAD_INVENTARIO = `

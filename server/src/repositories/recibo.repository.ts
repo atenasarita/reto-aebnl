@@ -22,6 +22,7 @@ const SELECT_COLS = `
     sf.DESCUENTO,
     sf.CUOTA_TOTAL,
     sf.MONTO_PAGADO,
+    NVL(sf.MONTO_DONACION, 0)                   AS MONTO_DONACION,
     sf.METODO_PAGO`;
 
 const FROM_JOINS = `
@@ -78,6 +79,7 @@ function rowToFinanciero(row: Record<string, unknown>): FinancieroRecibo | null 
     descuento:              Number(row["DESCUENTO"]        ?? 0),
     cuota_total:            Number(row["CUOTA_TOTAL"]      ?? 0),
     monto_pagado:           Number(row["MONTO_PAGADO"]     ?? 0),
+    monto_donacion:         Number(row["MONTO_DONACION"]   ?? 0),
     metodo_pago:            row["METODO_PAGO"] as FinancieroRecibo["metodo_pago"],
   };
 }

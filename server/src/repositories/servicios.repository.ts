@@ -1,5 +1,6 @@
 import oracledb from 'oracledb';
 import { OracleConnection } from '../db/oracle';
+import { FondoDonacionesRepository } from './fondoDonaciones.repository';
 import {
   SELECT_TIPOS_SERVICIO,
   INSERT_SERVICIO_OTORGADO,
@@ -37,6 +38,7 @@ type RegistrarServicioInput = {
   descuento: number;
   cuota_total: number;
   monto_pagado: number;
+  monto_donacion: number;
   metodo_pago: string;
   ya_aporto: boolean;
   id_usuario: number; // 👈 necesario para MOVIMIENTOS_INVENTARIO
@@ -66,9 +68,14 @@ function metodoPagoParaOracle(raw: string): MetodoPagoServicioOracle {
 
 export class ServicioRepository {
   private readonly oracleConnection: OracleConnection;
+  private readonly fondoRepository: FondoDonacionesRepository;
 
-  constructor(oracleConnection: OracleConnection = new OracleConnection()) {
+  constructor(
+    oracleConnection: OracleConnection = new OracleConnection(),
+    fondoRepository: FondoDonacionesRepository = new FondoDonacionesRepository()
+  ) {
     this.oracleConnection = oracleConnection;
+    this.fondoRepository = fondoRepository;
   }
 
   async getTiposServicio() {
@@ -182,7 +189,19 @@ export class ServicioRepository {
         );
       }
 
-      // ── 3. Insertar registro financiero ────────────────────────────
+      const montoDonacion = input.monto_donacion || 0;
+
+      // ── 3. Descontar del fondo de donaciones (si aplica) ─────────
+      if (montoDonacion > 0) {
+        await this.fondoRepository.registrarEgresoEnTransaccion(connection, {
+          monto: montoDonacion,
+          id_servicio_otorgado: idServicio,
+          id_usuario: input.id_usuario,
+          motivo: 'Pago de servicio con fondo de donaciones',
+        });
+      }
+
+      // ── 4. Insertar registro financiero ────────────────────────────
       await connection.execute(
         INSERT_SERVICIO_FINANCIERO,
         {
@@ -192,6 +211,7 @@ export class ServicioRepository {
           descuento:            input.descuento || 0,
           cuota_total:          input.cuota_total,
           monto_pagado:         input.monto_pagado,
+          monto_donacion:       montoDonacion,
           metodo_pago:          metodoPagoParaOracle(input.metodo_pago),
           ya_aporto:            input.ya_aporto ? 1 : 0,
         }
