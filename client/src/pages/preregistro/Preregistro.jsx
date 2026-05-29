@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Accessibility,
   ArrowLeft,
@@ -455,14 +456,16 @@ function AssociationPanel() {
     <aside className="preregistro-assoc-panel" aria-label="Sobre la asociación">
       {/* Cabecera con logo + título */}
       <div className="preregistro-assoc-header">
-        <img
-          src={logo}
-          alt="Asociación de Espina Bífida de Nuevo León, A.B.P."
-          className="preregistro-assoc-logo"
-        />
+  <img
+    src={logo}
+    alt="Asociación de Espina Bífida de Nuevo León, A.B.P."
+    className="preregistro-assoc-logo"
+  />
 
- 
-      </div>
+  <Link to="/login" className="preregistro-login-btn">
+    Regresar a Inicio de Sesión
+  </Link>
+</div>
 
       <div className="preregistro-assoc-body">
       {/* Stats */}
