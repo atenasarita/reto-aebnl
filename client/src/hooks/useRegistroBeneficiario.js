@@ -119,16 +119,24 @@ export function useRegistroBeneficiario(navigate) {
 
   };
 
+  const ID_otros = 9; // ID fijo para "Otros" en tipo_espinas
+
   const handleTipoEspinasChange = (e) => {
   const { value, checked } = e.target;
   const id = parseInt(value);
 
-  setFormData(prev => ({
-    ...prev,
-    tipo_espinas: checked
+  
+  setFormData(prev => {
+    const tipo_espinas = checked
       ? [...prev.tipo_espinas, id]
-      : prev.tipo_espinas.filter(t => t !== id)
-  }));
+      : prev.tipo_espinas.filter(t => t !== id);
+
+    return {
+      ...prev,
+      tipo_espinas,
+      diagnostico_otro: id === ID_otros && !checked ? "" : prev.diagnostico_otro
+    };
+  });
 
   if (fieldErrors.tipo_espinas) {
     setFieldErrors(prev => ({

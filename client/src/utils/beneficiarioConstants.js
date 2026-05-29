@@ -54,6 +54,7 @@ export const initialFormData = (fechaRegistro) => ({
   domicilio_ciudad: '',
   domicilio_estado: '',
   tipo_espinas: [],
+  diagnostico_otro: "",
   fecha_inicio_membresia: fechaRegistro,
   meses_membresia: 6,
 });

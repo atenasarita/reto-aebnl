@@ -20,6 +20,9 @@ function StepInformacionMedica({
 
       <div className="field-group full">
         <label>Tipo de Espina Bífida</label>
+
+        
+
         <div className="checkbox-group">
           {espinaBifidaOptions.map(type => (
             <label
@@ -39,6 +42,20 @@ function StepInformacionMedica({
               <small className="field-error">{fieldErrors.tipo_espinas}</small>
             )}
         </div>
+
+        {formData.tipo_espinas.includes(9) && (
+          <div className="field-group">
+            <label>Especifica el diagnóstico</label>
+            <input
+              type="text"
+              name="diagnostico_otro"
+              value={formData.diagnostico_otro || ""}
+              onChange={handleInputChange}
+              placeholder="Describe el diagnóstico aquí..."
+              rows={3}
+            />
+          </div>
+        )}
       </div>
 
       <div className="row">
