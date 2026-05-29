@@ -11,15 +11,15 @@ import {
 
 import "../styles/BusquedaBeneficiarioVista.css";
 
-import { useProductos } from "../../hooks/useProductos";
-import useBeneficiarios from "../../hooks/useBeneficiarios"
-import useAgendaHoy from "../../hooks/useCitasHoy";
-import useServicios from "../../hooks/useServicios";
-import useRegistrarServicio from "../../hooks/useRegistrarServicios";
+import { useProductos } from "../../hooks/useProductos.js";
+import useBeneficiarios from "../../hooks/useBeneficiarios.js"
+import useAgendaHoy from "../../hooks/useCitasHoy.js";
+import useServicios from "../../hooks/useServicios.js";
+import useRegistrarServicio from "../../hooks/useRegistrarServicios.js";
 
-import StepBusqueda from "../../components/layout/registroServicios/StepBusqueda";
-import StepDetalles from "../../components/layout/registroServicios/StepDetalles";
-import StepInsumos from "../../components/layout/registroServicios/StepInsumos";
+import StepBusqueda from "../../components/layout/registroServicios/StepBusqueda.jsx";
+import StepDetalles from "../../components/layout/registroServicios/StepDetalles.jsx";
+import StepInsumos from "../../components/layout/registroServicios/StepInsumos.jsx";
 import StepFinanzas from "../../components/layout/registroServicios/StepFinanzas.jsx";
 
 const PASOS = [

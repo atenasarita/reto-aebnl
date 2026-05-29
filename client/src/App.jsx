@@ -21,7 +21,9 @@ import ReportesMensual from "./pages/reportes/ReportesMensual/ReportesMensual";
 import ReportePersonalizado from "./pages/reportes/ReportePersonalizado/ReportePersonalizado";
 import Citas from './pages/Citas/AgendaCitas';
 import Dashboard from "./pages/dashboard";
-import RegistroServicios from "./pages/RegistroServicios/RegistroServicios";
+import RegistroServicios from "./pages/Servicios/RegistroServicios";
+
+import Servicios from "./pages/Servicios/Servicios";
 
 import "./App.css";
 
@@ -54,6 +56,7 @@ export default function App() {
 
           {/* Registro de Servicios */}
           <Route path="/registro_servicios" element={<RegistroServicios />} />
+          <Route path="/servicios" element={<Servicios />} />
 
 
           {/* Inventario */}

@@ -9,6 +9,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { API_URL } from '../../utils/config'
 
+
 const ESTATUS_OPTIONS = [
   { label: 'Todos', value: '' },
   { label: 'Activo', value: 'activo' },

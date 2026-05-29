@@ -1,4 +1,7 @@
 import { useState, useEffect, useCallback, useId, useRef } from "react";
+import { useSearchParams } from 'react-router-dom'
+
+
 import "../styles/Recibos.css";
 
 import { API_URL } from '../../utils/config'
@@ -269,18 +272,23 @@ export default function Recibos() {
   const tabDiaRef = useRef(null);
   const tabMesRef = useRef(null);
 
-  const [fecha, setFecha] = useState(hoy());
-  const [busquedaDia, setBusquedaDia] = useState("");
-  const [busquedaMes, setBusquedaMes] = useState("");
-  const [vistaActiva, setVistaActiva] = useState("dia");
+  const [fecha,        setFecha]        = useState(hoy());
+  const [busquedaDia,  setBusquedaDia]  = useState("");
+  const [busquedaMes,  setBusquedaMes]  = useState("");
+  const [vistaActiva,  setVistaActiva]  = useState("dia");
+ 
+  const [recibosDay,   setRecibosDay]   = useState([]);
+  const [loadingDay,   setLoadingDay]   = useState(false);
+  const [errorDay,     setErrorDay]     = useState("");
+ 
+  const [recibosMes,   setRecibosMes]   = useState([]);
+  const [loadingMes,   setLoadingMes]   = useState(false);
+  const [errorMes,     setErrorMes]     = useState("");
+ 
+  const [seleccion,    setSeleccion]    = useState(null);
 
-  const [recibosDay, setRecibosDay] = useState([]);
-  const [loadingDay, setLoadingDay] = useState(false);
-  const [errorDay, setErrorDay] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams()
 
-  const [recibosMes, setRecibosMes] = useState([]);
-  const [loadingMes, setLoadingMes] = useState(false);
-  const [errorMes, setErrorMes] = useState("");
 
   const [fechaDesde, setFechaDesde] = useState(hoy());
   const [fechaHasta, setFechaHasta] = useState(hoy());
@@ -289,7 +297,6 @@ export default function Recibos() {
   const [loadingRango, setLoadingRango] = useState(false);
   const [errorRango, setErrorRango] = useState("");
 
-  const [seleccion, setSeleccion] = useState(null);
 
   const cargarDia = useCallback(async (f) => {
     setLoadingDay(true); setErrorDay("");
@@ -332,6 +339,25 @@ export default function Recibos() {
   cargarDia(fecha);
   cargarMes(fecha);
 }, [fecha, cargarDia, cargarMes]);
+
+  useEffect(() => {
+    const folioParam = searchParams.get('folio')
+    if (!folioParam) return
+  
+    const todas = [...recibosDay, ...recibosMes]
+    const encontrado = todas.find(
+      (r) => String(r.id_servicio_otorgado) === String(folioParam)
+    )
+    if (encontrado) {
+      setSeleccion(encontrado)
+
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev)
+        next.delete('folio')
+        return next
+      })
+    }
+  }, [searchParams, recibosDay, recibosMes, setSearchParams])
 
   const normalizar = (str) =>
     (str || "")
