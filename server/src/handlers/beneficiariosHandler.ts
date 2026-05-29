@@ -69,11 +69,6 @@ export class BeneficiariosHandler {
   createBeneficiario = async (req: Request, res: Response, next: NextFunction) => {
     const payload = req.body as CreateBeneficiarioInput;
 
-    // console.log("1 BODY ORIGINAL:", JSON.stringify(req.body, null, 2));
-    // console.log("1 fecha_ingreso original:", req.body.fecha_ingreso);
-    // console.log("1 fecha_nacimiento original:", req.body.identificadores?.fecha_nacimiento);
-    // console.log("1 fecha_inicio original:", req.body.membresia?.fecha_inicio);
-
     try {
       const beneficiario = await this.beneficiariosController.createBeneficiario(payload);
       return res.status(201).json(beneficiario);
@@ -154,18 +149,37 @@ export class BeneficiariosHandler {
     }
   };
 
+  updatePadres = async (req: Request, res: Response, next: NextFunction) => {
+    const id_beneficiario = Number(req.params.id_beneficiario);
+
+    if (!Number.isInteger(id_beneficiario) || id_beneficiario <= 0) {
+      return next(new ValidationError('id_beneficiario invalido'));
+    }
+
+    try {
+      const result = await this.beneficiariosController.updatePadres(
+        id_beneficiario,
+        req.body
+      );
+
+      return res.status(200).json(result);
+    } catch (error) {
+      return next(error);
+    }
+  };
+
   updateBeneficiario = async (req: Request, res: Response, next: NextFunction) => {
-  const id_beneficiario = Number(req.params.id_beneficiario);
+    const id_beneficiario = Number(req.params.id_beneficiario);
 
-  if (!Number.isInteger(id_beneficiario) || id_beneficiario <= 0) {
-    return next(new ValidationError('id_beneficiario invalido'));
-  }
+    if (!Number.isInteger(id_beneficiario) || id_beneficiario <= 0) {
+      return next(new ValidationError('id_beneficiario invalido'));
+    }
 
-  try {
-    await this.beneficiariosController.updateBeneficiario(id_beneficiario, req.body);
-    return res.status(200).json({ message: 'Beneficiario actualizado correctamente' });
-  } catch (error) {
-    return next(error);
-  }
+    try {
+      await this.beneficiariosController.updateBeneficiario(id_beneficiario, req.body);
+      return res.status(200).json({ message: 'Beneficiario actualizado correctamente' });
+    } catch (error) {
+      return next(error);
+    }
   };
 }

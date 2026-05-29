@@ -426,13 +426,6 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
             const folio = input.folio ?? (await generateNextBeneficiarioFolio(connection));
             const estado: Beneficiario['estado'] = 'inactivo';
 
-            // console.log("BIND fecha_ingreso:", input.fecha_ingreso);
-            // console.log("BIND fecha_nacimiento:", input.identificadores.fecha_nacimiento);
-            // console.log("BIND fecha_inicio:", input.membresia?.fecha_inicio);
-            // console.log("TIPO fecha_ingreso:", typeof input.fecha_ingreso);
-            // console.log("TIPO fecha_nacimiento:", typeof input.identificadores.fecha_nacimiento);
-            // console.log("TIPO fecha_inicio:", typeof input.membresia?.fecha_inicio);
-
             const result = await connection.execute(
                 INSERT_BENEFICIARIO,
                 {
@@ -650,6 +643,182 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
             }
         }
     }
+
+    async updatePadres(id_beneficiario: number, input: any): Promise<void> {
+    let connection: oracledb.Connection | undefined;
+
+    try {
+        connection = await this.oracleConnection.getConnection();
+
+        const resultDatosMedicos = await connection.execute<{
+            ID_DATOS_MEDICOS: number;
+        }>(
+            `
+            SELECT ID_DATOS_MEDICOS
+            FROM DATOS_MEDICOS
+            WHERE ID_BENEFICIARIO = :id_beneficiario
+            `,
+            { id_beneficiario },
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
+
+        const rowDatosMedicos = resultDatosMedicos.rows?.[0];
+
+        if (!rowDatosMedicos) {
+            throw new NotFoundError('No se encontraron datos médicos para este beneficiario.');
+        }
+
+        const id_datos_medicos = rowDatosMedicos.ID_DATOS_MEDICOS;
+
+        await connection.execute(
+            `
+            MERGE INTO PADRES p
+            USING (
+                SELECT
+                    :id_datos_medicos AS ID_DATOS_MEDICOS,
+                    :tipo_padre AS TIPO_PADRE,
+                    :nombre_completo AS NOMBRE_COMPLETO,
+                    :fecha_nacimiento AS FECHA_NACIMIENTO,
+                    :email AS EMAIL,
+                    :telefono AS TELEFONO,
+                    :telefono_casa AS TELEFONO_CASA,
+                    :telefono_trabajo AS TELEFONO_TRABAJO
+                FROM dual
+            ) src
+            ON (
+                p.ID_DATOS_MEDICOS = src.ID_DATOS_MEDICOS
+                AND UPPER(p.TIPO_PADRE) = UPPER(src.TIPO_PADRE)
+            )
+            WHEN MATCHED THEN
+                UPDATE SET
+                    p.NOMBRE_COMPLETO = src.NOMBRE_COMPLETO,
+                    p.FECHA_NACIMIENTO = CASE
+                        WHEN src.FECHA_NACIMIENTO IS NULL OR src.FECHA_NACIMIENTO = '' THEN NULL
+                        ELSE TO_DATE(src.FECHA_NACIMIENTO, 'YYYY-MM-DD')
+                    END,
+                    p.EMAIL = src.EMAIL,
+                    p.TELEFONO = src.TELEFONO,
+                    p.TELEFONO_CASA = src.TELEFONO_CASA,
+                    p.TELEFONO_TRABAJO = src.TELEFONO_TRABAJO
+            WHEN NOT MATCHED THEN
+                INSERT (
+                    ID_DATOS_MEDICOS,
+                    TIPO_PADRE,
+                    NOMBRE_COMPLETO,
+                    FECHA_NACIMIENTO,
+                    EMAIL,
+                    TELEFONO,
+                    TELEFONO_CASA,
+                    TELEFONO_TRABAJO
+                )
+                VALUES (
+                    src.ID_DATOS_MEDICOS,
+                    src.TIPO_PADRE,
+                    src.NOMBRE_COMPLETO,
+                    CASE
+                        WHEN src.FECHA_NACIMIENTO IS NULL OR src.FECHA_NACIMIENTO = '' THEN NULL
+                        ELSE TO_DATE(src.FECHA_NACIMIENTO, 'YYYY-MM-DD')
+                    END,
+                    src.EMAIL,
+                    src.TELEFONO,
+                    src.TELEFONO_CASA,
+                    src.TELEFONO_TRABAJO
+                )
+            `,
+            {
+                id_datos_medicos,
+                tipo_padre: 'padre',
+                nombre_completo: input.padre_nombre_completo ?? null,
+                fecha_nacimiento: input.padre_fecha_nacimiento ?? null,
+                email: input.padre_email ?? null,
+                telefono: input.padre_telefono ?? null,
+                telefono_casa: input.padre_tel_casa ?? null,
+                telefono_trabajo: input.padre_tel_trabajo ?? null,
+            },
+            { autoCommit: false }
+        );
+
+        await connection.execute(
+            `
+            MERGE INTO PADRES p
+            USING (
+                SELECT
+                    :id_datos_medicos AS ID_DATOS_MEDICOS,
+                    :tipo_padre AS TIPO_PADRE,
+                    :nombre_completo AS NOMBRE_COMPLETO,
+                    :fecha_nacimiento AS FECHA_NACIMIENTO,
+                    :email AS EMAIL,
+                    :telefono AS TELEFONO,
+                    :telefono_casa AS TELEFONO_CASA,
+                    :telefono_trabajo AS TELEFONO_TRABAJO
+                FROM dual
+            ) src
+            ON (
+                p.ID_DATOS_MEDICOS = src.ID_DATOS_MEDICOS
+                AND UPPER(p.TIPO_PADRE) = UPPER(src.TIPO_PADRE)
+            )
+            WHEN MATCHED THEN
+                UPDATE SET
+                    p.NOMBRE_COMPLETO = src.NOMBRE_COMPLETO,
+                    p.FECHA_NACIMIENTO = CASE
+                        WHEN src.FECHA_NACIMIENTO IS NULL OR src.FECHA_NACIMIENTO = '' THEN NULL
+                        ELSE TO_DATE(src.FECHA_NACIMIENTO, 'YYYY-MM-DD')
+                    END,
+                    p.EMAIL = src.EMAIL,
+                    p.TELEFONO = src.TELEFONO,
+                    p.TELEFONO_CASA = src.TELEFONO_CASA,
+                    p.TELEFONO_TRABAJO = src.TELEFONO_TRABAJO
+            WHEN NOT MATCHED THEN
+                INSERT (
+                    ID_DATOS_MEDICOS,
+                    TIPO_PADRE,
+                    NOMBRE_COMPLETO,
+                    FECHA_NACIMIENTO,
+                    EMAIL,
+                    TELEFONO,
+                    TELEFONO_CASA,
+                    TELEFONO_TRABAJO
+                )
+                VALUES (
+                    src.ID_DATOS_MEDICOS,
+                    src.TIPO_PADRE,
+                    src.NOMBRE_COMPLETO,
+                    CASE
+                        WHEN src.FECHA_NACIMIENTO IS NULL OR src.FECHA_NACIMIENTO = '' THEN NULL
+                        ELSE TO_DATE(src.FECHA_NACIMIENTO, 'YYYY-MM-DD')
+                    END,
+                    src.EMAIL,
+                    src.TELEFONO,
+                    src.TELEFONO_CASA,
+                    src.TELEFONO_TRABAJO
+                )
+            `,
+            {
+                id_datos_medicos,
+                tipo_padre: 'madre',
+                nombre_completo: input.madre_nombre_completo ?? null,
+                fecha_nacimiento: input.madre_fecha_nacimiento ?? null,
+                email: input.madre_email ?? null,
+                telefono: input.madre_telefono ?? null,
+                telefono_casa: input.madre_tel_casa ?? null,
+                telefono_trabajo: input.madre_tel_trabajo ?? null,
+            },
+            { autoCommit: false }
+        );
+
+        await connection.commit();
+    } catch (error) {
+        if (connection) {
+            await connection.rollback();
+        }
+        console.error('Error en updatePadres:', error);
+        throw error;
+    } finally {
+        if (connection) {
+            await connection.close();
+        }
+    }
+}
 
     private async insertIdentificadores(
         connection: oracledb.Connection,
