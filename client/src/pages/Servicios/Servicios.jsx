@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef, useId } from 'react'
-import ServiciosNuevoServicioModal from './ServiciosNuevoServicioModal'
+import ServiciosNuevoServicioModal from './Serviciosnuevoserviciomodal'
 import ServiciosTabla from '../../components/layout/registroServicios/ServiciosTabla'
 import ServiciosDetalleModal from '../../components/layout/registroServicios/ServiciosDetalleModal'
 import ServiciosBeneficiario from '../../components/layout/registroServicios/ServiciosBeneficiario'
