@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import InventarioModalShell from '../../components/layout/inventario/InventarioModalShell/InventarioModalShell'
+import '../styles/Servicios.css'
 
 const CATEGORIAS_DEFAULT = [
   'Consultas',
@@ -8,7 +9,8 @@ const CATEGORIAS_DEFAULT = [
   'Procedimiento',
   'Rehabilitación',
   'Terapia',
-  'Material',
+  'Material1',
+  'Material3',
 ]
 
 const initialForm = {
@@ -193,7 +195,7 @@ export default function ServiciosNuevoServicioModal({
               placeholder="Ej. Consulta general"
             />
             {sugerenciaNombre && (
-              <p className="inventario-form__sugerencia">
+              <p>
                 ¿Quisiste decir{' '}
                 <button
                   type="button"
@@ -218,7 +220,7 @@ export default function ServiciosNuevoServicioModal({
                 <button
                   key={cat}
                   type="button"
-                  className={`inventario-form__cat-btn${categoriaSeleccionada === cat ? ' inventario-form__cat-btn--selected' : ''}`}
+                  className={`servicios-form__cat-btn${categoriaSeleccionada === cat ? ' servicios-form__cat-btn--selected' : ''}`}
                   onClick={() => handleSeleccionarCategoria(cat)}
                 >
                   {cat}
@@ -226,7 +228,7 @@ export default function ServiciosNuevoServicioModal({
               ))}
               <button
                 type="button"
-                className="inventario-form__cat-btn inventario-form__cat-btn--nueva"
+                className="servicios-form__cat-btn servicios-form__cat-btn--nueva"
                 onClick={() => setMostrarNuevaCat((v) => !v)}
               >
                 + Nueva
@@ -246,7 +248,7 @@ export default function ServiciosNuevoServicioModal({
                 />
                 <button
                   type="button"
-                  className="inventario-form__btnPri"
+                  className="servicios-form__btnPri"
                   onClick={handleAgregarCategoria}
                 >
                   Agregar
@@ -302,12 +304,12 @@ export default function ServiciosNuevoServicioModal({
         )}
 
         <div className="inventario-form__acciones">
-          <button type="button" className="inventario-form__btnSec" onClick={onClose}>
+          <button type="button" className="servicios-form__btnSec" onClick={onClose}>
             Cancelar
           </button>
           <button
             type="submit"
-            className="inventario-form__btnPri"
+            className="servicios-form__btnPri"
             disabled={submitting}
           >
             {submitting ? 'Guardando…' : 'Guardar servicio'}

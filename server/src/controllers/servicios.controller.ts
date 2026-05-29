@@ -38,4 +38,8 @@ export class ServiciosController {
   async registrarServicio(input: RegistrarServicioInput) {
     return this.repository.registrarServicio(input);
   }
+
+  async getHistorial(limit: number, page: number) {
+    return this.repository.getHistorial(limit, page);
+  }
 }

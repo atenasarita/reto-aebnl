@@ -69,4 +69,16 @@ export class ServiciosHandler {
       return res.status(500).json({ ok: false, message: 'Error al registrar servicio' });
     }
   };
+
+  getHistorial = async (req: Request, res: Response) => {
+    try {
+      const limit = Math.min(Number(req.query.limit) || 20, 200);
+      const page  = Math.max(Number(req.query.page)  || 0, 0);
+      const result = await this.serviciosController.getHistorial(limit, page);
+      res.status(200).json({ ok: true, ...result });
+    } catch (error) {
+      console.error('Error en getHistorial:', error);
+      res.status(500).json({ ok: false, message: 'Error obteniendo historial de servicios' });
+    }
+  };
 }

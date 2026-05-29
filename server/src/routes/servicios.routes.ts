@@ -17,6 +17,8 @@ router.get(
   authorizeRoles('administrador', 'operador'),
   serviciosHandler.getFechasUltimosEstudios
 );
+
 router.post('/registro_servicios', authenticateJWT, authorizeRoles('administrador', 'operador'), serviciosHandler.registrarServicio);
+router.get('/servicios/historial', authenticateJWT, authorizeRoles('administrador', 'operador'), serviciosHandler.getHistorial);
 
 export default router;

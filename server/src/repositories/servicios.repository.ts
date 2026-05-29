@@ -9,7 +9,9 @@ import {
   UPDATE_CANTIDAD_INVENTARIO,
   INSERT_MOVIMIENTO_INVENTARIO,
   SELECT_FECHAS_ULTIMOS_ESTUDIOS_BY_BENEFICIARIO,
+  SELECT_HISTORIAL_SERVICIOS
 } from './servicios.queries';
+
 
 type TipoServicioRow = {
   ID_CATALOGO_SERVICIO: number;
@@ -57,7 +59,23 @@ type FechasUltimosEstudiosRow = {
   UROCULTIVO: Date | null;
 };
 
-/** Valores que cumplen el CHECK de METODO_PAGO en SERVICIOS_FINANCIEROS (alineado a membrecías/recibos). */
+type HistorialRow = {
+  ID_SERVICIO_OTORGADO: number;
+  BENEFICIARIO:         string;
+  SERVICIO:             string;
+  CATEGORIA:            string;
+  FECHA:                string;
+  HORA:                 string;
+  MONTO_SERVICIO:       number | null;
+  MONTO_INVENTARIO:     number | null;
+  DESCUENTO:            number | null;
+  CUOTA_TOTAL:          number | null;
+  MONTO_PAGADO:         number | null;
+  METODO_PAGO:          string | null;
+  YA_APORTO:            number | null;
+  MONTO_DONACION:       number | null;
+};
+
 type MetodoPagoServicioOracle = 'efectivo' | 'tarjeta' | 'donacion';
 
 function metodoPagoParaOracle(raw: string): MetodoPagoServicioOracle {
@@ -258,4 +276,48 @@ export class ServicioRepository {
       if (connection) await connection.close();
     }
   }
+
+  async getHistorial(limit: number = 20, page: number = 0) {
+    let connection: oracledb.Connection | undefined;
+
+    try {
+      connection = await this.oracleConnection.getConnection();
+
+      const offset = page * limit;
+
+      const result = await connection.execute(
+        SELECT_HISTORIAL_SERVICIOS,
+        { limit, offset },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+
+      const rows = (result.rows ?? []) as HistorialRow[];
+
+      return {
+        data: rows.map((row) => ({
+          id:              row.ID_SERVICIO_OTORGADO,
+          beneficiario:    row.BENEFICIARIO?.trim() ?? '',
+          nombre:          row.SERVICIO,
+          categoria:       row.CATEGORIA,
+          fecha:           row.FECHA,
+          hora:            row.HORA,
+          montoServicio:   row.MONTO_SERVICIO   ?? null,
+          montoInventario: row.MONTO_INVENTARIO ?? null,
+          descuento:       row.DESCUENTO        ?? null,
+          cuotaTotal:      row.CUOTA_TOTAL      ?? null,
+          montoPagado:     row.MONTO_PAGADO     ?? null,
+          metodoPago:      row.METODO_PAGO      ?? null,
+          yaAporto:        row.YA_APORTO        ?? null,
+          montoDonacion:   row.MONTO_DONACION   ?? null,
+        })),
+        hasMore: rows.length === limit,
+        page,
+        limit,
+      };
+
+    } finally {
+      if (connection) await connection.close();
+    }
+  }
 }
+

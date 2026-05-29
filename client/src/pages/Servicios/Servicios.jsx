@@ -5,31 +5,20 @@ import ServiciosDetalleModal from '../../components/layout/registroServicios/Ser
 import ServiciosBeneficiario from '../../components/layout/registroServicios/ServiciosBeneficiario'
 import { useNavigate } from 'react-router-dom'
 
+
 import SearchBar from '../../components/ui/SearchBar'
 import Dropdown from '../../components/ui/Dropdown'
 import { FiSearch } from 'react-icons/fi'
 
 import '../styles/Servicios.css'
 
-const HISTORIAL_PLACEHOLDER = [
-  { id:145, beneficiario:'María García López',  nombre:'Consulta general',    categoria:'Consultas',     metodoPago:'Efectivo',      montoServicio:350, montoInventario:0,   descuento:0,  cuotaTotal:350, montoPagado:350, yaAporto:1 },
-  { id:2,   beneficiario:'Carlos Pérez Ruiz',   nombre:'Hemograma completo',  categoria:'Laboratorio',   metodoPago:'Tarjeta',        montoServicio:220, montoInventario:50,  descuento:20, cuotaTotal:250, montoPagado:250, yaAporto:1 },
-  { id:3,   beneficiario:'Ana Martínez',        nombre:'Rayos X tórax',       categoria:'Estudios',      metodoPago:'Transferencia',  montoServicio:480, montoInventario:0,   descuento:0,  cuotaTotal:480, montoPagado:0,   yaAporto:0 },
-  { id:4,   beneficiario:'Luis Hernández',      nombre:'Fisioterapia lumbar', categoria:'Rehabilitación',metodoPago:'Efectivo',       montoServicio:600, montoInventario:100, descuento:50, cuotaTotal:650, montoPagado:650, yaAporto:1 },
-  { id:5,   beneficiario:'Sofía Torres',        nombre:'Terapia de lenguaje', categoria:'Terapia',       metodoPago:'Efectivo',       montoServicio:500, montoInventario:0,   descuento:0,  cuotaTotal:500, montoPagado:250, yaAporto:0 },
-  { id:6,   beneficiario:'Roberto Díaz',        nombre:'Curación de herida',  categoria:'Procedimiento', metodoPago:'Tarjeta',        montoServicio:180, montoInventario:80,  descuento:0,  cuotaTotal:260, montoPagado:260, yaAporto:1 },
-  { id:7,   beneficiario:'María Garcia',        nombre:'Rayos X columna',     categoria:'Estudios',      metodoPago:'Transferencia',  montoServicio:520, montoInventario:0,   descuento:50, cuotaTotal:470, montoPagado:470, yaAporto:1 },
-  { id:15,  beneficiario:'María Garcia',        nombre:'Consulta general',    categoria:'Consultas',     metodoPago:'Efectivo',       montoServicio:350, montoInventario:0,   descuento:0,  cuotaTotal:350, montoPagado:350, yaAporto:1 },
-  { id:12,  beneficiario:'Carlos Garcia',       nombre:'Hemograma completo',  categoria:'Laboratorio',   metodoPago:'Tarjeta',        montoServicio:220, montoInventario:50,  descuento:20, cuotaTotal:250, montoPagado:250, yaAporto:1 },
-  { id:13,  beneficiario:'Ana Garcia',          nombre:'Rayos X tórax',       categoria:'Estudios',      metodoPago:'Transferencia',  montoServicio:480, montoInventario:0,   descuento:0,  cuotaTotal:480, montoPagado:0,   yaAporto:0 },
-  { id:14,  beneficiario:'Luis Torres',         nombre:'Fisioterapia lumbar', categoria:'Rehabilitación',metodoPago:'Efectivo',       montoServicio:600, montoInventario:100, descuento:50, cuotaTotal:650, montoPagado:650, yaAporto:1 },
-  { id:16,  beneficiario:'Roberto Mario',       nombre:'Curación de herida',  categoria:'Procedimiento', metodoPago:'Tarjeta',        montoServicio:180, montoInventario:80,  descuento:0,  cuotaTotal:260, montoPagado:260, yaAporto:1 },
-  { id:17,  beneficiario:'María Lopez',         nombre:'Rayos X columna',     categoria:'Estudios',      metodoPago:'Transferencia',  montoServicio:520, montoInventario:0,   descuento:50, cuotaTotal:470, montoPagado:470, yaAporto:1 },
-]
+import useHistorialServicios from '../../hooks/useHistorialServicios'
+import useServicios from "../../hooks/useServicios.js";
+
 
 export default function Servicios() {
-  const [historial]     = useState(HISTORIAL_PLACEHOLDER)
-  const [categoriasExtras, setCategoriasExtras] = useState([])
+  const { historial, loading, error, refetch } = useHistorialServicios(50)
+  const { tipos } = useServicios() 
   const [consulta, setConsulta]               = useState('')
   const [categoriaFiltro, setCategoriaFiltro] = useState('')
   const [modalServicio, setModalServicio]     = useState(false)
@@ -46,11 +35,13 @@ export default function Servicios() {
   const tabHistorialRef   = useRef(null)
   const tabBeneficiarioRef = useRef(null)
 
-  const todasCategorias = [
-    'Consultas', 'Estudios', 'Laboratorio', 'Procedimiento',
-    'Rehabilitación', 'Terapia', 'Material',
-    ...(categoriasExtras ?? []),
-  ]
+  const todasCategorias = useMemo(() => {
+    const desdeTipos = [...new Set(tipos.map((t) => t.categoria).filter(Boolean))]
+    return desdeTipos.length > 0 ? desdeTipos : [
+      'Consultas', 'Estudios', 'Laboratorio', 'Procedimiento',
+      'Rehabilitación', 'Terapia', 'Material',
+    ]
+  }, [tipos])
 
   const filtrados = useMemo(() => {
     const q = consulta.toLowerCase()
@@ -159,7 +150,9 @@ export default function Servicios() {
           <div className="section-title-row">
             <div>
               <h2 className="section-title">Historial general</h2>
-              <p className="section-sub">{historial.length} servicios registrados</p>
+              <p className="section-sub">
+                {loading ? 'Cargando…' : `${historial.length} servicios registrados`}
+              </p>
             </div>
             <div className="servicios-barra-acciones">
               <SearchBar
@@ -180,8 +173,10 @@ export default function Servicios() {
           </div>
 
           <div className="recibos-card">
-            <ServiciosTabla
+           <ServiciosTabla
               filas={filtrados}
+              loading={loading}
+              error={error}
               onVerDetalle={setDetalleItem}
               onVerRecibo={(item) => navigate(`/recibos?folio=${item.id}`)}
             />
@@ -216,14 +211,12 @@ export default function Servicios() {
         </section>
       )}
 
-      {/* Modales */}
       <ServiciosNuevoServicioModal
         open={modalServicio}
         onClose={() => setModalServicio(false)}
-        onExito={() => { /* TODO: void fetchHistorial() */ }}
+        onExito={refetch}
         serviciosExistentes={historial}
-        categoriasExtras={categoriasExtras}
-        onNuevaCategoria={(cat) => setCategoriasExtras((p) => [...p, cat])}
+        categorias={todasCategorias}          // 👈 pasa las categorías directo
       />
 
       <ServiciosDetalleModal
