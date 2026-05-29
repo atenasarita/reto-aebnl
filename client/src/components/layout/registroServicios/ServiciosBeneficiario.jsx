@@ -1,10 +1,6 @@
 import { useState, useMemo } from 'react'
+import { FiSearch, FiX } from 'react-icons/fi'
 import styles from './ServiciosBeneficiario.module.css'
-import '../../../pages/styles/Servicios.css'
-
-import SearchBar from '../../ui/SearchBar'
-import { FiSearch } from 'react-icons/fi'
-
 
 function fmt(num) {
   if (num == null) return '—'
@@ -12,7 +8,7 @@ function fmt(num) {
 }
 
 export default function ServiciosBeneficiario({ historial = [], onVerDetalle }) {
-  const [query, setQuery] = useState('')
+  const [query, setQuery]               = useState('')
   const [seleccionado, setSeleccionado] = useState(null)
 
   const sugerencias = useMemo(() => {
@@ -39,38 +35,40 @@ export default function ServiciosBeneficiario({ historial = [], onVerDetalle }) 
     setQuery(nombre)
   }
 
-  const handleChange = (val) => {
-    setQuery(val)
+  const handleLimpiar = () => {
+    setQuery('')
     setSeleccionado(null)
   }
 
+  const mostrarDropdown = sugerencias.length > 0 && !seleccionado
+
   return (
-    <section>
+    <section className={styles.seccion}>
+
       <div className={styles.buscadorWrap}>
-        <div className={styles.inputWrap}>
-          <SearchBar
-              icon={<FiSearch />}
-              className={styles.input}
-              placeholder="Buscar beneficiario…"
-              value={query}
-              onChange={handleChange}
-              autoComplete="off"
-            />
+        {/* Input */}
+        <div className={`${styles.inputRow} ${mostrarDropdown ? styles.inputRowOpen : ''}`}>
+          <span className={styles.icono}><FiSearch /></span>
+          <input
+            className={styles.input}
+            type="text"
+            placeholder="Buscar beneficiario…"
+            value={query}
+            onChange={(e) => { setQuery(e.target.value); setSeleccionado(null) }}
+            autoComplete="off"
+          />
           {query && (
-            <button
-              className={styles.limpiar}
-              onClick={() => { setQuery(''); setSeleccionado(null) }}
-              aria-label="Limpiar"
-            >
-              ✕
+            <button className={styles.limpiar} onClick={handleLimpiar} aria-label="Limpiar búsqueda">
+              <FiX size={14} />
             </button>
           )}
         </div>
 
-        {sugerencias.length > 0 && !seleccionado && (
-          <ul className='lista'>
+        {/* Dropdown en flujo normal — no sale del contenedor */}
+        {mostrarDropdown && (
+          <ul className={styles.dropdown} role="listbox">
             {sugerencias.map((s) => (
-              <li key={s.beneficiario}>
+              <li key={s.beneficiario} role="option">
                 <button
                   className={styles.dropdownItem}
                   onClick={() => handleSeleccionar(s.beneficiario)}
@@ -83,24 +81,25 @@ export default function ServiciosBeneficiario({ historial = [], onVerDetalle }) 
         )}
       </div>
 
+      {/* Tarjeta resultado */}
       {seleccionado && serviciosBeneficiario.length > 0 && (
-        <div className='beneficiario-card'>
-          <div>
+        <div className={styles.tarjeta}>
+          <div className={styles.tarjetaHeader}>
             <div>
-              <p>{seleccionado}</p>
-              <p>
+              <p className={styles.tarjetaNombre}>{seleccionado}</p>
+              <p className={styles.tarjetaSub}>
                 {serviciosBeneficiario.length} servicio{serviciosBeneficiario.length !== 1 ? 's' : ''} registrado{serviciosBeneficiario.length !== 1 ? 's' : ''}
               </p>
             </div>
-            <div>
-              <div>
-                <span>Total acumulado</span>
-                <span>
+            <div className={styles.tarjetaStats}>
+              <div className={styles.stat}>
+                <span className={styles.statLabel}>Total acumulado</span>
+                <span className={styles.statValor}>
                   {fmt(serviciosBeneficiario.reduce((acc, s) => acc + (s.cuotaTotal ?? 0), 0))}
                 </span>
               </div>
-              <div>
-                <span>Total pagado</span>
+              <div className={styles.stat}>
+                <span className={styles.statLabel}>Total pagado</span>
                 <span className={styles.statValor}>
                   {fmt(serviciosBeneficiario.reduce((acc, s) => acc + (s.montoPagado ?? 0), 0))}
                 </span>
@@ -108,26 +107,22 @@ export default function ServiciosBeneficiario({ historial = [], onVerDetalle }) 
             </div>
           </div>
 
-          <ul className='lista'>
+          <ul className={styles.lista}>
             {serviciosBeneficiario.map((s) => (
-              <li key={s.id} className='listaItem'>
-                <div className='listaLeft'>
-                  <span className='listaFolio'>#{s.id}</span>
+              <li key={s.id} className={styles.listaItem}>
+                <div className={styles.listaLeft}>
+                  <span className={styles.listaFolio}>#{s.id}</span>
                   <div>
-                    <p className='listaNombre'>{s.nombre}</p>
-                    <p className='listaCat'>{s.categoria}</p>
+                    <p className={styles.listaNombre}>{s.nombre}</p>
+                    <p className={styles.listaCat}>{s.categoria}</p>
                   </div>
                 </div>
-                <div className='listaRight'>
-                  <span className='listaMonto'>{fmt(s.cuotaTotal)}</span>
-                  <span className={`listaEstado ${s.yaAporto ? 'pagado' : 'pendiente'}`}>
+                <div className={styles.listaRight}>
+                  <span className={styles.listaMonto}>{fmt(s.cuotaTotal)}</span>
+                  <span className={`${styles.listaEstado} ${s.yaAporto ? styles.pagado : styles.pendiente}`}>
                     {s.yaAporto ? 'Pagado' : 'Pendiente'}
                   </span>
-                  <button
-                    className="inventario-form__btnSec"
-                    style={{ fontSize: '12px', padding: '4px 10px' }}
-                    onClick={() => onVerDetalle?.(s)}
-                  >
+                  <button className="btn-ver" onClick={() => onVerDetalle?.(s)}>
                     Ver detalle
                   </button>
                 </div>

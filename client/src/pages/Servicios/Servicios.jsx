@@ -38,7 +38,6 @@ export default function Servicios() {
 
   const navigate = useNavigate()
 
-  // IDs para accesibilidad (mismo patrón que Recibos.jsx)
   const tabsHintId       = useId()
   const tabHistorialId   = useId()
   const tabBeneficiarioId = useId()
@@ -110,15 +109,13 @@ export default function Servicios() {
         </div>
       </header>
 
-      {/* Tabs — mismo patrón que Recibos */}
-      <div className="recibos-tabs-wrap">
+      <div>
         <p id={tabsHintId} className="sr-only">
           Usa las flechas izquierda y derecha para cambiar entre pestañas.
         </p>
         <div
-          className="recibos-tabs"
+          className="servicios-tabs"
           role="tablist"
-          aria-label="Vistas de servicios"
           aria-describedby={tabsHintId}
           onKeyDown={onTabsKeyDown}
         >
@@ -130,7 +127,7 @@ export default function Servicios() {
             aria-selected={vistaActiva === 'historial'}
             aria-controls={panelHistorialId}
             tabIndex={vistaActiva === 'historial' ? 0 : -1}
-            className={`recibos-tab ${vistaActiva === 'historial' ? 'is-active' : ''}`}
+            className={`servicios-tab ${vistaActiva === 'historial' ? 'is-active' : ''}`}
             onClick={() => setVistaActiva('historial')}
           >
             Historial general
@@ -143,7 +140,7 @@ export default function Servicios() {
             aria-selected={vistaActiva === 'beneficiario'}
             aria-controls={panelBeneficiarioId}
             tabIndex={vistaActiva === 'beneficiario' ? 0 : -1}
-            className={`recibos-tab ${vistaActiva === 'beneficiario' ? 'is-active' : ''}`}
+            className={`servicios-tab ${vistaActiva === 'beneficiario' ? 'is-active' : ''}`}
             onClick={() => setVistaActiva('beneficiario')}
           >
             Por beneficiario

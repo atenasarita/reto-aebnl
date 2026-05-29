@@ -1,34 +1,40 @@
 .seccion {
-  margin-top: 2.5rem;
-  padding-top: 2rem;
-  border-top: 0.5px solid var(--color-border-tertiary);
+  padding-top: 0.5rem;
 }
 
-/* Buscador */
+/* ── Buscador ── */
 .buscadorWrap {
-  position: relative;
   max-width: 480px;
 }
 
-.inputWrap {
+.inputRow {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 12px;
-  border: 0.5px solid var(--color-border-tertiary);
-  border-radius: var(--border-radius-md);
-  background: var(--color-background-primary);
+  gap: var(--space-2);
+  padding: 9px var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-card);
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.inputWrap:focus-within {
-  border-color: var(--color-border-primary);
-  box-shadow: 0 0 0 2px var(--color-background-info);
+.inputRow:focus-within {
+  border-color: var(--color-brand-secondary);
+  box-shadow: 0 0 0 3px var(--color-brand-soft);
+}
+
+.inputRowOpen {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-color: var(--color-border);
 }
 
 .icono {
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  color: var(--color-icon-muted);
   flex-shrink: 0;
-  color: var(--color-text-tertiary);
+  font-size: 15px;
 }
 
 .input {
@@ -37,61 +43,68 @@
   outline: none;
   background: transparent;
   font-size: 14px;
+  font-family: var(--font-sans);
   color: var(--color-text-primary);
 }
 
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
 .limpiar {
+  display: flex;
+  align-items: center;
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--color-text-tertiary);
-  font-size: 13px;
+  color: var(--color-text-muted);
   padding: 0;
-  line-height: 1;
+  flex-shrink: 0;
 }
 
 .limpiar:hover {
   color: var(--color-text-secondary);
 }
 
-/* Dropdown sugerencias */
+/* ── Dropdown ── */
 .dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  background: var(--color-background-primary);
-  border: 0.5px solid var(--color-border-tertiary);
-  border-radius: var(--border-radius-md);
+  max-width: 480px;
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-top: none;
+  border-bottom-left-radius: var(--radius-control);
+  border-bottom-right-radius: var(--radius-control);
   list-style: none;
-  z-index: 50;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  padding: 4px 0;
+  margin: 0;
+  box-shadow: var(--shadow-card);
 }
 
 .dropdownItem {
   width: 100%;
   text-align: left;
-  padding: 10px 14px;
+  padding: 10px var(--space-4);
   font-size: 14px;
+  font-family: var(--font-sans);
   background: none;
   border: none;
   cursor: pointer;
   color: var(--color-text-primary);
-  background-color: aqua;
 }
 
 .dropdownItem:hover {
-  background: var(--color-background-secondary);
+  background: var(--color-surface-muted);
+  color: var(--color-brand);
 }
 
-/* Tarjeta */
+/* ── Tarjeta resultado ── */
 .tarjeta {
-  margin-top: 1rem;
-  max-width: 680px;
-  border: 0.5px solid var(--color-border-tertiary);
-  border-radius: var(--border-radius-lg);
-  background: var(--color-background-primary);
+  margin-top: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-card);
+  box-shadow: var(--shadow-card);
   overflow: hidden;
 }
 
@@ -99,28 +112,28 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 1rem 1.25rem;
-  border-bottom: 0.5px solid var(--color-border-tertiary);
-  background: var(--color-background-secondary);
-  gap: 1rem;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  gap: var(--space-4);
   flex-wrap: wrap;
 }
 
 .tarjetaNombre {
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-text-primary);
 }
 
 .tarjetaSub {
   font-size: 13px;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   margin-top: 2px;
 }
 
 .tarjetaStats {
   display: flex;
-  gap: 1.5rem;
+  gap: var(--space-6);
 }
 
 .stat {
@@ -132,30 +145,38 @@
 
 .statLabel {
   font-size: 11px;
-  color: var(--color-text-tertiary);
+  color: var(--color-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
+  font-weight: 500;
 }
 
 .statValor {
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-text-primary);
 }
 
-/* Lista de servicios */
+/* ── Lista servicios ── */
 .lista {
   list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .listaItem {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 1.25rem;
-  border-bottom: 0.5px solid var(--color-border-tertiary);
-  gap: 1rem;
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-4);
   flex-wrap: wrap;
+  transition: background 0.1s;
+}
+
+.listaItem:hover {
+  background: var(--color-surface-muted);
 }
 
 .listaItem:last-child {
@@ -165,53 +186,54 @@
 .listaLeft {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-3);
 }
 
 .listaFolio {
   font-size: 12px;
-  color: var(--color-text-tertiary);
+  color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
-  min-width: 28px;
+  min-width: 32px;
 }
 
 .listaNombre {
   font-size: 14px;
+  font-weight: 500;
   color: var(--color-text-primary);
 }
 
 .listaCat {
   font-size: 12px;
-  color: var(--color-text-secondary);
+  color: var(--color-text-muted);
   margin-top: 1px;
 }
 
 .listaRight {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-3);
 }
 
 .listaMonto {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-text-primary);
   font-variant-numeric: tabular-nums;
 }
 
 .listaEstado {
   font-size: 12px;
-  padding: 3px 8px;
-  border-radius: var(--border-radius-md);
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-control);
   font-weight: 500;
 }
 
 .pagado {
   background: #EAF3DE;
-  color: #27500A;
+  color: #1F9D55;
 }
 
 .pendiente {
-  background: #FAECE7;
-  color: #712B13;
+  background: #FEF3C7;
+  color: #92400E;
 }
