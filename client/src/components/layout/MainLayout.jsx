@@ -1,10 +1,10 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar/Navbar";
+import { getStoredUser } from "../../utils/auth";
 
 const RUTAS_NAV = [
   { prefix: "/registro_beneficiario", label: "Beneficiarios", exact: true },
   { prefix: "/beneficiarios", label: "Beneficiarios" },
-  { prefix: "/prerregistro", label: "Prerregistro" },
   { prefix: "/registro_servicios", label: "Servicios" },
   { prefix: "/inventario", label: "Inventario" },
   { prefix: "/citas", label: "Citas" },
@@ -14,7 +14,7 @@ const RUTAS_NAV = [
 ];
 
 /** Rutas con layout propio full-bleed (sidebar / wizard): sin page-shell externo */
-const FULL_BLEED_PREFIXES = ["/prerregistro", "/registro_beneficiario"];
+const FULL_BLEED_PREFIXES = ["/registro_beneficiario"];
 
 function isFullBleedPath(pathname) {
   return FULL_BLEED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
@@ -35,13 +35,7 @@ function MainLayout() {
   const { pathname } = useLocation();
   const activeLink = resolveActiveNavLabel(pathname);
 
-  let storedUser = null;
-
-  try {
-    storedUser = JSON.parse(localStorage.getItem("user") || "null");
-  } catch (error) {
-    storedUser = null;
-  }
+  const storedUser = getStoredUser();
 
   const navbarUser = storedUser
     ? {

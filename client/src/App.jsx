@@ -1,13 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import MainLayout from "./components/layout/MainLayout";
+import RequireAuth from "./components/auth/RequireAuth";
+import RedirectIfAuth from "./components/auth/RedirectIfAuth";
 
 // Auth / públicas
 import Login from "./pages/login/login";
 
 // Páginas internas (main)
 import GestionBeneficiarios from "./pages/GestionBeneficiarios/GestionBeneficiarios";
-import Prerregistro from "./pages/prerregistro/Prerregistro";
+import Preregistro from "./pages/preregistro/Preregistro";
 import Inventario from "./pages/inventario/Inventario";
 import RegistroBeneficiario from "./pages/registro_beneficiario/registro_beneficiario";
 import Recibos from './pages/Recibos/Recibos' 
@@ -17,6 +19,7 @@ import ReporteInventario from "./pages/reportes/ReporteInventario/ReporteInventa
 import ReporteAnual from "./pages/reportes/ReporteAnual/ReporteAnual";
 import ReportesMensual from "./pages/reportes/ReportesMensual/ReportesMensual";
 import ReportePersonalizado from "./pages/reportes/ReportePersonalizado/ReportePersonalizado";
+import Citas from './pages/Citas/AgendaCitas';
 import Dashboard from "./pages/dashboard";
 import RegistroServicios from "./pages/Servicios/RegistroServicios";
 
@@ -28,11 +31,20 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Pública */}
-        <Route path="/login" element={<Login />} />
+        {/* Públicas */}
+        <Route
+          path="/login"
+          element={
+            <RedirectIfAuth>
+              <Login />
+            </RedirectIfAuth>
+          }
+        />
+        <Route path="/preregistro" element={<Preregistro />} />
 
-        {/* Privadas dentro del layout (Navbar + etc) */}
-        <Route element={<MainLayout />}>
+        {/* Privadas: requieren sesión activa */}
+        <Route element={<RequireAuth />}>
+          <Route element={<MainLayout />}>
           {/* Dashboard */}
           <Route path="/dashboard" element={<Dashboard />} />
 
@@ -42,9 +54,6 @@ export default function App() {
           {/* Registro de Nuevo Beneficiario */}
           <Route path="/registro_beneficiario" element={<RegistroBeneficiario /> }/>
 
-          {/* Prerregistro */}
-          <Route path="/prerregistro" element={<Prerregistro />} />
-
           {/* Registro de Servicios */}
           <Route path="/registro_servicios" element={<RegistroServicios />} />
           <Route path="/servicios" element={<Servicios />} />
@@ -52,7 +61,12 @@ export default function App() {
 
           {/* Inventario */}
           <Route path="/inventario" element={<Inventario />} />
-            
+
+          {/* Citas */}
+          <Route path="/citas" element={<Citas />} />
+
+
+            {/*Recibos  */}
           <Route path="/recibos" element={<Recibos />} />
           <Route path="/reportes" element={<Reportes />}>
             <Route index element={<Navigate to="general" replace />} />
@@ -63,8 +77,12 @@ export default function App() {
             <Route path="personalizado" element={<ReportePersonalizado />} />
           </Route>
 
+          {/* Citas */}
+          <Route path="/citas" element={<Citas />} />
+
           {/* Default */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          </Route>
         </Route>
 
         {/* Catch-all */}

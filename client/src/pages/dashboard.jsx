@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-import { API_URL } from '../utils/config'
+import { API_URL } from "../utils/config";
+import { getStoredUser, getValidToken, handleUnauthorizedResponse } from "../utils/auth";
+import { getAgendaTagClass } from "../utils/agendaUtils";
+import { todayDate } from "../utils/dateTime";
 
 import {
   ArrowRight,
@@ -17,7 +19,6 @@ import {
   X,
 } from "lucide-react";
 import "./styles/dashboard.css";
-
 
 const actions = [
   {
@@ -39,6 +40,7 @@ const actions = [
     subtitle: "Gestionar horario médico",
     icon: CalendarDays,
     variant: "accent",
+    to: "/citas",
   },
   {
     title: "Recibos",
@@ -50,47 +52,14 @@ const actions = [
   },
 ];
 
-function getAgendaTagClass(item) {
-  const especialistaId = Number(item.id_especialista);
-  const especialistaNombre = String(item.especialista_nombre || "").toLowerCase();
-
-  if (especialistaId === 26 || especialistaNombre.includes("laura")) {
-    return "blue";
-  }
-
-  if (especialistaId === 27 || especialistaNombre.includes("carlos")) {
-    return "purple";
-  }
-
-  if (especialistaId === 28 || especialistaNombre.includes("roberto")) {
-    return "green";
-  }
-
-  if (especialistaId === 29 || especialistaNombre.includes("luis")) {
-    return "orange";
-  }
-
-  if (especialistaId === 30 || especialistaNombre.includes("sofia")) {
-    return "red";
-  }
-
-  return "blue";
-}
-
 function ActionCard({ title, subtitle, icon, variant, fullRow, to }) {
   const Icon = icon;
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    if (to) {
-      navigate(to);
-    }
-  };
-
   return (
     <button
       type="button"
-      onClick={handleClick}
+      onClick={() => to && navigate(to)}
       className={`action-card action-card-${variant} ${fullRow ? "action-card-full" : ""}`}
       style={{ cursor: to ? "pointer" : "default" }}
     >
@@ -112,7 +81,6 @@ function ActionCard({ title, subtitle, icon, variant, fullRow, to }) {
 
 function formatHora12(hora) {
   if (!hora) return "";
-
   const [rawHours, rawMinutes] = hora.split(":");
   const hours = Number(rawHours);
   const minutes = rawMinutes ?? "00";
@@ -130,27 +98,25 @@ function getTimelineStatusClass(item) {
 
   const citaDate = new Date(`${item.fecha}T${item.hora}:00`);
   const now = new Date();
-  const diffMs = citaDate.getTime() - now.getTime();
-  const diffHours = diffMs / (1000 * 60 * 60);
+  const diffHours = (citaDate.getTime() - now.getTime()) / (1000 * 60 * 60);
 
   if (diffHours < 0) return "past";
   if (diffHours <= 2) return "soon";
-
   return "future";
 }
 
-function AgendaCard({ agendaItems }) {
+function AgendaCard({ agendaItems, onEditCita }) {
   if (!agendaItems.length) {
     return (
-      <section className="agenda-panel">
+      <section className="agenda-panel fade-in-panel">
         <div className="panel-header">
           <h2>Agenda del Día</h2>
           <p>Gestión de citas y flujo de pacientes para hoy.</p>
         </div>
 
-          <div className="empty-panel-state">
-            <CalendarDays size={28} strokeWidth={1.75} />
-            <h3>Sin citas para hoy</h3>
+        <div className="empty-panel-state">
+          <CalendarDays size={42} />
+          <h3>Sin citas para hoy</h3>
           <p>No hay registros de agenda para la fecha actual.</p>
         </div>
       </section>
@@ -158,84 +124,97 @@ function AgendaCard({ agendaItems }) {
   }
 
   return (
-    <section className="agenda-panel">
+    <section className="agenda-panel fade-in-panel">
       <div className="panel-header">
         <h2>Agenda del Día</h2>
         <p>Gestión de citas y flujo de pacientes para hoy.</p>
       </div>
 
       <div className="agenda-timeline">
-        {agendaItems.map((item) => (
-          <div className="agenda-row" key={item.id_cita}>
-            <div className={`timeline-line ${getTimelineStatusClass(item)}`}>
-              <div className={`timeline-dot ${getTimelineStatusClass(item)}`}></div>
-            </div>
+        {agendaItems.map((item, index) => {
+          const citaId = item.id_cita ?? item.id ?? `cita-${index}`;
 
-            <div className="agenda-item-card">
-              <div className="agenda-item-top">
-                <div className="agenda-profile">
-                  {item.fotografia ? (
-                    <img
-                      src={item.fotografia}
-                      alt={item.nombre_completo}
-                      className="agenda-avatar"
-                    />
-                  ) : (
-                    <div className="agenda-avatar placeholder">
-                      <User size={22} strokeWidth={1.75} />
+          return (
+            <div
+              className="agenda-row fade-in-up"
+              key={citaId}
+              style={{ animationDelay: `${index * 0.06}s` }}
+            >
+              <div className={`timeline-line ${getTimelineStatusClass(item)}`}>
+                <div className={`timeline-dot ${getTimelineStatusClass(item)}`} />
+              </div>
+
+              <div className="agenda-item-card">
+                <div className="agenda-item-top">
+                  <div className="agenda-profile">
+                    {item.fotografia ? (
+                      <img
+                        src={item.fotografia}
+                        alt={item.nombre_completo}
+                        className="agenda-avatar"
+                      />
+                    ) : (
+                      <div className="agenda-avatar placeholder">
+                        <User size={34} />
+                      </div>
+                    )}
+
+                    <div className="agenda-profile-text">
+                      <div className={`agenda-tag ${getAgendaTagClass(item)}`}>
+                        {formatHora12(item.hora)} • {item.servicio_nombre || "Servicio"}
+                      </div>
+
+                      <h3>{item.nombre_completo || "Beneficiario sin nombre"}</h3>
+                      <p>
+                        {item.especialista_nombre || "Especialista"} • {item.folio || "Sin folio"}
+                      </p>
                     </div>
-                  )}
+                  </div>
 
-                  <div className="agenda-profile-text">
-                    <div className={`agenda-tag ${getAgendaTagClass(item)}`}>
-                      {formatHora12(item.hora)} • {item.servicio_nombre || "Servicio"}
-                    </div>
+                  <div className="agenda-actions">
+                    <button
+                      type="button"
+                      className={`agenda-btn ${getTimelineStatusClass(item) === "past" ? "muted" : "primary"}`}
+                    >
+                      {item.estatus || "Pendiente"}
+                    </button>
 
-                    <h3>{item.nombre_completo || "Beneficiario sin nombre"}</h3>
-                    <p>
-                      {item.especialista_nombre || "Especialista"} • {item.folio || "Sin folio"}
-                    </p>
+                    <button
+                      type="button"
+                      className="agenda-btn secondary"
+                      onClick={() => onEditCita(citaId)}
+                    >
+                      Modificar
+                    </button>
                   </div>
                 </div>
 
-                <div className="agenda-actions">
-                  <button
-                    type="button"
-                    className={`agenda-btn ${getTimelineStatusClass(item) === "past" ? "muted" : "primary"}`}
-                  >
-                    {item.estatus || "Pendiente"}
-                  </button>
-                  <button type="button" className="agenda-btn secondary">
-                    Ver Historial
-                  </button>
-                </div>
-              </div>
+                <div className="agenda-item-bottom">
+                  <div className="agenda-note-left">
+                    {item.motivo ? (
+                      <>
+                        <Info size={16} />
+                        <span>{item.motivo}</span>
+                      </>
+                    ) : (
+                      <span>Sin motivo registrado</span>
+                    )}
+                  </div>
 
-              <div className="agenda-item-bottom">
-                <div className="agenda-note-left">
-                  {item.motivo ? (
-                    <>
-                      <Info size={14} strokeWidth={2} />
-                      <span>{item.motivo}</span>
-                    </>
-                  ) : (
-                    <span>Sin motivo registrado</span>
-                  )}
-                </div>
-
-                <div className="agenda-note-right">
-                  {item.notas ? <span>{item.notas}</span> : <span>Sin notas</span>}
+                  <div className="agenda-note-right">
+                    {item.notas ? <span>{item.notas}</span> : <span>Sin notas</span>}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
 }
 
-function PreregistroCard({ preregistroItems, onUpdateEstado }) {
+function PreregistroCard({ preregistroItems, onAceptar, onRechazar }) {
   const [openId, setOpenId] = useState(null);
 
   const toggleItem = (id) => {
@@ -243,27 +222,28 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
   };
 
   return (
-    <section className="preregistro-panel">
+    <section className="preregistro-panel fade-in-panel">
       <div className="preregistro-header">
-        <h2>Personas en pre-registro</h2>
-        <div className="pending-badge">{preregistroItems.length} pendientes</div>
+        <h2>PERSONAS EN PRE-REGISTRO</h2>
+        <div className="pending-badge">{preregistroItems.length} Pendientes</div>
       </div>
 
       <div className="preregistro-list">
         {!preregistroItems.length ? (
           <div className="empty-side-state">
-            <User size={26} strokeWidth={1.75} />
+            <User size={40} />
             <h3>Sin pendientes</h3>
             <p>No hay personas en pre-registro por ahora.</p>
           </div>
         ) : (
-          preregistroItems.map((item) => {
+          preregistroItems.map((item, index) => {
             const isOpen = openId === item.id_preregistro;
 
             return (
               <div
-                className={`preregistro-card-wrapper ${isOpen ? "open" : ""}`}
+                className={`preregistro-card-wrapper ${isOpen ? "open" : ""} fade-in-up`}
                 key={item.id_preregistro}
+                style={{ animationDelay: `${index * 0.06}s` }}
               >
                 <div
                   className="preregistro-item"
@@ -271,7 +251,7 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
                 >
                   <div className="preregistro-left">
                     <div className="preregistro-avatar">
-                      <User size={18} strokeWidth={1.75} />
+                      <User size={24} />
                     </div>
 
                     <div className="preregistro-text">
@@ -288,7 +268,7 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
                       type="button"
                       className="icon-btn accept"
                       aria-label="Aceptar preregistro"
-                      onClick={() => onUpdateEstado(item.id_preregistro, "aceptado")}
+                      onClick={() => onAceptar(item)}
                     >
                       <Check />
                     </button>
@@ -297,7 +277,7 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
                       type="button"
                       className="icon-btn reject"
                       aria-label="Rechazar preregistro"
-                      onClick={() => onUpdateEstado(item.id_preregistro, "rechazado")}
+                      onClick={() => onRechazar(item.id_preregistro)}
                     >
                       <X />
                     </button>
@@ -315,16 +295,9 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
 
                 {isOpen && (
                   <div className="preregistro-details">
-                    <div>
-                      <strong>CURP:</strong> {item.curp || "No registrada"}
-                    </div>
-                    <div>
-                      <strong>Género:</strong> {item.genero || "No registrado"}
-                    </div>
-                    <div>
-                      <strong>Fecha de nacimiento:</strong>{" "}
-                      {item.fecha_nacimiento || "No registrada"}
-                    </div>
+                    <div><strong>CURP:</strong> {item.curp || "No registrada"}</div>
+                    <div><strong>Género:</strong> {item.genero || "No registrado"}</div>
+                    <div><strong>Fecha de nacimiento:</strong> {item.fecha_nacimiento || "No registrada"}</div>
                   </div>
                 )}
               </div>
@@ -336,20 +309,48 @@ function PreregistroCard({ preregistroItems, onUpdateEstado }) {
   );
 }
 
+function PerfilIncompletoModal({ open, onClose, onEditarAhora, nombre }) {
+  if (!open) return null;
+
+  return (
+    <div className="custom-modal-overlay" onClick={onClose}>
+      <div className="custom-modal-card" onClick={(e) => e.stopPropagation()}>
+        <h3>Perfil incompleto</h3>
+        <p>
+          {nombre
+            ? `El preregistro de ${nombre} fue aceptado correctamente.`
+            : "El preregistro fue aceptado correctamente."}
+        </p>
+        <p>
+          El perfil todavía tiene información pendiente por completar. ¿Te gustaría editarlo ahora?
+        </p>
+
+        <div className="custom-modal-actions">
+          <button type="button" className="btn-secondary-modal" onClick={onClose}>
+            Dejarlo por ahora
+          </button>
+          <button type="button" className="btn-primary-modal" onClick={onEditarAhora}>
+            Editar ahora
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const navigate = useNavigate();
+
   const [agendaItems, setAgendaItems] = useState([]);
   const [preregistroItems, setPreregistroItems] = useState([]);
   const [error, setError] = useState("");
 
-  const token = localStorage.getItem("token");
+  const [perfilModalOpen, setPerfilModalOpen] = useState(false);
+  const [nuevoBeneficiarioId, setNuevoBeneficiarioId] = useState(null);
+  const [nuevoBeneficiarioNombre, setNuevoBeneficiarioNombre] = useState("");
 
-  let storedUser = null;
-  try {
-    storedUser = JSON.parse(localStorage.getItem("user") || "null");
-  } catch (error) {
-    storedUser = null;
-  }
+  const token = getValidToken();
+  const storedUser = getStoredUser();
 
   const isAdministrador = storedUser?.rol === "administrador";
 
@@ -359,11 +360,13 @@ export default function Dashboard() {
   }, [isAdministrador]);
 
   const fetchAgenda = async () => {
-    const res = await fetch(`${API_URL}/api/dashboard/agenda-hoy`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    const hoyFrontend = todayDate();
+
+    const res = await fetch(`${API_URL}/api/dashboard/agenda-hoy?fecha=${hoyFrontend}`, {
+      headers: { Authorization: `Bearer ${token}` },
     });
+
+    if (handleUnauthorizedResponse(res)) return;
 
     const data = await res.json();
 
@@ -376,10 +379,10 @@ export default function Dashboard() {
 
   const fetchPreregistros = async () => {
     const res = await fetch(`${API_URL}/api/dashboard/preregistro-pendientes`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
+
+    if (handleUnauthorizedResponse(res)) return;
 
     const data = await res.json();
 
@@ -390,27 +393,75 @@ export default function Dashboard() {
     setPreregistroItems(data);
   };
 
-  const onUpdateEstado = async (id, estado) => {
+  const aceptarPreregistro = async (preregistro) => {
     try {
-      const res = await fetch(`${API_URL}/api/dashboard/preregistro/${id}/estado`, {
+      const res = await fetch(`${API_URL}/api/dashboard/preregistro/${preregistro.id_preregistro}/estado`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ estado }),
+        body: JSON.stringify({ estado: "aceptado" }),
       });
+
+      if (handleUnauthorizedResponse(res)) return;
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || "Error al actualizar preregistro");
+        throw new Error(data.message || "Error al aceptar preregistro");
+      }
+
+      await fetchPreregistros();
+
+      setNuevoBeneficiarioId(data.id_beneficiario ?? null);
+      setNuevoBeneficiarioNombre(preregistro?.nombre_completo ?? "");
+      setPerfilModalOpen(true);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const rechazarPreregistro = async (idPreregistro) => {
+    try {
+      const res = await fetch(`${API_URL}/api/dashboard/preregistro/${idPreregistro}/estado`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ estado: "rechazado" }),
+      });
+
+      if (handleUnauthorizedResponse(res)) return;
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Error al rechazar preregistro");
       }
 
       await fetchPreregistros();
     } catch (err) {
       alert(err.message);
     }
+  };
+
+  const handleEditarAhora = () => {
+    setPerfilModalOpen(false);
+
+    if (nuevoBeneficiarioId) {
+      navigate(`/beneficiarios?edit=${nuevoBeneficiarioId}`);
+      return;
+    }
+
+    navigate("/beneficiarios");
+  };
+
+  const handleCerrarModalPerfil = () => {
+    setPerfilModalOpen(false);
+    setNuevoBeneficiarioId(null);
+    setNuevoBeneficiarioNombre("");
   };
 
   useEffect(() => {
@@ -429,7 +480,7 @@ export default function Dashboard() {
   return (
     <div className="dashboard-page">
       <main className="dashboard-main">
-        <section className="dashboard-actions">
+        <section className="dashboard-actions fade-in-panel">
           {visibleActions.map((action) => (
             <ActionCard key={action.title} {...action} />
           ))}
@@ -437,22 +488,33 @@ export default function Dashboard() {
 
         <section className="dashboard-lower-grid">
           {error ? (
-            <section className="agenda-panel">
+            <section className="agenda-panel fade-in-panel">
               <div className="empty-panel-state">
                 <p>{error}</p>
               </div>
             </section>
           ) : (
             <>
-              <AgendaCard agendaItems={agendaItems} />
+              <AgendaCard
+                agendaItems={agendaItems}
+                onEditCita={(idCita) => navigate(`/citas?edit=${idCita}`)}
+              />
               <PreregistroCard
                 preregistroItems={preregistroItems}
-                onUpdateEstado={onUpdateEstado}
+                onAceptar={aceptarPreregistro}
+                onRechazar={rechazarPreregistro}
               />
             </>
           )}
         </section>
       </main>
+
+      <PerfilIncompletoModal
+        open={perfilModalOpen}
+        onClose={handleCerrarModalPerfil}
+        onEditarAhora={handleEditarAhora}
+        nombre={nuevoBeneficiarioNombre}
+      />
     </div>
   );
 }

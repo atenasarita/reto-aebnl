@@ -18,6 +18,31 @@ export class ServiciosHandler {
     }
   };
 
+  getFechasUltimosEstudios = async (req: Request, res: Response) => {
+    try {
+      const id_beneficiario = Number(req.params.id_beneficiario);
+
+      if (!id_beneficiario || Number.isNaN(id_beneficiario)) {
+        return res.status(400).json({
+          ok: false,
+          message: 'ID de beneficiario inválido',
+        });
+      }
+
+      const data = await this.serviciosController.getFechasUltimosEstudios(id_beneficiario);
+
+      return res.status(200).json({ ok: true, data });
+
+    } catch (error) {
+      console.error('Error en getFechasUltimosEstudios:', error);
+
+      return res.status(500).json({
+        ok: false,
+        message: 'Error obteniendo fechas de últimos estudios',
+      });
+    }
+  };
+
   registrarServicio = async (req: Request, res: Response) => {
     try {
       const id_usuario = (req as any).user?.id_usuario;

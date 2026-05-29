@@ -1,21 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
 import { limpiarSoloLetras, telefonoValido  } from '../utils/validator';
 import { initialFormData, registroSteps } from '../utils/beneficiarioConstants';
-import { validateField, validateStep } from '../utils/beneficiarioValidation';
+import { validateField, validateStep, validateStepFields } from '../utils/beneficiarioValidation';
 import { buildBeneficiarioPayload } from '../utils/beneficiarioPayload';
 import { fetchSiguienteFolio, createBeneficiario } from '../services/beneficiariosService';
 import { API_URL } from '../utils/config';
+import { todayDate } from '../utils/dateTime';
 
 export function useRegistroBeneficiario(navigate) {
   const [currentStep, setCurrentStep] = useState(0);
   const [folio, setFolio] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [touchedSteps, setTouchedSteps] = useState([]);
-  const [fechaRegistro] = useState(new Date().toISOString().split('T')[0]);
+  const [fechaRegistro] = useState(todayDate());
   const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [formData, setFormData] = useState(initialFormData(fechaRegistro));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [beneficiarioCreado, setBeneficiarioCreado] = useState(null);
 
   const fechaNacimientoRef = useRef(null);
   const fechaMembresiaRef = useRef(null);
@@ -91,6 +93,19 @@ export function useRegistroBeneficiario(navigate) {
     }
   };
 
+  const handleFechaNacimientoChange = (e) => {
+    const value = e.target.value;
+
+    setFechaNacimiento(value);
+
+    if (fieldErrors.fecha_nacimiento) {
+      setFieldErrors(prev => ({
+        ...prev,
+        fecha_nacimiento: ''
+      }));
+    }
+  };
+
   const handleBlur = async (e) => {
     const { name, value } = e.target;
 
@@ -105,16 +120,23 @@ export function useRegistroBeneficiario(navigate) {
   };
 
   const handleTipoEspinasChange = (e) => {
-    const { value, checked } = e.target;
-    const id = parseInt(value);
+  const { value, checked } = e.target;
+  const id = parseInt(value);
 
-    setFormData(prev => ({
+  setFormData(prev => ({
+    ...prev,
+    tipo_espinas: checked
+      ? [...prev.tipo_espinas, id]
+      : prev.tipo_espinas.filter(t => t !== id)
+  }));
+
+  if (fieldErrors.tipo_espinas) {
+    setFieldErrors(prev => ({
       ...prev,
-      tipo_espinas: checked
-        ? [...prev.tipo_espinas, id]
-        : prev.tipo_espinas.filter(t => t !== id)
+      tipo_espinas: ''
     }));
-  };
+  }
+};
 
   const handleFotoChange = (fotoBase64) => {
     setFormData(prev => ({
@@ -146,8 +168,16 @@ export function useRegistroBeneficiario(navigate) {
   return vigencia.toISOString().split('T')[0];
 };
 
+  // Permite avanzar a siguiente Step y muestra donde falta llenar el campo
   const handleNext = () => {
+    const stepErrors = validateStepFields(currentStep, formData, fechaNacimiento);
+
     setTouchedSteps(prev => [...new Set([...prev, currentStep])]);
+    setFieldErrors(prev => ({
+      ...prev,
+      ...stepErrors
+    }));
+
     if (currentStep < registroSteps.length - 1) {
       setCurrentStep(prev => prev + 1);
     }
@@ -216,7 +246,9 @@ export function useRegistroBeneficiario(navigate) {
         fechaNacimiento
       );
 
-      await createBeneficiario(payload, token);
+      // await createBeneficiario(payload, token);
+      const beneficiarioCreado = await createBeneficiario(payload, token);
+      setBeneficiarioCreado(beneficiarioCreado);
       setFormData(prev => ({
         ...prev,
         fotografiaFile: null,
@@ -258,6 +290,7 @@ export function useRegistroBeneficiario(navigate) {
     setShowSuccessModal,
     setFechaNacimiento,
     handleInputChange,
+    handleFechaNacimientoChange,
     handleBlur,
     handleTipoEspinasChange,
     handleFotoChange,
@@ -268,5 +301,6 @@ export function useRegistroBeneficiario(navigate) {
     handleSubmit,
     validateStep: stepIsComplete,
     areAllStepsComplete,
+    beneficiarioCreado,
   };
 }

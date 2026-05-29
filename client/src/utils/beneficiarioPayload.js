@@ -12,13 +12,13 @@ export function buildBeneficiarioPayload(formData, fechaRegistro, fechaNacimient
       estado_nacimiento: formData.estado_nacimiento,
       fotografia: formData.fotografia,
       telefono: formData.telefono,
-      email: formData.email
+      email: formData.email || undefined
     },
     datos_medicos: {
       contacto_nombre: formData.contacto_nombre,
       contacto_telefono: formData.contacto_telefono,
       contacto_parentesco: formData.contacto_parentesco,
-      alergias: formData.alergias,
+      alergias: formData.alergias || null,
       tipo_sanguineo: formData.tipo_sanguineo,
       valvula: formData.valvula === true || formData.valvula === 'true',
       hospital: formData.hospital,

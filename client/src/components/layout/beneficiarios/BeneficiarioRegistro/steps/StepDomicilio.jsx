@@ -13,6 +13,9 @@ function StepDomicilio({ formData, fieldErrors, handleInputChange, handleBlur })
           value={formData.domicilio_calle}
           onChange={handleInputChange}
         />
+        {fieldErrors.domicilio_calle && (
+              <small className="field-error">{fieldErrors.domicilio_calle}</small>
+            )}
       </div>
 
       <div className="row">
@@ -30,6 +33,9 @@ function StepDomicilio({ formData, fieldErrors, handleInputChange, handleBlur })
               </option>
             ))}
           </select>
+          {fieldErrors.domicilio_estado && (
+              <small className="field-error">{fieldErrors.domicilio_estado}</small>
+            )}
         </div>
 
         <div className="field-group">
@@ -40,6 +46,9 @@ function StepDomicilio({ formData, fieldErrors, handleInputChange, handleBlur })
             value={formData.domicilio_ciudad}
             onChange={handleInputChange}
           />
+          {fieldErrors.domicilio_ciudad && (
+              <small className="field-error">{fieldErrors.domicilio_ciudad}</small>
+            )}
         </div>
 
         <div className="field-group">

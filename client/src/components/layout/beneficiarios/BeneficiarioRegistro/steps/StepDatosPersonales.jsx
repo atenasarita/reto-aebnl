@@ -1,5 +1,6 @@
 import { FaCalendar } from 'react-icons/fa';
 import { estadosMexico } from '../../../../../utils/beneficiarioConstants';
+import { todayDate } from '../../../../../utils/dateTime';
 
 
 function StepDatosPersonales({
@@ -9,9 +10,11 @@ function StepDatosPersonales({
   fechaNacimientoRef,
   setFechaNacimiento,
   handleInputChange,
+  handleFechaNacimientoChange,
   handleBlur
 }) {
-  const today = new Date().toISOString().split("T")[0];  return (
+  const today = todayDate();
+  return (
     <>
       <div className="section-block">
         <h2>Identidad</h2>
@@ -97,13 +100,18 @@ function StepDatosPersonales({
                 name="fecha_nacimiento"
                 value={fechaNacimiento}
                 max={today}
-                onChange={(e) => setFechaNacimiento(e.target.value)}
+                onChange={handleFechaNacimientoChange}
+                className={fieldErrors.fecha_nacimiento ? 'input-error' : ''}
               />
+            
               <FaCalendar
                 className="icon"
                 onClick={() => fechaNacimientoRef.current?.showPicker()}
               />
             </div>
+              {fieldErrors.fecha_nacimiento && (
+              <small className="field-error">{fieldErrors.fecha_nacimiento}</small>
+            )}
           </div>
 
           <div className="field-group">
@@ -130,6 +138,9 @@ function StepDatosPersonales({
               <option value="femenino">Femenino</option>
               <option value="otro">Otro</option>
             </select>
+             {fieldErrors.genero && (
+              <small className="field-error">{fieldErrors.genero}</small>
+            )}
           </div>
 
           <div className="field-group">
@@ -146,6 +157,9 @@ function StepDatosPersonales({
                 </option>
               ))}
             </select>
+             {fieldErrors.estado_nacimiento && (
+              <small className="field-error">{fieldErrors.estado_nacimiento}</small>
+            )}
           </div>
         </div>
       </div>

@@ -118,6 +118,7 @@
   background: #172e6e;
   border-color: #172e6e;
 }
+
 .btn-hoy:focus-visible,
 .recibos-tab:focus-visible,
 .btn-ver:focus-visible,
@@ -134,7 +135,7 @@
 
 .recibos-tabs {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: center;
   gap: 0;
   width: 100%;
@@ -204,7 +205,7 @@
 /* Toolbar */
 .search-wrap {
   position: relative;
-  width: 280px;
+  width: 320px;
 }
 
 .search-icon {
@@ -220,7 +221,7 @@
 .search-input {
   width: 100%;
   height: 44px;
-  padding: 0 14px 0 36px;
+  padding: 0 14px 0 34px;
   border: 1px solid #cbd5e1;
   border-radius: 12px;
   font-size: 15px;
@@ -289,7 +290,33 @@
 }
 
 /* Tabla */
-.table-wrap { overflow-x: auto; }
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 420px;
+  border-radius: 16px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.table-wrap::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.table-wrap::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.table-wrap::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
 
 .recibos-table {
   width: 100%;
@@ -311,6 +338,10 @@
   letter-spacing: 0.7px;
   color: var(--text-muted);
   white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #ffffff;
 }
 
 .recibos-table td {
@@ -320,7 +351,9 @@
   vertical-align: middle;
 }
 
-.recibo-row:last-child td { border-bottom: none; }
+.recibo-row:last-child td {
+  border-bottom: none;
+}
 
 .td-folio {
   font-family: var(--font-regular);
@@ -329,8 +362,13 @@
   color: var(--primary);
 }
 
-.text-right { text-align: right; }
-.text-muted  { color: var(--text-muted); }
+.text-right {
+  text-align: right;
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
 
 /* Ver los detalles */
 .btn-ver {
@@ -370,9 +408,20 @@
   letter-spacing: 0.4px;
 }
 
-.badge-efectivo { background: var(--green-soft);  color: var(--green); }
-.badge-tarjeta  { background: var(--blue-soft);   color: #1d4ed8; }
-.badge-donacion { background: var(--accent-soft);  color: #92400e; }
+.badge-efectivo {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.badge-tarjeta {
+  background: var(--blue-soft);
+  color: #1d4ed8;
+}
+
+.badge-donacion {
+  background: var(--accent-soft);
+  color: #92400e;
+}
 
 /* Estados */
 .estado-msg {
@@ -391,7 +440,12 @@
 }
 
 /* Skeleton */
-.skeleton-wrap { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.skeleton-wrap {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
 .skeleton-row {
   height: 40px;
@@ -402,8 +456,12 @@
 }
 
 @keyframes shimmer {
-  0%   { background-position: 100% 0; }
-  100% { background-position: -100% 0; }
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
 }
 
 /* Overlay de detalles */
@@ -420,8 +478,12 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .detalle-panel {
@@ -436,8 +498,14 @@
 }
 
 @keyframes slideUp {
-  from { transform: translateY(16px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .detalle-header {
@@ -483,14 +551,18 @@
   flex-shrink: 0;
 }
 
-.btn-close:hover { background: var(--border); }
+.btn-close:hover {
+  background: var(--border);
+}
 
 .detalle-section {
   padding: 20px 24px;
   border-bottom: 1px solid var(--border);
 }
 
-.detalle-section:last-child { border-bottom: none; }
+.detalle-section:last-child {
+  border-bottom: none;
+}
 
 .detalle-section-title {
   font-size: 11px;
@@ -524,10 +596,16 @@
   border-bottom: 1px solid #f1f4fb;
 }
 
-.detalle-table tr:last-child td { border-bottom: none; }
+.detalle-table tr:last-child td {
+  border-bottom: none;
+}
 
 /* Resumen financiero */
-.detalle-financiero { display: flex; flex-direction: column; gap: 8px; }
+.detalle-financiero {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
 .fin-row {
   display: flex;
@@ -536,7 +614,9 @@
   color: var(--text-mid);
 }
 
-.fin-descuento { color: var(--green); }
+.fin-descuento {
+  color: var(--green);
+}
 
 .fin-total {
   font-size: 16px;
@@ -555,23 +635,94 @@
 
 /* Otros */
 @media (max-width: 900px) {
-  .resumen-strip { grid-template-columns: 1fr 1fr; }
+  .resumen-strip {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 @media (max-width: 640px) {
-  .recibos-header   { flex-direction: column; }
-  .recibos-heading { margin-bottom: 0; }
-  .recibos-tabs { width: 100%; grid-template-columns: 1fr 1fr; }
-  .recibos-tab { padding: 0 8px; }
-  .recibos-section  { padding: var(--space-4); }
-  .fecha-wrap       { width: 100%; }
-  .fecha-label      { min-width: 44px; }
-  .fecha-input      { flex: 1; }
-  .section-title-row{ flex-direction: column; align-items: flex-start; }
-  .search-wrap      { width: 100%; }
-  .resumen-strip    { grid-template-columns: 1fr 1fr; }
+  .recibos-header {
+    flex-direction: column;
+  }
+
+  .recibos-heading {
+    margin-bottom: 0;
+  }
+
+  .recibos-tabs {
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .recibos-tab {
+    padding: 0 8px;
+  }
+
+  .recibos-section {
+    padding: var(--space-4);
+  }
+
+  .fecha-wrap {
+    width: 100%;
+  }
+
+  .fecha-label {
+    min-width: 44px;
+  }
+
+  .fecha-input {
+    flex: 1;
+  }
+
+  .section-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-wrap {
+    width: 100%;
+  }
+
+  .resumen-strip {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 @media (max-width: 420px) {
-  .resumen-strip { grid-template-columns: 1fr; }
+  .resumen-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Animaciones elegantes para recibos */
+.recibos-fade-panel {
+  opacity: 0;
+  animation: recibosFadePanel 0.35s ease forwards;
+}
+
+@keyframes recibosFadePanel {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.recibos-fade-up {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: recibosFadeUp 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: opacity, transform;
+}
+
+@keyframes recibosFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

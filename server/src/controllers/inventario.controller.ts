@@ -6,6 +6,7 @@ import {
     Movimientos_inventario,
     Objeto_categoria,
     RegistrarMovimientoInventarioInput,
+    UpdateInventarioInput,
 } from '../types/inventario.types';
 import { OracleInventarioRepository } from '../repositories/inventario.repository';
 
@@ -30,6 +31,17 @@ export class InventarioController {
 
     async createInventario(input: CreateInventarioInput): Promise<Inventario> {
         return await this.repository.createInventario(input);
+    }
+
+    async updateInventario(
+        idInventario: number,
+        input: UpdateInventarioInput,
+    ): Promise<Inventario> {
+        return await this.repository.updateInventario(idInventario, input);
+    }
+
+    async deleteInventario(idInventario: number): Promise<void> {
+        return await this.repository.deleteInventario(idInventario);
     }
 
     async registrarMovimientoInventario(

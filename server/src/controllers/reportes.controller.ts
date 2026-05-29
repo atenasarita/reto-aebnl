@@ -1,6 +1,7 @@
 import {
   ReporteAllTimes,
   ReporteAnual,
+  ReporteInventario,
   ReporteMensual,
   ReporteRangoFechas,
 } from "../types/reportes.types";
@@ -23,6 +24,10 @@ export class ReportesController {
 
   getAnual(anio: number): Promise<ReporteAnual> {
     return this.repository.getAnual(anio);
+  }
+
+  getInventario(desde: string, hasta: string): Promise<ReporteInventario> {
+    return this.repository.getInventario(desde, hasta);
   }
 }
 

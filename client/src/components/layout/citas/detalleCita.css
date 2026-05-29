@@ -1,0 +1,159 @@
+.detalle-cita-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  padding: 16px;
+}
+
+.detalle-cita-modal {
+  width: min(92vw, 560px);
+  max-height: 90vh;
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22), 0 4px 16px rgba(44, 69, 147, 0.12);
+  overflow-y: auto;
+  position: relative;
+  font-family: "Sora", sans-serif;
+  z-index: 999;
+}
+
+/* Header igual al popup de modificar cita */
+.detalle-cita-modal h2 {
+  margin: 0;
+  padding: 20px 64px 18px 24px;
+  background: linear-gradient(135deg, #1e2f6b 0%, #2c4593 100%);
+  color: #ffffff;
+  font-family: "Sora", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  text-align: left;
+}
+
+/* Botón cerrar igual */
+.detalle-cita-close {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detalle-cita-close:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+/* Contenido */
+.detalle-cita-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 20px 24px 0;
+}
+
+.detalle-cita-grid p {
+  margin: 0;
+  padding: 14px;
+  background: #f4f6fb;
+  border: 1.5px solid #e2e8f2;
+  border-radius: 10px;
+  color: #0f172a;
+  font-family: "Sora", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.detalle-cita-grid strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Notas */
+.detalle-cita-notas {
+  grid-column: 1 / -1;
+  min-height: 80px;
+  margin-top: 2px;
+  padding: 14px !important;
+  background: #f4f6fb;
+  border: 1.5px solid #e2e8f2 !important;
+  border-radius: 10px;
+}
+
+/* Botón */
+.modificar-cita-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 16px 24px 20px auto;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 10px;
+  background: #2c4593;
+  color: #ffffff;
+  font-family: "Sora", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.modificar-cita-btn:hover {
+  background: #3a57bb;
+}
+
+.modificar-cita-btn:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 540px) {
+  .detalle-cita-modal {
+    width: 100%;
+    max-height: 95vh;
+    border-radius: 16px;
+  }
+
+  .detalle-cita-modal h2 {
+    padding: 16px 58px 16px 18px;
+  }
+
+  .detalle-cita-close {
+    top: 14px;
+    right: 16px;
+  }
+
+  .detalle-cita-grid {
+    grid-template-columns: 1fr;
+    margin: 16px 18px 0;
+  }
+
+  .detalle-cita-notas {
+    grid-column: 1;
+  }
+
+  .modificar-cita-btn {
+    width: calc(100% - 36px);
+    margin: 16px 18px 18px;
+  }
+}

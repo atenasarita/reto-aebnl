@@ -61,7 +61,7 @@
   flex-shrink: 0;
 }
 
-.settingsBtn {
+.logoutBtn {
   width: 36px;
   height: 36px;
   border-radius: 8px;
@@ -75,9 +75,9 @@
   transition: background 0.15s, color 0.15s;
 }
 
-.settingsBtn:hover {
-  background: #f3f4f6;
-  color: var(--color-text-secondary);
+.logoutBtn:hover {
+  background: #fef2f2;
+  color: #dc2626;
 }
 
 .user {

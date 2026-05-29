@@ -8,8 +8,106 @@ function StepInformacionMedica({
   handleTipoEspinasChange
 }) {
   return (
+    
     <div className="section-block">
       <h2>Información Médica</h2>
+
+       <div style={{ marginTop: '2rem', marginBottom: '1rem' }}>
+        <h3 style={{ fontSize: '1.1rem', color: '#1a3b5c', borderBottom: '1px solid #e0e0e0', paddingBottom: '0.5rem' }}>
+          Datos de Diagnóstico
+        </h3>
+      </div>
+
+      <div className="field-group full">
+        <label>Tipo de Espina Bífida</label>
+        <div className="checkbox-group">
+          {espinaBifidaOptions.map(type => (
+            <label
+              key={type.value}
+              className={`checkbox-card ${formData.tipo_espinas.includes(type.value) ? 'checked' : ''}`}
+            >
+              <input
+                type="checkbox"
+                value={type.value}
+                checked={formData.tipo_espinas.includes(type.value)}
+                onChange={handleTipoEspinasChange}
+              />
+              <div className="checkbox-card-mark"></div>
+              <span>{type.label}</span>
+            </label>
+          ))}
+          {fieldErrors.tipo_espinas && (
+              <small className="field-error">{fieldErrors.tipo_espinas}</small>
+            )}
+        </div>
+      </div>
+
+      <div className="row">
+        <div className="field-group full">
+          <label>Válvula</label>
+          <select
+            name="valvula"
+            value={String(formData.valvula)}
+            onChange={handleInputChange}
+          >
+            <option value="false">No</option>
+            <option value="true">Sí</option>
+          </select>
+        </div>
+
+          <div className="field-group">
+          <label>Tipo Sanguíneo</label>
+          <select
+            name="tipo_sanguineo"
+            value={formData.tipo_sanguineo}
+            onChange={handleInputChange}
+          >
+            <option value="">Seleccionar...</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
+          {fieldErrors.tipo_sanguineo && (
+              <small className="field-error">{fieldErrors.tipo_sanguineo}</small>
+            )}
+        </div>
+      </div>
+
+       <div className="field-group full">
+          <label>Hospital</label>
+          <input
+            type="text"
+            name="hospital"
+            value={formData.hospital}
+            onChange={handleInputChange}
+          />
+          {fieldErrors.hospital && (
+              <small className="field-error">{fieldErrors.hospital}</small>
+            )}
+        </div>
+
+      <div className="field-group full">
+        <label>Alergias</label>
+        <textarea
+          name="alergias"
+          placeholder='Atopia, Rinitis alérgica, etc.'
+          value={formData.alergias}
+          onChange={handleInputChange}
+        />
+      </div>
+
+           
+
+        <div style={{ marginTop: '2rem', marginBottom: '1rem' }}>
+        <h3 style={{ fontSize: '1.1rem', color: '#1a3b5c', borderBottom: '1px solid #e0e0e0', paddingBottom: '0.5rem' }}>
+          Datos de Contacto de Emergencia
+        </h3>
+      </div>
 
       <div className="row">
         <div className="field-group">
@@ -24,6 +122,8 @@ function StepInformacionMedica({
             <small className="field-error">{fieldErrors.contacto_nombre}</small>
           )}
         </div>
+
+  
 
         <div className="field-group">
           <label>Teléfono de Contacto de Emergencia</label>
@@ -50,88 +150,15 @@ function StepInformacionMedica({
             value={formData.contacto_parentesco}
             onChange={handleInputChange}
           />
+          {fieldErrors.contacto_parentesco && (
+              <small className="field-error">{fieldErrors.contacto_parentesco}</small>
+            )}
         </div>
 
-        <div className="field-group">
-          <label>Tipo Sanguíneo</label>
-          <select
-            name="tipo_sanguineo"
-            value={formData.tipo_sanguineo}
-            onChange={handleInputChange}
-          >
-            <option value="">Seleccionar...</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
-          </select>
-        </div>
+
       </div>
 
-      <div style={{ marginTop: '2rem', marginBottom: '1rem' }}>
-        <h3 style={{ fontSize: '1.1rem', color: '#1a3b5c', borderBottom: '1px solid #e0e0e0', paddingBottom: '0.5rem' }}>
-          Datos de Diagnóstico
-        </h3>
-      </div>
-
-      <div className="field-group full">
-        <label>Tipo de Espina Bífida</label>
-        <div className="checkbox-group">
-          {espinaBifidaOptions.map(type => (
-            <label
-              key={type.value}
-              className={`checkbox-card ${formData.tipo_espinas.includes(type.value) ? 'checked' : ''}`}
-            >
-              <input
-                type="checkbox"
-                value={type.value}
-                checked={formData.tipo_espinas.includes(type.value)}
-                onChange={handleTipoEspinasChange}
-              />
-              <div className="checkbox-card-mark"></div>
-              <span>{type.label}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div className="row">
-        <div className="field-group full">
-          <label>Válvula</label>
-          <select
-            name="valvula"
-            value={String(formData.valvula)}
-            onChange={handleInputChange}
-          >
-            <option value="false">No</option>
-            <option value="true">Sí</option>
-          </select>
-        </div>
-
-        <div className="field-group full">
-          <label>Hospital</label>
-          <input
-            type="text"
-            name="hospital"
-            value={formData.hospital}
-            onChange={handleInputChange}
-          />
-        </div>
-      </div>
-
-      <div className="field-group full">
-        <label>Alergias</label>
-        <textarea
-          name="alergias"
-          value={formData.alergias}
-          onChange={handleInputChange}
-        />
-      </div>
-
+     
       <div style={{ marginTop: '2rem', marginBottom: '1rem' }}>
         <h3 style={{ fontSize: '1.1rem', color: '#1a3b5c', borderBottom: '1px solid #e0e0e0', paddingBottom: '0.5rem' }}>
           Información de los Padres (Opcional)

@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useOutletContext } from "react-router-dom";
 import {
   Area,
   AreaChart,
@@ -17,6 +17,11 @@ import EstadosAtendidosCard from "../../../components/reportes/EstadosAtendidosC
 import { useReporteMensual } from "../../../hooks/useReporteMensual";
 import IndicadorCard from "../../../components/reportes/IndicadorCard/IndicadorCard";
 import ReportesLoading from "../../../components/reportes/ReportesLoading/ReportesLoading";
+import {
+  buildCsvReporteMensual,
+  exportTimestampSlug,
+  triggerCsvDownload,
+} from "../../../utils/reportesCsvExport";
 import "./ReportesMensual.css";
 
 const MONTH_OPTIONS = [
@@ -54,6 +59,7 @@ function ServiciosTooltip({ active, payload, label, mesNombre }) {
 }
 
 export default function ReportesMensual() {
+  const { registerCsvExportHandler } = useOutletContext() || {};
   const today = useMemo(() => new Date(), []);
   const [mes, setMes] = useState(today.getMonth() + 1);
   const [anio, setAnio] = useState(today.getFullYear());
@@ -86,6 +92,15 @@ export default function ReportesMensual() {
     if (mesNombre && anio) return `${mesNombre} ${anio}`;
     return "";
   }, [mesNombre, anio]);
+
+  useEffect(() => {
+    if (!registerCsvExportHandler) return undefined;
+    registerCsvExportHandler(() => {
+      const csv = buildCsvReporteMensual(data, mesNombre, anio);
+      triggerCsvDownload(`reporte_mensual_${anio}_${mes}_${exportTimestampSlug()}.csv`, csv);
+    });
+    return () => registerCsvExportHandler(null);
+  }, [anio, data, mes, mesNombre, registerCsvExportHandler]);
 
   return (
     <article className="reporte-mensual-shell">

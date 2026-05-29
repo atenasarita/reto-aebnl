@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import InventarioModalShell from '../InventarioModalShell/InventarioModalShell'
 import {
   createProductoInventario,
   getCategoriasInventario,
 } from '../../../../services/inventarioService'
+import { vistaPreviaClaveInventario } from '../../../../utils/inventarioClave'
+import { propsFormularioValidacionEs } from '../../../../utils/validacionFormularioEs'
 import '../../../../pages/styles/Inventario.css'
 
 const initialForm = {
-  clave: '',
   nombre: '',
   id_categoria: '',
   unidad_medida: '',
@@ -15,7 +16,12 @@ const initialForm = {
   cantidad: '0',
 }
 
-export default function InventarioNuevoProductoModal({ open, onClose, onExito }) {
+export default function InventarioNuevoProductoModal({
+  open,
+  onClose,
+  onExito,
+  itemsInventario = [],
+}) {
   const [categorias, setCategorias] = useState([])
   const [form, setForm] = useState(initialForm)
   const [loadingCats, setLoadingCats] = useState(false)
@@ -44,6 +50,11 @@ export default function InventarioNuevoProductoModal({ open, onClose, onExito })
       cancelled = true
     }
   }, [open])
+
+  const claveVistaPrevia = useMemo(
+    () => vistaPreviaClaveInventario(form.id_categoria, categorias, itemsInventario),
+    [categorias, form.id_categoria, itemsInventario]
+  )
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -75,7 +86,6 @@ export default function InventarioNuevoProductoModal({ open, onClose, onExito })
     setSubmitting(true)
     try {
       await createProductoInventario({
-        clave: form.clave.trim(),
         nombre: form.nombre.trim(),
         id_categoria: idCat,
         unidad_medida: form.unidad_medida.trim(),
@@ -97,22 +107,14 @@ export default function InventarioNuevoProductoModal({ open, onClose, onExito })
       open={open}
       onClose={onClose}
       title="Nuevo producto"
-      subtitle="Alta en Inventario: clave única, categoría, unidad, precio y existencias."
     >
-      <form className="inventario-form inventario-form--modal" onSubmit={handleSubmit}>
+      <form
+        className="inventario-form inventario-form--modal"
+        onSubmit={handleSubmit}
+        {...propsFormularioValidacionEs}
+      >
         <div className="inventario-form__grid">
-          <label className="inventario-form__field">
-            <span>Clave única</span>
-            <input
-              name="clave"
-              value={form.clave}
-              onChange={handleChange}
-              maxLength={10}
-              required
-              autoComplete="off"
-            />
-          </label>
-          <label className="inventario-form__field">
+          <label className="inventario-form__field inventario-form__field--span2">
             <span>Nombre</span>
             <input
               name="nombre"
@@ -171,6 +173,20 @@ export default function InventarioNuevoProductoModal({ open, onClose, onExito })
               step="1"
               value={form.cantidad}
               onChange={handleChange}
+            />
+          </label>
+          <label className="inventario-form__field">
+            <span>Clave (automática)</span>
+            <input
+              value={claveVistaPrevia || '—'}
+              readOnly
+              disabled
+              aria-readonly
+              title={
+                claveVistaPrevia
+                  ? 'Vista previa; se confirma al guardar'
+                  : 'Selecciona una categoría para ver la clave'
+              }
             />
           </label>
         </div>

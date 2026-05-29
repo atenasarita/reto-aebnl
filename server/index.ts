@@ -16,8 +16,12 @@ import { errorMiddleware } from './src/middlewares/error.middleware';
 import dashboardRoutes from "./src/routes/dashboard.routes";
 import reportesRoutes from "./src/routes/reportes.routes";
 import especialistasRoutes from './src/routes/especialistas.routes';
+import citasRoutes from './src/routes/citas.routes';
+
 
 import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job';
+import catalogosRouter from './src/routes/catalogos.routes.js';
+
 
 // ── Wallet setup ──────────────────────────────────────────────
 const walletDir = process.env.TNS_ADMIN || '/tmp/wallet';
@@ -60,12 +64,18 @@ app.use('/api', beneficiariosRoutes);
 app.use('/api/inventario', inventarioRoutes);
 app.use('/api/preregistros', preregistrosRoutes);
 app.use('/api/recibos', recibosRoutes);
+app.use('/api/citas', citasRoutes);
+app.use("/api", catalogosRouter);
 app.use('/api', dashboardRoutes);
 app.use('/api/reportes', reportesRoutes);
 app.use('/api', serviciosRoutes)
 app.use('/api', especialistasRoutes);
 
 app.use(errorMiddleware);
+
+// app.get('/api/citas-test', (req, res) => {
+//   res.json({ ok: true });
+// });
 
 startMembresiaExpirationJob();
 

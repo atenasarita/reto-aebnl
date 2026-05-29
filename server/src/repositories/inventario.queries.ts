@@ -11,6 +11,40 @@ SELECT
     c.DESCRIPCION AS DESCRIPCION_CATEGORIA
 FROM Inventario i
 LEFT JOIN Objeto_categoria c ON c.ID_CATEGORIA = i.ID_CATEGORIA
+WHERE i.ACTIVO = 1
+`.trim();
+
+export const SELECT_INVENTARIO_BY_ID = `
+SELECT
+    i.ID_INVENTARIO,
+    i.CLAVE,
+    i.NOMBRE,
+    i.ID_CATEGORIA,
+    i.UNIDAD_MEDIDA,
+    i.PRECIO,
+    i.CANTIDAD,
+    i.ACTIVO
+FROM Inventario i
+WHERE i.ID_INVENTARIO = :id_inventario
+`.trim();
+
+export const UPDATE_INVENTARIO = `
+UPDATE Inventario
+SET
+    clave = :clave,
+    nombre = :nombre,
+    id_categoria = :id_categoria,
+    unidad_medida = :unidad_medida,
+    precio = :precio
+WHERE id_inventario = :id_inventario
+  AND activo = 1
+`.trim();
+
+export const SOFT_DELETE_INVENTARIO = `
+UPDATE Inventario
+SET activo = 0
+WHERE id_inventario = :id_inventario
+  AND activo = 1
 `.trim();
 
 export const SELECT_OBJETO_CATEGORIAS = `
@@ -19,6 +53,32 @@ SELECT
     oc.DESCRIPCION
 FROM Objeto_categoria oc
 ORDER BY oc.ID_CATEGORIA
+`.trim();
+
+export const SELECT_OBJETO_CATEGORIA_BY_ID = `
+SELECT
+    oc.ID_CATEGORIA,
+    oc.DESCRIPCION
+FROM Objeto_categoria oc
+WHERE oc.ID_CATEGORIA = :id_categoria
+`.trim();
+
+/** Bloquea la categoría mientras se asigna el siguiente número de clave. */
+export const SELECT_OBJETO_CATEGORIA_BY_ID_FOR_UPDATE = `
+SELECT
+    oc.ID_CATEGORIA,
+    oc.DESCRIPCION
+FROM Objeto_categoria oc
+WHERE oc.ID_CATEGORIA = :id_categoria
+FOR UPDATE
+`.trim();
+
+/** Claves activas de la categoría (para calcular el siguiente sufijo numérico). */
+export const SELECT_CLAVES_INVENTARIO_ACTIVAS_POR_CATEGORIA = `
+SELECT clave
+FROM Inventario
+WHERE id_categoria = :id_categoria
+  AND activo = 1
 `.trim();
 
 export const INSERT_INVENTARIO = `

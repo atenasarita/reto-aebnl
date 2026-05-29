@@ -154,3 +154,20 @@
 .login-button:hover {
   background: var(--color-brand-hover);
 }
+
+.login-preregistro-text {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.login-preregistro-link {
+  color: #2563eb;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.login-preregistro-link:hover {
+  color: #1d4ed8;
+}

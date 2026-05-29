@@ -44,3 +44,45 @@ export const INSERT_MOVIMIENTO_INVENTARIO = `
   VALUES
     (:id_inventario, 'salida', :cantidad, SYSDATE, :cant_anterior, :cant_nueva, :id_servicio_otorgado, :id_usuario, 'Venta Cliente')
 `;
+
+export const SELECT_FECHAS_ULTIMOS_ESTUDIOS_BY_BENEFICIARIO = `
+  SELECT
+    so.ID_BENEFICIARIO,
+
+    MAX(CASE 
+      WHEN UPPER(TRIM(cs.NOMBRE)) = 'ESTUDIOS ESPECIALIZADOS' 
+      THEN so.FECHA 
+    END) AS GRAL_ORINA,
+
+    MAX(CASE 
+      WHEN UPPER(TRIM(cs.NOMBRE)) = 'ECO VIAS URINARIAS' 
+      THEN so.FECHA 
+    END) AS ECO_RENAL,
+
+    MAX(CASE 
+      WHEN UPPER(TRIM(cs.NOMBRE)) LIKE 'UROTAC%' 
+      THEN so.FECHA 
+    END) AS UROTAC,
+
+    MAX(CASE 
+      WHEN UPPER(TRIM(cs.NOMBRE)) LIKE 'GAMMAGRAMA RENAL%' 
+      THEN so.FECHA 
+    END) AS EST_URODINAMICO,
+
+    MAX(CASE 
+      WHEN UPPER(TRIM(cs.NOMBRE)) LIKE 'TAC%' 
+      THEN so.FECHA 
+    END) AS TAC_CEREBRO,
+
+    MAX(CASE 
+      WHEN UPPER(TRIM(cs.NOMBRE)) LIKE '%UROCULTIVO%' 
+      THEN so.FECHA 
+    END) AS UROCULTIVO
+
+  FROM SERVICIOS_OTORGADOS so
+  JOIN CATALOGO_SERVICIOS cs
+    ON so.ID_CATALOGO_SERVICIO = cs.ID_CATALOGO_SERVICIO
+  WHERE UPPER(TRIM(cs.CATEGORIA)) = 'ESTUDIOS'
+    AND so.ID_BENEFICIARIO = :id_beneficiario
+  GROUP BY so.ID_BENEFICIARIO
+`;

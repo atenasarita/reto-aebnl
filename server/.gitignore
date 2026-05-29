@@ -5,6 +5,7 @@ dist/
 build/
 .env
 Wallet_*/
+wallet/
 **/Wallet_*/
 *.sso
 *.p12
