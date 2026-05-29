@@ -30,22 +30,29 @@ type MovimientoRow = {
   ORIGEN_NOMBRE: string | null;
   CONCEPTO: string | null;
   ID_SERVICIO_OTORGADO: number | null;
+  FOLIO_SERVICIO: number | null;
+  NOMBRE_SERVICIO: string | null;
   ID_USUARIO: number | null;
   FECHA: string;
   MOTIVO: string | null;
 };
 
 function mapMovimiento(row: MovimientoRow): MovimientoFondoDonacion {
+  const idServicio = row.ID_SERVICIO_OTORGADO ?? row.FOLIO_SERVICIO;
+  const folioServicio = idServicio != null ? Number(idServicio) : null;
+
   return {
     id_movimiento: row.ID_MOVIMIENTO,
-    tipo_movimiento: row.TIPO_MOVIMIENTO as MovimientoFondoDonacion['tipo_movimiento'],
+    tipo_movimiento: row.TIPO_MOVIMIENTO.toLowerCase() as MovimientoFondoDonacion['tipo_movimiento'],
     monto: Number(row.MONTO),
     saldo_anterior: Number(row.SALDO_ANTERIOR),
     saldo_nuevo: Number(row.SALDO_NUEVO),
     origen_tipo: (row.ORIGEN_TIPO as MovimientoFondoDonacion['origen_tipo']) ?? null,
     origen_nombre: row.ORIGEN_NOMBRE,
     concepto: row.CONCEPTO,
-    id_servicio_otorgado: row.ID_SERVICIO_OTORGADO,
+    id_servicio_otorgado: folioServicio,
+    folio_servicio: folioServicio,
+    servicio_nombre: row.NOMBRE_SERVICIO,
     id_usuario: row.ID_USUARIO,
     fecha: row.FECHA,
     motivo: row.MOTIVO,
@@ -94,6 +101,7 @@ export class FondoDonacionesRepository {
       );
     }
 
+    const folioLabel = `#${input.id_servicio_otorgado}`;
     await connection.execute(INSERT_MOVIMIENTO_FONDO, {
       tipo_movimiento: 'egreso',
       monto: input.monto,
@@ -101,10 +109,10 @@ export class FondoDonacionesRepository {
       saldo_nuevo: saldoNuevo,
       origen_tipo: null,
       origen_nombre: null,
-      concepto: null,
+      concepto: `Folio ${folioLabel}`,
       id_servicio_otorgado: input.id_servicio_otorgado,
       id_usuario: input.id_usuario,
-      motivo: input.motivo ?? 'Pago de servicio con fondo de donaciones',
+      motivo: input.motivo ?? `Pago de servicio folio ${folioLabel}`,
       id_movimiento: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
     });
 

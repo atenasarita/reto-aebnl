@@ -1,6 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { CheckCircle2, RefreshCw } from "lucide-react";
-import SearchBar from "../../components/ui/SearchBar";
 import useFondoDonaciones from "../../hooks/useFondoDonaciones";
 import "../styles/Recibos.css";
 import "../styles/BusquedaBeneficiarioVista.css";
@@ -9,31 +8,76 @@ import "../styles/Donaciones.css";
 const fmt = (n) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(n ?? 0);
 
-function ResumenCard({ label, value, sub, index = 0, loading = false }) {
-  return (
-    <div
-      className="resumen-card recibos-fade-up"
-      style={{ animationDelay: `${index * 0.06}s` }}
-    >
-      <p className="resumen-label">{label}</p>
-      {loading ? (
-        <div className="donaciones-skeleton-value" aria-hidden="true" />
-      ) : (
-        <p className="resumen-value">{value}</p>
-      )}
-      {sub && !loading && <p className="resumen-sub">{sub}</p>}
-    </div>
-  );
-}
-
 function Skeleton({ rows = 4 }) {
   return (
     <div className="skeleton-wrap" role="status" aria-live="polite" aria-label="Cargando movimientos">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="skeleton-row" style={{ animationDelay: `${i * 0.07}s` }} />
+        <div key={i} className="skeleton-row" />
       ))}
     </div>
   );
+}
+
+function FieldError({ id, message }) {
+  if (!message) return null;
+  return (
+    <p id={id} className="donaciones-field-error" role="alert">
+      {message}
+    </p>
+  );
+}
+
+function validateField(name, { origenTipo, origenNombre, monto, concepto }) {
+  switch (name) {
+    case "origenTipo":
+      return origenTipo ? "" : "Seleccione si la donación proviene de una marca o una familia.";
+    case "origenNombre":
+      return origenNombre.trim() ? "" : "Ingrese el nombre de la marca o familia.";
+    case "monto": {
+      const n = parseFloat(monto);
+      if (!monto.trim()) return "Ingrese el monto de la donación.";
+      if (Number.isNaN(n) || n <= 0) return "El monto debe ser mayor a cero.";
+      return "";
+    }
+    case "concepto":
+      return concepto.trim() ? "" : "El concepto es obligatorio.";
+    default:
+      return "";
+  }
+}
+
+function validateAll(values) {
+  const fields = ["origenTipo", "origenNombre", "monto", "concepto"];
+  return Object.fromEntries(fields.map((f) => [f, validateField(f, values)]));
+}
+
+function sanitizeMonto(value) {
+  const cleaned = value.replace(/[^\d.]/g, "");
+  const parts = cleaned.split(".");
+  if (parts.length <= 1) return cleaned;
+  return `${parts[0]}.${parts.slice(1).join("")}`;
+}
+
+function formatOrigen(m) {
+  if (m.tipo_movimiento?.toLowerCase() === "egreso") {
+    const folio = m.folio_servicio ?? m.id_servicio_otorgado;
+    return folio ? `Servicio #${folio}` : "Servicio";
+  }
+  if (m.origen_tipo) {
+    const label = m.origen_tipo === "marca" ? "Marca" : "Familia";
+    return `${label}: ${m.origen_nombre}`;
+  }
+  return "—";
+}
+
+function formatConcepto(m) {
+  if (m.tipo_movimiento?.toLowerCase() === "egreso") {
+    const folio = m.folio_servicio ?? m.id_servicio_otorgado;
+    const nombre = m.servicio_nombre?.trim();
+    if (folio && nombre) return `Folio #${folio} · ${nombre}`;
+    if (folio) return `Folio #${folio}`;
+  }
+  return m.concepto || m.motivo || "—";
 }
 
 export default function Donaciones() {
@@ -45,11 +89,14 @@ export default function Donaciones() {
   const [monto, setMonto] = useState("");
   const [concepto, setConcepto] = useState("");
   const [guardado, setGuardado] = useState(false);
-  const [errorForm, setErrorForm] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [guardando, setGuardando] = useState(false);
   const [cargandoHistorial, setCargandoHistorial] = useState(false);
 
-  const montoNum = parseFloat(monto) || 0;
+  const formValues = useMemo(
+    () => ({ origenTipo, origenNombre, monto, concepto }),
+    [origenTipo, origenNombre, monto, concepto]
+  );
 
   const stats = useMemo(() => {
     const abonos = movimientos.filter((m) => m.tipo_movimiento === "abono");
@@ -61,32 +108,50 @@ export default function Donaciones() {
     fetchMovimientos().catch(() => {});
   }, [fetchMovimientos]);
 
+  const clearFieldError = useCallback((name) => {
+    setFieldErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+  }, []);
+
+  const handleBlur = (name) => {
+    const message = validateField(name, formValues);
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+      if (message) next[name] = message;
+      else delete next[name];
+      return next;
+    });
+  };
+
+  const handleOrigenTipo = (tipo) => {
+    setOrigenTipo(tipo);
+    clearFieldError("origenTipo");
+    if (fieldErrors.origenNombre) handleBlur("origenNombre");
+  };
+
+  const handleTabKeyDown = (e) => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    handleOrigenTipo(origenTipo === "marca" ? "familia" : "marca");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorForm(null);
     setGuardado(false);
 
-    if (!origenTipo) {
-      setErrorForm("Seleccione si la donación proviene de una marca o una familia.");
-      return;
-    }
-    if (!origenNombre.trim()) {
-      setErrorForm("Ingrese el nombre de la marca o familia.");
-      return;
-    }
-    if (montoNum <= 0) {
-      setErrorForm("El monto debe ser mayor a cero.");
-      return;
-    }
-    if (!concepto.trim()) {
-      setErrorForm("El concepto es obligatorio.");
-      return;
-    }
+    const errors = validateAll(formValues);
+    const hasErrors = Object.values(errors).some(Boolean);
+    setFieldErrors(errors);
+    if (hasErrors) return;
 
     setGuardando(true);
     try {
       await registrarAbono({
-        monto: montoNum,
+        monto: parseFloat(monto),
         origen_tipo: origenTipo,
         origen_nombre: origenNombre.trim(),
         concepto: concepto.trim(),
@@ -96,9 +161,12 @@ export default function Donaciones() {
       setOrigenNombre("");
       setMonto("");
       setConcepto("");
+      setFieldErrors({});
       await Promise.all([fetchSaldo(), fetchMovimientos()]);
     } catch (err) {
-      setErrorForm(err.message || "Error al registrar la donación.");
+      setFieldErrors({
+        form: err.message || "Error al registrar la donación.",
+      });
     } finally {
       setGuardando(false);
     }
@@ -113,55 +181,38 @@ export default function Donaciones() {
     }
   };
 
-  const origenLabel =
+  const origenNombreLabel =
     origenTipo === "marca"
-      ? "Marca o empresa"
+      ? "Nombre de la marca o empresa"
       : origenTipo === "familia"
-      ? "Familia"
-      : "Origen";
+      ? "Nombre de la familia"
+      : "Nombre de la marca o familia";
+
+  const saldoLoading = loading && !saldo;
 
   return (
     <main className="recibos-page donaciones-page" aria-labelledby="donaciones-page-title">
-      <header className="recibos-header page-header recibos-fade-panel">
+      <header className="recibos-header page-header donaciones-header">
         <div className="recibos-heading">
           <h1 id="donaciones-page-title" className="page-header-title">
             Fondo de Donaciones
           </h1>
           <p className="page-header-subtitle">
-            Abonos al fondo global y consulta de movimientos para pagar servicios.
+            Registre abonos y consulte movimientos para cubrir servicios con donación.
           </p>
+        </div>
+        <div className="donaciones-saldo" aria-live="polite">
+          <span className="donaciones-saldo-label">Saldo disponible</span>
+          {saldoLoading ? (
+            <div className="donaciones-skeleton-value" aria-hidden="true" />
+          ) : (
+            <span className="donaciones-saldo-value">{fmt(saldo?.saldo)}</span>
+          )}
         </div>
       </header>
 
-      <div className="resumen-strip donaciones-resumen-strip recibos-fade-panel">
-        <ResumenCard
-          label="Saldo disponible"
-          value={fmt(saldo?.saldo)}
-          sub="Para cubrir servicios con donación"
-          index={0}
-          loading={loading && !saldo}
-        />
-        <ResumenCard
-          label="Abonos registrados"
-          value={stats.abonos}
-          sub="Entradas al fondo global"
-          index={1}
-          loading={loading && movimientos.length === 0}
-        />
-        <ResumenCard
-          label="Egresos por servicios"
-          value={stats.egresos}
-          sub="Pagos aplicados desde el fondo"
-          index={2}
-          loading={loading && movimientos.length === 0}
-        />
-      </div>
-
       <div className="donaciones-layout">
-        <section
-          className="recibos-section recibos-fade-panel"
-          aria-labelledby="donaciones-form-title"
-        >
+        <section className="recibos-section" aria-labelledby="donaciones-form-title">
           <div className="section-title-row">
             <div>
               <h2 id="donaciones-form-title" className="section-title">
@@ -180,55 +231,91 @@ export default function Donaciones() {
                   className="recibos-tabs"
                   role="tablist"
                   aria-labelledby="origen-tipo-label"
+                  aria-describedby={fieldErrors.origenTipo ? "origen-tipo-error" : undefined}
+                  onKeyDown={handleTabKeyDown}
                 >
                   <button
                     type="button"
                     role="tab"
+                    id="origen-tab-marca"
                     aria-selected={origenTipo === "marca"}
-                    className={`recibos-tab ${origenTipo === "marca" ? "is-active" : ""}`}
-                    onClick={() => setOrigenTipo("marca")}
+                    aria-controls="origen-nombre"
+                    tabIndex={origenTipo === "marca" || !origenTipo ? 0 : -1}
+                    className={`recibos-tab ${origenTipo === "marca" ? "is-active" : ""} ${
+                      fieldErrors.origenTipo ? "is-invalid" : ""
+                    }`}
+                    onClick={() => handleOrigenTipo("marca")}
                   >
                     Marca / empresa
                   </button>
                   <button
                     type="button"
                     role="tab"
+                    id="origen-tab-familia"
                     aria-selected={origenTipo === "familia"}
-                    className={`recibos-tab ${origenTipo === "familia" ? "is-active" : ""}`}
-                    onClick={() => setOrigenTipo("familia")}
+                    aria-controls="origen-nombre"
+                    tabIndex={origenTipo === "familia" ? 0 : -1}
+                    className={`recibos-tab ${origenTipo === "familia" ? "is-active" : ""} ${
+                      fieldErrors.origenTipo ? "is-invalid" : ""
+                    }`}
+                    onClick={() => handleOrigenTipo("familia")}
                   >
                     Familia
                   </button>
                 </div>
               </div>
+              <FieldError id="origen-tipo-error" message={fieldErrors.origenTipo} />
             </div>
 
             <div className="field">
               <label className="fieldLabel" htmlFor="origen-nombre">
-                Nombre de {origenLabel.toLowerCase()}
+                {origenNombreLabel}
               </label>
-              <SearchBar
+              <input
                 id="origen-nombre"
+                type="text"
+                className={`input donaciones-input ${fieldErrors.origenNombre ? "is-invalid" : ""}`}
                 placeholder="Ej. Fundación XYZ o Familia García"
                 value={origenNombre}
-                onChange={setOrigenNombre}
-                debounceMs={0}
+                onChange={(e) => {
+                  setOrigenNombre(e.target.value);
+                  clearFieldError("origenNombre");
+                }}
+                onBlur={() => handleBlur("origenNombre")}
+                aria-invalid={Boolean(fieldErrors.origenNombre)}
+                aria-describedby={fieldErrors.origenNombre ? "origen-nombre-error" : undefined}
+                autoComplete="organization"
               />
+              <FieldError id="origen-nombre-error" message={fieldErrors.origenNombre} />
             </div>
 
             <div className="field">
               <label className="fieldLabel" htmlFor="monto-donacion">
-                Monto
+                Monto (MXN)
               </label>
-              <SearchBar
-                id="monto-donacion"
-                placeholder="0.00"
-                value={monto}
-                onChange={setMonto}
-                debounceMs={0}
-                prefix="$"
-                className="search-finanzas"
-              />
+              <div className="donaciones-input-prefix">
+                <span className="donaciones-input-prefix-symbol" aria-hidden="true">
+                  $
+                </span>
+                <input
+                  id="monto-donacion"
+                  type="text"
+                  inputMode="decimal"
+                  className={`input donaciones-input donaciones-input--monto ${
+                    fieldErrors.monto ? "is-invalid" : ""
+                  }`}
+                  placeholder="0.00"
+                  value={monto}
+                  onChange={(e) => {
+                    setMonto(sanitizeMonto(e.target.value));
+                    clearFieldError("monto");
+                  }}
+                  onBlur={() => handleBlur("monto")}
+                  aria-invalid={Boolean(fieldErrors.monto)}
+                  aria-describedby={fieldErrors.monto ? "monto-error" : undefined}
+                />
+              </div>
+              <FieldError id="monto-error" message={fieldErrors.monto} />
             </div>
 
             <div className="field">
@@ -237,25 +324,33 @@ export default function Donaciones() {
               </label>
               <textarea
                 id="concepto-donacion"
-                className="donaciones-textarea"
+                className={`donaciones-textarea ${fieldErrors.concepto ? "is-invalid" : ""}`}
                 placeholder="Propósito de la donación, campaña o acuerdo..."
                 value={concepto}
-                onChange={(e) => setConcepto(e.target.value)}
+                onChange={(e) => {
+                  setConcepto(e.target.value);
+                  clearFieldError("concepto");
+                }}
+                onBlur={() => handleBlur("concepto")}
                 rows={3}
                 maxLength={500}
-                aria-describedby="concepto-count"
+                aria-invalid={Boolean(fieldErrors.concepto)}
+                aria-describedby={
+                  fieldErrors.concepto ? "concepto-error concepto-count" : "concepto-count"
+                }
               />
+              <FieldError id="concepto-error" message={fieldErrors.concepto} />
               <p id="concepto-count" className="donaciones-char-count">
                 {concepto.length}/500
               </p>
             </div>
 
-            {errorForm && (
+            {fieldErrors.form && (
               <div className="estado-msg estado-error" role="alert">
-                {errorForm}
+                {fieldErrors.form}
               </div>
             )}
-            {error && !errorForm && (
+            {error && !fieldErrors.form && (
               <div className="estado-msg estado-error" role="alert">
                 {error}
               </div>
@@ -268,28 +363,36 @@ export default function Donaciones() {
               </div>
             )}
 
-            <button type="submit" className="btnPrimary" disabled={guardando || loading}>
+            <button type="submit" className="btnPrimary" disabled={guardando}>
               {guardando ? "Registrando..." : "Registrar donación"}
             </button>
           </form>
         </section>
 
-        <section
-          className="recibos-section recibos-fade-panel"
-          aria-labelledby="donaciones-historial-title"
-        >
+        <section className="recibos-section" aria-labelledby="donaciones-historial-title">
           <div className="section-title-row">
             <div>
               <h2 id="donaciones-historial-title" className="section-title">
                 Movimientos recientes
               </h2>
-              <p className="section-sub">Abonos y egresos del fondo global.</p>
+              <p className="section-sub">
+                Abonos y egresos del fondo global
+                {!loading && movimientos.length > 0 && (
+                  <>
+                    {" "}
+                    · {stats.abonos} {stats.abonos === 1 ? "abono" : "abonos"} · {stats.egresos}{" "}
+                    {stats.egresos === 1 ? "egreso" : "egresos"}
+                  </>
+                )}
+                .
+              </p>
             </div>
             <button
               type="button"
               className="btnSecondary"
               onClick={cargarHistorial}
               disabled={cargandoHistorial || loading}
+              aria-busy={cargandoHistorial}
             >
               <RefreshCw
                 size={15}
@@ -328,41 +431,34 @@ export default function Donaciones() {
                     </tr>
                   </thead>
                   <tbody>
-                    {movimientos.map((m, index) => (
-                      <tr
-                        key={m.id_movimiento}
-                        className="recibo-row recibos-fade-up"
-                        style={{ animationDelay: `${index * 0.05}s` }}
-                      >
-                        <td className="text-muted">{m.fecha}</td>
-                        <td>
-                          <span
-                            className={`badge ${
-                              m.tipo_movimiento === "abono"
-                                ? "badge-donacion"
-                                : "badge-egreso"
-                            }`}
-                          >
-                            {m.tipo_movimiento === "abono" ? "Abono" : "Egreso"}
-                          </span>
-                        </td>
-                        <td>
-                          {m.origen_tipo
-                            ? `${m.origen_tipo === "marca" ? "Marca" : "Familia"}: ${m.origen_nombre}`
-                            : "—"}
-                        </td>
-                        <td className="donaciones-col-concepto" title={m.concepto || m.motivo || ""}>
-                          {m.concepto || m.motivo || "—"}
-                        </td>
-                        <td
-                          className={`text-right donaciones-monto--${m.tipo_movimiento}`}
-                        >
-                          {m.tipo_movimiento === "egreso" ? "− " : "+ "}
-                          {fmt(m.monto)}
-                        </td>
-                        <td className="text-right">{fmt(m.saldo_nuevo)}</td>
-                      </tr>
-                    ))}
+                    {movimientos.map((m) => {
+                      const conceptoTexto = formatConcepto(m);
+                      return (
+                        <tr key={m.id_movimiento} className="recibo-row">
+                          <td className="text-muted">{m.fecha}</td>
+                          <td>
+                            <span
+                              className={`badge ${
+                                m.tipo_movimiento === "abono" ? "badge-donacion" : "badge-egreso"
+                              }`}
+                            >
+                              {m.tipo_movimiento === "abono" ? "Abono" : "Egreso"}
+                            </span>
+                          </td>
+                          <td>{formatOrigen(m)}</td>
+                          <td className="donaciones-col-concepto">
+                            <span className="donaciones-concepto-text" title={conceptoTexto}>
+                              {conceptoTexto}
+                            </span>
+                          </td>
+                          <td className={`text-right donaciones-monto--${m.tipo_movimiento}`}>
+                            {m.tipo_movimiento === "egreso" ? "− " : "+ "}
+                            {fmt(m.monto)}
+                          </td>
+                          <td className="text-right">{fmt(m.saldo_nuevo)}</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

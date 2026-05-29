@@ -17,6 +17,8 @@ export interface MovimientoFondoDonacion {
   origen_nombre: string | null;
   concepto: string | null;
   id_servicio_otorgado: number | null;
+  folio_servicio: number | null;
+  servicio_nombre: string | null;
   id_usuario: number | null;
   fecha: string;
   motivo: string | null;
