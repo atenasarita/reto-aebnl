@@ -1,40 +1,39 @@
-import { useMemo, useState, useRef, useId } from 'react'
+import { useMemo, useState, useRef, useId, useEffect } from 'react'
 import ServiciosNuevoServicioModal from './Serviciosnuevoserviciomodal'
 import ServiciosTabla from '../../components/layout/registroServicios/ServiciosTabla'
 import ServiciosDetalleModal from '../../components/layout/registroServicios/Serviciosdetallemodal'
 import ServiciosBeneficiario from '../../components/layout/registroServicios/ServiciosBeneficiario'
 import { useNavigate } from 'react-router-dom'
-
-
 import SearchBar from '../../components/ui/SearchBar'
 import Dropdown from '../../components/ui/Dropdown'
 import { FiSearch } from 'react-icons/fi'
-
 import '../styles/Servicios.css'
-
 import useHistorialServicios from '../../hooks/useHistorialServicios'
-import useServicios from "../../hooks/useServicios.js";
-
+import useServicios from '../../hooks/useServicios.js'
 
 export default function Servicios() {
-  const { historial, loading, error, refetch } = useHistorialServicios(50)
-  const { tipos } = useServicios() 
-  const [consulta, setConsulta]               = useState('')
+  const { servicios: historial, hasMore, loading, error, loadMore, refetch } = useHistorialServicios()
+  const { tipos } = useServicios()
+
+  const sentinelRef        = useRef(null)
+  const tabHistorialRef    = useRef(null)
+  const tabBeneficiarioRef = useRef(null)
+
+  const [consulta,        setConsulta]        = useState('')
   const [categoriaFiltro, setCategoriaFiltro] = useState('')
-  const [modalServicio, setModalServicio]     = useState(false)
-  const [detalleItem, setDetalleItem]         = useState(null)
-  const [vistaActiva, setVistaActiva]         = useState('historial')
+  const [modalServicio,   setModalServicio]   = useState(false)
+  const [detalleItem,     setDetalleItem]     = useState(null)
+  const [vistaActiva,     setVistaActiva]     = useState('historial')
 
   const navigate = useNavigate()
 
-  const tabsHintId       = useId()
-  const tabHistorialId   = useId()
-  const tabBeneficiarioId = useId()
-  const panelHistorialId  = useId()
+  const tabsHintId          = useId()
+  const tabHistorialId      = useId()
+  const tabBeneficiarioId   = useId()
+  const panelHistorialId    = useId()
   const panelBeneficiarioId = useId()
-  const tabHistorialRef   = useRef(null)
-  const tabBeneficiarioRef = useRef(null)
 
+  // Categorías desde el hook
   const todasCategorias = useMemo(() => {
     const desdeTipos = [...new Set(tipos.map((t) => t.categoria).filter(Boolean))]
     return desdeTipos.length > 0 ? desdeTipos : [
@@ -43,9 +42,10 @@ export default function Servicios() {
     ]
   }, [tipos])
 
+  // Filtrado local sobre los registros ya cargados
   const filtrados = useMemo(() => {
     const q = consulta.toLowerCase()
-    return historial.filter((s) => {
+    return (historial ?? []).filter((s) => {
       const matchCat   = !categoriaFiltro || s.categoria === categoriaFiltro
       const matchTexto = !q
         || s.nombre.toLowerCase().includes(q)
@@ -53,6 +53,20 @@ export default function Servicios() {
       return matchCat && matchTexto
     })
   }, [historial, consulta, categoriaFiltro])
+
+  // Infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          loadMore()
+        }
+      },
+      { threshold: 0.1 }
+    )
+    if (sentinelRef.current) observer.observe(sentinelRef.current)
+    return () => observer.disconnect()
+  }, [hasMore, loading, loadMore])
 
   const onTabsKeyDown = (e) => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return
@@ -100,6 +114,7 @@ export default function Servicios() {
         </div>
       </header>
 
+      {/* Tabs */}
       <div>
         <p id={tabsHintId} className="sr-only">
           Usa las flechas izquierda y derecha para cambiar entre pestañas.
@@ -151,7 +166,9 @@ export default function Servicios() {
             <div>
               <h2 className="section-title">Historial general</h2>
               <p className="section-sub">
-                {loading ? 'Cargando…' : `${historial.length} servicios registrados`}
+                {loading && historial.length === 0
+                  ? 'Cargando…'
+                  : `${historial.length} servicios registrados`}
               </p>
             </div>
             <div className="servicios-barra-acciones">
@@ -173,7 +190,7 @@ export default function Servicios() {
           </div>
 
           <div className="recibos-card">
-           <ServiciosTabla
+            <ServiciosTabla
               filas={filtrados}
               loading={loading}
               error={error}
@@ -186,6 +203,18 @@ export default function Servicios() {
               </p>
             )}
           </div>
+
+          {/* Sentinel — trigger del infinite scroll */}
+          <div ref={sentinelRef} style={{ height: '1px' }} />
+
+          {loading && historial.length > 0 && (
+            <p style={{ textAlign: 'center', padding: '1rem' }}>Cargando más…</p>
+          )}
+          {!hasMore && historial.length > 0 && (
+            <p style={{ textAlign: 'center', padding: '1rem', color: 'gray' }}>
+              Todos los registros cargados.
+            </p>
+          )}
         </section>
       )}
 
@@ -216,7 +245,7 @@ export default function Servicios() {
         onClose={() => setModalServicio(false)}
         onExito={refetch}
         serviciosExistentes={historial}
-        categorias={todasCategorias}          // 👈 pasa las categorías directo
+        categorias={todasCategorias}
       />
 
       <ServiciosDetalleModal

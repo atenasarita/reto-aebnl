@@ -2,17 +2,6 @@ import { useEffect, useState, useRef } from 'react'
 import InventarioModalShell from '../../components/layout/inventario/InventarioModalShell/InventarioModalShell'
 import '../styles/Servicios.css'
 
-const CATEGORIAS_DEFAULT = [
-  'Consultas',
-  'Estudios',
-  'Laboratorio',
-  'Procedimiento',
-  'Rehabilitación',
-  'Terapia',
-  'Material1',
-  'Material3',
-]
-
 const initialForm = {
   nombre: '',
   precio: '',
@@ -46,7 +35,7 @@ export default function ServiciosNuevoServicioModal({
   onClose,
   onExito,
   serviciosExistentes = [],
-  categoriasExtras = [],
+  categorias = [],        
   onNuevaCategoria,
 }) {
   const [form, setForm] = useState(initialForm)
@@ -62,8 +51,7 @@ export default function ServiciosNuevoServicioModal({
   const nuevaCatRef = useRef(null)
 
   const todasCategorias = [
-    ...CATEGORIAS_DEFAULT,
-    ...categoriasExtras,
+    ...categorias,           
     ...categoriasCustom,
   ]
 
