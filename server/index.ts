@@ -12,6 +12,7 @@ import recibosRoutes from './src/routes/recibos.routes';
 import beneficiariosRoutes from "./src/routes/beneficiarios.routes";
 import inventarioRoutes from "./src/routes/inventario.routes";
 import serviciosRoutes from "./src/routes/servicios.routes";
+import fondoDonacionesRoutes from "./src/routes/fondoDonaciones.routes";
 import { errorMiddleware } from './src/middlewares/error.middleware';
 import dashboardRoutes from "./src/routes/dashboard.routes";
 import reportesRoutes from "./src/routes/reportes.routes";
@@ -49,6 +50,7 @@ const PORT = Number(process.env.PORT) || 10000;
 app.use(cors({
   origin: [
     'http://localhost:5173',
+    'http://localhost:5174',
     'https://aebnl.netlify.app'
   ],
   credentials: true
@@ -68,7 +70,8 @@ app.use('/api/citas', citasRoutes);
 app.use("/api", catalogosRouter);
 app.use('/api', dashboardRoutes);
 app.use('/api/reportes', reportesRoutes);
-app.use('/api', serviciosRoutes)
+app.use('/api', serviciosRoutes);
+app.use('/api/fondo_donaciones', fondoDonacionesRoutes);
 app.use('/api', especialistasRoutes);
 
 app.use(errorMiddleware);
