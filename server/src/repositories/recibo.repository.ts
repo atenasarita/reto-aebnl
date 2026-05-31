@@ -48,6 +48,14 @@ const SQL_SERVICIOS_POR_MES = `
   ORDER BY so.FECHA ASC, so.HORA ASC
 `;
 
+// Recibos por rango de fechas
+const SQL_SERVICIOS_POR_RANGO = `
+  SELECT ${SELECT_COLS}
+  ${FROM_JOINS}
+  WHERE TRUNC(so.FECHA) BETWEEN TO_DATE(:desde, 'YYYY-MM-DD') AND TO_DATE(:hasta, 'YYYY-MM-DD')
+  ORDER BY so.HORA ASC
+`;
+
 // Buscar servicio por ID
 const SQL_SERVICIO_POR_ID = `
   SELECT ${SELECT_COLS}
@@ -149,6 +157,11 @@ export class ReciboRepository implements IReciboRepository {
   /**Recibos del mes */
   async listarPorMes(fecha: string): Promise<ReciboCompleto[]> {
     return ejecutarConsulta(SQL_SERVICIOS_POR_MES, { fecha });
+  }
+
+  /** Recibos por rango de fechas */
+  async listarRecibosRango(desde: string, hasta: string): Promise<ReciboCompleto[]> {
+    return ejecutarConsulta(SQL_SERVICIOS_POR_RANGO, { desde, hasta });
   }
 
   /** Recibo individual por ID de servicio otorgado */

@@ -42,8 +42,11 @@ function BeneficiarioModal({
         )}
 
         {activeTab === 'historial_padres' && (
-          <HistorialPadres beneficiario={beneficiario} />
-        )}
+  <HistorialPadres
+    beneficiario={beneficiario}
+    onUpdated={onUpdated}
+  />
+)}
       </div>
     </div>
   );

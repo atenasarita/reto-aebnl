@@ -18,9 +18,9 @@ import useServicios from "../../hooks/useServicios";
 import useRegistrarServicio from "../../hooks/useRegistrarServicios";
 import useFondoDonaciones from "../../hooks/useFondoDonaciones";
 
-import StepBusqueda from "../../components/layout/registroServicios/StepBusqueda";
-import StepDetalles from "../../components/layout/registroServicios/StepDetalles";
-import StepInsumos from "../../components/layout/registroServicios/StepInsumos";
+import StepBusqueda from "../../components/layout/registroServicios/StepBusqueda.jsx";
+import StepDetalles from "../../components/layout/registroServicios/StepDetalles.jsx";
+import StepInsumos from "../../components/layout/registroServicios/StepInsumos.jsx";
 import StepFinanzas from "../../components/layout/registroServicios/StepFinanzas.jsx";
 
 const PASOS = [

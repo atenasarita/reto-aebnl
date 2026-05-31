@@ -32,6 +32,10 @@ export class ServiciosController {
     return this.repository.getTiposServicio();
   }
 
+  async getFechasUltimosEstudios(id_beneficiario: number){
+    return this.repository.getFechasUltimosEstudios(id_beneficiario);
+  }
+
   async registrarServicio(input: RegistrarServicioInput) {
     return this.repository.registrarServicio(input);
   }

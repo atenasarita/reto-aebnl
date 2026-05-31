@@ -38,12 +38,17 @@ export const estadosMexicoSchema = z.enum([
 	'Zacatecas',
 ]);
 
+const dateOnlySchema = z
+  .string()
+  .trim()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Fecha inválida');
+
 export const createIdentificadoresSchema = z.object({
 	CURP: z.string().trim().min(18, 'CURP es requerido').max(20),
 	nombres: z.string().trim().min(1, 'nombres es requerido').max(40),
 	apellido_paterno: z.string().trim().min(1, 'apellido_paterno es requerido').max(20),
 	apellido_materno: z.string().trim().min(1, 'apellido_materno es requerido').max(20),
-	fecha_nacimiento: z.coerce.date(),
+	fecha_nacimiento: dateOnlySchema,
 	estado_nacimiento: estadosMexicoSchema,
 	fotografia: z.string().trim().max(500).optional(),
 	telefono: z.string().trim().max(10).optional(),
@@ -81,7 +86,7 @@ export const createDireccionSchema = z.object({
 });
 
 export const createBeneficiarioSchema = z.object({
-	fecha_ingreso: z.coerce.date(),
+	fecha_ingreso: dateOnlySchema,
 	genero: z.enum(['masculino', 'femenino', 'otro']),
 	tipo_espinas: z.array(z.number().int().positive()).min(1, 'tipo_espinas debe tener al menos un id'),
 	folio: z.string().trim().max(11).optional(),

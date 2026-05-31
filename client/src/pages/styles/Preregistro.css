@@ -839,3 +839,51 @@
   }
 }
 
+
+.preregistro-assoc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.preregistro-login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  height: 44px;
+  padding: 0 18px;
+  background: #ffffff;
+  color: #1e3a8a;
+  border: 1.5px solid #dbe4f0;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.18s ease;
+}
+
+.preregistro-login-btn:hover {
+  background: #f8fbff;
+  border-color: #bfd0ea;
+  color: #17327a;
+}
+
+.preregistro-login-btn:focus-visible {
+  outline: 2px solid #1e3a8a;
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .preregistro-assoc-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .preregistro-login-btn {
+    width: 100%;
+    max-width: 220px;
+  }
+}

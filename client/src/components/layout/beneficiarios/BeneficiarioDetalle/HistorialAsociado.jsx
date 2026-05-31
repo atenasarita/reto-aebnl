@@ -1,4 +1,6 @@
 import styles from './BeneficiarioDetalle.module.css';
+import { useEffect, useState } from 'react';
+import { API_URL } from '../../../../utils/config';
 
 function formatDate(dateStr) {
   if (!dateStr) return '—';
@@ -12,6 +14,8 @@ function booleanText(value) {
 }
 
 function HistorialAsociado({ beneficiario }) {
+  const [ultimosEstudios, setUltimosEstudios] = useState(null);
+  const [loadingEstudios, setLoadingEstudios] = useState(false);
   const { 
     tipo_espina = [],
     identificadores = {},
@@ -20,6 +24,47 @@ function HistorialAsociado({ beneficiario }) {
   const { estado_nacimiento } = identificadores;
   const { tipo_sanguineo, valvula, hospital} = datos_medicos;
 
+  const idBeneficiario = 
+    beneficiario?.id_beneficiario ??
+    beneficiario?.idBeneficiario ??
+    beneficiario?.ID_BENEFICIARIO;
+
+  useEffect(() => {
+    if (!idBeneficiario) return;
+
+    const fetchUltimosEstudios = async () => {
+      try {
+        setLoadingEstudios(true);
+
+        const token = localStorage.getItem('token');
+
+        const response = await fetch(
+          `${API_URL}/api/registro_servicios/ultimos-estudios/${idBeneficiario}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.ok) {
+          throw new Error(result.message || 'Error obteniendo últimos estudios');
+        }
+
+        setUltimosEstudios(result.data);
+      } catch (error) {
+        console.error('Error cargando últimos estudios:', error);
+        setUltimosEstudios(null);
+      } finally {
+        setLoadingEstudios(false);
+      }
+    };
+
+    fetchUltimosEstudios();
+  }, [idBeneficiario]);
+  
   const padecimiento =
     tipo_espina.length > 0
       ? tipo_espina.map((e) => e.nombre).join(' · ')
@@ -31,6 +76,9 @@ function HistorialAsociado({ beneficiario }) {
       : valvula === false || valvula === 0 || valvula === '0'
       ? 'No'
       : '—';
+
+  const [controlUrologico, setControlUrologico] = useState(false);
+  const [lugarControlUrologico, setLugarControlUrologico] = useState(''); 
 
   return (
 
@@ -73,71 +121,97 @@ function HistorialAsociado({ beneficiario }) {
           <div className={styles.col}>
             <p className={styles.sectionLabel}>Fecha de últimos estudios</p>
 
-            <div className={styles.row}>
-              <div className={styles.field}>
-                <span className={styles.fieldLabel}>Fecha</span>
-                <span className={styles.fieldValue}>
-                  <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
-                </span>
-              </div>
-              <div className={styles.field}>
-                <span className={styles.fieldLabel}>Control urológico</span>
-                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
-              </div>
-            </div>
+            {loadingEstudios && (
+              <span className={`${styles.fieldValue} ${styles.placeholder}`}>
+                Cargando...
+              </span>
+            )}
 
             <div className={styles.row}>
-              <div className={`${styles.field} ${styles.full}`}>
+              <div className={styles.field}>
+                <span className={styles.fieldLabel}>Control urológico</span>
+                
+                <div className={styles.radioGroup}>
+                  <label>
+                    <input 
+                      type="radio"
+                      name={`control-urologico-${idBeneficiario}`}
+                      checked={controlUrologico === true}
+                      onChange={() => setControlUrologico(true)}
+                    />
+                    Si
+                  </label>
+
+                  <label>
+                    <input
+                      type="radio"
+                      name={`control-urologico-${idBeneficiario}`}
+                      checked={controlUrologico === false}
+                      onChange={() => setControlUrologico(false)}
+                    />
+                    No
+                  </label>
+                </div>
+              </div>
+           
+              <div className={`${styles.field}`}>
                 <span className={styles.fieldLabel}>Lugar control urológico</span>
-                {/* <span className={styles.fieldValue}>{lugar_control_urologico ?? '—'}</span> */}
-                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
+                <span className={styles.fieldValue}>{hospital ?? '—'}</span>
               </div>
             </div>
+        
 
             <div className={styles.row}>
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>Gral. Orina</span>
-                {/* <span className={styles.fieldValue}>{gral_orina ?? '—'}</span> */}
-                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
+                <span className={styles.fieldValue}>
+                  {formatDate(ultimosEstudios?.gralOrina)}
+                </span>
               </div>
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>Urocultivo</span>
-                {/* <span className={styles.fieldValue}>{urocultivo ?? '—'}</span> */}
-                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
+                <span className={styles.fieldValue}>
+                  {formatDate(ultimosEstudios?.urocultivo)}
+                </span>
               </div>
             </div>
 
             <div className={styles.row}>
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>Eco Renal</span>
-                {/* <span className={styles.fieldValue}>{eco_renal ?? '—'}</span> */}
-                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
+                <span className={styles.fieldValue}>
+                  {formatDate(ultimosEstudios?.ecoRenal)}
+                </span>
               </div>
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>UroTAC</span>
-                {/* <span className={styles.fieldValue}>{uro_tac ?? '—'}</span> */}
-                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
+                <span className={styles.fieldValue}>
+                  {formatDate(ultimosEstudios?.uroTac)}
+                </span>
               </div>
             </div>
 
             <div className={styles.row}>
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>Est. Urodinámico</span>
-                {/* <span className={styles.fieldValue}>{estudio_urodinamico ?? '—'}</span> */}
-                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
+                <span className={styles.fieldValue}>
+                  {formatDate(ultimosEstudios?.estUrodinamico)}
+                </span>
               </div>
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>Últ. Est. Uro</span>
-                {/* <span className={styles.fieldValue}>{ultimo_estudio_uro ?? '—'}</span> */}
-                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
+                <span className={styles.fieldValue}>
+                  {formatDate(ultimosEstudios?.estUrodinamico)}
+                </span>
               </div>
             </div>
 
             <div className={styles.row}>
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>TAC Cerebro</span>
-                {/* <span className={styles.fieldValue}>{tac_cerebro ?? '—'}</span> */}
-                <span className={`${styles.fieldValue} ${styles.placeholder}`}>—</span>
+                <span className={styles.fieldValue}>
+                  {formatDate(ultimosEstudios?.tacCerebro)}
+                </span>
               </div>
               <div className={styles.field}>
                 <span className={styles.fieldLabel}>Otros</span>

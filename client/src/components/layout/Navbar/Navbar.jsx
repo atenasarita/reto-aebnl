@@ -11,7 +11,7 @@ import { getValidToken, handleUnauthorizedResponse, logout } from '../../../util
 const NAV_LINKS = [
   { label: "Inicio", to: "/dashboard" },
   { label: "Beneficiarios", to: "/beneficiarios" },
-  { label: "Servicios", to: "/registro_servicios" },
+  { label: "Servicios", to: "/servicios" },
   { label: "Donaciones", to: "/donaciones" },
   { label: "Inventario", to: "/inventario" },
   { label: "Citas", to: "/citas" },
