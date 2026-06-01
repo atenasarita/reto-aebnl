@@ -1,6 +1,6 @@
 **/.DS_Store
 /graphify-out
 /.cursor
-
+/node_modules
 server/INSERT INTO Citas (.sql
 Pruebas/tests/test-2.spec.ts
