@@ -1,14 +1,22 @@
 import { useMemo, useState, useRef, useId, useEffect } from 'react'
-import ServiciosNuevoServicioModal from './Serviciosnuevoserviciomodal.jsx'
-import ServiciosTabla from '../../components/layout/registroServicios/ServiciosTabla'
-import ServiciosDetalleModal from '../../components/layout/registroServicios/Serviciosdetallemodal'
-import ServiciosBeneficiario from '../../components/layout/registroServicios/ServiciosBeneficiario'
-import ServiciosCatalogo from '../../components/layout/registroServicios/ServiciosCatalogo'
 import { useNavigate } from 'react-router-dom'
+
+
+import ServiciosNuevoServicioModal from '../../components/layout/servicios/Navegacion/Serviciosnuevoserviciomodal.jsx'
+import ServiciosTabla from '../../components/layout/servicios/Navegacion/ServiciosTabla.jsx'
+
+
+import ServiciosDetalleModal from '../../components/layout/servicios/Navegacion/Serviciosdetallemodal.jsx'
+import ServiciosBeneficiario from '../../components/layout/servicios/Navegacion/ServiciosBeneficiario.jsx'
+import ServiciosCatalogo from '../../components/layout/servicios/Navegacion/ServiciosCatalogo.jsx'
+
 import SearchBar from '../../components/ui/SearchBar'
 import Dropdown from '../../components/ui/Dropdown'
-import { FiSearch } from 'react-icons/fi'
+
 import '../styles/Servicios.css'
+
+import { FiSearch } from 'react-icons/fi'
+
 import useHistorialServicios from '../../hooks/useHistorialServicios'
 import useServicios from '../../hooks/useServicios.js'
 

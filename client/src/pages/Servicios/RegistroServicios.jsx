@@ -9,7 +9,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-import "../styles/BusquedaBeneficiarioVista.css";
+import "../styles/RegistroServicio.css";
 
 import { useProductos } from "../../hooks/useProductos.js";
 import useBeneficiarios from "../../hooks/useBeneficiarios.js"
@@ -17,10 +17,10 @@ import useAgendaHoy from "../../hooks/useCitasHoy.js";
 import useServicios from "../../hooks/useServicios.js";
 import useRegistrarServicio from "../../hooks/useRegistrarServicios.js";
 
-import StepBusqueda from "../../components/layout/registroServicios/StepBusqueda.jsx";
-import StepDetalles from "../../components/layout/registroServicios/StepDetalles.jsx";
-import StepInsumos from "../../components/layout/registroServicios/StepInsumos.jsx";
-import StepFinanzas from "../../components/layout/registroServicios/StepFinanzas.jsx";
+import StepBusqueda from "../../components/layout/servicios/Registro/StepBusqueda.jsx";
+import StepDetalles from "../../components/layout/servicios/Registro/StepDetalles.jsx";
+import StepInsumos from "../../components/layout/servicios/Registro/StepInsumos.jsx";
+import StepFinanzas from "../../components/layout/servicios/Registro/StepFinanzas.jsx";
 
 const PASOS = [
   { id: 1, tab: "Búsqueda", Icon: Search },

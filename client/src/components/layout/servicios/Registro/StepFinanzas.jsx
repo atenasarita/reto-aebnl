@@ -1,6 +1,6 @@
-import Dropdown from '../../ui/Dropdown'
-import SearchBar from '../../ui/SearchBar' 
-import "../../../pages/styles/BusquedaBeneficiarioVista.css"
+import Dropdown from '../../../ui/Dropdown'
+import SearchBar from '../../../ui/SearchBar' 
+import "./RegistroSteps.css";
 
 const METODOS_PAGO = [
   { label: "Efectivo", value: "efectivo" },

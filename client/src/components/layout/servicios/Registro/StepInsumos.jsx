@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 
-import { useProductos } from "../../../hooks/useProductos";
+import { useProductos } from "../../../../hooks/useProductos";
 
-import Dropdown from "../../ui/Dropdown";
-import Button from "../../ui/Button";
+import Dropdown from "../../../ui/Dropdown";
+import Button from "../../../ui/Button";
 
-import "../../../pages/styles/BusquedaBeneficiarioVista.css";
+import "./RegistroSteps.css";
 
 export default function StepInsumos({ insumos, setInsumos }) {
   const { productos, loading, error } = useProductos();

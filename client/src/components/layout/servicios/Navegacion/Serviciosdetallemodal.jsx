@@ -1,4 +1,4 @@
-import InventarioModalShell from '../inventario/InventarioModalShell/InventarioModalShell'
+import InventarioModalShell from '../../inventario/InventarioModalShell/InventarioModalShell.jsx'
 
 
 

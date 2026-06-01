@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from 'react'
-import InventarioModalShell from '../../components/layout/inventario/InventarioModalShell/InventarioModalShell'
-import '../styles/Servicios.css'
+import InventarioModalShell from '../../inventario/InventarioModalShell/InventarioModalShell.jsx'
 
-import { crearServicioCatalogo } from '../../services/serviciosService'
+import './ServiciosComponents.css'
+
+import { crearServicioCatalogo } from '../../../../services/serviciosService'
 
 
 const initialForm = {
