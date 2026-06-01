@@ -2,6 +2,9 @@ import { useEffect, useState, useRef } from 'react'
 import InventarioModalShell from '../../components/layout/inventario/InventarioModalShell/InventarioModalShell'
 import '../styles/Servicios.css'
 
+import { crearServicioCatalogo } from '../../services/serviciosService'
+
+
 const initialForm = {
   nombre: '',
   precio: '',
@@ -133,28 +136,25 @@ export default function ServiciosNuevoServicioModal({
     e.preventDefault()
     setError(null)
 
-    if (!form.nombre.trim()) {
-      setError('Ingresa el nombre del servicio.')
-      return
-    }
-    if (!categoriaSeleccionada) {
-      setError('Selecciona una categoría.')
-      return
-    }
+    if (!form.nombre.trim()) { setError('Ingresa el nombre del servicio.'); return }
+    if (!categoriaSeleccionada) { setError('Selecciona una categoría.'); return }
     const precio = Number(form.precio)
     if (form.precio === '' || !Number.isFinite(precio) || precio < 0) {
-      setError('Indica un precio válido (número mayor o igual a 0).')
+      setError('Indica un precio válido.')
       return
     }
 
     setSubmitting(true)
     try {
-      // TODO: reemplaza con tu llamada al servicio real
-      // await createServicio({ nombre: form.nombre.trim(), categoria: categoriaSeleccionada, precio })
+      await crearServicioCatalogo({
+        nombre:    form.nombre.trim(),
+        categoria: categoriaSeleccionada,
+        precio,
+      })
       onExito?.()
       onClose()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al guardar')
+      setError(err.response?.data?.message ?? err.message ?? 'Error al guardar')
     } finally {
       setSubmitting(false)
     }

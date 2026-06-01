@@ -81,4 +81,41 @@ export class ServiciosHandler {
       res.status(500).json({ ok: false, message: 'Error obteniendo historial de servicios' });
     }
   };
+
+  getCategorias = async (_req: Request, res: Response) => {
+    try {
+      const data = await this.serviciosController.getCategorias();
+      res.status(200).json({ ok: true, data });
+    } catch (error) {
+      console.error('Error en getCategorias:', error);
+      res.status(500).json({ ok: false, message: 'Error obteniendo categorías' });
+    }
+  };
+  
+  crearServicioCatalogo = async (req: Request, res: Response) => {
+    try {
+      const { nombre, categoria, precio } = req.body;
+  
+      if (!nombre?.trim()) {
+        return res.status(400).json({ ok: false, message: 'El nombre es requerido' });
+      }
+      if (!categoria?.trim()) {
+        return res.status(400).json({ ok: false, message: 'La categoría es requerida' });
+      }
+      if (precio == null || isNaN(Number(precio)) || Number(precio) < 0) {
+        return res.status(400).json({ ok: false, message: 'El precio debe ser un número mayor o igual a 0' });
+      }
+  
+      const data = await this.serviciosController.crearServicioCatalogo({
+        nombre:    nombre.trim(),
+        categoria: categoria.trim(),
+        precio:    Number(precio),
+      });
+  
+      return res.status(201).json({ ok: true, data });
+    } catch (error) {
+      console.error('Error en crearServicioCatalogo:', error);
+      return res.status(500).json({ ok: false, message: 'Error al crear servicio en catálogo' });
+    }
+  };
 }

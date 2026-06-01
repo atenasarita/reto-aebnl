@@ -42,4 +42,12 @@ export class ServiciosController {
   async getHistorial(limit: number, page: number) {
     return this.repository.getHistorial(limit, page);
   }
+
+  async getCategorias() {
+    return this.repository.getCategorias();
+  }
+  
+  async crearServicioCatalogo(input: { nombre: string; categoria: string; precio: number }) {
+    return this.repository.crearServicioCatalogo(input);
+  }
 }

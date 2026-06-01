@@ -3,6 +3,7 @@ import ServiciosNuevoServicioModal from './Serviciosnuevoserviciomodal.jsx'
 import ServiciosTabla from '../../components/layout/registroServicios/ServiciosTabla'
 import ServiciosDetalleModal from '../../components/layout/registroServicios/Serviciosdetallemodal'
 import ServiciosBeneficiario from '../../components/layout/registroServicios/ServiciosBeneficiario'
+import ServiciosCatalogo from '../../components/layout/registroServicios/ServiciosCatalogo'
 import { useNavigate } from 'react-router-dom'
 import SearchBar from '../../components/ui/SearchBar'
 import Dropdown from '../../components/ui/Dropdown'
@@ -10,10 +11,6 @@ import { FiSearch } from 'react-icons/fi'
 import '../styles/Servicios.css'
 import useHistorialServicios from '../../hooks/useHistorialServicios'
 import useServicios from '../../hooks/useServicios.js'
-
-
-import ServiciosCatalogo from '../../components/layout/registroServicios/ServiciosCatalogo'
-
 
 function fmt(num) {
   if (num == null) return null
@@ -78,7 +75,6 @@ export default function Servicios() {
       .map(mapFila)
   }, [historial, consulta, categoriaFiltro])
 
-  // Infinite scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -90,7 +86,7 @@ export default function Servicios() {
     return () => observer.disconnect()
   }, [hasMore, loading, loadMore])
 
-  const TABS = ['historial', 'beneficiario', 'catalogo']
+  const TABS    = ['historial', 'beneficiario', 'catalogo']
   const tabRefs = { historial: tabHistorialRef, beneficiario: tabBeneficiarioRef, catalogo: tabCatalogoRef }
 
   const onTabsKeyDown = (e) => {
@@ -98,17 +94,17 @@ export default function Servicios() {
     e.preventDefault()
     const idx = TABS.indexOf(vistaActiva)
     let next
-    if (e.key === 'Home') next = TABS[0]
-    else if (e.key === 'End') next = TABS[TABS.length - 1]
+    if (e.key === 'Home')       next = TABS[0]
+    else if (e.key === 'End')   next = TABS[TABS.length - 1]
     else if (e.key === 'ArrowRight') next = TABS[(idx + 1) % TABS.length]
-    else next = TABS[(idx - 1 + TABS.length) % TABS.length]
+    else                        next = TABS[(idx - 1 + TABS.length) % TABS.length]
     setVistaActiva(next)
     tabRefs[next].current?.focus()
   }
 
   const handleExitoNuevoServicio = () => {
-    refetch()        // refresca historial
-    refetchTipos()   // refresca catálogo
+    refetch()       // refresca historial
+    refetchTipos()  // refresca catálogo
   }
 
   return (
@@ -133,15 +129,9 @@ export default function Servicios() {
         <p id={tabsHintId} className="sr-only">
           Usa las flechas izquierda y derecha para cambiar entre pestañas.
         </p>
-        <div
-          className="servicios-tabs"
-          role="tablist"
-          aria-describedby={tabsHintId}
-          onKeyDown={onTabsKeyDown}
-        >
+        <div className="servicios-tabs" role="tablist" aria-describedby={tabsHintId} onKeyDown={onTabsKeyDown}>
           <button
-            ref={tabHistorialRef}
-            id={tabHistorialId}
+            ref={tabHistorialRef} id={tabHistorialId}
             role="tab" type="button"
             aria-selected={vistaActiva === 'historial'}
             aria-controls={panelHistorialId}
@@ -152,8 +142,7 @@ export default function Servicios() {
             Historial general
           </button>
           <button
-            ref={tabBeneficiarioRef}
-            id={tabBeneficiarioId}
+            ref={tabBeneficiarioRef} id={tabBeneficiarioId}
             role="tab" type="button"
             aria-selected={vistaActiva === 'beneficiario'}
             aria-controls={panelBeneficiarioId}
@@ -164,8 +153,7 @@ export default function Servicios() {
             Por beneficiario
           </button>
           <button
-            ref={tabCatalogoRef}
-            id={tabCatalogoId}
+            ref={tabCatalogoRef} id={tabCatalogoId}
             role="tab" type="button"
             aria-selected={vistaActiva === 'catalogo'}
             aria-controls={panelCatalogoId}
@@ -268,7 +256,7 @@ export default function Servicios() {
         </section>
       )}
 
-      {/* Modales */}
+      {/* Modales — solo una instancia de cada uno */}
       <ServiciosNuevoServicioModal
         open={modalServicio}
         onClose={() => setModalServicio(false)}

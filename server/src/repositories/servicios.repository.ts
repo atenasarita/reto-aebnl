@@ -9,7 +9,9 @@ import {
   UPDATE_CANTIDAD_INVENTARIO,
   INSERT_MOVIMIENTO_INVENTARIO,
   SELECT_FECHAS_ULTIMOS_ESTUDIOS_BY_BENEFICIARIO,
-  SELECT_HISTORIAL_SERVICIOS
+  SELECT_HISTORIAL_SERVICIOS,
+  SELECT_CATEGORIAS_CATALOGO,
+  INSERT_CATALOGO_SERVICIO
 } from './servicios.queries';
 
 
@@ -77,6 +79,14 @@ type HistorialRow = {
 };
 
 type MetodoPagoServicioOracle = 'efectivo' | 'tarjeta' | 'donacion';
+
+type CategoriaRow = { CATEGORIA: string };
+ 
+type CrearServicioInput = {
+  nombre:    string;
+  categoria: string;
+  precio:    number;
+};
 
 function metodoPagoParaOracle(raw: string): MetodoPagoServicioOracle {
   const s = String(raw ?? '')
@@ -315,6 +325,46 @@ export class ServicioRepository {
         limit,
       };
 
+    } finally {
+      if (connection) await connection.close();
+    }
+  }
+
+  async getCategorias() {
+    let connection: oracledb.Connection | undefined;
+    try {
+      connection = await this.oracleConnection.getConnection();
+      const result = await connection.execute(
+        SELECT_CATEGORIAS_CATALOGO,
+        {},
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const rows = (result.rows ?? []) as CategoriaRow[];
+      return rows.map((r) => r.CATEGORIA);
+    } finally {
+      if (connection) await connection.close();
+    }
+  }
+  
+  async crearServicioCatalogo(input: CrearServicioInput) {
+    let connection: oracledb.Connection | undefined;
+    try {
+      connection = await this.oracleConnection.getConnection();
+      const result = await connection.execute(
+        INSERT_CATALOGO_SERVICIO,
+        {
+          nombre:               input.nombre.trim(),
+          categoria:            input.categoria.trim(),
+          precio:               input.precio,
+          id_catalogo_servicio: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
+        }
+      );
+      const outBinds = result.outBinds as { id_catalogo_servicio: number[] };
+      await connection.commit();
+      return { id: outBinds.id_catalogo_servicio[0] };
+    } catch (err) {
+      if (connection) await connection.rollback();
+      throw err;
     } finally {
       if (connection) await connection.close();
     }
