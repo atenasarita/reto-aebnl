@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import logo from "../../../assets/logo.png";
-import { Bell, LogOut } from "lucide-react";
+import { Bell, LogOut, Menu, X } from "lucide-react";
 
 import { API_URL } from '../../../utils/config';
 import { getValidToken, handleUnauthorizedResponse, logout } from '../../../utils/auth';
@@ -57,7 +57,8 @@ function Navbar({
   user = { name: "USUARIO DEMO", role: "Administrador", avatar: null },
 }) {
   const navigate = useNavigate();
-  const [active, setActive] = useState(activeLink);
+  const { pathname } = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [alertsLoading, setAlertsLoading] = useState(false);
   const [alertItems, setAlertItems] = useState([
@@ -87,8 +88,9 @@ function Navbar({
   const alertsRef = useRef(null);
 
   useEffect(() => {
-    setActive(activeLink);
-  }, [activeLink]);
+    setMenuOpen(false);
+    setAlertsOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -133,12 +135,6 @@ function Navbar({
           fetchJson(`${API_URL}/api/dashboard/preregistro-pendientes`, token),
         ]);
 
-        // console.log("RESULTADO MEMBRESIAS:", results[0]);
-
-        if (results[0].status === "fulfilled") {
-          console.log("PAYLOAD MEMBRESIAS:", results[0].value);
-        }
-
         const membresiasCount =
           results[0].status === "fulfilled" ? resolveCount(results[0].value) : 0;
 
@@ -171,7 +167,7 @@ function Navbar({
           },
           {
             key: "preregistros",
-            title: "Preregistros nuevos",
+            title: "Pre-registros nuevos",
             text:
               preregistrosCount > 0
                 ? `${preregistrosCount} preregistro(s) pendiente(s).`
@@ -194,44 +190,77 @@ function Navbar({
     return () => clearInterval(interval);
   }, []);
 
-  return (
-    <nav className={styles.navbar}>
-      <a className={styles.logo} href="/">
-        <img src={logo} alt="Espina Bífida logo" className={styles.logoIcon} />
-      </a>
+  const goTo = (to) => {
+    navigate(to);
+  };
 
-      <div className={styles.links}>
-        {visibleLinks.map((link) => (
-          <button
-            key={link.label}
-            type="button"
-            className={`${styles.link} ${active === link.label ? styles.linkActive : ""}`}
-            onClick={() => {
-              setActive(link.label);
-              navigate(link.to);
-            }}
-          >
-            {link.label}
-          </button>
-        ))}
+  const userInitial = String(user?.name || "?").charAt(0).toUpperCase();
+
+  return (
+    <nav
+      className={styles.navbar}
+      aria-label="Navegación principal"
+    >
+      <Link to="/dashboard" className={styles.brandMark} aria-label="Ir al inicio">
+        <img
+          src={logo}
+          alt="Asociación de Espina Bífida de Nuevo León"
+          className={styles.brandImage}
+          decoding="async"
+        />
+      </Link>
+
+      <button
+        type="button"
+        className={styles.menuToggle}
+        onClick={() => setMenuOpen((prev) => !prev)}
+        aria-expanded={menuOpen}
+        aria-controls="navbar-links"
+        aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+      >
+        {menuOpen ? <X size={22} /> : <Menu size={22} />}
+      </button>
+
+      <div
+        id="navbar-links"
+        className={`${styles.links} ${menuOpen ? styles.linksOpen : ""}`}
+      >
+        {visibleLinks.map((link) => {
+          const isActive = activeLink === link.label;
+          return (
+            <button
+              key={link.label}
+              type="button"
+              className={`${styles.link} ${isActive ? styles.linkActive : ""}`}
+              aria-current={isActive ? "page" : undefined}
+              onClick={() => goTo(link.to)}
+            >
+              {link.label}
+            </button>
+          );
+        })}
       </div>
 
       <div className={styles.right}>
         <div className={styles.alertWrapper} ref={alertsRef}>
           <button
-            className={styles.alertBtn}
+            className={styles.iconBtn}
             title="Alertas"
+            aria-expanded={alertsOpen}
+            aria-haspopup="true"
             onClick={() => setAlertsOpen((prev) => !prev)}
             type="button"
           >
-            <Bell size={20} />
+            <Bell size={20} aria-hidden />
             {totalAlerts > 0 && (
-              <span className={styles.alertBadge}>{totalAlerts}</span>
+              <span className={styles.alertBadge} aria-label={`${totalAlerts} alertas`}>
+                {totalAlerts > 99 ? "99+" : totalAlerts}
+              </span>
             )}
           </button>
 
           {alertsOpen && (
-            <div className={styles.alertDropdown}>
+            <div className={styles.alertDropdown} role="menu">
               <div className={styles.alertDropdownHeader}>Alertas</div>
 
               {alertsLoading ? (
@@ -241,6 +270,7 @@ function Navbar({
                   <button
                     key={item.key}
                     type="button"
+                    role="menuitem"
                     className={styles.alertItem}
                     onClick={() => {
                       setAlertsOpen(false);
@@ -266,14 +296,16 @@ function Navbar({
           )}
         </div>
 
+        <span className={styles.toolbarDivider} aria-hidden />
+
         <button
           type="button"
-          className={styles.logoutBtn}
+          className={`${styles.iconBtn} ${styles.logoutBtn}`}
           onClick={() => logout()}
           title="Cerrar sesión"
           aria-label="Cerrar sesión"
         >
-          <LogOut size={20} />
+          <LogOut size={20} aria-hidden />
         </button>
 
         <div className={styles.user}>
@@ -281,8 +313,8 @@ function Navbar({
             <div className={styles.userName}>{user.name}</div>
             <div className={styles.userRole}>{user.role}</div>
           </div>
-          <div className={styles.avatar}>
-            {user.avatar ? <img src={user.avatar} alt={user.name} /> : user.name.charAt(0)}
+          <div className={styles.avatar} aria-hidden>
+            {user.avatar ? <img src={user.avatar} alt="" /> : userInitial}
           </div>
         </div>
       </div>
