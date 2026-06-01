@@ -5,7 +5,7 @@ import {
   mapInventarioApiRowToTableRow,
   buildCategoriaFilterOptions,
   filterInventarioTableRows,
-} from '../inventarioUi.js';
+} from '../client/src/pages/inventario/inventarioUi.js';
 
 describe('inventarioUi', () => {
   describe('formatPrecioMXN', () => {

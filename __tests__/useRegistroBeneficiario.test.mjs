@@ -7,16 +7,16 @@ import React from 'react';
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
 
-jest.unstable_mockModule('../../services/beneficiariosService.js', () => ({
+jest.unstable_mockModule('../client/src/services/beneficiariosService.js', () => ({
   fetchSiguienteFolio: jest.fn(async () => 'FOLIO-001'),
   createBeneficiario: jest.fn(async (payload) => ({ id: 1, ...payload })),
 }));
 
-jest.unstable_mockModule('../../utils/config.js', () => ({
+jest.unstable_mockModule('../client/src/utils/config.js', () => ({
   API_URL: 'http://localhost:3000',
 }));
 
-const { useRegistroBeneficiario } = await import('../useRegistroBeneficiario.js');
+const { useRegistroBeneficiario } = await import('../client/src/hooks/useRegistroBeneficiario.js');
 
 let current;
 let container;

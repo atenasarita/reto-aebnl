@@ -1,10 +1,24 @@
 import { jest, describe, test, expect, beforeEach, afterEach } from '@jest/globals';
 
-jest.unstable_mockModule('../../utils/config.js', () => ({
+// Ensure a mocked localStorage exists before importing modules that may
+// read it at runtime — this prevents "No hay sesión activa" errors when
+// tests run together.
+global.localStorage = {
+  getItem: jest.fn().mockReturnValue('token-123'),
+};
+
+jest.unstable_mockModule('../client/src/utils/config.js', () => ({
   API_URL: 'http://localhost:3000',
 }));
 
-const reportesService = await import('../reportesService.js');
+// Mock auth utilities so getValidToken returns a usable value for tests
+jest.unstable_mockModule('../client/src/utils/auth.js', () => ({
+  getValidToken: () => 'token-123',
+  handleUnauthorizedResponse: () => false,
+  authFetch: async () => ({ ok: true, json: async () => ({}) }),
+}));
+
+const reportesService = await import('../client/src/services/reportesService.js');
 const {
   getReporteGeneral,
   getReporteMensual,

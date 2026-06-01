@@ -3,7 +3,7 @@ let validateStepFields;
 let validateStep;
 
 beforeAll(async () => {
-  const module = await import('../beneficiarioValidation.js');
+  const module = await import('../client/src/utils/beneficiarioValidation.js');
   validateField = module.validateField;
   validateStepFields = module.validateStepFields;
   validateStep = module.validateStep;
