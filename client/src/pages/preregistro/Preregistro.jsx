@@ -454,18 +454,15 @@ function MedicalAreasSection() {
 function AssociationPanel() {
   return (
     <aside className="preregistro-assoc-panel" aria-label="Sobre la asociación">
-      {/* Cabecera con logo + título */}
       <div className="preregistro-assoc-header">
-  <img
-    src={logo}
-    alt="Asociación de Espina Bífida de Nuevo León, A.B.P."
-    className="preregistro-assoc-logo"
-  />
-
-  <Link to="/login" className="preregistro-login-btn">
-    Regresar a Inicio de Sesión
-  </Link>
-</div>
+        <Link to="/" className="preregistro-assoc-logo-link" aria-label="Ir al inicio">
+          <img
+            src={logo}
+            alt=""
+            className="preregistro-assoc-logo"
+          />
+        </Link>
+      </div>
 
       <div className="preregistro-assoc-body">
       {/* Stats */}
@@ -539,6 +536,17 @@ function AssociationPanel() {
       </div>
       </div>
     </aside>
+  );
+}
+
+function FormToolbar() {
+  return (
+    <div className="preregistro-form-toolbar">
+      <Link to="/" className="preregistro-back-link">
+        <ArrowLeft size={16} aria-hidden />
+        Volver al inicio
+      </Link>
+    </div>
   );
 }
 
@@ -620,6 +628,7 @@ export default function Preregistro() {
         <AssociationPanel />
 
         <div className="preregistro-split-form">
+          <FormToolbar />
           <div className="preregistro-card">
             {!isDone && <StepIndicator currentStep={step} />}
 
