@@ -11,6 +11,8 @@ const METODOS_PAGO = [
 
 export default function StepFinanzas({
   total,
+  totalConDescuento,
+  saldo,
   metodoPago,
   setMetodoPago,
   montoPagado,
@@ -19,12 +21,10 @@ export default function StepFinanzas({
   setDescuento,
   yaAporto,
   setYaAporto,
-}) {
-  const totalNum = parseFloat(total) || 0;
-  const pagadoNum = parseFloat(montoPagado) || 0;
-  const descuentoNum = parseFloat(descuento) || 0;
-  const totalConDescuento = parseFloat(totalNum - descuentoNum);
-  const saldo = totalConDescuento - pagadoNum;
+}){
+  const subtotalNum = Number(total) || 0;
+  const descuentoNum = Number(descuento) || 0;
+  const pagadoNum = Number(montoPagado) || 0;
 
   const metodoOptions = [
     { label: "Seleccionar...", value: "" },
@@ -86,44 +86,63 @@ export default function StepFinanzas({
       
 
       {/* Resumen */}
-      <div className='finanzasResumen'>
-        <div className='finanzasResumenRow'>
-          <span>Subtotal</span>
-          <span>${totalNum.toFixed(2)}</span>
-        </div>
-        {descuentoNum > 0 && (
-          <div className='finanzasResumenRow finanzasDescuento'>
-            <span>Descuento</span>
-            <span>- ${descuentoNum.toFixed(2)}</span>
+        <div className='finanzasResumen'>
+
+          <div className='finanzasResumenRow'>
+            <span>Subtotal</span>
+            <span>${subtotalNum.toFixed(2)}</span>
           </div>
-        )}
-        <div className='finanzasResumenRow'>
-          <span>Total a pagar</span>
-          <span>${totalConDescuento.toFixed(2)}</span>
+
+          {descuentoNum > 0 && (
+            <div className='finanzasResumenRow finanzasDescuento'>
+              <span>Aporte de la Asociación</span>
+              <span>- ${descuentoNum.toFixed(2)}</span>
+            </div>
+          )}
+
+          <div className='finanzasResumenRow'>
+            <span>Total a pagar</span>
+            <span>${totalConDescuento.toFixed(2)}</span>
+          </div>
+
+          <div className='finanzasResumenRow'>
+            <span>Aportación familia</span>
+            <span>${pagadoNum.toFixed(2)}</span>
+          </div>
+
+          <div className='finanzasResumenRow'>
+            <span>Ya aportó</span>
+            <span
+              style={{
+                color: yaAporto ? '#166534' : '#dc2626',
+                fontWeight: 700,
+              }}
+            >
+              {yaAporto ? 'Sí' : 'No'}
+            </span>
+          </div>
+
+          <div
+            className={`finanzasResumenRow ${
+              saldo > 0
+                ? 'finanzasSaldoPendiente'
+                : saldo < 0
+                ? 'finanzasSaldoFavor'
+                : 'finanzasSaldoCero'
+            }`}
+          >
+            <span>
+              {saldo > 0
+                ? "Saldo pendiente"
+                : saldo < 0
+                ? "Cambio"
+                : "Saldo"}
+            </span>
+
+            <span>${Math.abs(saldo).toFixed(2)}</span>
+          </div>
+
         </div>
-        <div className='finanzasResumenRow'>
-          <span>Aportación familia</span>
-          <span>${pagadoNum.toFixed(2)}</span>
-        </div>
-        <div className='finanzasResumenRow'>
-          <span>Ya aportó</span>
-          <span style={{ color: yaAporto ? '#166534' : '#dc2626', fontWeight: 700 }}>
-            {yaAporto ? 'Sí' : 'No'}
-          </span>
-        </div>
-        <div
-          className={`finanzasResumenRow ${
-            saldo > 0
-              ? 'finanzasSaldoPendiente'
-              : saldo < 0
-              ? 'finanzasSaldoFavor'
-              : 'finanzasSaldoCero'
-          }`}
-        >
-          <span>{saldo > 0 ? "Saldo pendiente" : saldo < 0 ? "Cambio" : "Saldo"}</span>
-          <span>${Math.abs(saldo).toFixed(2)}</span>
-        </div>
-      </div>
 
     </div>
   );

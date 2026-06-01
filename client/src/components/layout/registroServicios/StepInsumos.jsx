@@ -3,44 +3,67 @@ import { Plus, Trash2 } from "lucide-react";
 
 import { useProductos } from "../../../hooks/useProductos";
 
-import Dropdown from "../../ui/Dropdown";  
+import Dropdown from "../../ui/Dropdown";
 import Button from "../../ui/Button";
 
-import "../../../pages/styles/BusquedaBeneficiarioVista.css"
+import "../../../pages/styles/BusquedaBeneficiarioVista.css";
 
 export default function StepInsumos({ insumos, setInsumos }) {
   const { productos, loading, error } = useProductos();
+
   const [productoSelec, setProductoSelec] = useState("");
-  const [cantidad, setCantidad] = useState(1);
+  const [cantidad, setCantidad] = useState("1");
   const [errorStock, setErrorStock] = useState("");
 
   const agregarInsumo = () => {
     setErrorStock("");
+
     if (!productoSelec) return;
-    const prod = productos.find((p) => p.id === parseInt(productoSelec));
+
+    const cantidadNum = parseInt(cantidad, 10);
+
+    if (!cantidadNum || cantidadNum < 1) {
+      return;
+    }
+
+    const prod = productos.find(
+      (p) => p.id === parseInt(productoSelec)
+    );
+
     if (!prod) return;
 
     const existe = insumos.find((i) => i.id === prod.id);
+
     const cantidadActual = existe ? existe.cantidad : 0;
-    const cantidadNueva = cantidadActual + cantidad;
+    const cantidadNueva = cantidadActual + cantidadNum;
 
     if (cantidadNueva > prod.stock) {
-      setErrorStock(`Solo hay ${prod.stock} unidades disponibles de ${prod.nombre}`);
+      setErrorStock(
+        `Solo hay ${prod.stock} unidades disponibles de ${prod.nombre}`
+      );
       return;
     }
 
     if (existe) {
       setInsumos(
         insumos.map((i) =>
-          i.id === prod.id ? { ...i, cantidad: cantidadNueva } : i
+          i.id === prod.id
+            ? { ...i, cantidad: cantidadNueva }
+            : i
         )
       );
     } else {
-      setInsumos([...insumos, { ...prod, cantidad }]);
+      setInsumos([
+        ...insumos,
+        {
+          ...prod,
+          cantidad: cantidadNum,
+        },
+      ]);
     }
 
     setProductoSelec("");
-    setCantidad(1);
+    setCantidad("1");
   };
 
   const eliminarInsumo = (id) => {
@@ -50,66 +73,106 @@ export default function StepInsumos({ insumos, setInsumos }) {
 
   const actualizarCantidad = (id, nuevaCantidad) => {
     setErrorStock("");
-    if (nuevaCantidad < 1) return;
-    const prod = productos.find((p) => p.id === id);
-    if (prod && nuevaCantidad > prod.stock) {
-      setErrorStock(`Solo hay ${prod.stock} unidades disponibles de ${prod.nombre}`);
+
+    const cantidadNum = parseInt(nuevaCantidad, 10);
+
+    if (!cantidadNum || cantidadNum < 1) {
       return;
     }
+
+    const prod = productos.find((p) => p.id === id);
+
+    if (prod && cantidadNum > prod.stock) {
+      setErrorStock(
+        `Solo hay ${prod.stock} unidades disponibles de ${prod.nombre}`
+      );
+      return;
+    }
+
     setInsumos(
-      insumos.map((i) => (i.id === id ? { ...i, cantidad: nuevaCantidad } : i))
+      insumos.map((i) =>
+        i.id === id
+          ? { ...i, cantidad: cantidadNum }
+          : i
+      )
     );
   };
 
-  const subtotal = insumos.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
+  const subtotal = insumos.reduce(
+    (acc, i) => acc + i.precio * i.cantidad,
+    0
+  );
 
-  const productoOptions = productos.map(p => ({
+  const productoOptions = productos.map((p) => ({
     label: `${p.nombre} (${p.stock} disp.)`,
-    value: String(p.id)
+    value: String(p.id),
   }));
 
   if (loading) return <p>Cargando productos…</p>;
-  if (error)   return <p>Error al cargar productos.</p>;
-  
-  return (
-    <div className='panel'>
+  if (error) return <p>Error al cargar productos.</p>;
 
-      <div className='insumoAddRow'>
-        <div className='field' style={{ flex: 2 }}>
-          <label className='fieldLabel'>Producto</label>
+  return (
+    <div className="panel">
+      <div className="insumoAddRow">
+        <div className="field" style={{ flex: 2 }}>
+          <label className="fieldLabel">Producto</label>
           <Dropdown
-            className='dropdown-servicios'
-            options={[{ label: "Seleccionar...", value: "" }, ...productoOptions]}
-            value={productoSelec}  
-            onChange={(val) => { setProductoSelec(val); setErrorStock(""); }}
+            className="dropdown-servicios"
+            options={[
+              { label: "Seleccionar...", value: "" },
+              ...productoOptions,
+            ]}
+            value={productoSelec}
+            onChange={(val) => {
+              setProductoSelec(val);
+              setErrorStock("");
+            }}
           />
         </div>
 
-        <div className='field' style={{ flex: 1 }}>
-          <label className='fieldLabel'>Cantidad</label>
+        <div className="field" style={{ flex: 1 }}>
+          <label className="fieldLabel">Cantidad</label>
+
           <input
             type="number"
-            className='input'
+            className="input"
             min={1}
             max={
               productoSelec
-                ? productos.find((p) => p.id === parseInt(productoSelec))?.stock
+                ? productos.find(
+                    (p) => p.id === parseInt(productoSelec)
+                  )?.stock
                 : undefined
             }
             value={cantidad}
-            onChange={(e) => { setCantidad(parseInt(e.target.value) || 1); setErrorStock(""); }}
+            onChange={(e) => {
+              setCantidad(e.target.value);
+              setErrorStock("");
+            }}
+            onBlur={() => {
+              if (cantidad === "" || Number(cantidad) < 1) {
+                setCantidad("1");
+              }
+            }}
           />
         </div>
 
-        <div className='field' style={{ flex: 1 }}>
-          <label className='fieldLabel'>Precio unitario</label>
+        <div className="field" style={{ flex: 1 }}>
+          <label className="fieldLabel">
+            Precio unitario
+          </label>
+
           <input
             type="text"
-            className='input'
+            className="input"
             readOnly
             value={
               productoSelec
-                ? `$${productos.find((p) => p.id === parseInt(productoSelec))?.precio ?? ""}`  
+                ? `$${
+                    productos.find(
+                      (p) => p.id === parseInt(productoSelec)
+                    )?.precio ?? ""
+                  }`
                 : ""
             }
             placeholder="—"
@@ -117,8 +180,13 @@ export default function StepInsumos({ insumos, setInsumos }) {
         </div>
 
         <Button
-          className='btnPrimary'
-          iconLeft={<Plus size={16} style={{ margin: '4px 0 0' }} />}
+          className="btnPrimary"
+          iconLeft={
+            <Plus
+              size={16}
+              style={{ margin: "4px 0 0" }}
+            />
+          }
           onClick={agregarInsumo}
           disabled={!productoSelec}
         >
@@ -126,23 +194,24 @@ export default function StepInsumos({ insumos, setInsumos }) {
         </Button>
       </div>
 
-      {/* Mensaje de error stock */}
       {errorStock && (
-        <p style={{
-          color: '#dc2626',
-          fontSize: 13,
-          fontWeight: 600,
-          margin: '8px 0 0',
-          padding: '8px 12px',
-          background: '#fee2e2',
-          borderRadius: 8,
-          border: '1px solid #fca5a5',
-        }}>
+        <p
+          style={{
+            color: "#dc2626",
+            fontSize: 13,
+            fontWeight: 600,
+            margin: "8px 0 0",
+            padding: "8px 12px",
+            background: "#fee2e2",
+            borderRadius: 8,
+            border: "1px solid #fca5a5",
+          }}
+        >
           {errorStock}
         </p>
       )}
 
-      <table className='insumoTable'>
+      <table className="insumoTable">
         <thead>
           <tr>
             <th>Producto</th>
@@ -152,10 +221,14 @@ export default function StepInsumos({ insumos, setInsumos }) {
             <th></th>
           </tr>
         </thead>
+
         <tbody>
           {insumos.length === 0 ? (
             <tr>
-              <td colSpan={5} className='insumoEmpty'>
+              <td
+                colSpan={5}
+                className="insumoEmpty"
+              >
                 Sin productos agregados
               </td>
             </tr>
@@ -163,24 +236,44 @@ export default function StepInsumos({ insumos, setInsumos }) {
             insumos.map((i) => (
               <tr key={i.id}>
                 <td>{i.nombre}</td>
+
                 <td>
                   <input
                     type="number"
-                    className='inputQty'
+                    className="inputQty"
                     min={1}
-                    max={productos.find((p) => p.id === i.id)?.stock}
+                    max={
+                      productos.find(
+                        (p) => p.id === i.id
+                      )?.stock
+                    }
                     value={i.cantidad}
                     onChange={(e) =>
-                      actualizarCantidad(i.id, parseInt(e.target.value) || 1)
+                      actualizarCantidad(
+                        i.id,
+                        e.target.value
+                      )
                     }
                   />
                 </td>
-                <td>${i.precio.toFixed(2)}</td>
-                <td>${(i.precio * i.cantidad).toFixed(2)}</td>
+
+                <td>
+                  ${i.precio.toFixed(2)}
+                </td>
+
+                <td>
+                  $
+                  {(
+                    i.precio * i.cantidad
+                  ).toFixed(2)}
+                </td>
+
                 <td>
                   <button
-                    className='btnDanger'
-                    onClick={() => eliminarInsumo(i.id)}
+                    className="btnDanger"
+                    onClick={() =>
+                      eliminarInsumo(i.id)
+                    }
                   >
                     <Trash2 size={14} />
                   </button>
@@ -189,14 +282,29 @@ export default function StepInsumos({ insumos, setInsumos }) {
             ))
           )}
         </tbody>
+
         {insumos.length > 0 && (
           <tfoot>
             <tr>
-              <td colSpan={3} style={{ textAlign: "right", fontWeight: 600 }}>
+              <td
+                colSpan={3}
+                style={{
+                  textAlign: "right",
+                  fontWeight: 600,
+                }}
+              >
                 Total
               </td>
-              <td style={{ fontWeight: 700 }}>${subtotal.toFixed(2)}</td>
-              <td></td>
+
+              <td
+                style={{
+                  fontWeight: 700,
+                }}
+              >
+                ${subtotal.toFixed(2)}
+              </td>
+
+              <td />
             </tr>
           </tfoot>
         )}

@@ -89,9 +89,12 @@ export default function RegistroServicios() {
 
   const subtotalInsumos = insumos.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
   const totalServicio = precioServicio;
-  const totalFinal = totalServicio + subtotalInsumos;
-  const totalConDescuento = Math.max(0, totalFinal - (parseFloat(descuento) || 0));
-  const saldoRestante = totalConDescuento - (parseFloat(montoPagado) || 0);
+
+  const subtotal = totalServicio + subtotalInsumos;
+  const descuentoNum = Math.max(0, parseFloat(descuento) || 0);
+  const montoPagadoNum = Math.max(0, parseFloat(montoPagado) || 0);
+  const totalConDescuento = Math.max(0, subtotal - descuentoNum);
+  const saldoRestante = totalConDescuento - montoPagadoNum;
 
   const servicioLabel = tiposOptions.find(
     t => String(t.value) === String(tipoServicio)
@@ -303,7 +306,9 @@ export default function RegistroServicios() {
 
             {pasoActual === 4 && (
               <StepFinanzas
-                total={totalConDescuento}
+                total={subtotal}
+                totalConDescuento={totalConDescuento}
+                saldo={saldoRestante}
                 metodoPago={metodoPago}
                 setMetodoPago={setMetodoPago}
                 montoPagado={montoPagado}
@@ -402,37 +407,68 @@ export default function RegistroServicios() {
             </dl>
 
             <div className='totales'>
+
               <div className='totalesRow'>
                 <span>Servicio:</span>
                 <strong>${totalServicio.toFixed(2)}</strong>
               </div>
+
               <div className='totalesRow'>
                 <span>Insumos:</span>
                 <strong>${subtotalInsumos.toFixed(2)}</strong>
               </div>
+
               <div className='totalesRow'>
-                <span>Descuento:</span>
-                <strong>- ${(parseFloat(descuento) || 0).toFixed(2)}</strong>
-              </div>
-              <div className='totalesRow'>
-                <span>Total:</span>
-                <strong className='totalesTotal'>${totalConDescuento.toFixed(2)}</strong>
-              </div>
-              <div className='totalesRow'>
-                <span>Aportación:</span>
-                <strong>${(parseFloat(montoPagado) || 0).toFixed(2)}</strong>
-              </div>
-              <div className='totalesRow'>
-                <span>Saldo:</span>
-                <strong
-                  className='totalesSaldo'
-                  style={{ color: saldoRestante > 0 ? "#dc2626" : "#0f766e" }}
-                >
-                  ${saldoRestante.toFixed(2)}
+                <span>Aporte Asociación:</span>
+                <strong>
+                  - ${descuentoNum.toFixed(2)}
                 </strong>
               </div>
-              <p className='totalesExtra'>Método: {metodoPago || "Pendiente"}</p>
-              <p className='totalesExtra'>Cita: {citaSeleccionada ?? "Sin cita"}</p>
+
+              <div className='totalesRow'>
+                <span>Total a pagar:</span>
+                <strong className='totalesTotal'>
+                  ${totalConDescuento.toFixed(2)}
+                </strong>
+              </div>
+
+              <div className='totalesRow'>
+                <span>Aportación familia:</span>
+                <strong>
+                  ${montoPagadoNum.toFixed(2)}
+                </strong>
+              </div>
+
+              <div className='totalesRow'>
+                <span>
+                  {saldoRestante > 0
+                    ? "Saldo pendiente:"
+                    : saldoRestante < 0
+                    ? "Cambio:"
+                    : "Saldo:"}
+                </span>
+
+                <strong
+                  className='totalesSaldo'
+                  style={{
+                    color:
+                      saldoRestante > 0
+                        ? "#dc2626"
+                        : "#0f766e",
+                  }}
+                >
+                  ${Math.abs(saldoRestante).toFixed(2)}
+                </strong>
+              </div>
+
+              <p className='totalesExtra'>
+                Método: {metodoPago || "Pendiente"}
+              </p>
+
+              <p className='totalesExtra'>
+                Cita: {citaSeleccionada ?? "Sin cita"}
+              </p>
+
             </div>
           </aside>
         </div>

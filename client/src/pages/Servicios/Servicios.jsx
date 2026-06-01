@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef, useId, useEffect } from 'react'
-import ServiciosNuevoServicioModal from './Serviciosnuevoserviciomodal'
+import ServiciosNuevoServicioModal from './Serviciosnuevoserviciomodal.jsx'
 import ServiciosTabla from '../../components/layout/registroServicios/ServiciosTabla'
 import ServiciosDetalleModal from '../../components/layout/registroServicios/Serviciosdetallemodal'
 import ServiciosBeneficiario from '../../components/layout/registroServicios/ServiciosBeneficiario'
@@ -11,13 +11,34 @@ import '../styles/Servicios.css'
 import useHistorialServicios from '../../hooks/useHistorialServicios'
 import useServicios from '../../hooks/useServicios.js'
 
+
+import ServiciosCatalogo from '../../components/layout/registroServicios/ServiciosCatalogo'
+
+
+function fmt(num) {
+  if (num == null) return null
+  return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(num)
+}
+
+function mapFila(s) {
+  return {
+    ...s,
+    montoServicioFormateado:   fmt(s.montoServicio),
+    montoInventarioFormateado: fmt(s.montoInventario),
+    descuentoFormateado:       fmt(s.descuento),
+    cuotaTotalFormateado:      fmt(s.cuotaTotal),
+    montoPagadoFormateado:     fmt(s.montoPagado),
+  }
+}
+
 export default function Servicios() {
   const { servicios: historial, hasMore, loading, error, loadMore, refetch } = useHistorialServicios()
-  const { tipos } = useServicios()
+  const { tipos, loading: loadingTipos, refetch: refetchTipos } = useServicios()
 
   const sentinelRef        = useRef(null)
   const tabHistorialRef    = useRef(null)
   const tabBeneficiarioRef = useRef(null)
+  const tabCatalogoRef     = useRef(null)
 
   const [consulta,        setConsulta]        = useState('')
   const [categoriaFiltro, setCategoriaFiltro] = useState('')
@@ -30,10 +51,11 @@ export default function Servicios() {
   const tabsHintId          = useId()
   const tabHistorialId      = useId()
   const tabBeneficiarioId   = useId()
+  const tabCatalogoId       = useId()
   const panelHistorialId    = useId()
   const panelBeneficiarioId = useId()
+  const panelCatalogoId     = useId()
 
-  // Categorías desde el hook
   const todasCategorias = useMemo(() => {
     const desdeTipos = [...new Set(tipos.map((t) => t.categoria).filter(Boolean))]
     return desdeTipos.length > 0 ? desdeTipos : [
@@ -42,25 +64,25 @@ export default function Servicios() {
     ]
   }, [tipos])
 
-  // Filtrado local sobre los registros ya cargados
   const filtrados = useMemo(() => {
     const q = consulta.toLowerCase()
-    return (historial ?? []).filter((s) => {
-      const matchCat   = !categoriaFiltro || s.categoria === categoriaFiltro
-      const matchTexto = !q
-        || s.nombre.toLowerCase().includes(q)
-        || s.categoria.toLowerCase().includes(q)
-      return matchCat && matchTexto
-    })
+    return (historial ?? [])
+      .filter((s) => {
+        const matchCat   = !categoriaFiltro || s.categoria === categoriaFiltro
+        const matchTexto = !q
+          || s.nombre?.toLowerCase().includes(q)
+          || s.categoria?.toLowerCase().includes(q)
+          || s.beneficiario?.toLowerCase().includes(q)
+        return matchCat && matchTexto
+      })
+      .map(mapFila)
   }, [historial, consulta, categoriaFiltro])
 
   // Infinite scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
-          loadMore()
-        }
+        if (entries[0].isIntersecting && hasMore && !loading) loadMore()
       },
       { threshold: 0.1 }
     )
@@ -68,29 +90,30 @@ export default function Servicios() {
     return () => observer.disconnect()
   }, [hasMore, loading, loadMore])
 
+  const TABS = ['historial', 'beneficiario', 'catalogo']
+  const tabRefs = { historial: tabHistorialRef, beneficiario: tabBeneficiarioRef, catalogo: tabCatalogoRef }
+
   const onTabsKeyDown = (e) => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return
     e.preventDefault()
-    if (e.key === 'Home') {
-      setVistaActiva('historial')
-      tabHistorialRef.current?.focus()
-      return
-    }
-    if (e.key === 'End') {
-      setVistaActiva('beneficiario')
-      tabBeneficiarioRef.current?.focus()
-      return
-    }
-    const next = vistaActiva === 'historial' ? 'beneficiario' : 'historial'
+    const idx = TABS.indexOf(vistaActiva)
+    let next
+    if (e.key === 'Home') next = TABS[0]
+    else if (e.key === 'End') next = TABS[TABS.length - 1]
+    else if (e.key === 'ArrowRight') next = TABS[(idx + 1) % TABS.length]
+    else next = TABS[(idx - 1 + TABS.length) % TABS.length]
     setVistaActiva(next)
-    if (next === 'historial') tabHistorialRef.current?.focus()
-    else tabBeneficiarioRef.current?.focus()
+    tabRefs[next].current?.focus()
+  }
+
+  const handleExitoNuevoServicio = () => {
+    refetch()        // refresca historial
+    refetchTipos()   // refresca catálogo
   }
 
   return (
     <div className="inventario-pagina">
 
-      {/* Header */}
       <header className="servicios-page-header">
         <section className="page-header-text">
           <h1 className="page-header-title description">Servicios otorgados</h1>
@@ -99,16 +122,7 @@ export default function Servicios() {
           </p>
         </section>
         <div className="servicios-acciones">
-          <button
-            className="inventario-form__btnSec"
-            onClick={() => setModalServicio(true)}
-          >
-            + Nuevo servicio
-          </button>
-          <button
-            className="inventario-form__btnPri"
-            onClick={() => navigate('/registro_servicios')}
-          >
+          <button className="inventario-form__btnPri" onClick={() => navigate('/registro_servicios')}>
             + Registrar atención
           </button>
         </div>
@@ -128,8 +142,7 @@ export default function Servicios() {
           <button
             ref={tabHistorialRef}
             id={tabHistorialId}
-            role="tab"
-            type="button"
+            role="tab" type="button"
             aria-selected={vistaActiva === 'historial'}
             aria-controls={panelHistorialId}
             tabIndex={vistaActiva === 'historial' ? 0 : -1}
@@ -141,8 +154,7 @@ export default function Servicios() {
           <button
             ref={tabBeneficiarioRef}
             id={tabBeneficiarioId}
-            role="tab"
-            type="button"
+            role="tab" type="button"
             aria-selected={vistaActiva === 'beneficiario'}
             aria-controls={panelBeneficiarioId}
             tabIndex={vistaActiva === 'beneficiario' ? 0 : -1}
@@ -151,30 +163,35 @@ export default function Servicios() {
           >
             Por beneficiario
           </button>
+          <button
+            ref={tabCatalogoRef}
+            id={tabCatalogoId}
+            role="tab" type="button"
+            aria-selected={vistaActiva === 'catalogo'}
+            aria-controls={panelCatalogoId}
+            tabIndex={vistaActiva === 'catalogo' ? 0 : -1}
+            className={`servicios-tab ${vistaActiva === 'catalogo' ? 'is-active' : ''}`}
+            onClick={() => setVistaActiva('catalogo')}
+          >
+            Catálogo
+          </button>
         </div>
       </div>
 
       {/* Panel: Historial general */}
       {vistaActiva === 'historial' && (
-        <section
-          id={panelHistorialId}
-          className="recibos-section"
-          role="tabpanel"
-          aria-labelledby={tabHistorialId}
-        >
+        <section id={panelHistorialId} className="recibos-section" role="tabpanel" aria-labelledby={tabHistorialId}>
           <div className="section-title-row">
             <div>
               <h2 className="section-title">Historial general</h2>
               <p className="section-sub">
-                {loading && historial.length === 0
-                  ? 'Cargando…'
-                  : `${historial.length} servicios registrados`}
+                {loading && historial.length === 0 ? 'Cargando…' : `${historial.length} servicios registrados`}
               </p>
             </div>
             <div className="servicios-barra-acciones">
               <SearchBar
                 icon={<FiSearch />}
-                placeholder="Buscar por servicio…"
+                placeholder="Buscar por servicio o beneficiario…"
                 value={consulta}
                 onChange={(val) => setConsulta(val)}
               />
@@ -192,7 +209,7 @@ export default function Servicios() {
           <div className="recibos-card">
             <ServiciosTabla
               filas={filtrados}
-              loading={loading}
+              loading={loading && historial.length === 0}
               error={error}
               onVerDetalle={setDetalleItem}
               onVerRecibo={(item) => navigate(`/recibos?folio=${item.id}`)}
@@ -204,46 +221,58 @@ export default function Servicios() {
             )}
           </div>
 
-          {/* Sentinel — trigger del infinite scroll */}
           <div ref={sentinelRef} style={{ height: '1px' }} />
-
           {loading && historial.length > 0 && (
-            <p style={{ textAlign: 'center', padding: '1rem' }}>Cargando más…</p>
+            <p style={{ textAlign: 'center', padding: '1rem', color: 'var(--color-text-muted)' }}>Cargando más…</p>
           )}
           {!hasMore && historial.length > 0 && (
-            <p style={{ textAlign: 'center', padding: '1rem', color: 'gray' }}>
-              Todos los registros cargados.
-            </p>
+            <p style={{ textAlign: 'center', padding: '1rem', color: 'var(--color-text-muted)' }}>Todos los registros cargados.</p>
           )}
         </section>
       )}
 
       {/* Panel: Por beneficiario */}
       {vistaActiva === 'beneficiario' && (
-        <section
-          id={panelBeneficiarioId}
-          className="recibos-section"
-          role="tabpanel"
-          aria-labelledby={tabBeneficiarioId}
-        >
+        <section id={panelBeneficiarioId} className="recibos-section" role="tabpanel" aria-labelledby={tabBeneficiarioId}>
           <div className="section-title-row">
             <div>
               <h2 className="section-title">Por beneficiario</h2>
               <p className="section-sub">Consulta el historial completo de un beneficiario</p>
             </div>
           </div>
-
           <ServiciosBeneficiario
             historial={historial}
-            onVerDetalle={setDetalleItem}
+            onVerDetalle={(s) => setDetalleItem(mapFila(s))}
           />
         </section>
       )}
 
+      {/* Panel: Catálogo */}
+      {vistaActiva === 'catalogo' && (
+        <section id={panelCatalogoId} className="recibos-section" role="tabpanel" aria-labelledby={tabCatalogoId}>
+          <div className="section-title-row">
+            <div>
+              <h2 className="section-title">Catálogo de servicios</h2>
+              <p className="section-sub">
+                {loadingTipos ? 'Cargando…' : `${tipos.length} servicios disponibles`}
+              </p>
+            </div>
+          </div>
+          <div className="recibos-card">
+            <ServiciosCatalogo
+              tipos={tipos}
+              loading={loadingTipos}
+              onNuevoServicio={() => setModalServicio(true)}
+            />
+          </div>
+        </section>
+      )}
+
+      {/* Modales */}
       <ServiciosNuevoServicioModal
         open={modalServicio}
         onClose={() => setModalServicio(false)}
-        onExito={refetch}
+        onExito={handleExitoNuevoServicio}
         serviciosExistentes={historial}
         categorias={todasCategorias}
       />
