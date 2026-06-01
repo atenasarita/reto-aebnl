@@ -211,6 +211,8 @@ export class FondoDonacionesRepository {
         origen_nombre: input.origen_nombre,
         concepto: input.concepto,
         id_servicio_otorgado: null,
+        folio_servicio: null,
+        servicio_nombre: null,
         id_usuario: input.id_usuario,
         fecha: new Date().toISOString(),
         motivo: 'Abono al fondo de donaciones',
