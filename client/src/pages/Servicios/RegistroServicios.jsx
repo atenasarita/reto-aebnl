@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Search,
   ClipboardList,
@@ -30,6 +31,8 @@ const PASOS = [
 ];
 
 export default function RegistroServicios() {
+  const navigate = useNavigate()
+
   const [pasoActual, setPasoActual] = useState(1);
   const [query, setQuery] = useState("");
 
@@ -222,15 +225,34 @@ export default function RegistroServicios() {
       <div className='page'>
         <div className='inner'>
           <div className='main'>
-            <CheckCircle2 size={64} color="#0f766e" />
-            <h2>Servicio registrado</h2>
-            <button className='btnPrimary' type="button" onClick={iniciarNuevoServicio}>
-              Nuevo servicio
-            </button>
+            <CheckCircle2 size={64} color="#1F9D55" />
+            <h2 style={{ margin: '1rem 0 0.5rem', fontSize: '22px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+              Servicio registrado
+            </h2>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '14px', marginBottom: '2rem' }}>
+              El servicio fue guardado correctamente.
+            </p>
+
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <button
+                className='btnSecondary'
+                type="button"
+                onClick={iniciarNuevoServicio}
+              >
+                + Registrar otro servicio
+              </button>
+              <button
+                className='btnPrimary'
+                type="button"
+                onClick={() => navigate('/servicios')}
+              >
+                Ver historial
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
