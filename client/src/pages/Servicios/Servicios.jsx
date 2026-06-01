@@ -9,7 +9,11 @@ import SearchBar from '../../components/ui/SearchBar'
 import Dropdown from '../../components/ui/Dropdown'
 import { FiSearch } from 'react-icons/fi'
 
+import '../styles/Recibos.css'
+import '../styles/OperationalPage.css'
+import '../styles/BusquedaBeneficiarioVista.css'
 import '../styles/Servicios.css'
+import '../styles/Inventario.css'
 
 const HISTORIAL_PLACEHOLDER = [
   { id:145, beneficiario:'María García López',  nombre:'Consulta general',    categoria:'Consultas',     metodoPago:'Efectivo',      montoServicio:350, montoInventario:0,   descuento:0,  cuotaTotal:350, montoPagado:350, yaAporto:1 },
@@ -83,25 +87,28 @@ export default function Servicios() {
   }
 
   return (
-    <div className="inventario-pagina">
+    <main className="recibos-page servicios-page" aria-labelledby="servicios-page-title">
 
-      {/* Header */}
-      <header className="servicios-page-header">
-        <section className="page-header-text">
-          <h1 className="page-header-title description">Servicios otorgados</h1>
-          <p className="page-header-subtitle description">
+      <header className="recibos-header page-header servicios-header">
+        <div className="recibos-heading">
+          <h1 id="servicios-page-title" className="page-header-title">
+            Servicios otorgados
+          </h1>
+          <p className="page-header-subtitle">
             Registro e historial de servicios brindados.
           </p>
-        </section>
-        <div className="servicios-acciones">
+        </div>
+        <div className="servicios-header-actions">
           <button
-            className="inventario-form__btnSec"
+            type="button"
+            className="btnSecondary"
             onClick={() => setModalServicio(true)}
           >
             + Nuevo servicio
           </button>
           <button
-            className="inventario-form__btnPri"
+            type="button"
+            className="btnPrimary"
             onClick={() => navigate('/registro_servicios')}
           >
             + Registrar atención
@@ -109,12 +116,12 @@ export default function Servicios() {
         </div>
       </header>
 
-      <div>
+      <div className="recibos-tabs-wrap">
         <p id={tabsHintId} className="sr-only">
           Usa las flechas izquierda y derecha para cambiar entre pestañas.
         </p>
         <div
-          className="servicios-tabs"
+          className="recibos-tabs recibos-tabs--two"
           role="tablist"
           aria-describedby={tabsHintId}
           onKeyDown={onTabsKeyDown}
@@ -127,7 +134,7 @@ export default function Servicios() {
             aria-selected={vistaActiva === 'historial'}
             aria-controls={panelHistorialId}
             tabIndex={vistaActiva === 'historial' ? 0 : -1}
-            className={`servicios-tab ${vistaActiva === 'historial' ? 'is-active' : ''}`}
+            className={`recibos-tab ${vistaActiva === 'historial' ? 'is-active' : ''}`}
             onClick={() => setVistaActiva('historial')}
           >
             Historial general
@@ -140,7 +147,7 @@ export default function Servicios() {
             aria-selected={vistaActiva === 'beneficiario'}
             aria-controls={panelBeneficiarioId}
             tabIndex={vistaActiva === 'beneficiario' ? 0 : -1}
-            className={`servicios-tab ${vistaActiva === 'beneficiario' ? 'is-active' : ''}`}
+            className={`recibos-tab ${vistaActiva === 'beneficiario' ? 'is-active' : ''}`}
             onClick={() => setVistaActiva('beneficiario')}
           >
             Por beneficiario
@@ -231,6 +238,6 @@ export default function Servicios() {
         onClose={() => setDetalleItem(null)}
         servicio={detalleItem}
       />
-    </div>
+    </main>
   )
 }

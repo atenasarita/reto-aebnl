@@ -18,31 +18,31 @@ function Skeleton({ rows = 4 }) {
 
 function ServicioRow({ servicio, onVerDetalle, onVerRecibo }) {
   return (
-    <tr className="recibo-row servicios-page">
+    <tr className="recibo-row">
       <th scope="row" className="td-folio">#{servicio.id}</th>
       <td>{servicio.beneficiario}</td>
       <td>{servicio.nombre}</td>
       <td>{servicio.categoria}</td>
-      <td>{fmt(servicio.cuotaTotal)}</td>
-     
+      <td className="text-right td-monto">{fmt(servicio.cuotaTotal)}</td>
       <td className="td-acciones">
-
-        <button
-          className="btn-ver"
-          onClick={() => onVerDetalle?.(servicio)}
-          aria-label={`Ver detalle del servicio ${servicio.id}`}
-        >
-          Ver Detalle
-        </button>
-
-        <button
-          className="btn-ver--seg"
-          onClick={() => onVerRecibo?.(servicio)}
-          aria-label={`Ver recibo del servicio ${servicio.id}`}
-        >
-          Ir a Recibo
-        </button>
-        
+        <div className="servicios-acciones-celda">
+          <button
+            type="button"
+            className="btn-ver"
+            onClick={() => onVerDetalle?.(servicio)}
+            aria-label={`Ver detalle del servicio ${servicio.id}`}
+          >
+            Ver Detalle
+          </button>
+          <button
+            type="button"
+            className="btn-ver--seg"
+            onClick={() => onVerRecibo?.(servicio)}
+            aria-label={`Ver recibo del servicio ${servicio.id}`}
+          >
+            Ir a Recibo
+          </button>
+        </div>
       </td>
     </tr>
   )
@@ -63,16 +63,20 @@ export default function ServiciosTabla({
 
   return (
     <>
-      <div className="servicios-table-wrap">
-        <table className="servicios-table">
+      <div className="table-wrap">
+        <table className="recibos-table">
           <thead>
             <tr>
               <th>Folio</th>
               <th>Beneficiario</th>
               <th>Servicio</th>
               <th>Categoría</th>
-              <th className="text-right">Total</th>
-              <th>Acciones</th>
+              <th className="text-right" scope="col">
+                Total
+              </th>
+              <th className="th-acciones" scope="col">
+                Acciones
+              </th>
             </tr>
           </thead>
           <tbody>

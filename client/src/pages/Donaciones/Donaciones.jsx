@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { CheckCircle2, RefreshCw } from "lucide-react";
 import useFondoDonaciones from "../../hooks/useFondoDonaciones";
 import "../styles/Recibos.css";
+import "../styles/OperationalPage.css";
 import "../styles/BusquedaBeneficiarioVista.css";
 import "../styles/Donaciones.css";
 
@@ -92,6 +93,7 @@ export default function Donaciones() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [guardando, setGuardando] = useState(false);
   const [cargandoHistorial, setCargandoHistorial] = useState(false);
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
   const formValues = useMemo(
     () => ({ origenTipo, origenNombre, monto, concepto }),
@@ -162,6 +164,7 @@ export default function Donaciones() {
       setMonto("");
       setConcepto("");
       setFieldErrors({});
+      setMostrarFormulario(false);
       await Promise.all([fetchSaldo(), fetchMovimientos()]);
     } catch (err) {
       setFieldErrors({
@@ -211,24 +214,65 @@ export default function Donaciones() {
         </div>
       </header>
 
-      <div className="donaciones-layout">
-        <section className="recibos-section" aria-labelledby="donaciones-form-title">
-          <div className="section-title-row">
-            <div>
-              <h2 id="donaciones-form-title" className="section-title">
-                Registrar donación
-              </h2>
-            </div>
+      <section className="recibos-section" aria-labelledby="donaciones-historial-title">
+        <div className="section-title-row">
+          <div>
+            <h2 id="donaciones-historial-title" className="section-title">
+              Historial de donaciones
+            </h2>
+            <p className="section-sub">
+              Abonos y egresos del fondo global
+              {!loading && movimientos.length > 0 && (
+                <>
+                  {" "}
+                  · {stats.abonos} {stats.abonos === 1 ? "abono" : "abonos"} · {stats.egresos}{" "}
+                  {stats.egresos === 1 ? "egreso" : "egresos"}
+                </>
+              )}
+              .
+            </p>
           </div>
+          <div className="donaciones-actions">
+            <button
+              type="button"
+              className="btnPrimary"
+              onClick={() => setMostrarFormulario((prev) => !prev)}
+              aria-expanded={mostrarFormulario}
+              aria-controls="donaciones-registro-form"
+            >
+              {mostrarFormulario ? "Ocultar formulario" : "Registrar donación"}
+            </button>
+            <button
+              type="button"
+              className="btnSecondary"
+              onClick={cargarHistorial}
+              disabled={cargandoHistorial || loading}
+              aria-busy={cargandoHistorial}
+            >
+              <RefreshCw
+                size={15}
+                aria-hidden="true"
+                className={cargandoHistorial ? "donaciones-spin" : ""}
+              />
+              Actualizar
+            </button>
+          </div>
+        </div>
 
-          <form onSubmit={handleSubmit} className="donaciones-form" noValidate>
+        {mostrarFormulario && (
+          <form
+            id="donaciones-registro-form"
+            onSubmit={handleSubmit}
+            className="donaciones-form donaciones-form-panel"
+            noValidate
+          >
             <div className="field">
               <span className="fieldLabel" id="origen-tipo-label">
                 Tipo de origen
               </span>
               <div className="recibos-tabs-wrap donaciones-tabs-wrap">
                 <div
-                  className="recibos-tabs"
+                  className="recibos-tabs recibos-tabs--two"
                   role="tablist"
                   aria-labelledby="origen-tipo-label"
                   aria-describedby={fieldErrors.origenTipo ? "origen-tipo-error" : undefined}
@@ -364,108 +408,73 @@ export default function Donaciones() {
             )}
 
             <button type="submit" className="btnPrimary" disabled={guardando}>
-              {guardando ? "Registrando..." : "Registrar donación"}
+              {guardando ? "Registrando..." : "Guardar donación"}
             </button>
           </form>
-        </section>
+        )}
 
-        <section className="recibos-section" aria-labelledby="donaciones-historial-title">
-          <div className="section-title-row">
-            <div>
-              <h2 id="donaciones-historial-title" className="section-title">
-                Movimientos recientes
-              </h2>
-              <p className="section-sub">
-                Abonos y egresos del fondo global
-                {!loading && movimientos.length > 0 && (
-                  <>
-                    {" "}
-                    · {stats.abonos} {stats.abonos === 1 ? "abono" : "abonos"} · {stats.egresos}{" "}
-                    {stats.egresos === 1 ? "egreso" : "egresos"}
-                  </>
-                )}
-                .
-              </p>
+        <div className="recibos-card">
+          {loading && movimientos.length === 0 ? (
+            <Skeleton rows={5} />
+          ) : movimientos.length === 0 ? (
+            <div className="estado-msg">
+              Sin movimientos registrados. Usa “Registrar donación” para agregar el primero.
             </div>
-            <button
-              type="button"
-              className="btnSecondary"
-              onClick={cargarHistorial}
-              disabled={cargandoHistorial || loading}
-              aria-busy={cargandoHistorial}
-            >
-              <RefreshCw
-                size={15}
-                aria-hidden="true"
-                className={cargandoHistorial ? "donaciones-spin" : ""}
-              />
-              Actualizar
-            </button>
-          </div>
-
-          <div className="recibos-card">
-            {loading && movimientos.length === 0 ? (
-              <Skeleton rows={5} />
-            ) : movimientos.length === 0 ? (
-              <div className="estado-msg">
-                Sin movimientos registrados. Registre la primera donación para abastecer el fondo.
-              </div>
-            ) : (
-              <div className="table-wrap">
-                <table className="recibos-table">
-                  <caption className="sr-only">
-                    Historial de movimientos del fondo de donaciones
-                  </caption>
-                  <thead>
-                    <tr>
-                      <th scope="col">Fecha</th>
-                      <th scope="col">Tipo</th>
-                      <th scope="col">Origen</th>
-                      <th scope="col">Concepto</th>
-                      <th className="text-right" scope="col">
-                        Monto
-                      </th>
-                      <th className="text-right" scope="col">
-                        Saldo
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {movimientos.map((m) => {
-                      const conceptoTexto = formatConcepto(m);
-                      return (
-                        <tr key={m.id_movimiento} className="recibo-row">
-                          <td className="text-muted">{m.fecha}</td>
-                          <td>
-                            <span
-                              className={`badge ${
-                                m.tipo_movimiento === "abono" ? "badge-donacion" : "badge-egreso"
-                              }`}
-                            >
-                              {m.tipo_movimiento === "abono" ? "Abono" : "Egreso"}
-                            </span>
-                          </td>
-                          <td>{formatOrigen(m)}</td>
-                          <td className="donaciones-col-concepto">
-                            <span className="donaciones-concepto-text" title={conceptoTexto}>
-                              {conceptoTexto}
-                            </span>
-                          </td>
-                          <td className={`text-right donaciones-monto--${m.tipo_movimiento}`}>
-                            {m.tipo_movimiento === "egreso" ? "− " : "+ "}
-                            {fmt(m.monto)}
-                          </td>
-                          <td className="text-right">{fmt(m.saldo_nuevo)}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        </section>
-      </div>
+          ) : (
+            <div className="table-wrap">
+              <table className="recibos-table">
+                <caption className="sr-only">
+                  Historial de movimientos del fondo de donaciones
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Origen</th>
+                    <th scope="col">Concepto</th>
+                    <th className="text-right" scope="col">
+                      Monto
+                    </th>
+                    <th className="text-right" scope="col">
+                      Saldo
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {movimientos.map((m) => {
+                    const conceptoTexto = formatConcepto(m);
+                    return (
+                      <tr key={m.id_movimiento} className="recibo-row">
+                        <td className="text-muted">{m.fecha}</td>
+                        <td>
+                          <span
+                            className={`badge ${
+                              m.tipo_movimiento === "abono" ? "badge-donacion" : "badge-egreso"
+                            }`}
+                          >
+                            {m.tipo_movimiento === "abono" ? "Abono" : "Egreso"}
+                          </span>
+                        </td>
+                        <td>{formatOrigen(m)}</td>
+                        <td className="donaciones-col-concepto">
+                          <span className="donaciones-concepto-text" title={conceptoTexto}>
+                            {conceptoTexto}
+                          </span>
+                        </td>
+                        <td className={`text-right donaciones-monto--${m.tipo_movimiento}`}>
+                          {m.tipo_movimiento === "egreso" ? "− " : "+ "}
+                          {fmt(m.monto)}
+                        </td>
+                        <td className="text-right">{fmt(m.saldo_nuevo)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </section>
     </main>
   );
 }
