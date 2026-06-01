@@ -14,6 +14,7 @@ type RegistrarServicioInput = {
   descuento: number;
   cuota_total: number;
   monto_pagado: number;
+  monto_donacion: number;
   metodo_pago: string;
   ya_aporto: boolean;
   id_usuario: number;
@@ -29,6 +30,10 @@ export class ServiciosController {
 
   async getTiposServicio() {
     return this.repository.getTiposServicio();
+  }
+
+  async getFechasUltimosEstudios(id_beneficiario: number){
+    return this.repository.getFechasUltimosEstudios(id_beneficiario);
   }
 
   async registrarServicio(input: RegistrarServicioInput) {

@@ -80,7 +80,7 @@ export function selectTipoEspinasByBeneficiarioIds(placeholders: string): string
 
 export const INSERT_BENEFICIARIO = `
   INSERT INTO Beneficiario (folio, fecha_ingreso, genero, estado)
-  VALUES (:folio, :fecha_ingreso, :genero, :estado)
+  VALUES (:folio,  TO_DATE(:fecha_ingreso, 'YYYY-MM-DD'), :genero, :estado)
   RETURNING id_beneficiario INTO :id_beneficiario
 `.trim();
 
@@ -108,7 +108,7 @@ export const INSERT_IDENTIFICADORES_RETURNING = `
       :nombres,
       :apellido_paterno,
       :apellido_materno,
-      :fecha_nacimiento,
+       TO_DATE(:fecha_nacimiento, 'YYYY-MM-DD'),
       :estado_nacimiento,
       :fotografia,
       :telefono,
@@ -185,7 +185,7 @@ export const INSERT_DIRECCION_RETURNING = `
 
 export const INSERT_MEMBRESIA = `
   INSERT INTO Membresias (id_beneficiario, precio, fecha_inicio, fecha_fin, estado, metodo_pago)
-  VALUES (:id_beneficiario, :precio, :fecha_inicio, :fecha_fin, :estado, :metodo_pago)
+  VALUES (:id_beneficiario, :precio, TO_DATE(:fecha_inicio, 'YYYY-MM-DD'),TO_DATE(:fecha_fin, 'YYYY-MM-DD'), :estado, :metodo_pago)
 `.trim();
 
 export const UPDATE_MEMBRESIA_ESTADO = `

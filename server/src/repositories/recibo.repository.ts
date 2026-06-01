@@ -22,6 +22,7 @@ const SELECT_COLS = `
     sf.DESCUENTO,
     sf.CUOTA_TOTAL,
     sf.MONTO_PAGADO,
+    NVL(sf.MONTO_DONACION, 0)                   AS MONTO_DONACION,
     sf.METODO_PAGO`;
 
 const FROM_JOINS = `
@@ -45,6 +46,14 @@ const SQL_SERVICIOS_POR_MES = `
   ${FROM_JOINS}
   WHERE TRUNC(so.FECHA, 'MM') = TRUNC(TO_DATE(:fecha, 'YYYY-MM'), 'MM')
   ORDER BY so.FECHA ASC, so.HORA ASC
+`;
+
+// Recibos por rango de fechas
+const SQL_SERVICIOS_POR_RANGO = `
+  SELECT ${SELECT_COLS}
+  ${FROM_JOINS}
+  WHERE TRUNC(so.FECHA) BETWEEN TO_DATE(:desde, 'YYYY-MM-DD') AND TO_DATE(:hasta, 'YYYY-MM-DD')
+  ORDER BY so.HORA ASC
 `;
 
 // Buscar servicio por ID
@@ -78,6 +87,7 @@ function rowToFinanciero(row: Record<string, unknown>): FinancieroRecibo | null 
     descuento:              Number(row["DESCUENTO"]        ?? 0),
     cuota_total:            Number(row["CUOTA_TOTAL"]      ?? 0),
     monto_pagado:           Number(row["MONTO_PAGADO"]     ?? 0),
+    monto_donacion:         Number(row["MONTO_DONACION"]   ?? 0),
     metodo_pago:            row["METODO_PAGO"] as FinancieroRecibo["metodo_pago"],
   };
 }
@@ -147,6 +157,11 @@ export class ReciboRepository implements IReciboRepository {
   /**Recibos del mes */
   async listarPorMes(fecha: string): Promise<ReciboCompleto[]> {
     return ejecutarConsulta(SQL_SERVICIOS_POR_MES, { fecha });
+  }
+
+  /** Recibos por rango de fechas */
+  async listarRecibosRango(desde: string, hasta: string): Promise<ReciboCompleto[]> {
+    return ejecutarConsulta(SQL_SERVICIOS_POR_RANGO, { desde, hasta });
   }
 
   /** Recibo individual por ID de servicio otorgado */

@@ -1,5 +1,6 @@
 import oracledb from 'oracledb';
 import { OracleConnection } from '../db/oracle';
+import { FondoDonacionesRepository } from './fondoDonaciones.repository';
 import {
   SELECT_TIPOS_SERVICIO,
   INSERT_SERVICIO_OTORGADO,
@@ -8,6 +9,7 @@ import {
   SELECT_CANTIDAD_INVENTARIO,
   UPDATE_CANTIDAD_INVENTARIO,
   INSERT_MOVIMIENTO_INVENTARIO,
+  SELECT_FECHAS_ULTIMOS_ESTUDIOS_BY_BENEFICIARIO,
 } from './servicios.queries';
 
 type TipoServicioRow = {
@@ -37,6 +39,7 @@ type RegistrarServicioInput = {
   descuento: number;
   cuota_total: number;
   monto_pagado: number;
+  monto_donacion: number;
   metodo_pago: string;
   ya_aporto: boolean;
   id_usuario: number; // 👈 necesario para MOVIMIENTOS_INVENTARIO
@@ -44,6 +47,16 @@ type RegistrarServicioInput = {
 
 type CantidadRow = {
   CANTIDAD: number;
+};
+
+type FechasUltimosEstudiosRow = {
+  ID_BENEFICIARIO: number;
+  GRAL_ORINA: Date | null;
+  ECO_RENAL: Date | null;
+  UROTAC: Date | null;
+  EST_URODINAMICO: Date | null;
+  TAC_CEREBRO: Date | null;
+  UROCULTIVO: Date | null;
 };
 
 /** Valores que cumplen el CHECK de METODO_PAGO en SERVICIOS_FINANCIEROS (alineado a membrecías/recibos). */
@@ -66,9 +79,14 @@ function metodoPagoParaOracle(raw: string): MetodoPagoServicioOracle {
 
 export class ServicioRepository {
   private readonly oracleConnection: OracleConnection;
+  private readonly fondoRepository: FondoDonacionesRepository;
 
-  constructor(oracleConnection: OracleConnection = new OracleConnection()) {
+  constructor(
+    oracleConnection: OracleConnection = new OracleConnection(),
+    fondoRepository: FondoDonacionesRepository = new FondoDonacionesRepository()
+  ) {
     this.oracleConnection = oracleConnection;
+    this.fondoRepository = fondoRepository;
   }
 
   async getTiposServicio() {
@@ -97,9 +115,49 @@ export class ServicioRepository {
     }
   }
 
+  async getFechasUltimosEstudios(id_beneficiario: number){
+    let connection: oracledb.Connection | undefined;
+
+    try {
+      connection = await this.oracleConnection.getConnection();
+
+      const result = await connection.execute(
+        SELECT_FECHAS_ULTIMOS_ESTUDIOS_BY_BENEFICIARIO,
+        {id_beneficiario},
+        {outFormat: oracledb.OUT_FORMAT_OBJECT}
+      );
+
+      const rows = (result.rows ?? []) as FechasUltimosEstudiosRow[];
+
+      if(rows.length === 0){
+        return {
+          idBeneficiario: id_beneficiario,
+          controlUrologico: null,
+          ecoRenal: null,
+          uroTac: null,
+          estUrodinamico: null,
+          tacCerebro: null,
+          urocultivo: null,
+        };
+      }
+      const row = rows[0];
+
+      return {
+        idBeneficiario: row.ID_BENEFICIARIO,
+        gralOrina: row.GRAL_ORINA,
+        ecoRenal: row.ECO_RENAL,
+        uroTac: row.UROTAC,
+        estUrodinamico: row.EST_URODINAMICO,
+        tacCerebro: row.TAC_CEREBRO,
+        urocultivo: row.UROCULTIVO,
+      };
+
+    } finally {
+      if(connection) await connection.close();
+    }
+  }
+
   async registrarServicio(input: RegistrarServicioInput) {
-    console.log("INPUT COMPLETO:");
-    console.log(JSON.stringify(input, null, 2));
 
     let connection: oracledb.Connection | undefined;
 
@@ -182,7 +240,19 @@ export class ServicioRepository {
         );
       }
 
-      // ── 3. Insertar registro financiero ────────────────────────────
+      const montoDonacion = input.monto_donacion || 0;
+
+      // ── 3. Descontar del fondo de donaciones (si aplica) ─────────
+      if (montoDonacion > 0) {
+        await this.fondoRepository.registrarEgresoEnTransaccion(connection, {
+          monto: montoDonacion,
+          id_servicio_otorgado: idServicio,
+          id_usuario: input.id_usuario,
+          motivo: 'Pago de servicio con fondo de donaciones',
+        });
+      }
+
+      // ── 4. Insertar registro financiero ────────────────────────────
       await connection.execute(
         INSERT_SERVICIO_FINANCIERO,
         {
@@ -192,6 +262,7 @@ export class ServicioRepository {
           descuento:            input.descuento || 0,
           cuota_total:          input.cuota_total,
           monto_pagado:         input.monto_pagado,
+          monto_donacion:       montoDonacion,
           metodo_pago:          metodoPagoParaOracle(input.metodo_pago),
           ya_aporto:            input.ya_aporto ? 1 : 0,
         }

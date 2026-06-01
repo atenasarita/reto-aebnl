@@ -134,7 +134,8 @@ function RegistroBeneficiario() {
 
           
         </section>
-        <RegistroBottom
+
+          <RegistroBottom
             currentStep={currentStep}
             loading={loading}
             areAllStepsComplete={areAllStepsComplete}
@@ -145,6 +146,7 @@ function RegistroBeneficiario() {
               setShowCancelModal(true)
             }}
            />
+        
       </main>
       <Modal
       isOpen={showCancelModal}

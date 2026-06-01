@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import MainLayout from "./components/layout/MainLayout";
 import RequireAuth from "./components/auth/RequireAuth";
+import RedirectIfAuth from "./components/auth/RedirectIfAuth";
 
 // Auth / públicas
 import Login from "./pages/login/login";
@@ -20,7 +21,9 @@ import ReportesMensual from "./pages/reportes/ReportesMensual/ReportesMensual";
 import ReportePersonalizado from "./pages/reportes/ReportePersonalizado/ReportePersonalizado";
 import Citas from './pages/Citas/AgendaCitas';
 import Dashboard from "./pages/dashboard";
-import RegistroServicios from "./pages/RegistroServicios/RegistroServicios";
+import RegistroServicios from "./pages/Servicios/RegistroServicios";
+import Donaciones from "./pages/Donaciones/Donaciones";
+import Servicios from "./pages/Servicios/Servicios";
 
 import "./App.css";
 
@@ -29,7 +32,14 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* Públicas */}
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={
+            <RedirectIfAuth>
+              <Login />
+            </RedirectIfAuth>
+          }
+        />
         <Route path="/preregistro" element={<Preregistro />} />
 
         {/* Privadas: requieren sesión activa */}
@@ -46,6 +56,10 @@ export default function App() {
 
           {/* Registro de Servicios */}
           <Route path="/registro_servicios" element={<RegistroServicios />} />
+          <Route path="/servicios" element={<Servicios />} />
+
+          {/* Fondo de Donaciones */}
+          <Route path="/donaciones" element={<Donaciones />} />
 
 
           {/* Inventario */}

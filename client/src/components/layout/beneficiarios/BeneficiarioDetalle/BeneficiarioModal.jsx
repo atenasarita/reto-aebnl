@@ -28,20 +28,25 @@ function BeneficiarioModal({
           <button className={styles.closeBtn} onClick={onClose}>✕</button>
         </div>
 
-        <BeneficiarioDetalle
-          beneficiario={beneficiario}
-          startInEditMode={startInEditMode}
-          onUpdated={onUpdated}
-          onClose={onClose}
+        {activeTab === 'datos_generales' && (
+          <BeneficiarioDetalle
+            beneficiario={beneficiario}
+            startInEditMode={startInEditMode}
+            onUpdated={onUpdated}
+            onClose={onClose}
           />
+        )}
 
         {activeTab === 'historial_asociado' && (
           <HistorialAsociado beneficiario={beneficiario} />
         )}
 
         {activeTab === 'historial_padres' && (
-          <HistorialPadres beneficiario={beneficiario} />
-        )}
+  <HistorialPadres
+    beneficiario={beneficiario}
+    onUpdated={onUpdated}
+  />
+)}
       </div>
     </div>
   );

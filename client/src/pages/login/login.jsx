@@ -2,10 +2,10 @@ import '../styles/login.css';
 import logo from '../../assets/espina.png';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-import { API_URL } from '../../utils/config'
-
+import { API_URL } from '../../utils/config';
+import { saveSession } from '../../utils/auth';
 
 function Login() {
   const [usuario, setUsuario] = useState('');
@@ -38,9 +38,7 @@ function Login() {
         throw new Error(data.message || 'Usuario o contraseña incorrectos');
       }
 
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-
+      saveSession(data.token, data.user);
       navigate(redirectTo, { replace: true });
     } catch (error) {
       setError(error.message || 'Error de conexión');
@@ -114,6 +112,13 @@ function Login() {
             <button className='login-button' type='submit' disabled={loading}>
               {loading ? 'Validando...' : 'Iniciar Sesión'}
             </button>
+
+            <p className='login-preregistro-text'>
+              ¿Nuevo Beneficiario?{' '}
+              <Link to='/preregistro' className='login-preregistro-link'>
+                Inicia Prerregistro
+              </Link>
+            </p>
           </form>
         </div>
       </div>

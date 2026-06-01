@@ -577,6 +577,16 @@
   color: #dc2626;
 }
 
+.agenda-tag.teal {
+  background: #ccfbf1;
+  color: #115e59;
+}
+
+.agenda-tag.pink {
+  background: #fce7f3;
+  color: #831843;
+}
+
 .preregistro-card-wrapper {
   border-bottom: 1px solid #edf2f8;
 }

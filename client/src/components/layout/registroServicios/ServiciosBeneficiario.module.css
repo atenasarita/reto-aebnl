@@ -1,0 +1,239 @@
+.seccion {
+  padding-top: 0.5rem;
+}
+
+/* ── Buscador ── */
+.buscadorWrap {
+  max-width: 480px;
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 9px var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-card);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.inputRow:focus-within {
+  border-color: var(--color-brand-secondary);
+  box-shadow: 0 0 0 3px var(--color-brand-soft);
+}
+
+.inputRowOpen {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-color: var(--color-border);
+}
+
+.icono {
+  display: flex;
+  align-items: center;
+  color: var(--color-icon-muted);
+  flex-shrink: 0;
+  font-size: 15px;
+}
+
+.input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.limpiar {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.limpiar:hover {
+  color: var(--color-text-secondary);
+}
+
+/* ── Dropdown ── */
+.dropdown {
+  max-width: 480px;
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-top: none;
+  border-bottom-left-radius: var(--radius-control);
+  border-bottom-right-radius: var(--radius-control);
+  list-style: none;
+  overflow: hidden;
+  padding: 4px 0;
+  margin: 0;
+  box-shadow: var(--shadow-card);
+}
+
+.dropdownItem {
+  width: 100%;
+  text-align: left;
+  padding: 10px var(--space-4);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-primary);
+}
+
+.dropdownItem:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-brand);
+}
+
+/* ── Tarjeta resultado ── */
+.tarjeta {
+  margin-top: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.tarjetaHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.tarjetaNombre {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.tarjetaSub {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.tarjetaStats {
+  display: flex;
+  gap: var(--space-6);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.statLabel {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.statValor {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* ── Lista servicios ── */
+.lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.listaItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  transition: background 0.1s;
+}
+
+.listaItem:hover {
+  background: var(--color-surface-muted);
+}
+
+.listaItem:last-child {
+  border-bottom: none;
+}
+
+.listaLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.listaFolio {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 32px;
+}
+
+.listaNombre {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.listaCat {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 1px;
+}
+
+.listaRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.listaMonto {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.listaEstado {
+  font-size: 12px;
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-control);
+  font-weight: 500;
+}
+
+.pagado {
+  background: #EAF3DE;
+  color: #1F9D55;
+}
+
+.pendiente {
+  background: #FEF3C7;
+  color: #92400E;
+}
