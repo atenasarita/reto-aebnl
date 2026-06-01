@@ -1,0 +1,58 @@
+import { test, expect } from '@playwright/test';
+import { qase } from 'playwright-qase-reporter';
+
+test(qase(6, 'HU - 007 - Pre-Registro de Beneficiarios - Caso de Prueba #HU007-1'), async ({ page }) => {
+    await page.goto('http://localhost:5173/login');
+    await page.getByRole('textbox', { name: 'Usuario' }).click();
+    await page.getByRole('textbox', { name: 'Usuario' }).click();
+    await page.getByRole('textbox', { name: 'Usuario' }).dblclick();
+    await page.getByRole('textbox', { name: 'Usuario' }).fill('prueba1');
+    await page.getByRole('textbox', { name: 'Usuario' }).press('Enter');
+    await page.getByRole('textbox', { name: 'Usuario' }).fill('prueba1');
+    await page.getByRole('textbox', { name: '********' }).click();
+    await page.getByRole('textbox', { name: '********' }).click();
+    await page.getByRole('textbox', { name: '********' }).fill('admin1');
+    await page.getByRole('button', { name: 'Iniciar Sesión' }).click();
+    await page.getByRole('button', { name: 'Prerregistro' }).click();
+    await page.getByRole('textbox', { name: 'Ej. Aldo' }).click();
+    await page.getByRole('textbox', { name: 'Ej. Aldo' }).fill('Juan');
+    await page.getByRole('textbox', { name: 'Ej. Flores' }).click();
+    await page.getByRole('textbox', { name: 'Ej. Flores' }).fill('Pérez');
+    await page.getByRole('textbox', { name: 'Ej. González' }).click();
+    await page.getByRole('textbox', { name: 'Ej. González' }).fill('Lopez');
+    await page.getByRole('button', { name: 'Continuar →' }).click();
+    await page.locator('input[type="date"]').fill('2000-01-01');
+    await page.getByRole('combobox').selectOption('masculino');
+    await page.getByRole('textbox', { name: 'XXXX000000XXXXXX00' }).dblclick();
+    await page.getByRole('textbox', { name: 'XXXX000000XXXXXX00' }).fill('PELJ000101HNLXXX11');
+    await page.getByRole('button', { name: 'Continuar →' }).click();
+    await page.getByText('Espina Bífida Oculta').click();
+    await page.getByRole('button', { name: 'Registrarse ✓' }).click();
+});
+
+test(qase(8, 'HU - 007 - CURP con longitud inválida - Caso de Prueba #HU007-2'), async ({ page }) => {
+    await page.goto('http://localhost:5173/login');
+    await page.getByRole('textbox', { name: 'Usuario' }).click();
+    await page.getByRole('textbox', { name: 'Usuario' }).fill('prueba1');
+    await page.getByRole('textbox', { name: '********' }).click();
+    await page.getByRole('textbox', { name: '********' }).fill('admin1');
+    await page.getByRole('button', { name: 'Iniciar Sesión' }).click();
+    await page.getByRole('button', { name: 'Prerregistro' }).click();
+    await page.getByRole('textbox', { name: 'Ej. Aldo' }).click();
+    await page.getByRole('textbox', { name: 'Ej. Aldo' }).fill('Ana');
+    await page.getByRole('textbox', { name: 'Ej. Flores' }).click();
+    await page.getByRole('textbox', { name: 'Ej. Flores' }).fill('Garcia');
+    await page.getByRole('textbox', { name: 'Ej. González' }).click();
+    await page.getByRole('textbox', { name: 'Ej. González' }).fill('Diaz');
+    await page.getByRole('button', { name: 'Continuar →' }).click();
+    await page.locator('input[type="date"]').fill('2000-01-01');
+    await page.getByRole('combobox').selectOption('femenino');
+    await page.getByRole('textbox', { name: 'XXXX000000XXXXXX00' }).click();
+    await page.getByRole('textbox', { name: 'XXXX000000XXXXXX00' }).click();
+    await page.getByRole('textbox', { name: 'XXXX000000XXXXXX00' }).fill('PELJ000101HNL');
+    await page.getByRole('textbox', { name: 'XXXX000000XXXXXX00' }).click();
+    await page.getByRole('textbox', { name: 'XXXX000000XXXXXX00' }).fill('PELJ000101HNLXXX12');
+    await page.getByRole('button', { name: 'Continuar →' }).click();
+    await page.locator('label:nth-child(7) > .checkbox-card-mark').click();
+    await page.getByRole('button', { name: 'Registrarse ✓' }).click();
+});

@@ -1,6 +1,6 @@
-﻿**/.DS_Store
+**/.DS_Store
 /graphify-out
 /.cursor
-
+/node_modules
 server/INSERT INTO Citas (.sql
-.impeccable
+.impeccablePruebas/tests/test-2.spec.ts

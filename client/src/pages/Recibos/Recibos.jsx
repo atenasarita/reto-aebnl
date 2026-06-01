@@ -305,92 +305,76 @@ export default function Recibos() {
   const tabDiaRef = useRef(null);
   const tabMesRef = useRef(null);
 
-  const [fecha,        setFecha]        = useState(hoy());
-  const [busquedaDia,  setBusquedaDia]  = useState("");
-  const [busquedaMes,  setBusquedaMes]  = useState("");
-  const [vistaActiva,  setVistaActiva]  = useState("dia");
- 
-  const [recibosDay,   setRecibosDay]   = useState([]);
-  const [loadingDay,   setLoadingDay]   = useState(false);
-  const [errorDay,     setErrorDay]     = useState("");
- 
-  const [recibosMes,   setRecibosMes]   = useState([]);
-  const [loadingMes,   setLoadingMes]   = useState(false);
-  const [errorMes,     setErrorMes]     = useState("");
- 
-  const [seleccion,    setSeleccion]    = useState(null);
+  const [fecha, setFecha] = useState(hoy());
+  const [busquedaDia, setBusquedaDia] = useState("");
+  const [busquedaMes, setBusquedaMes] = useState("");
+  const [vistaActiva, setVistaActiva] = useState("dia");
 
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [recibosDay, setRecibosDay] = useState([]);
+  const [loadingDay, setLoadingDay] = useState(false);
+  const [errorDay, setErrorDay] = useState("");
 
+  const [recibosMes, setRecibosMes] = useState([]);
+  const [loadingMes, setLoadingMes] = useState(false);
+  const [errorMes, setErrorMes] = useState("");
 
-  const [fechaDesde, setFechaDesde] = useState(hoy());
-  const [fechaHasta, setFechaHasta] = useState(hoy());
-  const [busquedaRango, setBusquedaRango] = useState("");
-  const [recibosRango, setRecibosRango] = useState([]);
-  const [loadingRango, setLoadingRango] = useState(false);
-  const [errorRango, setErrorRango] = useState("");
+  const [seleccion, setSeleccion] = useState(null);
 
+  const cargarDia = useCallback(async (f, signal) => {
+    setLoadingDay(true);
+    setErrorDay("");
 
-  const cargarDia = useCallback(async (f) => {
-    setLoadingDay(true); setErrorDay("");
     try {
-      const res = await fetch(`${API_URL}/api/recibos?fecha=${f}`);
+      const res = await fetch(`${API_URL}/api/recibos?fecha=${f}`, { signal });
+
       if (!res.ok) throw new Error(`Error ${res.status}`);
-      setRecibosDay(await res.json());
+
+      const data = await res.json();
+      setRecibosDay(data);
     } catch (e) {
-      setErrorDay(e.message || "No se pudo cargar."); setRecibosDay([]);
-    } finally { setLoadingDay(false); }
+      if (e.name === "AbortError") return;
+
+      setErrorDay(e.message || "No se pudo cargar.");
+      setRecibosDay([]);
+    } finally {
+      if (!signal.aborted) {
+        setLoadingDay(false);
+      }
+    }
   }, []);
 
-  const cargarMes = useCallback(async (f) => {
+  const cargarMes = useCallback(async (f, signal) => {
     setLoadingMes(true);
     setErrorMes("");
+
     try {
       const mes = f.slice(0, 7);
-      const res = await fetch(`${API_URL}/api/recibos/resumen-mes?fecha=${mes}`);
+      const res = await fetch(`${API_URL}/api/recibos/resumen-mes?fecha=${mes}`, { signal });
+
       if (!res.ok) throw new Error(`Error ${res.status}`);
-      setRecibosMes(await res.json());
+
+      const data = await res.json();
+      setRecibosMes(data);
     } catch (e) {
-      setErrorMes(e.message || "No se pudo cargar."); setRecibosMes([]);
-    } finally { setLoadingMes(false); }
-  }, []);
+      if (e.name === "AbortError") return;
 
-  const cargarRango = useCallback(async (desde, hasta) => {
-    setLoadingRango(true); setErrorRango("");
-    try {
-      const res = await fetch(
-        `${API_URL}/api/recibos/rango-fechas?desde=${desde}&hasta=${hasta}`
-      );
-      if (!res.ok) throw new Error(`Error ${res.status}`);
-      setRecibosRango(await res.json());
-    } catch (e) {
-      setErrorRango(e.message || "No se pudo cargar."); setRecibosRango([]);
-    } finally { setLoadingRango(false); }
-  }, []);
-
-  useEffect(() => {
-  cargarDia(fecha);
-  cargarMes(fecha);
-}, [fecha, cargarDia, cargarMes]);
-
-  useEffect(() => {
-    const folioParam = searchParams.get('folio')
-    if (!folioParam) return
-  
-    const todas = [...recibosDay, ...recibosMes]
-    const encontrado = todas.find(
-      (r) => String(r.id_servicio_otorgado) === String(folioParam)
-    )
-    if (encontrado) {
-      setSeleccion(encontrado)
-
-      setSearchParams((prev) => {
-        const next = new URLSearchParams(prev)
-        next.delete('folio')
-        return next
-      })
+      setErrorMes(e.message || "No se pudo cargar.");
+      setRecibosMes([]);
+    } finally {
+      if (!signal.aborted) {
+        setLoadingMes(false);
+      }
     }
-  }, [searchParams, recibosDay, recibosMes, setSearchParams])
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    cargarDia(fecha, controller.signal);
+    cargarMes(fecha, controller.signal);
+
+    return () => controller.abort();
+  }, [fecha, cargarDia, cargarMes]);
 
   const normalizar = (str) =>
     (str || "")
