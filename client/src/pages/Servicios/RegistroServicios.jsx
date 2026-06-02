@@ -12,11 +12,12 @@ import {
 
 import "../styles/RegistroServicio.css";
 
-import { useProductos } from "../../hooks/useProductos.js";
-import useBeneficiarios from "../../hooks/useBeneficiarios.js"
-import useAgendaHoy from "../../hooks/useCitasHoy.js";
-import useServicios from "../../hooks/useServicios.js";
-import useRegistrarServicio from "../../hooks/useRegistrarServicios.js";
+import { useProductos } from "../../hooks/useProductos";
+import useBeneficiarios from "../../hooks/useBeneficiarios"
+import useAgendaHoy from "../../hooks/useCitasHoy";
+import useServicios from "../../hooks/useServicios";
+import useRegistrarServicio from "../../hooks/useRegistrarServicios";
+import useFondoDonaciones from "../../hooks/useFondoDonaciones";
 
 import StepBusqueda from "../../components/layout/servicios/Registro/StepBusqueda.jsx";
 import StepDetalles from "../../components/layout/servicios/Registro/StepDetalles.jsx";
@@ -56,12 +57,14 @@ export default function RegistroServicios() {
 
   const [metodoPago, setMetodoPago] = useState("");
   const [montoPagado, setMontoPagado] = useState("");
+  const [montoDonacion, setMontoDonacion] = useState("");
   const [descuento, setDescuento] = useState(0);
   const [yaAporto, setYaAporto] = useState(false);
   const [guardado, setGuardado] = useState(false);
   const [errorGuardado, setErrorGuardado] = useState(null);
 
   const { registrar, loading: guardando } = useRegistrarServicio();
+  const { saldo: saldoFondo, fetchSaldo } = useFondoDonaciones();
 
   const totalPasos = PASOS.length;
   const progresoPct = (pasoActual / totalPasos) * 100;
@@ -177,7 +180,8 @@ export default function RegistroServicios() {
       monto_inventario: subtotalInsumos,
       descuento: parseFloat(descuento) || 0,
       cuota_total: totalConDescuento,
-      monto_pagado: parseFloat(montoPagado) || 0,
+      monto_pagado: pagadoNum,
+      monto_donacion: donacionNum,
       metodo_pago: metodoPago,
       ya_aporto: yaAporto,
     });
@@ -194,7 +198,14 @@ export default function RegistroServicios() {
     if (pasoActual === 1) return !!(beneficiarioSeleccionado || citaSeleccionada);
     if (pasoActual === 2) return !!(fecha && hora);
     if (pasoActual === 3) return !!(tipoServicio || insumos.length > 0);
-    if (pasoActual === 4) return !!(metodoPago && montoPagado);
+    if (pasoActual === 4) {
+      const pagado = parseFloat(montoPagado) || 0;
+      const donacion = parseFloat(montoDonacion) || 0;
+      if (pagado + donacion > totalConDescuento + 0.001) return false;
+      if (donacion > saldoFondoNum) return false;
+      if (pagado > 0 && !metodoPago) return false;
+      return true;
+    }
     return true;
   };
 
@@ -213,6 +224,7 @@ export default function RegistroServicios() {
     setInsumos([]);
     setMetodoPago("");
     setMontoPagado("");
+    setMontoDonacion("");
     setDescuento(0);
     setYaAporto(false);
     setErrorGuardado(null);
@@ -335,6 +347,8 @@ export default function RegistroServicios() {
                 setMetodoPago={setMetodoPago}
                 montoPagado={montoPagado}
                 setMontoPagado={setMontoPagado}
+                montoDonacion={montoDonacion}
+                setMontoDonacion={setMontoDonacion}
                 descuento={descuento}
                 setDescuento={setDescuento}
                 yaAporto={yaAporto}

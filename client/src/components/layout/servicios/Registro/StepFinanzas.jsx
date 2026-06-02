@@ -17,6 +17,8 @@ export default function StepFinanzas({
   setMetodoPago,
   montoPagado,
   setMontoPagado,
+  montoDonacion,
+  setMontoDonacion,
   descuento,
   setDescuento,
   yaAporto,
@@ -34,7 +36,15 @@ export default function StepFinanzas({
   return (
     <div className='panel'>
 
-      {/* Aportación */}
+      {/* Saldo del fondo */}
+      <div className='field' style={{ marginBottom: 20, padding: '12px 16px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
+        <label className='fieldLabel' style={{ marginBottom: 4 }}>Saldo disponible en fondo de donaciones</label>
+        <span style={{ fontSize: 20, fontWeight: 700, color: '#166534' }}>
+          ${saldoFondoNum.toFixed(2)}
+        </span>
+      </div>
+
+      {/* Aportación familiar */}
       <div className='field' style={{ marginBottom: 20 }}>
 
         <div className='field' style={{ maxWidth: 220, marginBottom: 20 }}>
@@ -58,7 +68,6 @@ export default function StepFinanzas({
             prefix="$"
             className="search-finanzas"
           />
-          {/* Ya Aportó */}
           <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontWeight: 600, fontSize: 14, color: yaAporto ? '#166534' : '#666e85', whiteSpace: 'nowrap' }}>
             <input
               type="checkbox"
@@ -71,9 +80,27 @@ export default function StepFinanzas({
         </div>
       </div>
 
+      {/* Monto con fondo de donaciones */}
+      <div className='field' style={{ marginBottom: 20 }}>
+        <label className='fieldLabel'>Cubierto con fondo de donaciones</label>
+        <SearchBar
+          placeholder="0.00"
+          value={String(montoDonacion ?? '')}
+          onChange={(val) => setMontoDonacion(val)}
+          debounceMs={0}
+          prefix="$"
+          className="search-finanzas"
+        />
+        {excedeFondo && (
+          <p style={{ color: '#dc2626', fontSize: 13, marginTop: 6 }}>
+            El monto excede el saldo disponible del fondo (${saldoFondoNum.toFixed(2)}).
+          </p>
+        )}
+      </div>
+
       {/* Método de pago */}
       <div className='field' style={{ maxWidth: 220, marginBottom: 20 }}>
-        <label className='fieldLabel'>Método de pago</label>
+        <label className='fieldLabel'>Método de pago (aportación familiar)</label>
         <Dropdown
           options={metodoOptions}
           value={metodoPago}

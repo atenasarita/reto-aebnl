@@ -5,8 +5,8 @@ export interface Membresia {
   id_membresia: number;
   id_beneficiario: number;
   precio: number;
-  fecha_inicio: Date;
-  fecha_fin: Date;
+  fecha_inicio: string;
+  fecha_fin: string;
   estado: EstadoMembresia;
   metodo_pago: MetodoPagoMembresia;
 }
@@ -14,6 +14,6 @@ export interface Membresia {
 export interface CreateMembresiaInput {
   meses: number;
   precio_mensual: number;
-  fecha_inicio?: Date;
+  fecha_inicio?: string;
   metodo_pago: MetodoPagoMembresia;
 }

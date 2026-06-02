@@ -32,7 +32,6 @@ function StepInformacionMedica({
                 checked={formData.tipo_espinas.includes(type.value)}
                 onChange={handleTipoEspinasChange}
               />
-              <div className="checkbox-card-mark"></div>
               <span>{type.label}</span>
             </label>
           ))}

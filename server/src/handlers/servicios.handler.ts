@@ -51,8 +51,28 @@ export class ServiciosHandler {
         return res.status(401).json({ ok: false, message: 'Usuario no autenticado' });
       }
 
+      const montoPagado = Number(req.body.monto_pagado) || 0;
+      const montoDonacion = Number(req.body.monto_donacion) || 0;
+      const cuotaTotal = Number(req.body.cuota_total) || 0;
+
+      if (montoPagado < 0 || montoDonacion < 0) {
+        return res.status(400).json({
+          ok: false,
+          message: 'Los montos de aportación y donación deben ser no negativos',
+        });
+      }
+
+      if (montoPagado + montoDonacion > cuotaTotal + 0.001) {
+        return res.status(400).json({
+          ok: false,
+          message: 'La suma de aportación familiar y donación no puede exceder el total a pagar',
+        });
+      }
+
       const data = await this.serviciosController.registrarServicio({
         ...req.body,
+        monto_pagado: montoPagado,
+        monto_donacion: montoDonacion,
         id_usuario,
       });
 
@@ -61,7 +81,11 @@ export class ServiciosHandler {
     } catch (error: any) {
       const mensaje = error.message ?? '';
 
-      if (mensaje.includes('Stock insuficiente') || mensaje.includes('no encontrado en inventario')) {
+      if (
+        mensaje.includes('Stock insuficiente') ||
+        mensaje.includes('no encontrado en inventario') ||
+        mensaje.includes('Saldo insuficiente en fondo de donaciones')
+      ) {
         return res.status(409).json({ ok: false, message: mensaje });
       }
 

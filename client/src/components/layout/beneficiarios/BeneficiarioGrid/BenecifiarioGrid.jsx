@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import BeneficiarioCard from '../BeneficiarioCard/BeneficiarioCard'
 import styles from './BeneficiarioGrid.module.css'
 import Pagination from '../../../ui/Pagination'
@@ -13,15 +13,32 @@ function BeneficiarioGrid({
   loading,
   onRefresh,
   beneficiarioEditId = null,
-  clearEditQuery
+  clearEditQuery,
+  beneficiarioCreadoId,
 }) {
   const [currentPage, setCurrentPage] = useState(1)
   const [selected, setSelected] = useState(null)
   const [openInEditMode, setOpenInEditMode] = useState(false)
+  const openedCreatedBeneficiario = useRef(false)
+  const animatedIds = useRef(new Set())
+
 
   useEffect(() => {
     setCurrentPage(1)
   }, [data])
+
+  useEffect(() => {
+    if(!beneficiarioCreadoId || openedCreatedBeneficiario.current || loading) return;
+
+    const existenEnData = data.some(
+      b => b.id_beneficiario === beneficiarioCreadoId
+    );
+
+    if(!existenEnData) return;
+
+    openedCreatedBeneficiario.current = true;
+    handleView(beneficiarioCreadoId);
+  }, [beneficiarioCreadoId, data, loading])
 
   async function fetchBeneficiarioById(id) {
     const token = localStorage.getItem('token')
@@ -136,10 +153,17 @@ function BeneficiarioGrid({
 
   return (
     <>
-      <div key={`page-${currentPage}`} className={styles.grid}>
-        {paginated.map((b, index) => (
+      <div className={styles.grid}>
+        {paginated.map((b, index) => {
+
+        const isNew = !animatedIds.current.has(b.id_beneficiario)
+
+        if(isNew){
+          animatedIds.current.add(b.id_beneficiario)
+        }
+        return (
           <div
-            key={`${currentPage}-${b.id_beneficiario}`}
+            key={b.id_beneficiario}
             className={styles.cardEntrance}
             style={{ animationDelay: `${index * 0.06}s` }}
           >
@@ -151,10 +175,11 @@ function BeneficiarioGrid({
               onDownloadPdf={() => handleDownloadPdf(b.id_beneficiario)}
             />
           </div>
-        ))}
+          )
+        })}
       </div>
 
-      <div className={styles.paginationEntrance} key={`pagination-${currentPage}`}>
+      <div className={styles.paginationEntrance}>
         <Pagination
           currentPage={currentPage}
           totalItems={normalized.length}

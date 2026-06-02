@@ -4,8 +4,12 @@ import { useSearchParams } from 'react-router-dom'
 
 import "../styles/Recibos.css";
 
+<<<<<<< HEAD
 import { API_URL } from '../../utils/config'
 import { todayDate } from '../../utils/dateTime';
+=======
+const API_URL = import.meta.env.VITE_API_URL;
+>>>>>>> 05eb4c4 (vite.url)
 
 const fmt = (n) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(n ?? 0);
@@ -148,8 +152,23 @@ function ReciboDetalle({ recibo, onClose }) {
               <span>{fmt(recibo.financiero?.cuota_total)}</span>
             </div>
             <div className="fin-row fin-pagado">
-              <span>Pagado</span>
+              <span>Aportación familia</span>
               <span>{fmt(recibo.financiero?.monto_pagado)}</span>
+            </div>
+            {(recibo.financiero?.monto_donacion ?? 0) > 0 && (
+              <div className="fin-row fin-donacion">
+                <span>Fondo donaciones</span>
+                <span>{fmt(recibo.financiero.monto_donacion)}</span>
+              </div>
+            )}
+            <div className="fin-row fin-total-cobrado">
+              <span>Total cobrado</span>
+              <span>
+                {fmt(
+                  Number(recibo.financiero?.monto_pagado ?? 0) +
+                    Number(recibo.financiero?.monto_donacion ?? 0)
+                )}
+              </span>
             </div>
           </div>
           {recibo.financiero?.metodo_pago && (
@@ -177,6 +196,11 @@ function ReciboRow({ recibo, onVerDetalle, mostrarFecha = false, index = 0 }) {
       <td>{recibo.hora}</td>
       <td className="text-right">{fmt(recibo.financiero?.cuota_total)}</td>
       <td className="text-right">{fmt(recibo.financiero?.monto_pagado)}</td>
+      <td className="text-right">
+        {(recibo.financiero?.monto_donacion ?? 0) > 0
+          ? fmt(recibo.financiero.monto_donacion)
+          : <span className="text-muted">—</span>}
+      </td>
       <td>
         {recibo.financiero?.metodo_pago
           ? <PagoBadge metodo={recibo.financiero.metodo_pago} />
@@ -237,6 +261,7 @@ function TablaRecibos({
             <th>Hora</th>
             <th className="text-right">Total</th>
             <th className="text-right">Pagado</th>
+            <th className="text-right">Donación</th>
             <th>Método</th>
             <th>Detalles</th>
           </tr>
@@ -380,9 +405,17 @@ export default function Recibos() {
   const filtradosMes = filtrarRecibos(recibosMes, busquedaMes);
 
   const totalDia = filtradosDia.reduce((s, r) => s + Number(r.financiero?.cuota_total ?? 0), 0);
-  const pagadoDia = filtradosDia.reduce((s, r) => s + Number(r.financiero?.monto_pagado ?? 0), 0);
+  const pagadoDia = filtradosDia.reduce(
+    (s, r) =>
+      s + Number(r.financiero?.monto_pagado ?? 0) + Number(r.financiero?.monto_donacion ?? 0),
+    0
+  );
   const totalMes = filtradosMes.reduce((s, r) => s + Number(r.financiero?.cuota_total ?? 0), 0);
-  const pagadoMes = filtradosMes.reduce((s, r) => s + Number(r.financiero?.monto_pagado ?? 0), 0);
+  const pagadoMes = filtradosMes.reduce(
+    (s, r) =>
+      s + Number(r.financiero?.monto_pagado ?? 0) + Number(r.financiero?.monto_donacion ?? 0),
+    0
+  );
 
   const onTabsKeyDown = (event) => {
     const tabs = ["dia", "mes", "rango"];

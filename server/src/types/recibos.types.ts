@@ -17,6 +17,7 @@ export interface FinancieroRecibo {
   descuento:              number;
   cuota_total:            number;
   monto_pagado:           number;
+  monto_donacion:         number;
   metodo_pago:            "efectivo" | "tarjeta" | "donacion";
 }
 

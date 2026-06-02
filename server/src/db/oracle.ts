@@ -3,8 +3,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-
-
 export class OracleConnection {
     async getConnection() {
         const user = process.env.ORACLE_USER;
@@ -13,7 +11,7 @@ export class OracleConnection {
         const walletPassword = process.env.ORACLE_WALLET_PASSWORD;
         const walletLocation = process.env.TNS_ADMIN || '/tmp/wallet';
 
-        if (!user || !password || !connectString || !walletPassword) {
+        if (!user || !password || !connectString || !walletPath || !walletPassword) {
             throw new Error('Faltan variables de entorno de Oracle.');
         }
 
@@ -21,8 +19,8 @@ export class OracleConnection {
             user,
             password,
             connectString,
-            configDir: walletLocation,
-            walletLocation,
+            configDir: walletPath,
+            walletLocation: walletPath,
             walletPassword,
         });
     }

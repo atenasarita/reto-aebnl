@@ -15,8 +15,12 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+<<<<<<< HEAD
   const location = useLocation();
   const redirectTo = location.state?.from?.pathname || '/dashboard';
+=======
+  const API_URL = import.meta.env.VITE_API_URL;
+>>>>>>> 05eb4c4 (vite.url)
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -25,12 +29,12 @@ function Login() {
 
     try {
       const response = await fetch(`${API_URL}/api/usuarios/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ usuario, contrasena }),
-      });
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ usuario, contrasena }),
+    });
 
     const text = await response.text();
     console.log("RAW RESPONSE:", text);

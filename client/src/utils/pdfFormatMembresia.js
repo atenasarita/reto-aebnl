@@ -2,15 +2,29 @@
 import JsBarcode from 'jsbarcode';
 import logoAebnl from '../assets/aebnl_vertical.png';
 
+const parseDateOnly = (dateStr) => {
+  if (!dateStr) return null;
+  const dateOnly = String(dateStr).split('T')[0];
+  const [year, month, day] = dateOnly.split('-');
+  if (!year || !month || !day) return null;
+  return new Date(Number(year), Number(month) - 1, Number(day));
+};
+
 const calcAge = (fechaNacimiento) => {
   if (!fechaNacimiento) return '—';
-  const diff = Date.now() - new Date(fechaNacimiento).getTime();
+  const birthDate = parseDateOnly(fechaNacimiento);
+  if (!birthDate) return '—';
+  const diff = Date.now() - birthDate.getTime();
   return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25)).toString();
 };
 
 const formatDate = (dateStr) => {
-  if (!dateStr) return '—';
-  return new Date(dateStr).toLocaleDateString('es-MX');
+  const date = parseDateOnly(dateStr);
+  if (!date) return '—';
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = String(date.getFullYear());
+  return `${day}/${month}/${year}`;
 };
 
 export const downloadBeneficiarioPdf = (data, id) => {
