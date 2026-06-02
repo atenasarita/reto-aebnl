@@ -4,4 +4,6 @@ module.exports = {
   moduleFileExtensions: ['js', 'mjs', 'cjs', 'json', 'node'],
    roots: ['<rootDir>/client/src', '<rootDir>/__tests__'],
    moduleDirectories: ['node_modules', 'client/node_modules'],
+   coverageReporters: ['lcov', 'text'],
+    coverageDirectory: 'coverage',
 };
