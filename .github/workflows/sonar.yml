@@ -25,12 +25,11 @@ jobs:
           ref: unitTests
           path: unitTests
  
-    #   - name: Copiar pruebas unitarias al proyecto
-    #     run: |
-    #         mkdir -p __tests__
-    #         cp unitTests/__tests__/* __tests__/
-    #         cp unitTests/package.json ./
-    #         cp unitTests/package-lock.json ./
+      - name: Copiar dependencias de pruebas unitarias al proyecto
+        run: |
+            cp unitTests/package.json ./
+            cp unitTests/package-lock.json ./
+
       - name: Apuntar Jest a pruebas en unitTests
         run: cp unitTests/jest.config.cjs ./jest.config.cjs
 
