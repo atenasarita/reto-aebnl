@@ -39,11 +39,10 @@ jobs:
  
       - name: Install dependencies
         run: npm install
-        working-directory: client
+        # working-directory: client
  
       - name: Run tests with coverage
-        run: node --experimental-vm-modules ./client/node_modules/.bin/jest --coverage
-        working-directory: client
+        run: node --experimental-vm-modules ./node_modules/.bin/jest --coverage
  
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
