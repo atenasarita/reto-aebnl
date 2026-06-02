@@ -5,3 +5,5 @@
 server/INSERT INTO Citas (.sql
 .impeccable.clj-kondo/.cache/
 .lsp/.cache/
+.impeccable
+node_modules/
