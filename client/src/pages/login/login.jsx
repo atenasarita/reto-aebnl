@@ -115,9 +115,9 @@ function Login() {
 
             <p className='login-preregistro-text'>
               ¿Nuevo Beneficiario?{' '}
-              <Link to='/preregistro' className='login-preregistro-link'>
+              <a href='/#preregistro' className='login-preregistro-link'>
                 Inicia Prerregistro
-              </Link>
+              </a>
             </p>
           </form>
         </div>

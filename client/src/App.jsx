@@ -6,10 +6,10 @@ import RedirectIfAuth from "./components/auth/RedirectIfAuth";
 
 // Auth / públicas
 import Login from "./pages/login/login";
+import Landing from "./pages/landing/Landing";
 
 // Páginas internas (main)
 import GestionBeneficiarios from "./pages/GestionBeneficiarios/GestionBeneficiarios";
-import Preregistro from "./pages/preregistro/Preregistro";
 import Inventario from "./pages/inventario/Inventario";
 import RegistroBeneficiario from "./pages/registro_beneficiario/registro_beneficiario";
 import Recibos from './pages/Recibos/Recibos' 
@@ -32,6 +32,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* Públicas */}
+        <Route path="/" element={<Landing />} />
         <Route
           path="/login"
           element={
@@ -40,7 +41,7 @@ export default function App() {
             </RedirectIfAuth>
           }
         />
-        <Route path="/preregistro" element={<Preregistro />} />
+        <Route path="/preregistro" element={<Navigate to="/#preregistro" replace />} />
 
         {/* Privadas: requieren sesión activa */}
         <Route element={<RequireAuth />}>
@@ -83,13 +84,11 @@ export default function App() {
           {/* Citas */}
           <Route path="/citas" element={<Citas />} />
 
-          {/* Default */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Route>
 
         {/* Catch-all */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

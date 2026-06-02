@@ -40,6 +40,33 @@
   font-family: var(--pr-font-headline);
 }
 
+/* Variante landing: solo wizard en tarjeta centrada */
+.preregistro-page--landing {
+  min-height: auto;
+  background: transparent;
+  font-family: "Outfit", var(--font-sans);
+}
+
+.preregistro-page--landing .preregistro-landing-card {
+  width: 100%;
+  background: var(--color-surface-card);
+  border-radius: 24px;
+  padding: 0;
+}
+
+.preregistro-page--landing .preregistro-steps {
+  margin-bottom: 8px;
+}
+
+.preregistro-page--landing .preregistro-card,
+.preregistro-page--landing .preregistro-form {
+  max-width: none;
+}
+
+.preregistro-page--landing .preregistro-submit-btn {
+  width: 100%;
+}
+
 /* ── Split layout (izquierda: asociación | derecha: formulario) */
 .preregistro-split {
   display: grid;
@@ -524,6 +551,28 @@
   width: 16px;
   height: 16px;
   accent-color: var(--pr-primary);
+}
+
+/* Variante compacta dentro del label de campo */
+.preregistro-label-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.preregistro-inline-check--sm {
+  grid-column: unset;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--pr-primary);
+  gap: 5px;
+}
+
+.preregistro-inline-check--sm input {
+  width: 13px;
+  height: 13px;
 }
 
 /* ── Radio group ────────────────────────────────────────── */

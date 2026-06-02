@@ -1,58 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import {
-  Accessibility,
-  ArrowLeft,
-  ArrowRight,
-  Bone,
-  Brain,
-  Droplets,
-  Globe,
-  Hand,
-  Headset,
-  Heart,
-  Mail,
-  MapPin,
-  Phone,
-  Send,
-  Stethoscope,
-} from "lucide-react";
-import { FaFacebook, FaInstagram } from "react-icons/fa";
+import { ArrowLeft, ArrowRight, Send } from "lucide-react";
 import "../styles/Preregistro.css";
 
 import { API_URL } from "../../utils/config";
 import { espinaBifidaOptions } from "../../utils/espinaBifidaTypes";
 import { limpiarSoloLetras, validarCURP } from "../../utils/validator";
 import { todayDate } from "../../utils/dateTime";
-import logo from "../../assets/espina.png";
-
-const CONTACT = {
-  website: "https://www.espinabifida.org.mx/",
-  facebook: "https://www.facebook.com/espinabifidanl/?locale=es_LA",
-  instagram: "https://www.instagram.com/a.espinabifida/",
-  address: "C. Julián Villagrán 344, Centro, 64000 Monterrey, N.L.",
-  mapsUrl:
-    "https://www.google.com/maps/search/?api=1&query=Juli%C3%A1n+Villagr%C3%A1n+344+Centro+Monterrey+Nuevo+Le%C3%B3n",
-  phone: "81 1099 0168",
-  phoneHref: "tel:+528110990168",
-  email: "espinabifidanl@yahoo.com.mx",
-};
-
-const MEDICAL_AREAS = [
-  { icon: Brain, label: "Neurocirugía" },
-  { icon: Bone, label: "Ortopedia" },
-  { icon: Hand, label: "Cir. plástica reconstructiva" },
-  { icon: Droplets, label: "Urología" },
-  { icon: Heart, label: "Psicología" },
-  { icon: Accessibility, label: "Rehabilitación" },
-  { icon: Stethoscope, label: "Gastroenterología" },
-];
-
-const PREREGISTRO_STEPS = [
-  "Identidad del beneficiario",
-  "Datos oficiales (CURP, fecha de nacimiento)",
-  "Diagnóstico de espina bífida",
-];
 
 const STEPS = [
   { key: "identidad", label: "Identidad" },
@@ -145,7 +98,25 @@ function StepIdentidad({ savedData, onComplete }) {
       />
 
       <div className="preregistro-form-grid">
-        <Field label="Nombre(s)" required className="preregistro-field--full">
+        <Field
+          label={
+            <span className="preregistro-label-row">
+              Nombre(s)<span className="preregistro-required">*</span>
+              <label className="preregistro-inline-check preregistro-inline-check--sm">
+                <input
+                  type="checkbox"
+                  checked={tieneSegundo}
+                  onChange={(e) => {
+                    setTieneSegundo(e.target.checked);
+                    if (!e.target.checked) setSegundoNombre("");
+                  }}
+                />
+                <span>+ Segundo nombre</span>
+              </label>
+            </span>
+          }
+          className={tieneSegundo ? "" : "preregistro-field--full"}
+        >
           <input
             type="text"
             placeholder="Ej. Juan"
@@ -154,20 +125,8 @@ function StepIdentidad({ savedData, onComplete }) {
           />
         </Field>
 
-        <label className="preregistro-inline-check">
-          <input
-            type="checkbox"
-            checked={tieneSegundo}
-            onChange={(e) => {
-              setTieneSegundo(e.target.checked);
-              if (!e.target.checked) setSegundoNombre("");
-            }}
-          />
-          <span>¿Tiene segundo nombre?</span>
-        </label>
-
         {tieneSegundo && (
-          <Field label="Segundo nombre" className="preregistro-field--full">
+          <Field label="Segundo nombre">
             <input
               type="text"
               placeholder="Ej. Pablo"
@@ -432,124 +391,6 @@ function SuccessScreen({ data, onReset }) {
   );
 }
 
-function MedicalAreasSection() {
-  return (
-    <section className="preregistro-assoc-areas" aria-label="Áreas médicas">
-      <h4>Áreas médicas</h4>
-      <p>Vinculamos a familias con especialistas en:</p>
-      <ul className="preregistro-assoc-areas-grid">
-        {MEDICAL_AREAS.map(({ icon: Icon, label }) => (
-          <li key={label}>
-            <span className="preregistro-assoc-area-icon" aria-hidden="true">
-              <Icon size={18} />
-            </span>
-            <span>{label}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-function AssociationPanel() {
-  return (
-    <aside className="preregistro-assoc-panel" aria-label="Sobre la asociación">
-      <div className="preregistro-assoc-header">
-        <Link to="/" className="preregistro-assoc-logo-link" aria-label="Ir al inicio">
-          <img
-            src={logo}
-            alt=""
-            className="preregistro-assoc-logo"
-          />
-        </Link>
-      </div>
-
-      <div className="preregistro-assoc-body">
-      {/* Stats */}
-      <div className="preregistro-assoc-stats">
-        <div className="preregistro-assoc-stat">
-          <span className="preregistro-assoc-stat-num">+1,167</span>
-          <span className="preregistro-assoc-stat-label">familias integradas</span>
-        </div>
-        <div className="preregistro-assoc-stat-divider" aria-hidden="true" />
-        <div className="preregistro-assoc-stat">
-          <span className="preregistro-assoc-stat-num">30+</span>
-          <span className="preregistro-assoc-stat-label">años apoyando</span>
-        </div>
-      </div>
-
-      {/* Descripción */}
-      <p className="preregistro-assoc-desc">
-        Somos una asociación única en México dedicada a brindar servicios de
-        asistencia en salud a personas con espina bífida desde 1993.
-      </p>
-
-
-
-      <MedicalAreasSection />
-
-
-      <div className="preregistro-assoc-contact-block">
-        <h4>Contáctanos</h4>
-        <a href={CONTACT.phoneHref} className="preregistro-assoc-contact-item">
-          <Phone size={17} aria-hidden="true" />
-          {CONTACT.phone}
-        </a>
-        <a href={`mailto:${CONTACT.email}`} className="preregistro-assoc-contact-item">
-          <Mail size={17} aria-hidden="true" />
-          {CONTACT.email}
-        </a>
-        <a
-          href={CONTACT.mapsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="preregistro-assoc-contact-item"
-        >
-          <MapPin size={17} aria-hidden="true" />
-          {CONTACT.address}
-        </a>
-
-      </div>
-
-      {/* Social */}
-      <div className="preregistro-assoc-social">
-        <a
-          href={CONTACT.facebook}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Facebook AEBNL"
-          className="preregistro-assoc-social-btn"
-        >
-          <FaFacebook size={20} />
-          Facebook
-        </a>
-        <a
-          href={CONTACT.instagram}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Instagram AEBNL"
-          className="preregistro-assoc-social-btn"
-        >
-          <FaInstagram size={20} />
-          Instagram
-        </a>
-      </div>
-      </div>
-    </aside>
-  );
-}
-
-function FormToolbar() {
-  return (
-    <div className="preregistro-form-toolbar">
-      <Link to="/" className="preregistro-back-link">
-        <ArrowLeft size={16} aria-hidden />
-        Volver al inicio
-      </Link>
-    </div>
-  );
-}
-
 export default function Preregistro() {
   const [step, setStep] = useState(0);
   const [completed, setCompleted] = useState([]);
@@ -622,52 +463,39 @@ export default function Preregistro() {
     }
   };
 
-  return (
-    <div className="preregistro-page">
-      <div className="preregistro-split">
-        <AssociationPanel />
-
-        <div className="preregistro-split-form">
-          <FormToolbar />
-          <div className="preregistro-card">
-            {!isDone && <StepIndicator currentStep={step} />}
-
-            <div className="preregistro-form">
-              {isDone ? (
-                <SuccessScreen data={formData} onReset={resetForm} />
-              ) : step === 0 ? (
-                <StepIdentidad
-                  savedData={formData.identidad}
-                  onComplete={(d) => advance(d, "identidad")}
-                />
-              ) : step === 1 ? (
-                <StepDemografia
-                  savedData={formData.demografia}
-                  onComplete={(d) => advance(d, "demografia")}
-                  onBack={back}
-                />
-              ) : (
-                <StepDiagnostico
-                  savedData={formData.diagnostico}
-                  onComplete={handleFinalSubmit}
-                  onBack={back}
-                  isSubmitting={isSubmitting}
-                  submitError={submitError}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+  const formBody = (
+    <>
+      {!isDone && <StepIndicator currentStep={step} />}
+      <div className="preregistro-form">
+        {isDone ? (
+          <SuccessScreen data={formData} onReset={resetForm} />
+        ) : step === 0 ? (
+          <StepIdentidad
+            savedData={formData.identidad}
+            onComplete={(d) => advance(d, "identidad")}
+          />
+        ) : step === 1 ? (
+          <StepDemografia
+            savedData={formData.demografia}
+            onComplete={(d) => advance(d, "demografia")}
+            onBack={back}
+          />
+        ) : (
+          <StepDiagnostico
+            savedData={formData.diagnostico}
+            onComplete={handleFinalSubmit}
+            onBack={back}
+            isSubmitting={isSubmitting}
+            submitError={submitError}
+          />
+        )}
       </div>
+    </>
+  );
 
-      <a
-        href={CONTACT.phoneHref}
-        className="preregistro-fab"
-        title="Llamar a la asociación"
-        aria-label="Llamar a la asociación"
-      >
-        <Headset size={24} />
-      </a>
+  return (
+    <div className="preregistro-page preregistro-page--landing">
+      <div className="preregistro-landing-card">{formBody}</div>
     </div>
   );
 }
