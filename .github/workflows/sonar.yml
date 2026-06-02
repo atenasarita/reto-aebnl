@@ -29,9 +29,6 @@ jobs:
         run: |
             cp unitTests/package.json ./
             cp unitTests/package-lock.json ./
-          
-      - name: Apuntar Jest a pruebas en rama de unitTests
-        run: cp unitTests/jest.config.cjs ./jest.config.cjs
 
       - name: Copy test files from branch unitTests 
         run: cp -r unitTests/__tests__ ./
