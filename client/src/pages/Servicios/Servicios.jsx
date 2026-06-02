@@ -1,91 +1,123 @@
-import { useMemo, useState, useRef, useId } from 'react'
-import ServiciosNuevoServicioModal from './Serviciosnuevoserviciomodal'
-import ServiciosTabla from '../../components/layout/registroServicios/ServiciosTabla'
-import ServiciosDetalleModal from '../../components/layout/registroServicios/Serviciosdetallemodal'
-import ServiciosBeneficiario from '../../components/layout/registroServicios/ServiciosBeneficiario'
+import { useMemo, useState, useRef, useId, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+
+
+import ServiciosNuevoServicioModal from '../../components/layout/servicios/Navegacion/Serviciosnuevoserviciomodal.jsx'
+import ServiciosTabla from '../../components/layout/servicios/Navegacion/ServiciosTabla.jsx'
+
+
+import ServiciosDetalleModal from '../../components/layout/servicios/Navegacion/Serviciosdetallemodal.jsx'
+import ServiciosBeneficiario from '../../components/layout/servicios/Navegacion/ServiciosBeneficiario.jsx'
+import ServiciosCatalogo from '../../components/layout/servicios/Navegacion/ServiciosCatalogo.jsx'
 
 import SearchBar from '../../components/ui/SearchBar'
 import Dropdown from '../../components/ui/Dropdown'
-import { FiSearch } from 'react-icons/fi'
 
 import '../styles/Servicios.css'
 
-const HISTORIAL_PLACEHOLDER = [
-  { id:145, beneficiario:'María García López',  nombre:'Consulta general',    categoria:'Consultas',     metodoPago:'Efectivo',      montoServicio:350, montoInventario:0,   descuento:0,  cuotaTotal:350, montoPagado:350, yaAporto:1 },
-  { id:2,   beneficiario:'Carlos Pérez Ruiz',   nombre:'Hemograma completo',  categoria:'Laboratorio',   metodoPago:'Tarjeta',        montoServicio:220, montoInventario:50,  descuento:20, cuotaTotal:250, montoPagado:250, yaAporto:1 },
-  { id:3,   beneficiario:'Ana Martínez',        nombre:'Rayos X tórax',       categoria:'Estudios',      metodoPago:'Transferencia',  montoServicio:480, montoInventario:0,   descuento:0,  cuotaTotal:480, montoPagado:0,   yaAporto:0 },
-  { id:4,   beneficiario:'Luis Hernández',      nombre:'Fisioterapia lumbar', categoria:'Rehabilitación',metodoPago:'Efectivo',       montoServicio:600, montoInventario:100, descuento:50, cuotaTotal:650, montoPagado:650, yaAporto:1 },
-  { id:5,   beneficiario:'Sofía Torres',        nombre:'Terapia de lenguaje', categoria:'Terapia',       metodoPago:'Efectivo',       montoServicio:500, montoInventario:0,   descuento:0,  cuotaTotal:500, montoPagado:250, yaAporto:0 },
-  { id:6,   beneficiario:'Roberto Díaz',        nombre:'Curación de herida',  categoria:'Procedimiento', metodoPago:'Tarjeta',        montoServicio:180, montoInventario:80,  descuento:0,  cuotaTotal:260, montoPagado:260, yaAporto:1 },
-  { id:7,   beneficiario:'María Garcia',        nombre:'Rayos X columna',     categoria:'Estudios',      metodoPago:'Transferencia',  montoServicio:520, montoInventario:0,   descuento:50, cuotaTotal:470, montoPagado:470, yaAporto:1 },
-  { id:15,  beneficiario:'María Garcia',        nombre:'Consulta general',    categoria:'Consultas',     metodoPago:'Efectivo',       montoServicio:350, montoInventario:0,   descuento:0,  cuotaTotal:350, montoPagado:350, yaAporto:1 },
-  { id:12,  beneficiario:'Carlos Garcia',       nombre:'Hemograma completo',  categoria:'Laboratorio',   metodoPago:'Tarjeta',        montoServicio:220, montoInventario:50,  descuento:20, cuotaTotal:250, montoPagado:250, yaAporto:1 },
-  { id:13,  beneficiario:'Ana Garcia',          nombre:'Rayos X tórax',       categoria:'Estudios',      metodoPago:'Transferencia',  montoServicio:480, montoInventario:0,   descuento:0,  cuotaTotal:480, montoPagado:0,   yaAporto:0 },
-  { id:14,  beneficiario:'Luis Torres',         nombre:'Fisioterapia lumbar', categoria:'Rehabilitación',metodoPago:'Efectivo',       montoServicio:600, montoInventario:100, descuento:50, cuotaTotal:650, montoPagado:650, yaAporto:1 },
-  { id:16,  beneficiario:'Roberto Mario',       nombre:'Curación de herida',  categoria:'Procedimiento', metodoPago:'Tarjeta',        montoServicio:180, montoInventario:80,  descuento:0,  cuotaTotal:260, montoPagado:260, yaAporto:1 },
-  { id:17,  beneficiario:'María Lopez',         nombre:'Rayos X columna',     categoria:'Estudios',      metodoPago:'Transferencia',  montoServicio:520, montoInventario:0,   descuento:50, cuotaTotal:470, montoPagado:470, yaAporto:1 },
-]
+import { FiSearch } from 'react-icons/fi'
+
+import useHistorialServicios from '../../hooks/useHistorialServicios'
+import useServicios from '../../hooks/useServicios.js'
+
+function fmt(num) {
+  if (num == null) return null
+  return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(num)
+}
+
+function mapFila(s) {
+  return {
+    ...s,
+    montoServicioFormateado:   fmt(s.montoServicio),
+    montoInventarioFormateado: fmt(s.montoInventario),
+    descuentoFormateado:       fmt(s.descuento),
+    cuotaTotalFormateado:      fmt(s.cuotaTotal),
+    montoPagadoFormateado:     fmt(s.montoPagado),
+  }
+}
 
 export default function Servicios() {
-  const [historial]     = useState(HISTORIAL_PLACEHOLDER)
-  const [categoriasExtras, setCategoriasExtras] = useState([])
-  const [consulta, setConsulta]               = useState('')
+  const { servicios: historial, hasMore, loading, error, loadMore, refetch } = useHistorialServicios()
+  const { tipos, loading: loadingTipos, refetch: refetchTipos } = useServicios()
+
+  const sentinelRef        = useRef(null)
+  const tabHistorialRef    = useRef(null)
+  const tabBeneficiarioRef = useRef(null)
+  const tabCatalogoRef     = useRef(null)
+
+  const [consulta,        setConsulta]        = useState('')
   const [categoriaFiltro, setCategoriaFiltro] = useState('')
-  const [modalServicio, setModalServicio]     = useState(false)
-  const [detalleItem, setDetalleItem]         = useState(null)
-  const [vistaActiva, setVistaActiva]         = useState('historial')
+  const [modalServicio,   setModalServicio]   = useState(false)
+  const [detalleItem,     setDetalleItem]     = useState(null)
+  const [vistaActiva,     setVistaActiva]     = useState('historial')
 
   const navigate = useNavigate()
 
-  const tabsHintId       = useId()
-  const tabHistorialId   = useId()
-  const tabBeneficiarioId = useId()
-  const panelHistorialId  = useId()
+  const tabsHintId          = useId()
+  const tabHistorialId      = useId()
+  const tabBeneficiarioId   = useId()
+  const tabCatalogoId       = useId()
+  const panelHistorialId    = useId()
   const panelBeneficiarioId = useId()
-  const tabHistorialRef   = useRef(null)
-  const tabBeneficiarioRef = useRef(null)
+  const panelCatalogoId     = useId()
 
-  const todasCategorias = [
-    'Consultas', 'Estudios', 'Laboratorio', 'Procedimiento',
-    'Rehabilitación', 'Terapia', 'Material',
-    ...(categoriasExtras ?? []),
-  ]
+  const todasCategorias = useMemo(() => {
+    const desdeTipos = [...new Set(tipos.map((t) => t.categoria).filter(Boolean))]
+    return desdeTipos.length > 0 ? desdeTipos : [
+      'Consultas', 'Estudios', 'Laboratorio', 'Procedimiento',
+      'Rehabilitación', 'Terapia', 'Material',
+    ]
+  }, [tipos])
 
   const filtrados = useMemo(() => {
     const q = consulta.toLowerCase()
-    return historial.filter((s) => {
-      const matchCat   = !categoriaFiltro || s.categoria === categoriaFiltro
-      const matchTexto = !q
-        || s.nombre.toLowerCase().includes(q)
-        || s.categoria.toLowerCase().includes(q)
-      return matchCat && matchTexto
-    })
+    return (historial ?? [])
+      .filter((s) => {
+        const matchCat   = !categoriaFiltro || s.categoria === categoriaFiltro
+        const matchTexto = !q
+          || s.nombre?.toLowerCase().includes(q)
+          || s.categoria?.toLowerCase().includes(q)
+          || s.beneficiario?.toLowerCase().includes(q)
+        return matchCat && matchTexto
+      })
+      .map(mapFila)
   }, [historial, consulta, categoriaFiltro])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) loadMore()
+      },
+      { threshold: 0.1 }
+    )
+    if (sentinelRef.current) observer.observe(sentinelRef.current)
+    return () => observer.disconnect()
+  }, [hasMore, loading, loadMore])
+
+  const TABS    = ['historial', 'beneficiario', 'catalogo']
+  const tabRefs = { historial: tabHistorialRef, beneficiario: tabBeneficiarioRef, catalogo: tabCatalogoRef }
 
   const onTabsKeyDown = (e) => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return
     e.preventDefault()
-    if (e.key === 'Home') {
-      setVistaActiva('historial')
-      tabHistorialRef.current?.focus()
-      return
-    }
-    if (e.key === 'End') {
-      setVistaActiva('beneficiario')
-      tabBeneficiarioRef.current?.focus()
-      return
-    }
-    const next = vistaActiva === 'historial' ? 'beneficiario' : 'historial'
+    const idx = TABS.indexOf(vistaActiva)
+    let next
+    if (e.key === 'Home')       next = TABS[0]
+    else if (e.key === 'End')   next = TABS[TABS.length - 1]
+    else if (e.key === 'ArrowRight') next = TABS[(idx + 1) % TABS.length]
+    else                        next = TABS[(idx - 1 + TABS.length) % TABS.length]
     setVistaActiva(next)
-    if (next === 'historial') tabHistorialRef.current?.focus()
-    else tabBeneficiarioRef.current?.focus()
+    tabRefs[next].current?.focus()
+  }
+
+  const handleExitoNuevoServicio = () => {
+    refetch()       // refresca historial
+    refetchTipos()  // refresca catálogo
   }
 
   return (
     <div className="inventario-pagina">
 
-      {/* Header */}
       <header className="servicios-page-header">
         <section className="page-header-text">
           <h1 className="page-header-title description">Servicios otorgados</h1>
@@ -94,36 +126,21 @@ export default function Servicios() {
           </p>
         </section>
         <div className="servicios-acciones">
-          <button
-            className="inventario-form__btnSec"
-            onClick={() => setModalServicio(true)}
-          >
-            + Nuevo servicio
-          </button>
-          <button
-            className="inventario-form__btnPri"
-            onClick={() => navigate('/registro_servicios')}
-          >
+          <button className="inventario-form__btnPri" onClick={() => navigate('/registro_servicios')}>
             + Registrar atención
           </button>
         </div>
       </header>
 
+      {/* Tabs */}
       <div>
         <p id={tabsHintId} className="sr-only">
           Usa las flechas izquierda y derecha para cambiar entre pestañas.
         </p>
-        <div
-          className="servicios-tabs"
-          role="tablist"
-          aria-describedby={tabsHintId}
-          onKeyDown={onTabsKeyDown}
-        >
+        <div className="servicios-tabs" role="tablist" aria-describedby={tabsHintId} onKeyDown={onTabsKeyDown}>
           <button
-            ref={tabHistorialRef}
-            id={tabHistorialId}
-            role="tab"
-            type="button"
+            ref={tabHistorialRef} id={tabHistorialId}
+            role="tab" type="button"
             aria-selected={vistaActiva === 'historial'}
             aria-controls={panelHistorialId}
             tabIndex={vistaActiva === 'historial' ? 0 : -1}
@@ -133,10 +150,8 @@ export default function Servicios() {
             Historial general
           </button>
           <button
-            ref={tabBeneficiarioRef}
-            id={tabBeneficiarioId}
-            role="tab"
-            type="button"
+            ref={tabBeneficiarioRef} id={tabBeneficiarioId}
+            role="tab" type="button"
             aria-selected={vistaActiva === 'beneficiario'}
             aria-controls={panelBeneficiarioId}
             tabIndex={vistaActiva === 'beneficiario' ? 0 : -1}
@@ -145,26 +160,34 @@ export default function Servicios() {
           >
             Por beneficiario
           </button>
+          <button
+            ref={tabCatalogoRef} id={tabCatalogoId}
+            role="tab" type="button"
+            aria-selected={vistaActiva === 'catalogo'}
+            aria-controls={panelCatalogoId}
+            tabIndex={vistaActiva === 'catalogo' ? 0 : -1}
+            className={`servicios-tab ${vistaActiva === 'catalogo' ? 'is-active' : ''}`}
+            onClick={() => setVistaActiva('catalogo')}
+          >
+            Catálogo
+          </button>
         </div>
       </div>
 
       {/* Panel: Historial general */}
       {vistaActiva === 'historial' && (
-        <section
-          id={panelHistorialId}
-          className="recibos-section"
-          role="tabpanel"
-          aria-labelledby={tabHistorialId}
-        >
+        <section id={panelHistorialId} className="recibos-section" role="tabpanel" aria-labelledby={tabHistorialId}>
           <div className="section-title-row">
             <div>
               <h2 className="section-title">Historial general</h2>
-              <p className="section-sub">{historial.length} servicios registrados</p>
+              <p className="section-sub">
+                {loading && historial.length === 0 ? 'Cargando…' : `${historial.length} servicios registrados`}
+              </p>
             </div>
             <div className="servicios-barra-acciones">
               <SearchBar
                 icon={<FiSearch />}
-                placeholder="Buscar por servicio…"
+                placeholder="Buscar por servicio o beneficiario…"
                 value={consulta}
                 onChange={(val) => setConsulta(val)}
               />
@@ -182,6 +205,8 @@ export default function Servicios() {
           <div className="recibos-card">
             <ServiciosTabla
               filas={filtrados}
+              loading={loading && historial.length === 0}
+              error={error}
               onVerDetalle={setDetalleItem}
               onVerRecibo={(item) => navigate(`/recibos?folio=${item.id}`)}
             />
@@ -191,39 +216,61 @@ export default function Servicios() {
               </p>
             )}
           </div>
+
+          <div ref={sentinelRef} style={{ height: '1px' }} />
+          {loading && historial.length > 0 && (
+            <p style={{ textAlign: 'center', padding: '1rem', color: 'var(--color-text-muted)' }}>Cargando más…</p>
+          )}
+          {!hasMore && historial.length > 0 && (
+            <p style={{ textAlign: 'center', padding: '1rem', color: 'var(--color-text-muted)' }}>Todos los registros cargados.</p>
+          )}
         </section>
       )}
 
       {/* Panel: Por beneficiario */}
       {vistaActiva === 'beneficiario' && (
-        <section
-          id={panelBeneficiarioId}
-          className="recibos-section"
-          role="tabpanel"
-          aria-labelledby={tabBeneficiarioId}
-        >
+        <section id={panelBeneficiarioId} className="recibos-section" role="tabpanel" aria-labelledby={tabBeneficiarioId}>
           <div className="section-title-row">
             <div>
               <h2 className="section-title">Por beneficiario</h2>
               <p className="section-sub">Consulta el historial completo de un beneficiario</p>
             </div>
           </div>
-
           <ServiciosBeneficiario
             historial={historial}
-            onVerDetalle={setDetalleItem}
+            onVerDetalle={(s) => setDetalleItem(mapFila(s))}
           />
         </section>
       )}
 
-      {/* Modales */}
+      {/* Panel: Catálogo */}
+      {vistaActiva === 'catalogo' && (
+        <section id={panelCatalogoId} className="recibos-section" role="tabpanel" aria-labelledby={tabCatalogoId}>
+          <div className="section-title-row">
+            <div>
+              <h2 className="section-title">Catálogo de servicios</h2>
+              <p className="section-sub">
+                {loadingTipos ? 'Cargando…' : `${tipos.length} servicios disponibles`}
+              </p>
+            </div>
+          </div>
+          <div className="recibos-card">
+            <ServiciosCatalogo
+              tipos={tipos}
+              loading={loadingTipos}
+              onNuevoServicio={() => setModalServicio(true)}
+            />
+          </div>
+        </section>
+      )}
+
+      {/* Modales — solo una instancia de cada uno */}
       <ServiciosNuevoServicioModal
         open={modalServicio}
         onClose={() => setModalServicio(false)}
-        onExito={() => { /* TODO: void fetchHistorial() */ }}
+        onExito={handleExitoNuevoServicio}
         serviciosExistentes={historial}
-        categoriasExtras={categoriasExtras}
-        onNuevaCategoria={(cat) => setCategoriasExtras((p) => [...p, cat])}
+        categorias={todasCategorias}
       />
 
       <ServiciosDetalleModal

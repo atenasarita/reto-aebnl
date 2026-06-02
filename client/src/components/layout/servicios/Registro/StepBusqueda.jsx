@@ -1,11 +1,13 @@
 import { useState } from "react";
+
 import { User, Calendar } from "lucide-react";
-import "../../../pages/styles/BusquedaBeneficiarioVista.css"
-import SearchBar from '../../ui/SearchBar'
 import { FiSearch } from 'react-icons/fi'
 
+import "./RegistroSteps.css";
 
-import Button from "../../ui/Button"
+import Button from "../../../ui/Button"
+import SearchBar from '../../../ui/SearchBar'
+
 
 export default function StepBusqueda({
   setQuery,
