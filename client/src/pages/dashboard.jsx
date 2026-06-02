@@ -20,11 +20,6 @@ import {
 } from "lucide-react";
 import "./styles/dashboard.css";
 
-<<<<<<< HEAD
-=======
-const API_URL = import.meta.env.VITE_API_URL;
-
->>>>>>> 05eb4c4 (vite.url)
 const actions = [
   {
     title: "Registrar Servicio",
@@ -365,17 +360,10 @@ export default function Dashboard() {
   }, [isAdministrador]);
 
   const fetchAgenda = async () => {
-<<<<<<< HEAD
     const hoyFrontend = todayDate();
 
     const res = await fetch(`${API_URL}/api/dashboard/agenda-hoy?fecha=${hoyFrontend}`, {
       headers: { Authorization: `Bearer ${token}` },
-=======
-    const res = await fetch(`${API_URL}/api/dashboard/agenda-hoy`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
->>>>>>> 05eb4c4 (vite.url)
     });
 
     if (handleUnauthorizedResponse(res)) return;
@@ -391,13 +379,7 @@ export default function Dashboard() {
 
   const fetchPreregistros = async () => {
     const res = await fetch(`${API_URL}/api/dashboard/preregistro-pendientes`, {
-<<<<<<< HEAD
       headers: { Authorization: `Bearer ${token}` },
-=======
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
->>>>>>> 05eb4c4 (vite.url)
     });
 
     if (handleUnauthorizedResponse(res)) return;
@@ -413,11 +395,7 @@ export default function Dashboard() {
 
   const aceptarPreregistro = async (preregistro) => {
     try {
-<<<<<<< HEAD
       const res = await fetch(`${API_URL}/api/dashboard/preregistro/${preregistro.id_preregistro}/estado`, {
-=======
-      const res = await fetch(`${API_URL}/api/dashboard/preregistro/${id}/estado`, {
->>>>>>> 05eb4c4 (vite.url)
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
