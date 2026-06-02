@@ -1,0 +1,60 @@
+name: SonarCloud Analysis
+ 
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - main
+ 
+jobs:
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: Checkout code (rama del PR o push)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+ 
+      - name: Checkout pruebas desde rama testing
+        uses: actions/checkout@v4
+        with:
+          ref: unitTests
+          path: unitTests
+ 
+      - name: Copiar pruebas unitarias al proyecto
+        run: |
+          cp unitTests/__tests__/* __tests__/
+ 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+ 
+      - name: Install dependencies
+        run: npm install
+        working-directory: client
+ 
+      - name: Run tests with coverage
+        run: node --experimental-vm-modules ./node_modules/.bin/jest --coverage
+        working-directory: client
+ 
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=atenasarita_reto-aebnl
+            -Dsonar.organization=atenasarita
+            -Dsonar.sources=client/src
+            -Dsonar.tests=client/src
+            -Dsonar.test.inclusions=**/__tests__/**/*.mjs
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/coverage/**
