@@ -42,7 +42,6 @@ jobs:
  
       - name: Install dependencies Jest
         run: npm install
-        # working-directory: client
 
       - name: Install client dependencies
         run: npm install
