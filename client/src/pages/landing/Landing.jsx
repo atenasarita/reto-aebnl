@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import Preregistro from "../preregistro/Preregistro";
+import CircularTestimonials from "../../components/ui/CircularTestimonials/CircularTestimonials";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -20,11 +21,45 @@ import "./landing.css";
 gsap.registerPlugin(ScrollTrigger);
 
 const NAV_LINKS = [
-  { href: "#nosotros", label: "Nosotros" },
-  { href: "#consultas", label: "Consultas" },
-  { href: "#areas", label: "Áreas" },
+  { href: "#nosotros",    label: "Nosotros" },
+  { href: "#consultas",   label: "Consultas" },
+  { href: "#areas",       label: "Áreas" },
+  { href: "#testimonios", label: "Testimonios" },
   { href: "#preregistro", label: "Pre-registro" },
-  { href: "#donar", label: "Apóyanos" },
+  { href: "#donar",       label: "Apóyanos" },
+];
+
+const UPLOADS = "https://www.espinabifida.org.mx/wp-content/uploads";
+
+const TESTIMONIOS_DATA = [
+  {
+    quote:
+      "Al volverme miembro de la Asociación todo comenzó a ser más positivo. Hoy me siento 100% integrado a la sociedad, soy licenciado en Recursos Humanos y disfruto mi vida. En la vida no hay imposibles si realmente lo crees.",
+    name: "José Daniel",
+    designation: "Beneficiario, más de 20 años",
+    src: `${UPLOADS}/2025/12/PACIENTE-1-scaled.jpg`,
+  },
+  {
+    quote:
+      "Antes me sentía perdida, sin orientación y con miedo. Al llegar a la Asociación sentí como si llegara a mi casa. Aquí encontramos orientación y hoy los logros de Yael son diarios.",
+    name: "Ricardo",
+    designation: "Padre de Yael, familia beneficiaria",
+    src: `${UPLOADS}/2025/12/2-scaled.jpg`,
+  },
+  {
+    quote:
+      "Mi hija Itzel trabaja hoy en un consultorio médico. La Asociación nos apoyó con medicamentos, seguimiento integral y nos recibió con los brazos abiertos desde Monclova.",
+    name: "Alma Leticia y José Alberto",
+    designation: "Padres de Itzel Anahí, 15+ años en la asociación",
+    src: `${UPLOADS}/2025/12/3-scaled.jpg`,
+  },
+  {
+    quote:
+      "Al entrar fue alentador. Aprendimos muchas cosas que no sabíamos y nos ayudan en todo momento. Una de las más grandes bendiciones es que Isabel aún esté con nosotros.",
+    name: "Amada",
+    designation: "Madre de Isabel Cisneros",
+    src: `${UPLOADS}/2025/12/4-scaled.jpg`,
+  },
 ];
 
 const STATS = [
@@ -72,7 +107,8 @@ function AreasAccordion() {
 export default function Landing() {
   const mainRef  = useRef(null);
   const wordsRef = useRef(null);
-  const [heroPhotoIndex, setHeroPhotoIndex] = useState(0);
+  const [heroPhotoIndex, setHeroPhotoIndex]   = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen]   = useState(false);
 
   useEffect(() => {
     const photos = AEBNL_ASSETS.consultasPhotos;
@@ -177,14 +213,39 @@ export default function Landing() {
           <ul className="lp-nav-links">
             {NAV_LINKS.map((l) => (
               <li key={l.href}>
-                <a href={l.href}>{l.label}</a>
+                <a href={l.href} onClick={() => setMobileMenuOpen(false)}>{l.label}</a>
               </li>
             ))}
           </ul>
           <div className="lp-nav-actions">
             <Link to="/login" className="lp-nav-login">Acceso</Link>
+            <button
+              className="lp-nav-hamburger"
+              onClick={() => setMobileMenuOpen((o) => !o)}
+              aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+              aria-expanded={mobileMenuOpen}
+            >
+              <span className={`lp-ham-bar${mobileMenuOpen ? " is-open" : ""}`} />
+            </button>
           </div>
         </nav>
+        {mobileMenuOpen && (
+          <div className="lp-mobile-menu" role="navigation" aria-label="Menú móvil">
+            {NAV_LINKS.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                className="lp-mobile-link"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {l.label}
+              </a>
+            ))}
+            <Link to="/login" className="lp-mobile-link lp-mobile-link--dim" onClick={() => setMobileMenuOpen(false)}>
+              Acceso administrativo
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* HERO */}
@@ -244,7 +305,6 @@ export default function Landing() {
       <section id="nosotros" className="lp-section lp-section--sky">
         <div className="lp-inner lp-split">
           <div className="lp-reveal">
-            <span className="lp-eyebrow">Nosotros</span>
             <h2 className="lp-h2">¿Quiénes somos?</h2>
             <p ref={wordsRef} className="lp-prose">
               {words.map((word, i) => (
@@ -253,7 +313,6 @@ export default function Landing() {
             </p>
           </div>
           <div className="lp-reveal">
-            <span className="lp-eyebrow">La condición</span>
             <h2 className="lp-h2">¿Qué es la espina bífida?</h2>
             <p className="lp-prose">{AEBNL_COPY.queEsEspinaBifida}</p>
           </div>
@@ -276,7 +335,6 @@ export default function Landing() {
         <div className="lp-inner lp-reveal">
           <div className="lp-consultas-inner">
             <div className="lp-consultas-text">
-              <span className="lp-eyebrow lp-eyebrow--light">Atención</span>
               <h2 className="lp-h2 lp-h2--white">Nuestras consultas</h2>
               <p className="lp-prose lp-prose--light">
                 Acompañamos a familias en consultas, orientación y seguimiento continuo con un equipo
@@ -301,7 +359,6 @@ export default function Landing() {
       {/* ÁREAS */}
       <section id="areas" className="lp-section lp-section--white">
         <div className="lp-inner lp-reveal" style={{ marginBottom: 28 }}>
-          <span className="lp-eyebrow">Especialidades</span>
           <h2 className="lp-h2">Áreas médicas</h2>
           <p className="lp-prose">
             Vinculamos a familias con especialistas en las principales disciplinas. Pasa el cursor
@@ -313,13 +370,40 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* TESTIMONIOS */}
+      <section id="testimonios" className="lp-section lp-section--dark lp-section--testimonios">
+        <div className="lp-inner lp-reveal">
+          <div className="lp-test2-header">
+            <h2 className="lp-h2 lp-h2--white">Lo que dicen las familias</h2>
+            <p className="lp-prose lp-prose--light">
+              Más de 1,167 familias han encontrado orientación, acompañamiento y esperanza en la asociación.
+            </p>
+          </div>
+          <div className="lp-test2-body">
+            <CircularTestimonials
+              testimonials={TESTIMONIOS_DATA}
+              autoplay
+              colors={{
+                name:                 "#ffffff",
+                designation:          "rgba(255,255,255,0.50)",
+                testimony:            "rgba(255,255,255,0.84)",
+                arrowBackground:      "#1E3B8A",
+                arrowForeground:      "#ffffff",
+                arrowHoverBackground: "#F4A300",
+              }}
+              fontSizes={{ name: "1.35rem", designation: "11px", quote: "1.05rem" }}
+            />
+          </div>
+        </div>
+      </section>
+
       {/* PRE-REGISTRO EMBEBIDO */}
-      <section id="preregistro" className="lp-section lp-section--preregistro">
+      <section id="preregistro" className="lp-section lp-section--sky lp-section--preregistro">
         <div className="lp-inner lp-reveal">
           <div className="lp-preregistro-header">
-            <span className="lp-eyebrow lp-eyebrow--light">Primeros pasos</span>
-            <h2 className="lp-h2 lp-h2--white">Registra al beneficiario desde aquí</h2>
-            <p className="lp-prose lp-prose--light">
+            <span className="lp-eyebrow">Primeros pasos</span>
+            <h2 className="lp-h2">Registra al beneficiario desde aquí</h2>
+            <p className="lp-prose">
               Ingresa los datos del paciente en tres pasos. Una vez registrado en el sistema,
               el equipo coordinará su primera cita con el especialista correspondiente.
             </p>
@@ -331,24 +415,37 @@ export default function Landing() {
       </section>
 
       {/* DONAR */}
-      <section id="donar" className="lp-section lp-section--sky lp-section--donate">
+      <section id="donar" className="lp-section lp-section--donate">
         <div className="lp-inner lp-donate-layout">
           <div className="lp-donate-text lp-reveal">
-            <span className="lp-eyebrow">Donaciones</span>
             <h2 className="lp-h2">Apóyanos</h2>
-            <p className="lp-prose">{AEBNL_COPY.apoyanos}</p>
-            <div className="lp-bank">
-              <img src={AEBNL_ASSETS.banorte} alt="Banorte" className="lp-bank-logo" />
-              <ul className="lp-bank-list">
-                <li>{AEBNL_DONATION.bank} banco</li>
-                <li>Cuenta: {AEBNL_DONATION.account}</li>
-                <li className="lp-mono">CLABE: {AEBNL_DONATION.clabe}</li>
-                <li className="lp-slogan">{AEBNL_DONATION.slogan}</li>
-              </ul>
+            <p className="lp-prose">
+              Tu donativo sostiene consultas, medicamentos y seguimiento para familias con espina bífida en Nuevo León.
+            </p>
+            <div className="lp-donate-card">
+              <div className="lp-donate-card-head">
+                <span>Transferencia bancaria</span>
+                <img src={AEBNL_ASSETS.banorte} alt="Banorte" className="lp-bank-logo" />
+              </div>
+              <dl className="lp-bank-list">
+                <div>
+                  <dt>Banco</dt>
+                  <dd>{AEBNL_DONATION.bank}</dd>
+                </div>
+                <div>
+                  <dt>Cuenta</dt>
+                  <dd>{AEBNL_DONATION.account}</dd>
+                </div>
+                <div>
+                  <dt>CLABE</dt>
+                  <dd className="lp-mono">{AEBNL_DONATION.clabe}</dd>
+                </div>
+              </dl>
+              <p className="lp-slogan">{AEBNL_DONATION.slogan}</p>
             </div>
             <div className="lp-donate-actions">
               <a
-                href={CONTACT.website}
+                href={AEBNL_DONATION.paypalUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="lp-btn lp-btn--amber"
@@ -370,6 +467,7 @@ export default function Landing() {
               width={1024}
               height={832}
             />
+            <figcaption>Cada aportación ayuda a mantener la red de atención.</figcaption>
           </figure>
         </div>
       </section>
@@ -377,8 +475,7 @@ export default function Landing() {
       {/* DONANTES */}
       <section className="lp-section lp-section--white">
         <div className="lp-inner lp-reveal" style={{ marginBottom: 32 }}>
-          <span className="lp-eyebrow">Quienes nos apoyan</span>
-          <h2 className="lp-h2">Nuestros donantes</h2>
+          <h2 className="lp-h2">Quienes nos apoyan</h2>
         </div>
         <div className="lp-marquee" aria-hidden>
           <div className="lp-marquee-track">
@@ -421,26 +518,26 @@ export default function Landing() {
             <h4>Contacto</h4>
             <ul>
               <li>
-                <a href={CONTACT.mapsUrl} target="_blank" rel="noreferrer">
-                  <MapPin size={13} style={{ display: "inline", marginRight: 6, verticalAlign: "middle" }} />
+                <a href={CONTACT.mapsUrl} target="_blank" rel="noreferrer" className="lp-footer-contact-link">
+                  <MapPin size={13} className="lp-footer-icon" />
                   {CONTACT.address}
                 </a>
               </li>
               <li>
-                <a href={CONTACT.phoneHref}>
-                  <Phone size={13} style={{ display: "inline", marginRight: 6, verticalAlign: "middle" }} />
+                <a href={CONTACT.phoneHref} className="lp-footer-contact-link">
+                  <Phone size={13} className="lp-footer-icon" />
                   T: {CONTACT.phone}
                 </a>
               </li>
               <li>
-                <a href={CONTACT.phoneMobileHref}>
-                  <Phone size={13} style={{ display: "inline", marginRight: 6, verticalAlign: "middle" }} />
+                <a href={CONTACT.phoneMobileHref} className="lp-footer-contact-link">
+                  <Phone size={13} className="lp-footer-icon" />
                   C: {CONTACT.phoneMobile}
                 </a>
               </li>
               <li>
-                <a href={`mailto:${CONTACT.email}`}>
-                  <Mail size={13} style={{ display: "inline", marginRight: 6, verticalAlign: "middle" }} />
+                <a href={`mailto:${CONTACT.email}`} className="lp-footer-contact-link">
+                  <Mail size={13} className="lp-footer-icon" />
                   {CONTACT.email}
                 </a>
               </li>

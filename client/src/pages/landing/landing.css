@@ -93,6 +93,70 @@
 .lp-nav-login:hover { color: #fff; }
 @media (min-width: 640px) { .lp-nav-login { display: block; } }
 
+/* hamburger */
+.lp-nav-hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  position: relative;
+}
+@media (min-width: 900px) { .lp-nav-hamburger { display: none; } }
+
+.lp-ham-bar,
+.lp-ham-bar::before,
+.lp-ham-bar::after {
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: rgba(255,255,255,0.80);
+  border-radius: 2px;
+  transition: transform 0.22s ease, opacity 0.18s ease;
+}
+.lp-ham-bar { position: relative; }
+.lp-ham-bar::before { content: ""; position: absolute; top: -5px; left: 0; }
+.lp-ham-bar::after  { content: ""; position: absolute; top: 5px; left: 0; }
+
+.lp-ham-bar.is-open             { background: transparent; }
+.lp-ham-bar.is-open::before     { transform: translateY(5px) rotate(45deg); }
+.lp-ham-bar.is-open::after      { transform: translateY(-5px) rotate(-45deg); }
+
+/* mobile menu dropdown */
+.lp-mobile-menu {
+  pointer-events: all;
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  margin: 6px auto 0;
+  padding: 8px;
+  background: rgba(6, 14, 31, 0.96);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+@media (min-width: 900px) { .lp-mobile-menu { display: none; } }
+
+.lp-mobile-link {
+  padding: 13px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.82);
+  text-decoration: none;
+  border-radius: 12px;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.lp-mobile-link:hover { background: rgba(255,255,255,0.07); color: #fff; }
+.lp-mobile-link--dim { color: rgba(255,255,255,0.40); font-size: 13px; margin-top: 4px; }
+.lp-mobile-link--dim:hover { color: rgba(255,255,255,0.65); }
+
 /* ── BUTTONS ─────────────────────────────────── */
 .lp-btn {
   display: inline-flex;
@@ -513,6 +577,9 @@
 .lp-section--donate {
   padding-bottom: 0;
   overflow: hidden;
+  background:
+    radial-gradient(ellipse at 0% 0%, oklch(0.88 0.04 260 / 0.35) 0%, transparent 55%),
+    oklch(0.96 0.008 250);
 }
 
 .lp-donate-layout {
@@ -524,42 +591,78 @@
   .lp-donate-layout { grid-template-columns: 1fr 1fr; gap: 64px; }
 }
 
-.lp-donate-text {
-  padding-bottom: 72px;
-}
-@media (min-width: 768px) {
-  .lp-donate-text { padding-bottom: 96px; }
+.lp-donate-text { padding-bottom: 72px; }
+@media (min-width: 768px) { .lp-donate-text { padding-bottom: 96px; } }
+
+/* donate card */
+.lp-donate-card {
+  margin-top: 24px;
+  padding: 20px 22px;
+  border-radius: 18px;
+  background: oklch(0.99 0.005 260);
+  border: 1px solid oklch(0.88 0.02 260);
+  box-shadow: 0 16px 40px oklch(0.30 0.06 260 / 0.10);
 }
 
-.lp-bank { margin-top: 24px; }
-.lp-bank-logo { height: 32px; width: auto; margin-bottom: 14px; }
+.lp-donate-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: oklch(0.45 0.04 260);
+}
+
+.lp-bank-logo { height: 28px; width: auto; }
 
 .lp-bank-list {
   list-style: none;
-  margin: 0;
+  margin: 14px 0 0;
   padding: 0;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.8;
-  color: var(--lp-navy);
+  display: grid;
+  gap: 10px;
 }
-.lp-mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 13px; font-weight: 500; }
-.lp-slogan { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; color: var(--lp-amber2); text-transform: uppercase; margin-top: 6px; }
+.lp-bank-list div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid oklch(0.92 0.01 260);
+}
+.lp-bank-list div:last-child { border-bottom: none; padding-bottom: 0; }
+.lp-bank-list dt { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: oklch(0.55 0.04 260); }
+.lp-bank-list dd { font-size: 14px; font-weight: 700; color: oklch(0.22 0.06 265); margin: 0; }
+
+.lp-mono { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 12px; font-weight: 600; }
+.lp-slogan { font-size: 11px; font-weight: 800; letter-spacing: 0.09em; color: oklch(0.55 0.12 70); text-transform: uppercase; margin: 16px 0 0; }
 
 .lp-donate-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
 
 .lp-donate-photo {
   margin: 0;
   display: flex;
+  flex-direction: column;
   align-items: flex-end;
-  justify-content: center;
+  justify-content: flex-end;
 }
 .lp-donate-photo img {
   display: block;
   width: 100%;
   max-width: 480px;
   height: auto;
-  mix-blend-mode: multiply;
+  border-radius: 20px 20px 0 0;
+}
+.lp-donate-photo figcaption {
+  font-size: 11px;
+  color: oklch(0.50 0.03 260);
+  text-align: center;
+  width: 100%;
+  max-width: 480px;
+  padding: 8px 0 4px;
 }
 
 /* ── DONANTES MARQUEE ────────────────────────── */
@@ -592,23 +695,34 @@
 }
 .lp-donor-logo:hover { opacity: 1; filter: none; }
 
-/* ── PRE-REGISTRO EMBEBIDO ────────────────────── */
-.lp-section--preregistro {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, var(--lp-dark) 0%, var(--lp-navy) 60%, #2a4a9e 100%);
+/* ── TESTIMONIOS CIRCULARES ───────────────────── */
+.lp-section--testimonios {
+  background:
+    radial-gradient(ellipse 70% 50% at 88% 8%, rgba(244, 163, 0, 0.11), transparent 55%),
+    var(--lp-dark);
 }
 
-.lp-section--preregistro::before {
-  content: "";
-  position: absolute;
-  width: 560px;
-  height: 560px;
-  right: -180px;
-  top: -240px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.18), transparent 66%);
-  pointer-events: none;
+.lp-test2-header {
+  margin-bottom: 52px;
+}
+
+.lp-test2-header .lp-h2 {
+  max-width: 18ch;
+}
+
+.lp-test2-header .lp-prose {
+  margin-top: 12px;
+}
+
+.lp-test2-body {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* ── PRE-REGISTRO EMBEBIDO (capítulo Acción, superficie clara) ── */
+.lp-section--preregistro {
+  position: relative;
+  background: var(--lp-sky-lt);
 }
 
 .lp-preregistro-header {
@@ -618,12 +732,15 @@
 }
 
 .lp-preregistro-card {
+  position: relative;
+  z-index: 1;
   max-width: 680px;
   margin-inline: auto;
   background: #fff;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
+  border: 1px solid oklch(0.90 0.02 260);
+  box-shadow: 0 20px 48px oklch(0.30 0.06 260 / 0.14);
 }
 
 .lp-preregistro-card .preregistro-page {
@@ -701,6 +818,9 @@
 .lp-footer li  { margin-bottom: 6px; }
 .lp-footer a   { color: rgba(255,255,255,0.6); text-decoration: none; }
 .lp-footer a:hover { color: #fff; }
+
+.lp-footer-contact-link { display: flex; align-items: flex-start; gap: 7px; }
+.lp-footer-icon { flex-shrink: 0; margin-top: 2px; }
 
 .lp-footer-rule {
   max-width: 1200px;

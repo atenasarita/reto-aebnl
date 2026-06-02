@@ -76,6 +76,8 @@ export const AEBNL_DONATION = {
   account: "0001617086-5",
   clabe: "072 580 00016170865 0",
   slogan: "CONTAMOS CONTIGO",
+  paypalUrl:
+    "https://www.paypal.com/donate/?cmd=_s-xclick&hosted_button_id=7GBV72MMBQG7S&source=url",
 };
 
 export const AEBNL_COPY = {
