@@ -42,7 +42,7 @@ jobs:
         working-directory: client
  
       - name: Run tests with coverage
-        run: node --experimental-vm-modules ./node_modules/.bin/jest --coverage
+        run: node --experimental-vm-modules ./client/node_modules/.bin/jest --coverage
         working-directory: client
  
       - name: SonarCloud Scan
