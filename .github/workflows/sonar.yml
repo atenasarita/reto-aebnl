@@ -32,8 +32,7 @@ jobs:
     #         cp unitTests/package.json ./
     #         cp unitTests/package-lock.json ./
       - name: Apuntar Jest a pruebas en unitTests
-        run: |
-            sed -i "s|'<rootDir>/__tests__'|'<rootDir>/unitTests/__tests__'|g" jest.config.cjs
+        run: cp unitTests/jest.config.cjs ./jest.config.cjs
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
