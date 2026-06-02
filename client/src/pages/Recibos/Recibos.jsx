@@ -4,12 +4,8 @@ import { useSearchParams } from 'react-router-dom'
 
 import "../styles/Recibos.css";
 
-<<<<<<< HEAD
 import { API_URL } from '../../utils/config'
 import { todayDate } from '../../utils/dateTime';
-=======
-const API_URL = import.meta.env.VITE_API_URL;
->>>>>>> 05eb4c4 (vite.url)
 
 const fmt = (n) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(n ?? 0);
