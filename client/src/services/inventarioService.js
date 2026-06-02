@@ -1,10 +1,6 @@
-<<<<<<< HEAD
 import { getAuthHeaders, parseErrorMessage } from './apiService'
 import { API_URL } from '../utils/config'
 
-=======
-import { API_URL, getAuthHeaders, parseErrorMessage } from './apiService'
->>>>>>> 23068ee (update de base url)
 
 /* GET /api/inventario */
 export async function getInventario() {

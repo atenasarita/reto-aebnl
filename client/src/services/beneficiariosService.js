@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { API_URL } from '../utils/config'
-=======
-const API_URL = import.meta.env.VITE_API_URL;
->>>>>>> 05eb4c4 (vite.url)
 
 export async function fetchSiguienteFolio(token) {
   const response = await fetch(`${API_URL}/api/beneficiarios/siguiente-folio`, {

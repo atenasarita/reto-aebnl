@@ -11,7 +11,6 @@ router.get("/resumen-mes", listarRecibosMes);
 
 // GET /api/recibos/rango-fechas?desde=YYYY-MM-DD&hasta=YYYY-MM-DD (recibos por rango de fechas)
 router.get("/rango-fechas", listarRecibosRango);
-console.log("[recibos] Rutas de recibos configuradas");
 
 // GET  /api/recibos/:id (recibo por ID de servicio otorgado)
 router.get("/:id", obtenerRecibo);

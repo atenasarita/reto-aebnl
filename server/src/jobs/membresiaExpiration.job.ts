@@ -7,9 +7,7 @@ const refreshExpiredMemberships = async () => {
   // await beneficiarioRepository.refreshExpiredMembresias();
   try {
     await beneficiarioRepository.refreshExpiredMembresias();
-    // console.log('Expired memberships refreshed successfully');
   } catch (error) {
-    // console.error('Failed to refresh expired memberships:', error);
     console.error('Failed to refresh expired memberships:');
   }
 };

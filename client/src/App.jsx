@@ -27,8 +27,6 @@ import Servicios from "./pages/Servicios/Servicios";
 
 import "./App.css";
 
-console.log(import.meta.env.VITE_API_URL);
-
 export default function App() {
   return (
     <BrowserRouter>

@@ -132,12 +132,6 @@ function Navbar({
           fetchJson(`${API_URL}/api/dashboard/preregistro-pendientes`, token),
         ]);
 
-        // console.log("RESULTADO MEMBRESIAS:", results[0]);
-
-        if (results[0].status === "fulfilled") {
-          console.log("PAYLOAD MEMBRESIAS:", results[0].value);
-        }
-
         const membresiasCount =
           results[0].status === "fulfilled" ? resolveCount(results[0].value) : 0;
 

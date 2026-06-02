@@ -257,7 +257,6 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
       notas: notas || null,
       estatus: estado,
     };
-    console.log("PAYLOAD CITA:", payload);
 
     try {
 
