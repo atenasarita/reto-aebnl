@@ -3,10 +3,10 @@ module.exports = {
   testMatch: ['**/__tests__/**/*.test.js', '**/__tests__/**/*.test.mjs', '**/?(*.)+(spec|test).js', '**/?(*.)+(spec|test).mjs'],
   moduleFileExtensions: ['js', 'mjs', 'cjs', 'json', 'node'],
 //   Ruta para correr en main
-   roots: ['<rootDir>/client/src', '<rootDir>/unitTests/__tests__'],
+//    roots: ['<rootDir>/client/src', '<rootDir>/unitTests/__tests__'],
 
 // Ruta para correr en local
-//    roots: ['<rootDir>/client/src', '<rootDir>/__tests__'],
+   roots: ['<rootDir>/client/src', '<rootDir>/__tests__'],
 
    moduleDirectories: ['node_modules', 'client/node_modules'],
     moduleNameMapper: {
