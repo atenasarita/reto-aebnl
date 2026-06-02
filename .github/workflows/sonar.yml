@@ -65,7 +65,8 @@ jobs:
             -Dsonar.projectKey=atenasarita_reto-aebnl
             -Dsonar.organization=atenasarita
             -Dsonar.sources=client/src
-            -Dsonar.tests=client/src
-            -Dsonar.test.inclusions=**/__tests__/**/*.mjs
+            -Dsonar.inclusions=client/src/**/*.js,client/src/**/*.jsx
+            -Dsonar.tests=__tests__
+            -Dsonar.test.inclusions=**/__tests__/**/*.mjs,**/__tests__/**/*.test.js
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/coverage/**
