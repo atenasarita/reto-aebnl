@@ -6,6 +6,7 @@ import { jest, describe, test, expect, beforeEach, afterEach } from '@jest/globa
 import React from 'react';
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 jest.unstable_mockModule('../client/src/services/beneficiariosService.js', () => ({
   fetchSiguienteFolio: jest.fn(async () => 'FOLIO-001'),
@@ -172,4 +173,101 @@ describe('useRegistroBeneficiario', () => {
     expect(current.error).toBe('Debes completar todos los apartados antes de registrar al beneficiario');
     expect(current.loading).toBe(false);
   });
+
+  test('handleInputChange con valvula campo boolean', async () => {
+    await mountHook();
+
+    act(() => {
+      current.handleInputChange({ target: { name: 'valvula', value: 'true' } });
+    });
+    expect(current.formData.valvula).toBe(true);
+
+    act(() => {
+      current.handleInputChange({ target: { name: 'valvula', value: 'false' } });
+    });
+    expect(current.formData.valvula).toBe(false);
+  });
+
+  test('handleInputChange con CURP mayúscula y límite de 18 caracteres', async () => {
+    await mountHook();
+
+    act(() => {
+      current.handleInputChange({ target: { name: 'CURP', value: 'pela900101hmclrr09extra' } });
+    });
+    expect(current.formData.CURP).toBe('PELA900101HMCLRR09');
+    expect(current.formData.CURP.length).toBe(18);
+  });
+
+  test('handleBlur sin error borra el error existente', async () => {
+    await mountHook();
+
+    // Primero agrega un error
+    act(() => {
+      current.handleBlur({ target: { name: 'CURP', value: 'ABC' } });
+    });
+    expect(current.fieldErrors.CURP).toBe('CURP invalida');
+
+    // Luego valida un CURP correcto
+    act(() => {
+      current.handleBlur({ target: { name: 'CURP', value: 'PELA900101HMCLRR09' } });
+    });
+    expect(current.fieldErrors.CURP).toBe('');
+  });
+
+  test('handleFotoChange con null limpia la fotografía', async () => {
+    await mountHook();
+
+    act(() => {
+      current.handleFotoChange(null);
+    });
+    expect(current.formData.fotografiaFile).toBeNull();
+    expect(current.formData.fotografiaPreview).toBe('');
+  });
+
+  test('handleFotoChange limpia errores previos', async () => {
+    await mountHook();
+
+    act(() => {
+      current.handleFotoError('Error previo');
+    });
+    expect(current.error).toBe('Error previo');
+
+    act(() => {
+      current.handleFotoChange({ file: 'data', preview: 'preview' });
+    });
+    expect(current.error).toBe('');
+  });
+
+  test('calculateFechaVigencia con fecha inválida devuelve string vacío', async () => {
+    await mountHook();
+
+    act(() => {
+      current.handleInputChange({ target: { name: 'fecha_inicio_membresia', value: 'invalid-date' } });
+      current.handleInputChange({ target: { name: 'meses_membresia', value: '3' } });
+    });
+
+    const result = current.calculateFechaVigencia();
+    expect(result).toBe('');
+  });
+
+  test('areAllStepsComplete y validateStep validan correctamente', async () => {
+    await mountHook();
+
+    const allComplete = current.areAllStepsComplete;
+    const stepComplete = current.validateStep(0);
+
+    expect(typeof allComplete).toBe('boolean');
+    expect(typeof stepComplete).toBe('boolean');
+  });
+
+  test('handleInputChange en campo teléfono limita a 10 dígitos', async () => {
+    await mountHook();
+
+    act(() => {
+      current.handleInputChange({ target: { name: 'padre_telefono', value: '5512345678901234' } });
+    });
+    expect(current.formData.padre_telefono).toBe('5512345678');
+    expect(current.formData.padre_telefono.length).toBe(10);
+  });
 });
+

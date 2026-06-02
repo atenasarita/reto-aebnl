@@ -36,3 +36,5 @@ Wallet_*/
 *.pem
 *.jks
 *.ora
+
+/coverage
