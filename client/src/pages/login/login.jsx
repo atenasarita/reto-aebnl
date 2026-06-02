@@ -15,12 +15,8 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-<<<<<<< HEAD
   const location = useLocation();
   const redirectTo = location.state?.from?.pathname || '/dashboard';
-=======
-  const API_URL = import.meta.env.VITE_API_URL;
->>>>>>> 05eb4c4 (vite.url)
 
   const handleSubmit = async (event) => {
     event.preventDefault();
