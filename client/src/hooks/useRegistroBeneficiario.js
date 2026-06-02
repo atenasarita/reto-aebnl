@@ -246,12 +246,7 @@ export function useRegistroBeneficiario(navigate) {
         fechaNacimiento
       );
 
-      // console.log("PAYLOAD ANTES DE ENVIAR:", payload);
-      // console.log("fechaRegistro:", fechaRegistro);
-      // console.log("fechaNacimiento:", fechaNacimiento);
-      // console.log("payload.fecha_ingreso:", payload.fecha_ingreso);
-      // console.log("payload.identificadores.fecha_nacimiento:", payload.identificadores.fecha_nacimiento);
-      // console.log("payload.membresia.fecha_inicio:", payload.membresia.fecha_inicio);
+ 
 
       // await createBeneficiario(payload, token);
       const beneficiarioCreado = await createBeneficiario(payload, token);

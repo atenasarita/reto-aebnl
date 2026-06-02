@@ -8,8 +8,6 @@ export class DashboardHandler {
     try {
       const fecha = req.query.fecha as string;
 
-      // console.log("Fecha recibida en backend:", fecha);
-      // console.log("Query completa:", req.query);
 
       if(!fecha){
         return res.status(400).json({
