@@ -34,7 +34,7 @@ jobs:
         run: cp unitTests/jest.config.cjs ./jest.config.cjs
 
       - name: Copy test files from unitTests branch
-        run: cp -r unitTests/unitTests ./
+        run: cp -r unitTests/__tests__ ./
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
