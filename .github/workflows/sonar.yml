@@ -29,6 +29,8 @@ jobs:
         run: |
             mkdir -p __tests__
             cp unitTests/__tests__/* __tests__/
+            cp unitTests/package.json ./
+            cp unitTests/package-lock.json ./
  
       - name: Setup Node.js
         uses: actions/setup-node@v4
