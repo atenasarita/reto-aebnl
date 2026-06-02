@@ -27,7 +27,8 @@ jobs:
  
       - name: Copiar pruebas unitarias al proyecto
         run: |
-          cp unitTests/__tests__/* __tests__/
+            mkdir -p __tests__
+            cp unitTests/__tests__/* __tests__/
  
       - name: Setup Node.js
         uses: actions/setup-node@v4
