@@ -322,10 +322,10 @@
 
 /* ── SECTIONS ────────────────────────────────── */
 .lp-section {
-  padding: 72px 24px;
+  padding: 88px 24px;
 }
 @media (min-width: 768px) {
-  .lp-section { padding: 96px 32px; }
+  .lp-section { padding: 124px 32px; }
 }
 
 .lp-section--sky   { background: var(--lp-sky-lt); }
@@ -594,7 +594,21 @@
 
 /* ── PRE-REGISTRO EMBEBIDO ────────────────────── */
 .lp-section--preregistro {
+  position: relative;
+  overflow: hidden;
   background: linear-gradient(135deg, var(--lp-dark) 0%, var(--lp-navy) 60%, #2a4a9e 100%);
+}
+
+.lp-section--preregistro::before {
+  content: "";
+  position: absolute;
+  width: 560px;
+  height: 560px;
+  right: -180px;
+  top: -240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.18), transparent 66%);
+  pointer-events: none;
 }
 
 .lp-preregistro-header {

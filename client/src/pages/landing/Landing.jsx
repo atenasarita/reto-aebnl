@@ -155,6 +155,7 @@ export default function Landing() {
           }
         );
       }
+
     },
     { scope: mainRef }
   );
@@ -317,10 +318,10 @@ export default function Landing() {
         <div className="lp-inner lp-reveal">
           <div className="lp-preregistro-header">
             <span className="lp-eyebrow lp-eyebrow--light">Primeros pasos</span>
-            <h2 className="lp-h2 lp-h2--white">¿Necesitas apoyo para tu familia?</h2>
+            <h2 className="lp-h2 lp-h2--white">Registra al beneficiario desde aquí</h2>
             <p className="lp-prose lp-prose--light">
-              Completa el pre-registro en tres pasos. Un miembro del equipo revisará tu solicitud
-              y te orientará sobre los programas disponibles.
+              Ingresa los datos del paciente en tres pasos. Una vez registrado en el sistema,
+              el equipo coordinará su primera cita con el especialista correspondiente.
             </p>
           </div>
           <div className="lp-preregistro-card">
