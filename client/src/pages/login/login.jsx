@@ -32,11 +32,21 @@ function Login() {
         body: JSON.stringify({ usuario, contrasena }),
       });
 
-      const data = await response.json();
+    const text = await response.text();
+    console.log("RAW RESPONSE:", text);
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Usuario o contraseña incorrectos');
-      }
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error("Respuesta no es JSON");
+    }
+
+    if (!response.ok) {
+      console.error("STATUS:", response.status);
+      console.error("DATA:", data);
+      throw new Error(data.message || 'Error en login');
+    }
 
       saveSession(data.token, data.user);
       navigate(redirectTo, { replace: true });

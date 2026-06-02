@@ -23,7 +23,6 @@ import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job'
 import catalogosRouter from './src/routes/catalogos.routes.js';
 
 
-// ── Wallet setup ──────────────────────────────────────────────
 const walletDir = process.env.TNS_ADMIN || '/tmp/wallet';
 
 if (!fs.existsSync(walletDir)) {
@@ -40,7 +39,6 @@ if (!fs.existsSync(walletDir)) {
 }
 
 process.env.TNS_ADMIN = walletDir;
-// ─────────────────────────────────────────────────────────────
 
 
 const app = express();
@@ -72,10 +70,6 @@ app.use('/api', serviciosRoutes)
 app.use('/api', especialistasRoutes);
 
 app.use(errorMiddleware);
-
-// app.get('/api/citas-test', (req, res) => {
-//   res.json({ ok: true });
-// });
 
 startMembresiaExpirationJob();
 
