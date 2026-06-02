@@ -10,7 +10,11 @@ import {
   UPDATE_CANTIDAD_INVENTARIO,
   INSERT_MOVIMIENTO_INVENTARIO,
   SELECT_FECHAS_ULTIMOS_ESTUDIOS_BY_BENEFICIARIO,
+  SELECT_HISTORIAL_SERVICIOS,
+  SELECT_CATEGORIAS_CATALOGO,
+  INSERT_CATALOGO_SERVICIO
 } from './servicios.queries';
+
 
 type TipoServicioRow = {
   ID_CATALOGO_SERVICIO: number;
@@ -59,8 +63,32 @@ type FechasUltimosEstudiosRow = {
   UROCULTIVO: Date | null;
 };
 
-/** Valores que cumplen el CHECK de METODO_PAGO en SERVICIOS_FINANCIEROS (alineado a membrecías/recibos). */
+type HistorialRow = {
+  ID_SERVICIO_OTORGADO: number;
+  BENEFICIARIO:         string;
+  SERVICIO:             string;
+  CATEGORIA:            string;
+  FECHA:                string;
+  HORA:                 string;
+  MONTO_SERVICIO:       number | null;
+  MONTO_INVENTARIO:     number | null;
+  DESCUENTO:            number | null;
+  CUOTA_TOTAL:          number | null;
+  MONTO_PAGADO:         number | null;
+  METODO_PAGO:          string | null;
+  YA_APORTO:            number | null;
+  MONTO_DONACION:       number | null;
+};
+
 type MetodoPagoServicioOracle = 'efectivo' | 'tarjeta' | 'donacion';
+
+type CategoriaRow = { CATEGORIA: string };
+ 
+type CrearServicioInput = {
+  nombre:    string;
+  categoria: string;
+  precio:    number;
+};
 
 function metodoPagoParaOracle(raw: string): MetodoPagoServicioOracle {
   const s = String(raw ?? '')
@@ -278,4 +306,88 @@ export class ServicioRepository {
       if (connection) await connection.close();
     }
   }
+
+  async getHistorial(limit: number = 20, page: number = 0) {
+    let connection: oracledb.Connection | undefined;
+
+    try {
+      connection = await this.oracleConnection.getConnection();
+
+      const offset = page * limit;
+
+      const result = await connection.execute(
+        SELECT_HISTORIAL_SERVICIOS,
+        { limit, offset },
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+
+      const rows = (result.rows ?? []) as HistorialRow[];
+
+      return {
+        data: rows.map((row) => ({
+          id:              row.ID_SERVICIO_OTORGADO,
+          beneficiario:    row.BENEFICIARIO?.trim() ?? '',
+          nombre:          row.SERVICIO,
+          categoria:       row.CATEGORIA,
+          fecha:           row.FECHA,
+          hora:            row.HORA,
+          montoServicio:   row.MONTO_SERVICIO   ?? null,
+          montoInventario: row.MONTO_INVENTARIO ?? null,
+          descuento:       row.DESCUENTO        ?? null,
+          cuotaTotal:      row.CUOTA_TOTAL      ?? null,
+          montoPagado:     row.MONTO_PAGADO     ?? null,
+          metodoPago:      row.METODO_PAGO      ?? null,
+          yaAporto:        row.YA_APORTO        ?? null,
+          montoDonacion:   row.MONTO_DONACION   ?? null,
+        })),
+        hasMore: rows.length === limit,
+        page,
+        limit,
+      };
+
+    } finally {
+      if (connection) await connection.close();
+    }
+  }
+
+  async getCategorias() {
+    let connection: oracledb.Connection | undefined;
+    try {
+      connection = await this.oracleConnection.getConnection();
+      const result = await connection.execute(
+        SELECT_CATEGORIAS_CATALOGO,
+        {},
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+      const rows = (result.rows ?? []) as CategoriaRow[];
+      return rows.map((r) => r.CATEGORIA);
+    } finally {
+      if (connection) await connection.close();
+    }
+  }
+  
+  async crearServicioCatalogo(input: CrearServicioInput) {
+    let connection: oracledb.Connection | undefined;
+    try {
+      connection = await this.oracleConnection.getConnection();
+      const result = await connection.execute(
+        INSERT_CATALOGO_SERVICIO,
+        {
+          nombre:               input.nombre.trim(),
+          categoria:            input.categoria.trim(),
+          precio:               input.precio,
+          id_catalogo_servicio: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
+        }
+      );
+      const outBinds = result.outBinds as { id_catalogo_servicio: number[] };
+      await connection.commit();
+      return { id: outBinds.id_catalogo_servicio[0] };
+    } catch (err) {
+      if (connection) await connection.rollback();
+      throw err;
+    } finally {
+      if (connection) await connection.close();
+    }
+  }
 }
+

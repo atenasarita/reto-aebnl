@@ -1,6 +1,6 @@
-import { Calendar, Clock, Stethoscope, FileText, Hash, Tag } from "lucide-react";
-import "../../../pages/styles/BusquedaBeneficiarioVista.css"
-import Dropdown from '../../ui/Dropdown'
+import { Calendar, Clock, Stethoscope, Tag } from "lucide-react";
+import "./RegistroSteps.css";
+import Dropdown from '../../../ui/Dropdown'
 
 export default function StepDetalles({
   fecha,

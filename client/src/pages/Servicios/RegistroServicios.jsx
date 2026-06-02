@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Search,
   ClipboardList,
@@ -9,7 +10,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-import "../styles/BusquedaBeneficiarioVista.css";
+import "../styles/RegistroServicio.css";
 
 import { useProductos } from "../../hooks/useProductos";
 import useBeneficiarios from "../../hooks/useBeneficiarios"
@@ -18,10 +19,10 @@ import useServicios from "../../hooks/useServicios";
 import useRegistrarServicio from "../../hooks/useRegistrarServicios";
 import useFondoDonaciones from "../../hooks/useFondoDonaciones";
 
-import StepBusqueda from "../../components/layout/registroServicios/StepBusqueda.jsx";
-import StepDetalles from "../../components/layout/registroServicios/StepDetalles.jsx";
-import StepInsumos from "../../components/layout/registroServicios/StepInsumos.jsx";
-import StepFinanzas from "../../components/layout/registroServicios/StepFinanzas.jsx";
+import StepBusqueda from "../../components/layout/servicios/Registro/StepBusqueda.jsx";
+import StepDetalles from "../../components/layout/servicios/Registro/StepDetalles.jsx";
+import StepInsumos from "../../components/layout/servicios/Registro/StepInsumos.jsx";
+import StepFinanzas from "../../components/layout/servicios/Registro/StepFinanzas.jsx";
 
 const PASOS = [
   { id: 1, tab: "Búsqueda", Icon: Search },
@@ -31,6 +32,8 @@ const PASOS = [
 ];
 
 export default function RegistroServicios() {
+  const navigate = useNavigate()
+
   const [pasoActual, setPasoActual] = useState(1);
   const [query, setQuery] = useState("");
 
@@ -92,18 +95,12 @@ export default function RegistroServicios() {
 
   const subtotalInsumos = insumos.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
   const totalServicio = precioServicio;
-  const totalFinal = totalServicio + subtotalInsumos;
-  const totalConDescuento = Math.max(0, totalFinal - (parseFloat(descuento) || 0));
-  const pagadoNum = parseFloat(montoPagado) || 0;
-  const donacionNum = parseFloat(montoDonacion) || 0;
-  const saldoRestante = totalConDescuento - pagadoNum - donacionNum;
-  const saldoFondoNum = saldoFondo?.saldo ?? 0;
 
-  useEffect(() => {
-    if (pasoActual === 4) {
-      fetchSaldo().catch(() => {});
-    }
-  }, [pasoActual, fetchSaldo]);
+  const subtotal = totalServicio + subtotalInsumos;
+  const descuentoNum = Math.max(0, parseFloat(descuento) || 0);
+  const montoPagadoNum = Math.max(0, parseFloat(montoPagado) || 0);
+  const totalConDescuento = Math.max(0, subtotal - descuentoNum);
+  const saldoRestante = totalConDescuento - montoPagadoNum;
 
   const servicioLabel = tiposOptions.find(
     t => String(t.value) === String(tipoServicio)
@@ -240,15 +237,34 @@ export default function RegistroServicios() {
       <div className='page'>
         <div className='inner'>
           <div className='main'>
-            <CheckCircle2 size={64} color="#0f766e" />
-            <h2>Servicio registrado</h2>
-            <button className='btnPrimary' type="button" onClick={iniciarNuevoServicio}>
-              Nuevo servicio
-            </button>
+            <CheckCircle2 size={64} color="#1F9D55" />
+            <h2 style={{ margin: '1rem 0 0.5rem', fontSize: '22px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+              Servicio registrado
+            </h2>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '14px', marginBottom: '2rem' }}>
+              El servicio fue guardado correctamente.
+            </p>
+
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <button
+                className='btnSecondary'
+                type="button"
+                onClick={iniciarNuevoServicio}
+              >
+                + Registrar otro servicio
+              </button>
+              <button
+                className='btnPrimary'
+                type="button"
+                onClick={() => navigate('/servicios')}
+              >
+                Ver historial
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -324,8 +340,9 @@ export default function RegistroServicios() {
 
             {pasoActual === 4 && (
               <StepFinanzas
-                total={totalFinal}
-                saldoFondo={saldoFondoNum}
+                total={subtotal}
+                totalConDescuento={totalConDescuento}
+                saldo={saldoRestante}
                 metodoPago={metodoPago}
                 setMetodoPago={setMetodoPago}
                 montoPagado={montoPagado}
@@ -426,41 +443,68 @@ export default function RegistroServicios() {
             </dl>
 
             <div className='totales'>
+
               <div className='totalesRow'>
                 <span>Servicio:</span>
                 <strong>${totalServicio.toFixed(2)}</strong>
               </div>
+
               <div className='totalesRow'>
                 <span>Insumos:</span>
                 <strong>${subtotalInsumos.toFixed(2)}</strong>
               </div>
+
               <div className='totalesRow'>
-                <span>Descuento:</span>
-                <strong>- ${(parseFloat(descuento) || 0).toFixed(2)}</strong>
-              </div>
-              <div className='totalesRow'>
-                <span>Total:</span>
-                <strong className='totalesTotal'>${totalConDescuento.toFixed(2)}</strong>
-              </div>
-              <div className='totalesRow'>
-                <span>Aportación:</span>
-                <strong>${pagadoNum.toFixed(2)}</strong>
-              </div>
-              <div className='totalesRow'>
-                <span>Donación:</span>
-                <strong style={{ color: '#166534' }}>${donacionNum.toFixed(2)}</strong>
-              </div>
-              <div className='totalesRow'>
-                <span>Saldo:</span>
-                <strong
-                  className='totalesSaldo'
-                  style={{ color: saldoRestante > 0 ? "#dc2626" : "#0f766e" }}
-                >
-                  ${saldoRestante.toFixed(2)}
+                <span>Aporte Asociación:</span>
+                <strong>
+                  - ${descuentoNum.toFixed(2)}
                 </strong>
               </div>
-              <p className='totalesExtra'>Método: {metodoPago || "Pendiente"}</p>
-              <p className='totalesExtra'>Cita: {citaSeleccionada ?? "Sin cita"}</p>
+
+              <div className='totalesRow'>
+                <span>Total a pagar:</span>
+                <strong className='totalesTotal'>
+                  ${totalConDescuento.toFixed(2)}
+                </strong>
+              </div>
+
+              <div className='totalesRow'>
+                <span>Aportación familia:</span>
+                <strong>
+                  ${montoPagadoNum.toFixed(2)}
+                </strong>
+              </div>
+
+              <div className='totalesRow'>
+                <span>
+                  {saldoRestante > 0
+                    ? "Saldo pendiente:"
+                    : saldoRestante < 0
+                    ? "Cambio:"
+                    : "Saldo:"}
+                </span>
+
+                <strong
+                  className='totalesSaldo'
+                  style={{
+                    color:
+                      saldoRestante > 0
+                        ? "#dc2626"
+                        : "#0f766e",
+                  }}
+                >
+                  ${Math.abs(saldoRestante).toFixed(2)}
+                </strong>
+              </div>
+
+              <p className='totalesExtra'>
+                Método: {metodoPago || "Pendiente"}
+              </p>
+
+              <p className='totalesExtra'>
+                Cita: {citaSeleccionada ?? "Sin cita"}
+              </p>
+
             </div>
           </aside>
         </div>

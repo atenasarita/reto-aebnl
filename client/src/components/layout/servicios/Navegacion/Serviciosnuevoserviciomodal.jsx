@@ -1,15 +1,10 @@
 import { useEffect, useState, useRef } from 'react'
-import InventarioModalShell from '../../components/layout/inventario/InventarioModalShell/InventarioModalShell'
+import InventarioModalShell from '../../inventario/InventarioModalShell/InventarioModalShell.jsx'
 
-const CATEGORIAS_DEFAULT = [
-  'Consultas',
-  'Estudios',
-  'Laboratorio',
-  'Procedimiento',
-  'Rehabilitación',
-  'Terapia',
-  'Material',
-]
+import './ServiciosComponents.css'
+
+import { crearServicioCatalogo } from '../../../../services/serviciosService'
+
 
 const initialForm = {
   nombre: '',
@@ -44,7 +39,7 @@ export default function ServiciosNuevoServicioModal({
   onClose,
   onExito,
   serviciosExistentes = [],
-  categoriasExtras = [],
+  categorias = [],        
   onNuevaCategoria,
 }) {
   const [form, setForm] = useState(initialForm)
@@ -60,8 +55,7 @@ export default function ServiciosNuevoServicioModal({
   const nuevaCatRef = useRef(null)
 
   const todasCategorias = [
-    ...CATEGORIAS_DEFAULT,
-    ...categoriasExtras,
+    ...categorias,           
     ...categoriasCustom,
   ]
 
@@ -143,28 +137,25 @@ export default function ServiciosNuevoServicioModal({
     e.preventDefault()
     setError(null)
 
-    if (!form.nombre.trim()) {
-      setError('Ingresa el nombre del servicio.')
-      return
-    }
-    if (!categoriaSeleccionada) {
-      setError('Selecciona una categoría.')
-      return
-    }
+    if (!form.nombre.trim()) { setError('Ingresa el nombre del servicio.'); return }
+    if (!categoriaSeleccionada) { setError('Selecciona una categoría.'); return }
     const precio = Number(form.precio)
     if (form.precio === '' || !Number.isFinite(precio) || precio < 0) {
-      setError('Indica un precio válido (número mayor o igual a 0).')
+      setError('Indica un precio válido.')
       return
     }
 
     setSubmitting(true)
     try {
-      // TODO: reemplaza con tu llamada al servicio real
-      // await createServicio({ nombre: form.nombre.trim(), categoria: categoriaSeleccionada, precio })
+      await crearServicioCatalogo({
+        nombre:    form.nombre.trim(),
+        categoria: categoriaSeleccionada,
+        precio,
+      })
       onExito?.()
       onClose()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al guardar')
+      setError(err.response?.data?.message ?? err.message ?? 'Error al guardar')
     } finally {
       setSubmitting(false)
     }
@@ -193,7 +184,7 @@ export default function ServiciosNuevoServicioModal({
               placeholder="Ej. Consulta general"
             />
             {sugerenciaNombre && (
-              <p className="inventario-form__sugerencia">
+              <p>
                 ¿Quisiste decir{' '}
                 <button
                   type="button"
@@ -218,7 +209,7 @@ export default function ServiciosNuevoServicioModal({
                 <button
                   key={cat}
                   type="button"
-                  className={`inventario-form__cat-btn${categoriaSeleccionada === cat ? ' inventario-form__cat-btn--selected' : ''}`}
+                  className={`servicios-form__cat-btn${categoriaSeleccionada === cat ? ' servicios-form__cat-btn--selected' : ''}`}
                   onClick={() => handleSeleccionarCategoria(cat)}
                 >
                   {cat}
@@ -226,7 +217,7 @@ export default function ServiciosNuevoServicioModal({
               ))}
               <button
                 type="button"
-                className="inventario-form__cat-btn inventario-form__cat-btn--nueva"
+                className="servicios-form__cat-btn servicios-form__cat-btn--nueva"
                 onClick={() => setMostrarNuevaCat((v) => !v)}
               >
                 + Nueva
@@ -246,7 +237,7 @@ export default function ServiciosNuevoServicioModal({
                 />
                 <button
                   type="button"
-                  className="inventario-form__btnPri"
+                  className="servicios-form__btnPri"
                   onClick={handleAgregarCategoria}
                 >
                   Agregar
@@ -302,12 +293,12 @@ export default function ServiciosNuevoServicioModal({
         )}
 
         <div className="inventario-form__acciones">
-          <button type="button" className="inventario-form__btnSec" onClick={onClose}>
+          <button type="button" className="servicios-form__btnSec" onClick={onClose}>
             Cancelar
           </button>
           <button
             type="submit"
-            className="inventario-form__btnPri"
+            className="servicios-form__btnPri"
             disabled={submitting}
           >
             {submitting ? 'Guardando…' : 'Guardar servicio'}
