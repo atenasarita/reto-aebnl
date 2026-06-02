@@ -3,4 +3,5 @@
 /.cursor
 
 server/INSERT INTO Citas (.sql
-.impeccable
+.impeccable.clj-kondo/.cache/
+.lsp/.cache/
