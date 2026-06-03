@@ -37,6 +37,56 @@ import {
 } from "../../../utils/reportesCsvExport";
 import { useReportePersonalizado } from "../../../hooks/useReportePersonalizado";
 
+
+function toggleSelectionValue(prev, items, key, resetWhenAllSelected = true) {
+  const all = new Set(items.map((row) => row.key));
+  const current = prev === null ? new Set(all) : new Set(prev);
+
+  if (current.has(key)) {
+    current.delete(key);
+  } else {
+    current.add(key);
+  }
+
+  const allSelected = current.size === all.size && [...all].every((itemKey) => current.has(itemKey));
+
+  if (resetWhenAllSelected && allSelected) {
+    return null;
+  }
+
+  return current;
+}
+
+function getRegionAnalisisResumen({
+  metricas,
+  periodoAplicado,
+  distribucionEstado,
+  estadosSel,
+  estadosEfectivos,
+}) {
+  if (!metricas.has(METRICA_DEMOGRAFICOS)) return "No aplica";
+  if (!periodoAplicado) return "Cobertura global (tras generar)";
+  if (distribucionEstado.length === 0) return "Sin datos en el periodo";
+
+  const all = new Set(distribucionEstado.map((row) => row.key));
+
+  if (estadosSel === null || estadosEfectivos.size === all.size) {
+    return "Cobertura global";
+  }
+
+  if (estadosEfectivos.size === 0) return "Sin estados seleccionados";
+
+  return `${estadosEfectivos.size} estado${estadosEfectivos.size === 1 ? "" : "s"}`;
+}
+
+function getRangoResumenPie(desdeDraft, hastaDraft) {
+  if (esRangoFechaValido(desdeDraft, hastaDraft)) {
+    return formatRangoLegible(desdeDraft, hastaDraft);
+  }
+
+  return "Periodo no definido";
+}
+
 export default function ReportePersonalizado() {
   const { registerCsvExportHandler } = useOutletContext() || {};
   const def = useMemo(() => defaultRangoMesActual(), []);
@@ -102,6 +152,8 @@ export default function ReportePersonalizado() {
 
   const hayDatos = periodoAplicado;
 
+  const muestraSinDatos = !hayDatos;
+
   const toggleMetrica = useCallback((id) => {
     setMetricas((prev) => {
       const next = new Set(prev);
@@ -116,36 +168,15 @@ export default function ReportePersonalizado() {
   }, []);
 
   const toggleGenero = useCallback((key) => {
-    setGenerosSel((prev) => {
-      const all = new Set(data.distribucionGenero.map((r) => r.key));
-      const cur = prev === null ? new Set(all) : new Set(prev);
-      if (cur.has(key)) cur.delete(key);
-      else cur.add(key);
-      if (cur.size === all.size && [...all].every((k) => cur.has(k))) return null;
-      return cur;
-    });
+    setGenerosSel((prev) => toggleSelectionValue(prev, data.distribucionGenero, key));
   }, [data.distribucionGenero]);
 
   const toggleEtapa = useCallback((key) => {
-    setEtapasSel((prev) => {
-      const all = new Set(data.distribucionEtapaVida.map((r) => r.key));
-      const cur = prev === null ? new Set(all) : new Set(prev);
-      if (cur.has(key)) cur.delete(key);
-      else cur.add(key);
-      if (cur.size === all.size && [...all].every((k) => cur.has(k))) return null;
-      return cur;
-    });
+    setEtapasSel((prev) => toggleSelectionValue(prev, data.distribucionEtapaVida, key));
   }, [data.distribucionEtapaVida]);
 
   const toggleEstado = useCallback((key) => {
-    setEstadosSel((prev) => {
-      const all = new Set(data.distribucionEstado.map((r) => r.key));
-      const cur = prev === null ? new Set(all) : new Set(prev);
-      if (cur.has(key)) cur.delete(key);
-      else cur.add(key);
-      if (all.size && cur.size === all.size && [...all].every((k) => cur.has(k))) return null;
-      return cur;
-    });
+    setEstadosSel((prev) => toggleSelectionValue(prev, data.distribucionEstado, key));
   }, [data.distribucionEstado]);
 
   const aplicarFiltros = useCallback(() => {
@@ -160,30 +191,30 @@ export default function ReportePersonalizado() {
     setAplicadoHasta(hastaDraft);
   }, [desdeDraft, hastaDraft]);
 
-  const rangoResumenPie = useMemo(() => {
-    if (esRangoFechaValido(desdeDraft, hastaDraft)) {
-      return formatRangoLegible(desdeDraft, hastaDraft);
-    }
-    return "Periodo no definido";
-  }, [desdeDraft, hastaDraft]);
+  const rangoResumenPie = useMemo(
+    () => getRangoResumenPie(desdeDraft, hastaDraft),
+    [desdeDraft, hastaDraft]
+  );
 
   const filtrosActivosResumen = useMemo(() => textoMetricas(metricas), [metricas]);
 
-  const regionAnalisisResumen = useMemo(() => {
-    if (!metricas.has(METRICA_DEMOGRAFICOS)) return "No aplica";
-    if (!periodoAplicado) return "Cobertura global (tras generar)";
-    if (data.distribucionEstado.length === 0) return "Sin datos en el periodo";
-    const all = new Set(data.distribucionEstado.map((r) => r.key));
-    if (estadosSel === null || estadosEfectivos.size === all.size) return "Cobertura global";
-    if (estadosEfectivos.size === 0) return "Sin estados seleccionados";
-    return `${estadosEfectivos.size} estado${estadosEfectivos.size === 1 ? "" : "s"}`;
-  }, [
+  const regionAnalisisResumen = useMemo(
+  () =>
+    getRegionAnalisisResumen({
+      metricas,
+      periodoAplicado,
+      distribucionEstado: data.distribucionEstado,
+      estadosSel,
+      estadosEfectivos,
+    }),
+  [
     metricas,
     periodoAplicado,
     data.distribucionEstado,
     estadosSel,
     estadosEfectivos,
-  ]);
+  ]
+);
 
   const metricasTieneServicios = metricas.has(METRICA_SERVICIOS);
   const metricasTieneNuevos = metricas.has(METRICA_NUEVOS);
@@ -194,7 +225,7 @@ export default function ReportePersonalizado() {
     if (!registerCsvExportHandler) return undefined;
     registerCsvExportHandler(() => {
       if (!hayDatos) {
-        window.alert("Aplica primero el periodo en las fechas y pulsa «Generar reporte».");
+        globalThis.alert("Aplica primero el periodo en las fechas y pulsa «Generar reporte».");
         return;
       }
       const csv = buildCsvReportePersonalizado({
@@ -238,6 +269,9 @@ export default function ReportePersonalizado() {
 
   const muestraDemo = metricas.has(METRICA_DEMOGRAFICOS);
 
+  const muestraServicios = metricas.has(METRICA_SERVICIOS);
+  const muestraSoloEstados = !muestraServicios && metricas.has(METRICA_DEMOGRAFICOS);
+
   return (
     <ReportePersonalizadoShell>
 
@@ -275,7 +309,7 @@ export default function ReportePersonalizado() {
         onGenerarReporte={aplicarFiltros}
       />
 
-      {!hayDatos ? <PersonalizadoSinDatosState /> : null}
+      {muestraSinDatos ? <PersonalizadoSinDatosState /> : null}
 
       {error ? (
         <div className="reporte-general-alert" role="alert">
@@ -296,8 +330,9 @@ export default function ReportePersonalizado() {
             />
           ) : (
             <>
+            
               <PersonalizadoKpiSection metricas={metricas} data={data} />
-              {metricas.has(METRICA_SERVICIOS) ? (
+              {muestraServicios && (
                 <PersonalizadoServiciosChartRow
                   metricas={metricas}
                   serieServiciosVista={serieServiciosVista}
@@ -306,9 +341,11 @@ export default function ReportePersonalizado() {
                   distribEstadoVista={distribEstadoVista}
                   rangoLegible={formatRangoLegible(aplicadoDesde, aplicadoHasta)}
                 />
-              ) : metricas.has(METRICA_DEMOGRAFICOS) ? (
+              )} 
+              {muestraSoloEstados &&   (
                 <PersonalizadoSoloEstadosCard distribEstadoVista={distribEstadoVista} limit={12} />
-              ) : null}
+              )}
+
               {metricas.has(METRICA_DEMOGRAFICOS) ? (
                 <PersonalizadoDemograficosGrid
                   distribGeneroVista={distribGeneroVista}
