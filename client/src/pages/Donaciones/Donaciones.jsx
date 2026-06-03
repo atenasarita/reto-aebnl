@@ -3,7 +3,7 @@ import { CheckCircle2, RefreshCw } from "lucide-react";
 import useFondoDonaciones from "../../hooks/useFondoDonaciones";
 import "../styles/Recibos.css";
 import "../styles/OperationalPage.css";
-import "../styles/BusquedaBeneficiarioVista.css";
+import "../styles/RegistroServicio.css";
 import "../styles/Donaciones.css";
 
 const fmt = (n) =>

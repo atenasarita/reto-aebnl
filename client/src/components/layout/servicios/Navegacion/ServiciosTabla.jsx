@@ -1,6 +1,5 @@
-import '../../../pages/styles/Servicios.css'
+import './ServiciosComponents.css'
 
-/* ── Helpers ── */
 function fmt(num) {
   if (num == null) return '—'
   return `$${Number(num).toFixed(2)}`
@@ -48,7 +47,6 @@ function ServicioRow({ servicio, onVerDetalle, onVerRecibo }) {
   )
 }
 
-/* ── ServiciosTabla ── */
 export default function ServiciosTabla({
   filas,
   loading,

@@ -7,7 +7,6 @@ import { Bell, LogOut, Menu, X } from "lucide-react";
 import { API_URL } from '../../../utils/config';
 import { getValidToken, handleUnauthorizedResponse, logout } from '../../../utils/auth';
 
-
 const NAV_LINKS = [
   { label: "Inicio", to: "/dashboard" },
   { label: "Beneficiarios", to: "/beneficiarios" },

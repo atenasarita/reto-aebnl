@@ -337,7 +337,6 @@ input[type="date"] {
 
 /* ── Agregar en BusquedaBeneficiarioVista.module.css ── */
 
-/* Fila de selección de producto */
 .insumoAddRow {
   display: flex;
   gap: 12px;

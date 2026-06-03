@@ -31,7 +31,13 @@ function Login() {
         body: JSON.stringify({ usuario, contrasena }),
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error("Respuesta inválida del servidor");
+      }
 
       if (!response.ok) {
         throw new Error(data.message || "Usuario o contraseña incorrectos");
