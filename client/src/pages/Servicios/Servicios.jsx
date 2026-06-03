@@ -8,12 +8,16 @@ import ServiciosTabla from '../../components/layout/servicios/Navegacion/Servici
 
 import ServiciosDetalleModal from '../../components/layout/servicios/Navegacion/Serviciosdetallemodal.jsx'
 import ServiciosBeneficiario from '../../components/layout/servicios/Navegacion/ServiciosBeneficiario.jsx'
-import ServiciosCatalogo from '../../components/layout/servicios/Navegacion/ServiciosCatalogo.jsx'
+import ServiciosCatalogo from '../../components/layout/servicios/Navegacion/Servicioscatalogo.jsx'
 
 import SearchBar from '../../components/ui/SearchBar'
 import Dropdown from '../../components/ui/Dropdown'
 
+import '../styles/Recibos.css'
+import '../styles/OperationalPage.css'
+import '../styles/RegistroServicio.css'
 import '../styles/Servicios.css'
+import '../styles/Inventario.css'
 
 import { FiSearch } from 'react-icons/fi'
 
@@ -116,35 +120,51 @@ export default function Servicios() {
   }
 
   return (
-    <div className="inventario-pagina">
-
-      <header className="servicios-page-header">
-        <section className="page-header-text">
-          <h1 className="page-header-title description">Servicios otorgados</h1>
-          <p className="page-header-subtitle description">
+    <main className="recibos-page servicios-page" aria-labelledby="servicios-page-title">
+      <header className="recibos-header page-header servicios-header">
+        <div className="recibos-heading">
+          <h1 id="servicios-page-title" className="page-header-title">
+            Servicios otorgados
+          </h1>
+          <p className="page-header-subtitle">
             Registro e historial de servicios brindados.
           </p>
-        </section>
-        <div className="servicios-acciones">
-          <button className="inventario-form__btnPri" onClick={() => navigate('/registro_servicios')}>
+        </div>
+        <div className="servicios-header-actions">
+          <button
+            type="button"
+            className="btnSecondary"
+            onClick={() => setModalServicio(true)}
+          >
+            + Nuevo servicio
+          </button>
+          <button
+            type="button"
+            className="btnPrimary"
+            onClick={() => navigate('/registro_servicios')}
+          >
             + Registrar atención
           </button>
         </div>
       </header>
 
-      {/* Tabs */}
-      <div>
+      <div className="recibos-tabs-wrap">
         <p id={tabsHintId} className="sr-only">
           Usa las flechas izquierda y derecha para cambiar entre pestañas.
         </p>
-        <div className="servicios-tabs" role="tablist" aria-describedby={tabsHintId} onKeyDown={onTabsKeyDown}>
+        <div
+          className="recibos-tabs recibos-tabs--two"
+          role="tablist"
+          aria-describedby={tabsHintId}
+          onKeyDown={onTabsKeyDown}
+        >
           <button
             ref={tabHistorialRef} id={tabHistorialId}
             role="tab" type="button"
             aria-selected={vistaActiva === 'historial'}
             aria-controls={panelHistorialId}
             tabIndex={vistaActiva === 'historial' ? 0 : -1}
-            className={`servicios-tab ${vistaActiva === 'historial' ? 'is-active' : ''}`}
+            className={`recibos-tab ${vistaActiva === 'historial' ? 'is-active' : ''}`}
             onClick={() => setVistaActiva('historial')}
           >
             Historial general
@@ -155,7 +175,7 @@ export default function Servicios() {
             aria-selected={vistaActiva === 'beneficiario'}
             aria-controls={panelBeneficiarioId}
             tabIndex={vistaActiva === 'beneficiario' ? 0 : -1}
-            className={`servicios-tab ${vistaActiva === 'beneficiario' ? 'is-active' : ''}`}
+            className={`recibos-tab ${vistaActiva === 'beneficiario' ? 'is-active' : ''}`}
             onClick={() => setVistaActiva('beneficiario')}
           >
             Por beneficiario
@@ -166,7 +186,7 @@ export default function Servicios() {
             aria-selected={vistaActiva === 'catalogo'}
             aria-controls={panelCatalogoId}
             tabIndex={vistaActiva === 'catalogo' ? 0 : -1}
-            className={`servicios-tab ${vistaActiva === 'catalogo' ? 'is-active' : ''}`}
+            className={`recibos-tab ${vistaActiva === 'catalogo' ? 'is-active' : ''}`}
             onClick={() => setVistaActiva('catalogo')}
           >
             Catálogo
@@ -278,6 +298,6 @@ export default function Servicios() {
         onClose={() => setDetalleItem(null)}
         servicio={detalleItem}
       />
-    </div>
+    </main>
   )
 }

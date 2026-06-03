@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { FiSearch } from 'react-icons/fi'
-import styles from './ServiciosCatalogo.module.css'
+import styles from './Servicioscatalogo.module.css'
 
 function fmt(num) {
   if (num == null) return '—'

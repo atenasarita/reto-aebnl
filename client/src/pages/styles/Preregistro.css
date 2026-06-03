@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap");
-
 .preregistro-page *,
 .preregistro-page *::before,
 .preregistro-page *::after {
@@ -27,13 +25,13 @@
   --pr-error-bg: #fef2f2;
   --pr-error-border: #fecaca;
   --pr-error-text: #dc2626;
-  --pr-font-headline: "Plus Jakarta Sans", system-ui, sans-serif;
-  --pr-font-body: "Inter", system-ui, sans-serif;
+  --pr-font-headline: var(--font-sans);
+  --pr-font-body: var(--font-sans);
 
-  min-height: 100vh;
-  background: var(--pr-surface);
-  color: var(--pr-on-surface);
-  font-family: var(--pr-font-body);
+  min-height: 100dvh;
+  background: var(--color-surface-page);
+  color: var(--color-text-secondary);
+  font-family: var(--font-sans);
 }
 
 .preregistro-page h1,
@@ -42,20 +40,47 @@
   font-family: var(--pr-font-headline);
 }
 
+/* Variante landing: solo wizard en tarjeta centrada */
+.preregistro-page--landing {
+  min-height: auto;
+  background: transparent;
+  font-family: "Outfit", var(--font-sans);
+}
+
+.preregistro-page--landing .preregistro-landing-card {
+  width: 100%;
+  background: var(--color-surface-card);
+  border-radius: 24px;
+  padding: 0;
+}
+
+.preregistro-page--landing .preregistro-steps {
+  margin-bottom: 8px;
+}
+
+.preregistro-page--landing .preregistro-card,
+.preregistro-page--landing .preregistro-form {
+  max-width: none;
+}
+
+.preregistro-page--landing .preregistro-submit-btn {
+  width: 100%;
+}
+
 /* ── Split layout (izquierda: asociación | derecha: formulario) */
 .preregistro-split {
   display: grid;
-  grid-template-columns: 400px minmax(0, 1fr);
-  min-height: 100vh;
+  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+  min-height: 100dvh;
 }
 
 /* Panel izquierdo */
 .preregistro-assoc-panel {
   display: flex;
   flex-direction: column;
-  background: #1e3b8a;
+  background: var(--color-brand);
   border-right: 1px solid var(--color-border);
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .preregistro-assoc-body {
@@ -65,22 +90,26 @@
   gap: 0;
 }
 
-/* Cabecera del panel */
 .preregistro-assoc-header {
-  padding: 24px 28px 20px;
-  background: #ffffff;
-  border-bottom: 1px solid var(--color-border);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 10px;
+  padding: 22px 24px 18px;
+  background: var(--color-surface-card);
   flex-shrink: 0;
+}
+
+.preregistro-assoc-logo-link {
+  display: block;
+  line-height: 0;
+  border-radius: var(--radius-control);
+}
+
+.preregistro-assoc-logo-link:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 4px;
 }
 
 .preregistro-assoc-logo {
   width: 100%;
-  max-width: 230px;
+  max-width: 220px;
   height: auto;
   display: block;
   margin: 0 auto;
@@ -102,14 +131,40 @@
   margin: 0;
 }
 
-/* Panel derecho: contenedor del formulario */
 .preregistro-split-form {
-  background: var(--pr-surface);
+  background: var(--color-surface-page);
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 48px 32px 80px;
-  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 32px 80px;
+  min-height: 100dvh;
+}
+
+.preregistro-form-toolbar {
+  width: 100%;
+  max-width: 34rem;
+  margin-bottom: 14px;
+}
+
+.preregistro-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-brand);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s ease-out;
+}
+
+.preregistro-back-link:hover {
+  color: var(--color-brand-hover);
+}
+
+.preregistro-back-link:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 .preregistro-split-form .preregistro-card {
@@ -348,9 +403,9 @@
 
 /* ── Step indicator ─────────────────────────────────────── */
 .preregistro-steps {
-  padding: 24px 32px;
-  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
-  border-bottom: 1px solid var(--pr-outline-variant);
+  padding: 22px 28px;
+  background: var(--color-surface-muted);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .preregistro-steps-header {
@@ -387,8 +442,8 @@
 .preregistro-steps-bar-fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--pr-primary) 0%, #3b5fc7 100%);
-  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--color-brand);
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .preregistro-form-intro {
@@ -496,6 +551,28 @@
   width: 16px;
   height: 16px;
   accent-color: var(--pr-primary);
+}
+
+/* Variante compacta dentro del label de campo */
+.preregistro-label-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.preregistro-inline-check--sm {
+  grid-column: unset;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--pr-primary);
+  gap: 5px;
+}
+
+.preregistro-inline-check--sm input {
+  width: 13px;
+  height: 13px;
 }
 
 /* ── Radio group ────────────────────────────────────────── */
@@ -676,8 +753,9 @@
 }
 
 .preregistro-submit-btn:disabled {
-  opacity: 0.45;
+  opacity: 0.5;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .preregistro-privacy {
@@ -798,9 +876,7 @@
   }
 
   .preregistro-assoc-header {
-    padding: 20px 24px 16px;
-    align-items: center;
-    text-align: center;
+    padding: 18px 20px 14px;
   }
 
   .preregistro-assoc-stats,
@@ -816,7 +892,11 @@
 
   .preregistro-split-form {
     min-height: unset;
-    padding: 32px 20px 64px;
+    padding: 20px 20px 64px;
+  }
+
+  .preregistro-form-toolbar {
+    margin-bottom: 12px;
   }
 }
 
@@ -837,53 +917,5 @@
   .preregistro-checkbox-grid {
     grid-template-columns: 1fr;
   }
-}
 
-
-.preregistro-assoc-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.preregistro-login-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 140px;
-  height: 44px;
-  padding: 0 18px;
-  background: #ffffff;
-  color: #1e3a8a;
-  border: 1.5px solid #dbe4f0;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 700;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: all 0.18s ease;
-}
-
-.preregistro-login-btn:hover {
-  background: #f8fbff;
-  border-color: #bfd0ea;
-  color: #17327a;
-}
-
-.preregistro-login-btn:focus-visible {
-  outline: 2px solid #1e3a8a;
-  outline-offset: 2px;
-}
-
-@media (max-width: 768px) {
-  .preregistro-assoc-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .preregistro-login-btn {
-    width: 100%;
-    max-width: 220px;
-  }
 }

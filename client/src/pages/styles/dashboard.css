@@ -641,7 +641,7 @@
 
 .preregistro-card-wrapper {
   border-bottom: 1px solid #edf2f8;
-  transition: all 0.25s ease;
+  transition: background-color 0.25s ease;
 }
 
 .preregistro-card-wrapper.open {
