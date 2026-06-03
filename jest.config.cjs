@@ -9,11 +9,8 @@ module.exports = {
    roots: ['<rootDir>/client/src', '<rootDir>/__tests__'],
 
    moduleDirectories: ['node_modules', 'client/node_modules'],
-   
-   extensionsToTreatAsEsm: ['.jsx'],
-
    transform:{
-    '^.+\\.(js|jsx|mjs)$': ['babel-jest', { supportsStaticESM: true }], 
+    '^.+\\.(js|jsx|mjs)$': 'babel-jest', 
    },
     moduleNameMapper: {
     '^react$': '<rootDir>/client/node_modules/react',           // Para la prueba de useRegistroBeneficiario.test.mjs
