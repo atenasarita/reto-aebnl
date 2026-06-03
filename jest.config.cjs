@@ -17,6 +17,8 @@ module.exports = {
     '^react-dom/client$': '<rootDir>/client/node_modules/react-dom/client', 
     '\\.(css|less)$': '<rootDir>/__mocks__/fileMock.js', //Pruebas de Preregistro
     '\\.(png|jpg|svg|gif)$': '<rootDir>/__mocks__/fileMock.js',
+    '^.*/utils/config\\.js$': '<rootDir>/__mocks__/configMock.js', 
+    '^.*/utils/espinaBifidaTypes\\.js$': '<rootDir>/__mocks__/espinaBifidaMock.js',
   },
    coverageReporters: ['lcov', 'text'],
     coverageDirectory: 'coverage',
