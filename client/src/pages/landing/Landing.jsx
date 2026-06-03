@@ -81,28 +81,51 @@ const AREAS = [
 
 function AreasAccordion() {
   const [open, setOpen] = useState(null);
+
   return (
-    <div className="lp-accordion" role="list" aria-label="Áreas médicas">
+    <ul className="lp-accordion" aria-label="Áreas médicas">
       {AREAS.map((area, i) => (
-        <div
+        <li
           key={area.id}
           className={`lp-slice${open === i ? " is-open" : ""}`}
           style={{ "--slice-bg": area.bg }}
-          role="listitem"
-          tabIndex={0}
           onMouseEnter={() => setOpen(i)}
           onMouseLeave={() => setOpen(null)}
-          onFocus={() => setOpen(i)}
-          onBlur={() => setOpen(null)}
-          aria-label={area.label}
         >
-          <span className="lp-slice-v" aria-hidden>{area.label}</span>
-          <span className="lp-slice-h" aria-hidden>{area.label}</span>
-        </div>
+          <button
+            type="button"
+            className="lp-slice-button"
+            onFocus={() => setOpen(i)}
+            onBlur={() => setOpen(null)}
+            aria-label={area.label}
+          >
+            <span className="lp-slice-v" aria-hidden>
+              {area.label}
+            </span>
+            <span className="lp-slice-h" aria-hidden>
+              {area.label}
+            </span>
+          </button>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }
+
+function getWordTokens(text) {
+      let position = 0;
+
+      return text.split(" ").map((word) => {
+        const token = {
+          id: `${word}-${position}`,
+          value: word,
+        };
+
+        position += word.length + 1;
+
+        return token;
+      });
+    }
 
 export default function Landing() {
   const mainRef  = useRef(null);
@@ -113,31 +136,30 @@ export default function Landing() {
   useEffect(() => {
     const photos = AEBNL_ASSETS.consultasPhotos;
     if (!photos.length) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (globalThis.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const id = window.setInterval(() => {
+    const id = globalThis.setInterval(() => {
       setHeroPhotoIndex((i) => (i + 1) % photos.length);
     }, 5500);
 
-    return () => window.clearInterval(id);
+    return () => globalThis.clearInterval(id);
   }, []);
 
   useEffect(() => {
-    if (window.location.hash !== "#preregistro") return;
+    if (globalThis.location.hash !== "#preregistro") return;
     const el = document.getElementById("preregistro");
     if (!el) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const t = window.setTimeout(() => {
+    const reduced = globalThis.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const t = globalThis.setTimeout(() => {
       el.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
     }, 150);
-    return () => window.clearTimeout(t);
+    return () => globalThis.clearTimeout(t);
   }, []);
 
-  if (getValidToken()) return <Navigate to="/dashboard" replace />;
 
   useGSAP(
     () => {
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (globalThis.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
       gsap.from(".lp-hero-reveal", {
         y: 36,
@@ -196,9 +218,14 @@ export default function Landing() {
     { scope: mainRef }
   );
 
+
+
   useEffect(() => () => ScrollTrigger.getAll().forEach((t) => t.kill()), []);
 
-  const words = AEBNL_COPY.quienesSomos.split(" ");
+  if (getValidToken()) return <Navigate to="/dashboard" replace />;
+
+
+  const words = getWordTokens(AEBNL_COPY.quienesSomos);
 
   return (
     <main ref={mainRef} className="lp-page">
@@ -230,7 +257,7 @@ export default function Landing() {
           </div>
         </nav>
         {mobileMenuOpen && (
-          <div className="lp-mobile-menu" role="navigation" aria-label="Menú móvil">
+          <nav className="lp-mobile-menu" role="navigation" aria-label="Menú móvil">
             {NAV_LINKS.map((l) => (
               <a
                 key={l.href}
@@ -244,7 +271,7 @@ export default function Landing() {
             <Link to="/login" className="lp-mobile-link lp-mobile-link--dim" onClick={() => setMobileMenuOpen(false)}>
               Acceso administrativo
             </Link>
-          </div>
+          </nav>
         )}
       </div>
 
@@ -307,8 +334,10 @@ export default function Landing() {
           <div className="lp-reveal">
             <h2 className="lp-h2">¿Quiénes somos?</h2>
             <p ref={wordsRef} className="lp-prose">
-              {words.map((word, i) => (
-                <span key={i} className="lp-word">{word}{" "}</span>
+              {words.map((word) => (
+                <span key={word.id} className="lp-word">
+                  {word.value}{" "}
+                </span>
               ))}
             </p>
           </div>
