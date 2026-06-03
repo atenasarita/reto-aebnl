@@ -15,10 +15,12 @@ module.exports = {
     moduleNameMapper: {
     '^react$': '<rootDir>/client/node_modules/react',           // Para la prueba de useRegistroBeneficiario.test.mjs
     '^react-dom/client$': '<rootDir>/client/node_modules/react-dom/client', 
-    '\\.(css|less)$': '<rootDir>/__mocks__/fileMock.js', //Pruebas de Preregistro
-    '\\.(png|jpg|svg|gif)$': '<rootDir>/__mocks__/fileMock.js',
-    '^.*/utils/config\\.js$': '<rootDir>/__mocks__/configMock.js', 
-    '^.*/utils/espinaBifidaTypes\\.js$': '<rootDir>/__mocks__/espinaBifidaMock.js',
+    // PREregistro y HistorialPadres
+    '\\.(css|less|module\\.css)$': '<rootDir>/__mocks__/fileMock.js',
+    '\\.(png|jpg|jpeg|svg|gif)$': '<rootDir>/__mocks__/fileMock.js',
+
+    '^.*\\/utils\\/config(\\.js)?$': '<rootDir>/__mocks__/configMock.js',
+    '^.*\\/utils\\/espinaBifidaTypes(\\.js)?$': '<rootDir>/__mocks__/espinaBifidaMock.js',
   },
    coverageReporters: ['lcov', 'text'],
     coverageDirectory: 'coverage',
