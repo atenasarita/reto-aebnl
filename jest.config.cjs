@@ -9,9 +9,14 @@ module.exports = {
    roots: ['<rootDir>/client/src', '<rootDir>/__tests__'],
 
    moduleDirectories: ['node_modules', 'client/node_modules'],
+   transform:{
+    '^.+\\.(js|jsx|mjs)$': 'babel-jest', 
+   },
     moduleNameMapper: {
     '^react$': '<rootDir>/client/node_modules/react',           // Para la prueba de useRegistroBeneficiario.test.mjs
     '^react-dom/client$': '<rootDir>/client/node_modules/react-dom/client', 
+    '\\.(css|less)$': '<rootDir>/__mocks__/fileMock.js',
+    '\\.(png|jpg|svg|gif)$': '<rootDir>/__mocks__/fileMock.js',
   },
    coverageReporters: ['lcov', 'text'],
     coverageDirectory: 'coverage',

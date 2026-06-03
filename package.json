@@ -2,9 +2,12 @@
   "scripts": {
     "test": "node --experimental-vm-modules ./node_modules/.bin/jest",
     "test:coverage": "node --experimental-vm-modules ./node_modules/.bin/jest --coverage"
-
   },
   "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "@babel/preset-react": "^7.29.7",
+    "babel-jest": "^30.4.1",
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1"
   }

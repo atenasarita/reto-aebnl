@@ -22,15 +22,21 @@ function makeJwt(payload) {
 }
 
 describe('auth.js', () => {
+  let consoleErrorSpy;
+
   beforeEach(() => {
     localStorage.clear();
     jest.clearAllMocks();
     global.fetch = jest.fn();
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
     localStorage.clear();
     jest.clearAllMocks();
+    if (consoleErrorSpy) {
+      consoleErrorSpy.mockRestore();
+    }
   });
 
   describe('isTokenValid', () => {
