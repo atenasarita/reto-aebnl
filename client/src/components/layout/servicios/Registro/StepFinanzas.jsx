@@ -13,6 +13,7 @@ export default function StepFinanzas({
   total,
   totalConDescuento,
   saldo,
+  saldoFondoNum,
   metodoPago,
   setMetodoPago,
   montoPagado,
@@ -27,6 +28,8 @@ export default function StepFinanzas({
   const subtotalNum = Number(total) || 0;
   const descuentoNum = Number(descuento) || 0;
   const pagadoNum = Number(montoPagado) || 0;
+  const donacionNum = Number(montoDonacion) || 0;
+  const excedeFondo = donacionNum > saldoFondoNum;
 
   const metodoOptions = [
     { label: "Seleccionar...", value: "" },

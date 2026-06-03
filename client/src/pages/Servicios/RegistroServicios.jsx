@@ -31,6 +31,90 @@ const PASOS = [
   { id: 4, tab: "Finanzas", Icon: Wallet },
 ];
 
+function filtrarBeneficiarios(data, query) {
+  if (query.length < 2) return [];
+
+  const q = query.toLowerCase();
+
+  return data
+    .filter((b) => {
+      if (b.estado !== "activo") return false;
+
+      const nombre = `${b.identificadores?.nombres ?? ""} ${b.identificadores?.apellido_paterno ?? ""}`.toLowerCase();
+      const folio = b.folio?.toLowerCase() ?? "";
+      const curp = b.identificadores?.CURP?.toLowerCase() ?? "";
+
+      return nombre.includes(q) || folio.includes(q) || curp.includes(q);
+    })
+    .map((b) => ({
+      id_beneficiario: b.id_beneficiario,
+      folio: b.folio,
+      nombre: `${b.identificadores?.nombres ?? ""} ${b.identificadores?.apellido_paterno ?? ""}`.trim(),
+      curp: b.identificadores?.CURP ?? "",
+      membresia: b.estado === "activo" ? "Activa" : "Inactiva",
+    }));
+}
+
+function formatearCitas(agendaItems) {
+  return (agendaItems || []).map((c) => ({
+    id: c.id_cita,
+    id_beneficiario: c.id_beneficiario,
+    nombre: c.nombre_completo,
+    beneficiario: c.nombre_completo,
+    hora: c.hora,
+    tipo: c.servicio_nombre,
+    medico: c.especialista_nombre,
+  }));
+}
+
+function obtenerBeneficiarioFinal(beneficiarioSeleccionado, citaSeleccionada, resultados, citasFormateadas) {
+  if (beneficiarioSeleccionado) {
+    return resultados.find((b) => b.folio === beneficiarioSeleccionado);
+  }
+
+  if (citaSeleccionada) {
+    return citasFormateadas.find((c) => c.id === citaSeleccionada);
+  }
+
+  return null;
+}
+
+function puedeAvanzarPaso({
+  pasoActual,
+  beneficiarioSeleccionado,
+  citaSeleccionada,
+  fecha,
+  hora,
+  tipoServicio,
+  insumos,
+  montoPagado,
+  montoDonacion,
+  totalConDescuento,
+  saldoFondoNum,
+  metodoPago,
+}) {
+  if (pasoActual === 1) return Boolean(beneficiarioSeleccionado || citaSeleccionada);
+  if (pasoActual === 2) return Boolean(fecha && hora);
+  if (pasoActual === 3) return Boolean(tipoServicio || insumos.length > 0);
+
+  if (pasoActual !== 4) return true;
+
+  const pagado = Number.parseFloat(montoPagado) || 0;
+  const donacion = Number.parseFloat(montoDonacion) || 0;
+
+  const excedeTotal = pagado + donacion > totalConDescuento + 0.001;
+  const excedeFondo = donacion > saldoFondoNum;
+  const faltaMetodoPago = pagado > 0 && !metodoPago;
+
+  return !excedeTotal && !excedeFondo && !faltaMetodoPago;
+}
+
+function getSaldoLabel(saldoRestante) {
+  if (saldoRestante > 0) return "Saldo pendiente:";
+  if (saldoRestante < 0) return "Cambio:";
+  return "Saldo:";
+}
+
 export default function RegistroServicios() {
   const navigate = useNavigate()
 
@@ -64,7 +148,7 @@ export default function RegistroServicios() {
   const [errorGuardado, setErrorGuardado] = useState(null);
 
   const { registrar, loading: guardando } = useRegistrarServicio();
-  const { saldo: saldoFondo, fetchSaldo } = useFondoDonaciones();
+  const { saldo: saldoFondo } = useFondoDonaciones();
 
   const totalPasos = PASOS.length;
   const progresoPct = (pasoActual / totalPasos) * 100;
@@ -97,52 +181,33 @@ export default function RegistroServicios() {
   const totalServicio = precioServicio;
 
   const subtotal = totalServicio + subtotalInsumos;
-  const descuentoNum = Math.max(0, parseFloat(descuento) || 0);
-  const montoPagadoNum = Math.max(0, parseFloat(montoPagado) || 0);
+  const descuentoNum = Math.max(0, Number.parseFloat(descuento) || 0);
+  const montoPagadoNum = Math.max(0, Number.parseFloat(montoPagado) || 0);
   const totalConDescuento = Math.max(0, subtotal - descuentoNum);
   const saldoRestante = totalConDescuento - montoPagadoNum;
+  const saldoFondoNum = Math.max(0, Number.parseFloat(saldoFondo) || 0);
+  const pagadoNum = montoPagadoNum;
+  const donacionNum = Math.max(0, Number.parseFloat(montoDonacion) || 0);
+
+  const saldoLabel = getSaldoLabel(saldoRestante);
 
   const servicioLabel = tiposOptions.find(
     t => String(t.value) === String(tipoServicio)
   )?.label;
 
   // ── Resultados de búsqueda ─────────────────────────────────
-  const resultados = query.length >= 2
-    ? data
-        .filter((b) => {
-          if (b.estado !== 'activo') return false;
-          const nombre = `${b.identificadores?.nombres ?? ''} ${b.identificadores?.apellido_paterno ?? ''}`.toLowerCase();
-          const folio = b.folio?.toLowerCase() ?? '';
-          const curp = b.identificadores?.CURP?.toLowerCase() ?? '';
-          const q = query.toLowerCase();
-          return nombre.includes(q) || folio.includes(q) || curp.includes(q);
-        })
-        .map((b) => ({
-          id_beneficiario: b.id_beneficiario,
-          folio: b.folio,
-          nombre: `${b.identificadores?.nombres ?? ''} ${b.identificadores?.apellido_paterno ?? ''}`.trim(),
-          curp: b.identificadores?.CURP ?? '',
-          membresia: b.estado === 'activo' ? 'Activa' : 'Inactiva',
-        }))
-    : [];
+  const resultados = filtrarBeneficiarios(data, query);
 
   // ── Citas de hoy — incluye id_beneficiario ─────────────────
-  const citasFormateadas = (agendaItems || []).map((c) => ({
-    id:              c.id_cita,
-    id_beneficiario: c.id_beneficiario, // 👈 necesario para el guardado
-    nombre:          c.nombre_completo,
-    beneficiario:    c.nombre_completo,
-    hora:            c.hora,
-    tipo:            c.servicio_nombre,
-    medico:          c.especialista_nombre,
-  }));
+  const citasFormateadas = formatearCitas(agendaItems);
 
   // ── Beneficiario mostrado en el resumen ────────────────────
-  const beneficiarioFinal = beneficiarioSeleccionado
-    ? resultados.find((b) => b.folio === beneficiarioSeleccionado)
-    : citaSeleccionada
-    ? citasFormateadas.find((c) => c.id === citaSeleccionada)
-    : null;
+  const beneficiarioFinal = obtenerBeneficiarioFinal(
+    beneficiarioSeleccionado,
+    citaSeleccionada,
+    resultados,
+    citasFormateadas
+  );
 
   // ── Guardar ────────────────────────────────────────────────
   const handleGuardar = async () => {
@@ -178,7 +243,7 @@ export default function RegistroServicios() {
 
       monto_servicio: totalServicio,
       monto_inventario: subtotalInsumos,
-      descuento: parseFloat(descuento) || 0,
+      descuento: Number.parseFloat(descuento) || 0,
       cuota_total: totalConDescuento,
       monto_pagado: pagadoNum,
       monto_donacion: donacionNum,
@@ -194,20 +259,21 @@ export default function RegistroServicios() {
     }
   };
 
-  const puedeAvanzar = () => {
-    if (pasoActual === 1) return !!(beneficiarioSeleccionado || citaSeleccionada);
-    if (pasoActual === 2) return !!(fecha && hora);
-    if (pasoActual === 3) return !!(tipoServicio || insumos.length > 0);
-    if (pasoActual === 4) {
-      const pagado = parseFloat(montoPagado) || 0;
-      const donacion = parseFloat(montoDonacion) || 0;
-      if (pagado + donacion > totalConDescuento + 0.001) return false;
-      if (donacion > saldoFondoNum) return false;
-      if (pagado > 0 && !metodoPago) return false;
-      return true;
-    }
-    return true;
-  };
+  const puedeAvanzar = () =>
+    puedeAvanzarPaso({
+      pasoActual,
+      beneficiarioSeleccionado,
+      citaSeleccionada,
+      fecha,
+      hora,
+      tipoServicio,
+      insumos,
+      montoPagado,
+      montoDonacion,
+      totalConDescuento,
+      saldoFondoNum,
+      metodoPago,
+    });
 
   /** Vuelve al inicio del flujo con formulario limpio (solo desactivar guardado deja el paso 4 lleno). */
   const iniciarNuevoServicio = useCallback(() => {
@@ -343,6 +409,7 @@ export default function RegistroServicios() {
                 total={subtotal}
                 totalConDescuento={totalConDescuento}
                 saldo={saldoRestante}
+                saldoFondoNum={saldoFondoNum}
                 metodoPago={metodoPago}
                 setMetodoPago={setMetodoPago}
                 montoPagado={montoPagado}
@@ -477,11 +544,7 @@ export default function RegistroServicios() {
 
               <div className='totalesRow'>
                 <span>
-                  {saldoRestante > 0
-                    ? "Saldo pendiente:"
-                    : saldoRestante < 0
-                    ? "Cambio:"
-                    : "Saldo:"}
+                  {saldoLabel}
                 </span>
 
                 <strong
