@@ -11,9 +11,9 @@ import { createRoot } from 'react-dom/client';
 
 global.fetch = jest.fn();
 
-jest.unstable_mockModule('../client/src/utils/config.js', () => ({
-  API_URL: 'http://localhost:3000',
-}));
+// jest.unstable_mockModule('../client/src/utils/config.js', () => ({
+//   API_URL: 'http://localhost:3000',
+// }));
 
 // Mock CSS module
 jest.unstable_mockModule(
