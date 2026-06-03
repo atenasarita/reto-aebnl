@@ -391,7 +391,10 @@
   font-weight: 600;
   color: var(--cp-text-muted);
   cursor: pointer;
-  transition: all var(--cp-transition);
+  transition:
+    border-color var(--cp-transition),
+    color var(--cp-transition),
+    background-color var(--cp-transition);
 }
 
 .cp-estado-btn:hover { border-color: var(--cp-primary); color: var(--cp-primary); }
@@ -468,7 +471,10 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--cp-transition);
+  transition:
+    border-color var(--cp-transition),
+    color var(--cp-transition),
+    background-color var(--cp-transition);
 }
 
 .cp-btn-secondary:hover:not(:disabled) {

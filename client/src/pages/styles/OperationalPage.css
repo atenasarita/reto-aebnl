@@ -1,0 +1,62 @@
+/**
+ * Shell compartido: Donaciones y Servicios (dentro de .page-shell).
+ * Recibos.css define secciones, tablas y tabs base.
+ */
+
+.recibos-page.servicios-page,
+.recibos-page.donaciones-page {
+  width: 100%;
+  max-width: 100%;
+}
+
+.recibos-page > .recibos-header.page-header {
+  margin-bottom: var(--space-6);
+}
+
+.recibos-page .recibos-tabs-wrap {
+  margin-bottom: var(--space-6);
+}
+
+.recibos-tabs--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.servicios-header {
+  align-items: flex-start;
+}
+
+@media (min-width: 769px) {
+  .servicios-header {
+    align-items: center;
+  }
+}
+
+.servicios-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.servicios-page .section-title-row {
+  margin-bottom: var(--space-4);
+}
+
+.servicios-page .servicios-barra-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.servicios-page .th-acciones,
+.servicios-page .td-acciones {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.servicios-page .table-wrap {
+  max-height: 420px;
+}
