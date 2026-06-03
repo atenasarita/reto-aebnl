@@ -1,6 +1,7 @@
 import "./ReporteAnual.css";
 import "../ReportesMensual/ReportesMensual.css";
 import { useEffect, useMemo, useState } from "react";
+import PropTypes from "prop-types";
 import { Link, useOutletContext } from "react-router-dom";
 import {
   Area,
@@ -49,6 +50,18 @@ function ServiciosPorMesTooltip({ active, payload }) {
   );
 }
 
+ServiciosPorMesTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+      payload: PropTypes.shape({
+        mesLabel: PropTypes.string,
+      }),
+    })
+  ),
+};
+
 function NuevosPorMesTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
   const row = payload[0]?.payload;
@@ -65,6 +78,46 @@ function NuevosPorMesTooltip({ active, payload }) {
     </div>
   );
 }
+
+NuevosPorMesTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+      payload: PropTypes.shape({
+        mesLabel: PropTypes.string,
+      }),
+    })
+  ),
+};
+
+function getSerieConfig(mostrarServicios, anio) {
+  if (mostrarServicios) {
+    return {
+      title: "Servicios otorgados por mes",
+      gradientId: "serviciosGradientAnual",
+      color: "#1e3b8a",
+      dataKey: "servicios",
+      tooltip: <ServiciosPorMesTooltip />,
+      emptyMessage: `No se registraron servicios por mes en ${anio}.`,
+    };
+  }
+
+  return {
+    title: "Nuevos beneficiarios por mes",
+    gradientId: "nuevosGradientAnual",
+    color: "#0f766e",
+    dataKey: "nuevosBeneficiarios",
+    tooltip: <NuevosPorMesTooltip />,
+    emptyMessage: `No se registraron nuevos beneficiarios por mes en ${anio}.`,
+  };
+}
+
+function tieneDatosMensuales(mostrarServicios, tieneServiciosPorMes, tieneNuevosPorMes) {
+  if (mostrarServicios) return tieneServiciosPorMes;
+  return tieneNuevosPorMes;
+}
+
 
 export default function ReporteAnual() {
   const { registerCsvExportHandler } = useOutletContext() || {};
@@ -95,7 +148,13 @@ export default function ReporteAnual() {
   const tieneServiciosPorMes = porMes.some((d) => Number(d.servicios) > 0);
   const tieneNuevosPorMes = porMes.some((d) => Number(d.nuevosBeneficiarios) > 0);
   const mostrarServicios = serieMensual === SERIE_SERVICIOS;
-  const tieneDatosSerie = mostrarServicios ? tieneServiciosPorMes : tieneNuevosPorMes;
+  const tieneDatosSerie = tieneDatosMensuales(
+    mostrarServicios,
+    tieneServiciosPorMes,
+    tieneNuevosPorMes
+  );
+  const serieConfig = getSerieConfig(mostrarServicios, anio);
+  const mostrarNuevos = !mostrarServicios;
 
   useEffect(() => {
     if (!registerCsvExportHandler) return undefined;
@@ -138,7 +197,7 @@ export default function ReporteAnual() {
         </div>
       </header>
 
-      <>
+      
         {error ? (
           <div className="reporte-general-alert" role="alert">
             <p>{error}</p>
@@ -171,11 +230,11 @@ export default function ReporteAnual() {
             <CardHeader className="reporte-mensual-trend-header">
               <div>
                 <h3 className="reporte-mensual-trend-title">
-                  {mostrarServicios ? "Servicios otorgados por mes" : "Nuevos beneficiarios por mes"}
+                  {serieConfig.title}
                 </h3>
               </div>
               <div className="reporte-anual-trend-controls">
-                <div className="reporte-periodo-switch" role="group" aria-label="Serie de la gráfica">
+                <div className="reporte-periodo-switch"  aria-label="Serie de la gráfica">
                   <button
                     type="button"
                     className={mostrarServicios ? "is-active" : ""}
@@ -186,9 +245,9 @@ export default function ReporteAnual() {
                   </button>
                   <button
                     type="button"
-                    className={!mostrarServicios ? "is-active" : ""}
+                    className={mostrarNuevos ? "is-active" : ""}
                     onClick={() => setSerieMensual(SERIE_NUEVOS)}
-                    aria-pressed={!mostrarServicios}
+                    aria-pressed={mostrarNuevos}
                   >
                     Nuevos beneficiarios
                   </button>
@@ -200,21 +259,12 @@ export default function ReporteAnual() {
                 <div className="reporte-mensual-trend-chart" key={serieMensual}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={porMes} margin={{ top: 10, right: 16, bottom: 8, left: 0 }}>
-                      {mostrarServicios ? (
-                        <defs>
-                          <linearGradient id="serviciosGradientAnual" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#1e3b8a" stopOpacity={0.35} />
-                            <stop offset="100%" stopColor="#1e3b8a" stopOpacity={0.02} />
-                          </linearGradient>
-                        </defs>
-                      ) : (
-                        <defs>
-                          <linearGradient id="nuevosGradientAnual" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#0f766e" stopOpacity={0.35} />
-                            <stop offset="100%" stopColor="#0f766e" stopOpacity={0.02} />
-                          </linearGradient>
-                        </defs>
-                      )}
+                      <defs>
+                        <linearGradient id={serieConfig.gradientId} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={serieConfig.color} stopOpacity={0.35} />
+                          <stop offset="100%" stopColor={serieConfig.color} stopOpacity={0.02} />
+                        </linearGradient>
+                      </defs>
                       <CartesianGrid vertical={false} stroke="#e2e8f0" strokeDasharray="3 3" />
                       <XAxis
                         dataKey="mesLabel"
@@ -233,19 +283,17 @@ export default function ReporteAnual() {
                       />
                       <Tooltip
                         cursor={{ stroke: "#94a3b8", strokeDasharray: "3 3" }}
-                        content={
-                          mostrarServicios ? <ServiciosPorMesTooltip /> : <NuevosPorMesTooltip />
-                        }
+                        content={serieConfig.tooltip}
                       />
                       <Area
                         type="monotone"
-                        dataKey={mostrarServicios ? "servicios" : "nuevosBeneficiarios"}
-                        stroke={mostrarServicios ? "#1e3b8a" : "#0f766e"}
+                        dataKey={serieConfig.dataKey}
+                        stroke={serieConfig.color}
                         strokeWidth={2.5}
-                        fill={mostrarServicios ? "url(#serviciosGradientAnual)" : "url(#nuevosGradientAnual)"}
+                        fill={`url(#${serieConfig.gradientId})`}
                         activeDot={{
                           r: 4,
-                          stroke: mostrarServicios ? "#1e3b8a" : "#0f766e",
+                          stroke: serieConfig.color,
                           strokeWidth: 2,
                           fill: "#ffffff",
                         }}
@@ -255,9 +303,7 @@ export default function ReporteAnual() {
                 </div>
               ) : (
                 <p className="reporte-mxmap-hint">
-                  {mostrarServicios
-                    ? `No se registraron servicios por mes en ${anio}.`
-                    : `No se registraron nuevos beneficiarios por mes en ${anio}.`}
+                  {serieConfig.emptyMessage}
                 </p>
               )}
             </CardContent>
@@ -292,7 +338,8 @@ export default function ReporteAnual() {
 
           </>
         )}
-      </>
     </article>
   );
 }
+
+
