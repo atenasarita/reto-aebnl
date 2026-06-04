@@ -31,7 +31,11 @@ jobs:
             cp unitTests/package-lock.json ./
 
       - name: Copy test files from branch unitTests 
-        run: cp -r unitTests/__tests__ ./
+        run: | 
+            cp -r unitTests/__tests__ ./
+            cp -r unitTests/__mocks__ ./
+            cp unitTests/babel.config.cjs ./
+
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
