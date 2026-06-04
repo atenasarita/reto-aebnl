@@ -339,14 +339,9 @@ jest.mock('../client/src/components/layout/servicios/Registro/StepFinanzas.jsx',
   };
 });
 
-const RegistroServiciosModule = await import(
-  '../client/src/pages/Servicios/RegistroServicios.jsx'
-);
+import RegistroServicios from '../client/src/pages/Servicios/RegistroServicios.jsx';
 
-const RegistroServicios =
-  RegistroServiciosModule.default?.default ||
-  RegistroServiciosModule.default ||
-  RegistroServiciosModule;
+const RegistroServicios = RegistroServicios.default || RegistroServicios;
 
 let container;
 let root;
