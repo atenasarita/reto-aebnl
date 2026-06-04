@@ -1,5 +1,6 @@
-import { describe, test, expect, beforeEach, afterEach } from '@jest/globals';
-import { nowLocalDateTime, todayDate } from '../client/src/utils/dateTime.js';
+import { jest, describe, test, expect, beforeEach, afterEach } from '@jest/globals';
+jest.unmock('../client/src/utils/dateTime.js');
+const { todayDate, nowLocalDateTime } = await import('../client/src/utils/dateTime.js');
 
 describe('dateTime', () => {
   describe('nowLocalDateTime', () => {

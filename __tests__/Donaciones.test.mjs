@@ -6,36 +6,74 @@ import { jest, describe, test, expect, beforeEach, afterEach } from '@jest/globa
 import React from 'react';
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
-import Donaciones from '../client/src/pages/Donaciones/Donaciones.jsx';
 
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
-jest.mock('../client/src/hooks/useFondoDonaciones.js', () => ({
-  default: () => ({
-    saldo: { saldo: 5000 },
-    movimientos: [],
-    loading: false,
-    error: null,
-    fetchSaldo: jest.fn().mockResolvedValue({ saldo: 1000 }),
-    fetchMovimientos: jest.fn().mockResolvedValue([]),
-    registrarAbono: jest.fn().mockResolvedValue({ success: true }),
-  }),
+const mockFetchMovimientos = jest.fn();
+const mockFetchSaldo = jest.fn();
+const mockRegistrarAbono = jest.fn();
+
+let mockMovimientos = [];
+
+const MockIcon = () => null;
+
+jest.unstable_mockModule('lucide-react', () => ({
+  CheckCircle2: MockIcon,
+  RefreshCw: MockIcon,
 }));
 
-const { default: Donaciones } = await import('../client/src/pages/Donaciones/Donaciones.jsx');
+const mockUseFondoDonaciones = jest.fn(() => ({
+  saldo: { saldo: 5000 },
+  movimientos: mockMovimientos,
+  loading: false,
+  error: null,
+  fetchSaldo: mockFetchSaldo,
+  fetchMovimientos: mockFetchMovimientos,
+  registrarAbono: mockRegistrarAbono,
+}));
+
+jest.unstable_mockModule('../client/src/hooks/useFondoDonaciones', () => ({
+  __esModule: true,
+  default: mockUseFondoDonaciones,
+}));
+
+const mod = await import('../client/src/pages/Donaciones/Donaciones.jsx');
+const Donaciones = mod.default.default ?? mod.default;
+
+console.log('Donaciones:', Donaciones);
+console.log('typeof Donaciones:', typeof Donaciones);
+
+const lucide = await import('lucide-react');
+console.log('typeof CheckCircle2:', typeof lucide.CheckCircle2);
+console.log('typeof RefreshCw:', typeof lucide.RefreshCw);
 
 let container;
 let root;
 
 describe('Donaciones', () => {
   beforeEach(() => {
-    container = document.createElement('div');
-    document.body.appendChild(container);
-    root = createRoot(container);
-    jest.clearAllMocks();
-    mockFetchMovimientos.mockResolvedValue([]);
-    mockFetchSaldo.mockResolvedValue({ saldo: 1000 });
-    mockRegistrarAbono.mockResolvedValue({ success: true });
-  });
+  container = document.createElement('div');
+  document.body.appendChild(container);
+  root = createRoot(container);
+
+  jest.clearAllMocks();
+
+  mockMovimientos = [];
+
+  mockUseFondoDonaciones.mockImplementation(() => ({
+    saldo: { saldo: 5000 },
+    movimientos: mockMovimientos,
+    loading: false,
+    error: null,
+    fetchSaldo: mockFetchSaldo,
+    fetchMovimientos: mockFetchMovimientos,
+    registrarAbono: mockRegistrarAbono,
+  }));
+
+  mockFetchMovimientos.mockResolvedValue([]);
+  mockFetchSaldo.mockResolvedValue({ saldo: 1000 });
+  mockRegistrarAbono.mockResolvedValue({ success: true });
+});
 
   afterEach(async () => {
     await act(async () => { root.unmount(); });
@@ -304,7 +342,7 @@ describe('Donaciones', () => {
 
   // ── Movimientos table ─────────────────────────────────────────
   test('muestra tabla cuando hay movimientos', async () => {
-    const mockMovimientos = [
+    mockMovimientos = [
       {
         id_movimiento: 1,
         fecha: '2025-01-01',
@@ -317,21 +355,8 @@ describe('Donaciones', () => {
       },
     ];
 
-    jest.unstable_mockModule('../client/src/hooks/useFondoDonaciones.js', () => ({
-      default: () => ({
-        saldo: { saldo: 5000 },
-        movimientos: mockMovimientos,
-        loading: false,
-        error: null,
-        fetchSaldo: mockFetchSaldo,
-        fetchMovimientos: mockFetchMovimientos,
-        registrarAbono: mockRegistrarAbono,
-      }),
-    }));
-
-    
-
     await mount();
+
     expect(container.querySelector('table')).toBeTruthy();
   });
 

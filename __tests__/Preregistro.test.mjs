@@ -68,9 +68,9 @@ jest.unstable_mockModule('../client/src/pages/styles/Preregistro.css', () => ({}
 //   validarCURP: (v) => v.length === 18,
 // }));
 
-// jest.unstable_mockModule('../client/src/utils/dateTime.js', () => ({
-//   todayDate: () => '2026-06-02',
-// }));
+jest.unstable_mockModule('../client/src/utils/dateTime.js', () => ({
+  todayDate: () => '2026-06-02',
+}));
 
 const PreregistroModule = await import('../client/src/pages/preregistro/Preregistro.jsx');
 const Preregistro =
