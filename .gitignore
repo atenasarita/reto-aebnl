@@ -12,3 +12,4 @@ node_modules/
 .lsp/
 .clj-kondo/
 .vscode/
+coverage/
