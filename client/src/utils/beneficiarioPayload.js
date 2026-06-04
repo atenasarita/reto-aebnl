@@ -51,9 +51,9 @@ export function buildBeneficiarioPayload(formData, fechaRegistro, fechaNacimient
     },
     membresia: {
       fecha_inicio: formData.fecha_inicio_membresia,
-      meses: Number(formData.meses_membresia),
-      precio_mensual: 0,
-      metodo_pago: 'donacion'
+      meses: 12,
+      precio_mensual: 12.5,
+      metodo_pago: formData.metodo_pago ?? 'efectivo'
     }
   };
 }

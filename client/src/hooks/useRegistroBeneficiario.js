@@ -158,7 +158,7 @@ export function useRegistroBeneficiario(navigate) {
   if (Number.isNaN(inicio.getTime())) return '';
 
   const vigencia = new Date(inicio);
-  vigencia.setMonth(vigencia.getMonth() + Number(formData.meses_membresia || 6));
+  vigencia.setMonth(vigencia.getMonth() + 12);
   vigencia.setDate(vigencia.getDate() - 1);
 
   // Ajuste clave para evitar desfase
