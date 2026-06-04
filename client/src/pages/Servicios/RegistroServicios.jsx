@@ -58,13 +58,26 @@ export default function RegistroServicios() {
   const [metodoPago, setMetodoPago] = useState("");
   const [montoPagado, setMontoPagado] = useState("");
   const [montoDonacion, setMontoDonacion] = useState("");
+  const [fondoSeleccionado, setFondoSeleccionado] = useState("");
   const [descuento, setDescuento] = useState(0);
   const [yaAporto, setYaAporto] = useState(false);
   const [guardado, setGuardado] = useState(false);
   const [errorGuardado, setErrorGuardado] = useState(null);
 
   const { registrar, loading: guardando } = useRegistrarServicio();
-  const { saldo: saldoFondo, fetchSaldo } = useFondoDonaciones();
+  const { saldo: saldoFondo, donadores, fetchSaldo, fetchDonadores } = useFondoDonaciones();
+
+  const donacionNum = Math.max(0, parseFloat(montoDonacion) || 0);
+  const pagadoNum = Math.max(0, parseFloat(montoPagado) || 0);
+  const fondoActivo = donadores.find((d) => String(d.id_fondo) === String(fondoSeleccionado));
+  const saldoFondoSel = fondoActivo ? Number(fondoActivo.saldo) : 0;
+
+  useEffect(() => {
+    if (pasoActual === 4) {
+      fetchSaldo().catch(() => {});
+      fetchDonadores().catch(() => {});
+    }
+  }, [pasoActual, fetchSaldo, fetchDonadores]);
 
   const totalPasos = PASOS.length;
   const progresoPct = (pasoActual / totalPasos) * 100;
@@ -98,9 +111,8 @@ export default function RegistroServicios() {
 
   const subtotal = totalServicio + subtotalInsumos;
   const descuentoNum = Math.max(0, parseFloat(descuento) || 0);
-  const montoPagadoNum = Math.max(0, parseFloat(montoPagado) || 0);
   const totalConDescuento = Math.max(0, subtotal - descuentoNum);
-  const saldoRestante = totalConDescuento - montoPagadoNum;
+  const saldoRestante = totalConDescuento - pagadoNum - donacionNum;
 
   const servicioLabel = tiposOptions.find(
     t => String(t.value) === String(tipoServicio)
@@ -182,11 +194,15 @@ export default function RegistroServicios() {
       cuota_total: totalConDescuento,
       monto_pagado: pagadoNum,
       monto_donacion: donacionNum,
+      id_fondo: donacionNum > 0 ? Number(fondoSeleccionado) : null,
+      id_donador: donacionNum > 0 ? fondoActivo?.id_donador : null,
       metodo_pago: metodoPago,
       ya_aporto: yaAporto,
     });
 
       setGuardado(true);
+      fetchSaldo().catch(() => {});
+      fetchDonadores().catch(() => {});
 
     } catch (err) {
       console.error('Error al guardar:', err);
@@ -202,7 +218,8 @@ export default function RegistroServicios() {
       const pagado = parseFloat(montoPagado) || 0;
       const donacion = parseFloat(montoDonacion) || 0;
       if (pagado + donacion > totalConDescuento + 0.001) return false;
-      if (donacion > saldoFondoNum) return false;
+      if (donacion > 0 && !fondoSeleccionado) return false;
+      if (donacion > saldoFondoSel + 0.001) return false;
       if (pagado > 0 && !metodoPago) return false;
       return true;
     }
@@ -225,6 +242,7 @@ export default function RegistroServicios() {
     setMetodoPago("");
     setMontoPagado("");
     setMontoDonacion("");
+    setFondoSeleccionado("");
     setDescuento(0);
     setYaAporto(false);
     setErrorGuardado(null);
@@ -343,6 +361,10 @@ export default function RegistroServicios() {
                 total={subtotal}
                 totalConDescuento={totalConDescuento}
                 saldo={saldoRestante}
+                saldoGlobal={saldoFondo?.saldo ?? 0}
+                donadores={donadores}
+                fondoSeleccionado={fondoSeleccionado}
+                setFondoSeleccionado={setFondoSeleccionado}
                 metodoPago={metodoPago}
                 setMetodoPago={setMetodoPago}
                 montoPagado={montoPagado}
@@ -471,7 +493,7 @@ export default function RegistroServicios() {
               <div className='totalesRow'>
                 <span>Aportación familia:</span>
                 <strong>
-                  ${montoPagadoNum.toFixed(2)}
+                  ${pagadoNum.toFixed(2)}
                 </strong>
               </div>
 

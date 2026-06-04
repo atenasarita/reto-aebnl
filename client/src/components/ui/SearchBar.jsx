@@ -44,16 +44,27 @@ function SearchBar({
     if (fn) fn(search)
   }, [search, debounceMs])
 
+  const { className: inputClassFromProps, style: inputStyle, ...inputProps } = props
+
+  const inputClassName = [
+    'search-input',
+    icon ? 'search-input--with-icon' : '',
+    inputClassFromProps,
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
-    <div className={`searchbar-wrapper ${className}`}>
-      {icon && <span className="search-icon">{icon}</span>}
+    <div className={`searchbar-wrapper ${className}`.trim()}>
+      {icon && <span className="search-icon" aria-hidden="true">{icon}</span>}
       <input
         type="text"
         value={search}
         onChange={handleChange}
         placeholder={placeholder}
-        className={`search-input ${icon ? 'search-input--with-icon' : ''}`}
-        {...props}
+        className={inputClassName}
+        style={icon ? { paddingLeft: '42px', ...inputStyle } : inputStyle}
+        {...inputProps}
       />
     </div>
   )

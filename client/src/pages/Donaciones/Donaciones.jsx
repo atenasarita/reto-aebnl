@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { CheckCircle2, RefreshCw } from "lucide-react";
+import Dropdown from "../../components/ui/Dropdown";
 import useFondoDonaciones from "../../hooks/useFondoDonaciones";
 import "../styles/Recibos.css";
 import "../styles/OperationalPage.css";
@@ -8,6 +9,28 @@ import "../styles/Donaciones.css";
 
 const fmt = (n) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(n ?? 0);
+
+function MontoCell({ tipo, monto }) {
+  const egreso = tipo === "egreso";
+  return (
+    <td className="donaciones-col-numeric">
+      <span className={`donaciones-money donaciones-money--${tipo}`}>
+        <span className="donaciones-money__sign" aria-hidden="true">
+          {egreso ? "−" : "+"}
+        </span>
+        <span className="donaciones-money__value">{fmt(monto)}</span>
+      </span>
+    </td>
+  );
+}
+
+function SaldoCell({ value, variant = "balance" }) {
+  return (
+    <td className={`donaciones-col-numeric donaciones-balance donaciones-balance--${variant}`}>
+      <span className="donaciones-money__value">{fmt(value)}</span>
+    </td>
+  );
+}
 
 function Skeleton({ rows = 4 }) {
   return (
@@ -28,12 +51,14 @@ function FieldError({ id, message }) {
   );
 }
 
-function validateField(name, { origenTipo, origenNombre, monto, concepto }) {
+function validateField(name, { donadorSeleccionado, monto, concepto, nuevoTipo, nuevoNombre }) {
   switch (name) {
-    case "origenTipo":
-      return origenTipo ? "" : "Seleccione si la donación proviene de una marca o una familia.";
-    case "origenNombre":
-      return origenNombre.trim() ? "" : "Ingrese el nombre de la marca o familia.";
+    case "donadorSeleccionado":
+      return donadorSeleccionado ? "" : "Seleccione la marca o familia.";
+    case "nuevoTipo":
+      return nuevoTipo ? "" : "Seleccione si es marca o familia.";
+    case "nuevoNombre":
+      return nuevoNombre.trim() ? "" : "Ingrese el nombre.";
     case "monto": {
       const n = parseFloat(monto);
       if (!monto.trim()) return "Ingrese el monto de la donación.";
@@ -47,8 +72,13 @@ function validateField(name, { origenTipo, origenNombre, monto, concepto }) {
   }
 }
 
-function validateAll(values) {
-  const fields = ["origenTipo", "origenNombre", "monto", "concepto"];
+function validateAbono(values) {
+  const fields = ["donadorSeleccionado", "monto", "concepto"];
+  return Object.fromEntries(fields.map((f) => [f, validateField(f, values)]));
+}
+
+function validateCrearDonador(values) {
+  const fields = ["nuevoTipo", "nuevoNombre"];
   return Object.fromEntries(fields.map((f) => [f, validateField(f, values)]));
 }
 
@@ -61,13 +91,15 @@ function sanitizeMonto(value) {
 
 function formatOrigen(m) {
   if (m.tipo_movimiento?.toLowerCase() === "egreso") {
+    if (m.donador_nombre) return `Fondo: ${m.donador_nombre}`;
     const folio = m.folio_servicio ?? m.id_servicio_otorgado;
     return folio ? `Servicio #${folio}` : "Servicio";
   }
   if (m.origen_tipo) {
     const label = m.origen_tipo === "marca" ? "Marca" : "Familia";
-    return `${label}: ${m.origen_nombre}`;
+    return `${label}: ${m.origen_nombre ?? m.donador_nombre ?? "—"}`;
   }
+  if (m.donador_nombre) return m.donador_nombre;
   return "—";
 }
 
@@ -82,22 +114,56 @@ function formatConcepto(m) {
 }
 
 export default function Donaciones() {
-  const { saldo, movimientos, loading, error, fetchSaldo, fetchMovimientos, registrarAbono } =
-    useFondoDonaciones();
+  const {
+    saldo,
+    donadores,
+    movimientos,
+    loading,
+    error,
+    fetchSaldo,
+    fetchDonadores,
+    fetchMovimientos,
+    registrarAbono,
+    crearDonador,
+  } = useFondoDonaciones();
 
-  const [origenTipo, setOrigenTipo] = useState("");
-  const [origenNombre, setOrigenNombre] = useState("");
+  const [donadorSeleccionado, setDonadorSeleccionado] = useState("");
   const [monto, setMonto] = useState("");
   const [concepto, setConcepto] = useState("");
+  const [nuevoTipo, setNuevoTipo] = useState("");
+  const [nuevoNombre, setNuevoNombre] = useState("");
   const [guardado, setGuardado] = useState(false);
+  const [donadorCreado, setDonadorCreado] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [crearErrors, setCrearErrors] = useState({});
   const [guardando, setGuardando] = useState(false);
+  const [creando, setCreando] = useState(false);
   const [cargandoHistorial, setCargandoHistorial] = useState(false);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [mostrarCrearDonador, setMostrarCrearDonador] = useState(false);
 
-  const formValues = useMemo(
-    () => ({ origenTipo, origenNombre, monto, concepto }),
-    [origenTipo, origenNombre, monto, concepto]
+  const abonoValues = useMemo(
+    () => ({ donadorSeleccionado, monto, concepto }),
+    [donadorSeleccionado, monto, concepto]
+  );
+
+  const crearValues = useMemo(
+    () => ({ nuevoTipo, nuevoNombre }),
+    [nuevoTipo, nuevoNombre]
+  );
+
+  const donadorOptions = useMemo(
+    () => [
+      { label: "Seleccionar marca o familia...", value: "" },
+      ...donadores.map((d) => {
+        const tipo = d.tipo_origen === "marca" ? "Marca" : "Familia";
+        return {
+          label: `${d.nombre} (${tipo}) — ${fmt(d.saldo)}`,
+          value: String(d.id_donador),
+        };
+      }),
+    ],
+    [donadores]
   );
 
   const stats = useMemo(() => {
@@ -119,8 +185,8 @@ export default function Donaciones() {
     });
   }, []);
 
-  const handleBlur = (name) => {
-    const message = validateField(name, formValues);
+  const handleBlurAbono = (name) => {
+    const message = validateField(name, { ...abonoValues, nuevoTipo: "", nuevoNombre: "" });
     setFieldErrors((prev) => {
       const next = { ...prev };
       if (message) next[name] = message;
@@ -129,43 +195,77 @@ export default function Donaciones() {
     });
   };
 
-  const handleOrigenTipo = (tipo) => {
-    setOrigenTipo(tipo);
-    clearFieldError("origenTipo");
-    if (fieldErrors.origenNombre) handleBlur("origenNombre");
+  const handleNuevoTipo = (tipo) => {
+    setNuevoTipo(tipo);
+    setCrearErrors((prev) => {
+      const next = { ...prev };
+      delete next.nuevoTipo;
+      return next;
+    });
   };
 
   const handleTabKeyDown = (e) => {
     if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
     e.preventDefault();
-    handleOrigenTipo(origenTipo === "marca" ? "familia" : "marca");
+    handleNuevoTipo(nuevoTipo === "marca" ? "familia" : "marca");
+  };
+
+  const handleSubmitCrear = async (e) => {
+    e.preventDefault();
+    setDonadorCreado(false);
+
+    const errors = validateCrearDonador(crearValues);
+    if (Object.values(errors).some(Boolean)) {
+      setCrearErrors(errors);
+      return;
+    }
+
+    setCreando(true);
+    try {
+      const res = await crearDonador({
+        tipo_origen: nuevoTipo,
+        nombre: nuevoNombre.trim(),
+      });
+      setDonadorCreado(true);
+      setNuevoTipo("");
+      setNuevoNombre("");
+      setCrearErrors({});
+      setMostrarCrearDonador(false);
+      await fetchDonadores();
+      if (res?.data?.id_donador) {
+        setDonadorSeleccionado(String(res.data.id_donador));
+      }
+    } catch (err) {
+      setCrearErrors({ form: err.message || "Error al crear marca o familia." });
+    } finally {
+      setCreando(false);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setGuardado(false);
 
-    const errors = validateAll(formValues);
-    const hasErrors = Object.values(errors).some(Boolean);
-    setFieldErrors(errors);
-    if (hasErrors) return;
+    const errors = validateAbono(abonoValues);
+    if (Object.values(errors).some(Boolean)) {
+      setFieldErrors(errors);
+      return;
+    }
 
     setGuardando(true);
     try {
       await registrarAbono({
         monto: parseFloat(monto),
-        origen_tipo: origenTipo,
-        origen_nombre: origenNombre.trim(),
+        id_donador: Number(donadorSeleccionado),
         concepto: concepto.trim(),
       });
       setGuardado(true);
-      setOrigenTipo("");
-      setOrigenNombre("");
+      setDonadorSeleccionado("");
       setMonto("");
       setConcepto("");
       setFieldErrors({});
       setMostrarFormulario(false);
-      await Promise.all([fetchSaldo(), fetchMovimientos()]);
+      await Promise.all([fetchSaldo(), fetchDonadores(), fetchMovimientos()]);
     } catch (err) {
       setFieldErrors({
         form: err.message || "Error al registrar la donación.",
@@ -184,13 +284,6 @@ export default function Donaciones() {
     }
   };
 
-  const origenNombreLabel =
-    origenTipo === "marca"
-      ? "Nombre de la marca o empresa"
-      : origenTipo === "familia"
-      ? "Nombre de la familia"
-      : "Nombre de la marca o familia";
-
   const saldoLoading = loading && !saldo;
 
   return (
@@ -201,11 +294,11 @@ export default function Donaciones() {
             Fondo de Donaciones
           </h1>
           <p className="page-header-subtitle">
-            Registre abonos y consulte movimientos para cubrir servicios con donación.
+            Cree marcas o familias, registre abonos y consulte movimientos por fondo.
           </p>
         </div>
         <div className="donaciones-saldo" aria-live="polite">
-          <span className="donaciones-saldo-label">Saldo disponible</span>
+          <span className="donaciones-saldo-label">Saldo total</span>
           {saldoLoading ? (
             <div className="donaciones-skeleton-value" aria-hidden="true" />
           ) : (
@@ -214,6 +307,136 @@ export default function Donaciones() {
         </div>
       </header>
 
+      <section className="recibos-section" aria-labelledby="donaciones-fondos-title">
+        <div className="section-title-row">
+          <div>
+            <h2 id="donaciones-fondos-title" className="section-title">
+              Marcas y familias
+            </h2>
+            <p className="section-sub">Cada una tiene su propio fondo de donación.</p>
+          </div>
+          <button
+            type="button"
+            className="btnSecondary"
+            onClick={() => setMostrarCrearDonador((prev) => !prev)}
+            aria-expanded={mostrarCrearDonador}
+          >
+            {mostrarCrearDonador ? "Cancelar" : "Nueva marca / familia"}
+          </button>
+        </div>
+
+        {mostrarCrearDonador && (
+          <form
+            onSubmit={handleSubmitCrear}
+            className="donaciones-form donaciones-form-panel"
+            noValidate
+          >
+            <div className="field">
+              <span className="fieldLabel">Tipo</span>
+              <div className="recibos-tabs-wrap donaciones-tabs-wrap">
+                <div
+                  className="recibos-tabs recibos-tabs--two"
+                  role="tablist"
+                  onKeyDown={handleTabKeyDown}
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={nuevoTipo === "marca"}
+                    className={`recibos-tab ${nuevoTipo === "marca" ? "is-active" : ""} ${
+                      crearErrors.nuevoTipo ? "is-invalid" : ""
+                    }`}
+                    onClick={() => handleNuevoTipo("marca")}
+                  >
+                    Marca / empresa
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={nuevoTipo === "familia"}
+                    className={`recibos-tab ${nuevoTipo === "familia" ? "is-active" : ""} ${
+                      crearErrors.nuevoTipo ? "is-invalid" : ""
+                    }`}
+                    onClick={() => handleNuevoTipo("familia")}
+                  >
+                    Familia
+                  </button>
+                </div>
+              </div>
+              <FieldError message={crearErrors.nuevoTipo} />
+            </div>
+
+            <div className="field">
+              <label className="fieldLabel" htmlFor="nuevo-donador-nombre">
+                Nombre
+              </label>
+              <input
+                id="nuevo-donador-nombre"
+                type="text"
+                className={`input donaciones-input ${crearErrors.nuevoNombre ? "is-invalid" : ""}`}
+                placeholder="Ej. Fundación XYZ"
+                value={nuevoNombre}
+                onChange={(e) => {
+                  setNuevoNombre(e.target.value);
+                  setCrearErrors((prev) => {
+                    const next = { ...prev };
+                    delete next.nuevoNombre;
+                    return next;
+                  });
+                }}
+              />
+              <FieldError message={crearErrors.nuevoNombre} />
+            </div>
+
+            {crearErrors.form && (
+              <div className="estado-msg estado-error" role="alert">
+                {crearErrors.form}
+              </div>
+            )}
+
+            {donadorCreado && (
+              <div className="donaciones-exito" role="status">
+                <CheckCircle2 size={18} aria-hidden="true" />
+                <span>Marca o familia creada correctamente.</span>
+              </div>
+            )}
+
+            <button type="submit" className="btnPrimary" disabled={creando}>
+              {creando ? "Creando..." : "Crear fondo"}
+            </button>
+          </form>
+        )}
+
+        <div className="recibos-card" style={{ marginBottom: 24 }}>
+          {donadores.length === 0 ? (
+            <div className="estado-msg">
+              No hay marcas ni familias. Cree una antes de registrar donaciones.
+            </div>
+          ) : (
+            <div className="table-wrap">
+              <table className="recibos-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Tipo</th>
+                    <th className="text-right" scope="col">Saldo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {donadores.map((d) => (
+                    <tr key={d.id_donador}>
+                      <td>{d.nombre}</td>
+                      <td>{d.tipo_origen === "marca" ? "Marca" : "Familia"}</td>
+                      <SaldoCell value={d.saldo} variant="fondo" />
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </section>
+
       <section className="recibos-section" aria-labelledby="donaciones-historial-title">
         <div className="section-title-row">
           <div>
@@ -221,7 +444,7 @@ export default function Donaciones() {
               Historial de donaciones
             </h2>
             <p className="section-sub">
-              Abonos y egresos del fondo global
+              Abonos y egresos de todos los fondos
               {!loading && movimientos.length > 0 && (
                 <>
                   {" "}
@@ -239,6 +462,7 @@ export default function Donaciones() {
               onClick={() => setMostrarFormulario((prev) => !prev)}
               aria-expanded={mostrarFormulario}
               aria-controls="donaciones-registro-form"
+              disabled={donadores.length === 0}
             >
               {mostrarFormulario ? "Ocultar formulario" : "Registrar donación"}
             </button>
@@ -267,70 +491,19 @@ export default function Donaciones() {
             noValidate
           >
             <div className="field">
-              <span className="fieldLabel" id="origen-tipo-label">
-                Tipo de origen
-              </span>
-              <div className="recibos-tabs-wrap donaciones-tabs-wrap">
-                <div
-                  className="recibos-tabs recibos-tabs--two"
-                  role="tablist"
-                  aria-labelledby="origen-tipo-label"
-                  aria-describedby={fieldErrors.origenTipo ? "origen-tipo-error" : undefined}
-                  onKeyDown={handleTabKeyDown}
-                >
-                  <button
-                    type="button"
-                    role="tab"
-                    id="origen-tab-marca"
-                    aria-selected={origenTipo === "marca"}
-                    aria-controls="origen-nombre"
-                    tabIndex={origenTipo === "marca" || !origenTipo ? 0 : -1}
-                    className={`recibos-tab ${origenTipo === "marca" ? "is-active" : ""} ${
-                      fieldErrors.origenTipo ? "is-invalid" : ""
-                    }`}
-                    onClick={() => handleOrigenTipo("marca")}
-                  >
-                    Marca / empresa
-                  </button>
-                  <button
-                    type="button"
-                    role="tab"
-                    id="origen-tab-familia"
-                    aria-selected={origenTipo === "familia"}
-                    aria-controls="origen-nombre"
-                    tabIndex={origenTipo === "familia" ? 0 : -1}
-                    className={`recibos-tab ${origenTipo === "familia" ? "is-active" : ""} ${
-                      fieldErrors.origenTipo ? "is-invalid" : ""
-                    }`}
-                    onClick={() => handleOrigenTipo("familia")}
-                  >
-                    Familia
-                  </button>
-                </div>
-              </div>
-              <FieldError id="origen-tipo-error" message={fieldErrors.origenTipo} />
-            </div>
-
-            <div className="field">
-              <label className="fieldLabel" htmlFor="origen-nombre">
-                {origenNombreLabel}
+              <label className="fieldLabel" htmlFor="donador-abono">
+                Marca o familia
               </label>
-              <input
-                id="origen-nombre"
-                type="text"
-                className={`input donaciones-input ${fieldErrors.origenNombre ? "is-invalid" : ""}`}
-                placeholder="Ej. Fundación XYZ o Familia García"
-                value={origenNombre}
-                onChange={(e) => {
-                  setOrigenNombre(e.target.value);
-                  clearFieldError("origenNombre");
+              <Dropdown
+                options={donadorOptions}
+                value={donadorSeleccionado}
+                onChange={(val) => {
+                  setDonadorSeleccionado(val);
+                  clearFieldError("donadorSeleccionado");
                 }}
-                onBlur={() => handleBlur("origenNombre")}
-                aria-invalid={Boolean(fieldErrors.origenNombre)}
-                aria-describedby={fieldErrors.origenNombre ? "origen-nombre-error" : undefined}
-                autoComplete="organization"
+                className="dropdown-servicios"
               />
-              <FieldError id="origen-nombre-error" message={fieldErrors.origenNombre} />
+              <FieldError id="donador-error" message={fieldErrors.donadorSeleccionado} />
             </div>
 
             <div className="field">
@@ -354,7 +527,7 @@ export default function Donaciones() {
                     setMonto(sanitizeMonto(e.target.value));
                     clearFieldError("monto");
                   }}
-                  onBlur={() => handleBlur("monto")}
+                  onBlur={() => handleBlurAbono("monto")}
                   aria-invalid={Boolean(fieldErrors.monto)}
                   aria-describedby={fieldErrors.monto ? "monto-error" : undefined}
                 />
@@ -375,7 +548,7 @@ export default function Donaciones() {
                   setConcepto(e.target.value);
                   clearFieldError("concepto");
                 }}
-                onBlur={() => handleBlur("concepto")}
+                onBlur={() => handleBlurAbono("concepto")}
                 rows={3}
                 maxLength={500}
                 aria-invalid={Boolean(fieldErrors.concepto)}
@@ -449,7 +622,9 @@ export default function Donaciones() {
                         <td>
                           <span
                             className={`badge ${
-                              m.tipo_movimiento === "abono" ? "badge-donacion" : "badge-egreso"
+                              m.tipo_movimiento === "abono"
+                                ? "badge-donacion badge-donacion--abono"
+                                : "badge-egreso badge-egreso--egreso"
                             }`}
                           >
                             {m.tipo_movimiento === "abono" ? "Abono" : "Egreso"}
@@ -461,11 +636,8 @@ export default function Donaciones() {
                             {conceptoTexto}
                           </span>
                         </td>
-                        <td className={`text-right donaciones-monto--${m.tipo_movimiento}`}>
-                          {m.tipo_movimiento === "egreso" ? "− " : "+ "}
-                          {fmt(m.monto)}
-                        </td>
-                        <td className="text-right">{fmt(m.saldo_nuevo)}</td>
+                        <MontoCell tipo={m.tipo_movimiento} monto={m.monto} />
+                        <SaldoCell value={m.saldo_nuevo} />
                       </tr>
                     );
                   })}

@@ -2,10 +2,14 @@ import { z } from 'zod';
 
 export const origenDonacionTipoSchema = z.enum(['marca', 'familia']);
 
+export const crearDonadorSchema = z.object({
+  tipo_origen: origenDonacionTipoSchema,
+  nombre: z.string().trim().min(1, 'El nombre es requerido').max(100),
+});
+
 export const registrarAbonoFondoSchema = z.object({
   monto: z.number().positive('El monto debe ser mayor a 0'),
-  origen_tipo: origenDonacionTipoSchema,
-  origen_nombre: z.string().trim().min(1, 'El nombre del origen es requerido').max(100),
+  id_donador: z.number().int().positive('Seleccione una marca o familia'),
   concepto: z.string().trim().min(1, 'El concepto es requerido').max(500),
 });
 

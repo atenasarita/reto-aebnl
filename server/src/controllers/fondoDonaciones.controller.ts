@@ -1,5 +1,5 @@
 import { FondoDonacionesRepository } from '../repositories/fondoDonaciones.repository';
-import { RegistrarAbonoInput } from '../types/fondoDonaciones.types';
+import { CrearDonadorInput, RegistrarAbonoInput } from '../types/fondoDonaciones.types';
 
 export class FondoDonacionesController {
   private readonly repository: FondoDonacionesRepository;
@@ -14,6 +14,14 @@ export class FondoDonacionesController {
 
   listarMovimientos(limite?: number) {
     return this.repository.listarMovimientos(limite);
+  }
+
+  listarDonadores() {
+    return this.repository.listarDonadores();
+  }
+
+  crearDonador(input: CrearDonadorInput) {
+    return this.repository.crearDonador(input);
   }
 
   registrarAbono(input: RegistrarAbonoInput) {

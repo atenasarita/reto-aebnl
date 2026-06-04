@@ -1,5 +1,9 @@
 /* Complementos sobre Recibos.css + BusquedaBeneficiarioVista.css */
 
+.donaciones-page {
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
 .donaciones-header {
   align-items: flex-end;
 }
@@ -22,10 +26,12 @@
 
 .donaciones-saldo-value {
   font-size: 28px;
-  font-weight: 800;
+  font-weight: 700;
   font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   color: var(--color-brand);
   line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
 @media (max-width: 640px) {
@@ -185,23 +191,78 @@
   word-break: break-word;
 }
 
-.donaciones-monto--abono {
-  font-weight: 700;
-  color: var(--green);
-  font-family: var(--font-mono);
-  font-size: 14px;
+/* Columnas numéricas: mono tabular, alineación y respiro */
+.donaciones-page .recibos-table th.text-right {
+  padding-right: 20px;
+  min-width: 7.5rem;
+  text-align: right;
 }
 
-.donaciones-monto--egreso {
-  font-weight: 700;
-  color: #991b1b;
-  font-family: var(--font-mono);
-  font-size: 14px;
+.donaciones-col-numeric {
+  padding: 13px 20px 13px 14px;
+  min-width: 7.5rem;
+  text-align: right;
+  vertical-align: middle;
 }
 
-.badge-egreso {
-  background: var(--red-soft);
-  color: #991b1b;
+.donaciones-money,
+.donaciones-balance .donaciones-money__value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.donaciones-money {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 4px;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.donaciones-money__sign {
+  flex-shrink: 0;
+  min-width: 0.75em;
+  font-weight: 600;
+  text-align: center;
+}
+
+.donaciones-money__value {
+  font-weight: 600;
+}
+
+.donaciones-money--abono,
+.donaciones-money--abono .donaciones-money__sign {
+  color: var(--color-brand);
+}
+
+.donaciones-money--egreso,
+.donaciones-money--egreso .donaciones-money__sign {
+  color: var(--color-brand-secondary);
+}
+
+.donaciones-balance .donaciones-money__value {
+  display: inline-block;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.donaciones-balance--fondo .donaciones-money__value {
+  color: var(--color-brand);
+}
+
+/* Badges tipo movimiento (azules, coherente con marca) */
+.donaciones-page .badge-donacion--abono {
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+}
+
+.donaciones-page .badge-egreso--egreso {
+  background: #e8eef8;
+  color: var(--color-brand-secondary);
 }
 
 .donaciones-skeleton-value {
