@@ -50,27 +50,35 @@ jest.unstable_mockModule('../client/src/assets/espina.png', () => ({
 // Mock CSS
 jest.unstable_mockModule('../client/src/pages/styles/Preregistro.css', () => ({}));
 
-// Mock utils
-// jest.unstable_mockModule('../client/src/utils/config.js', () => ({
-//   API_URL: 'http://localhost:3000',
-// }));
-
-// jest.unstable_mockModule('../client/src/utils/espinaBifidaTypes.js', () => ({
-//   espinaBifidaOptions: [
-//     { value: 1, label: 'Encefalocele' },
-//     { value: 2, label: 'Espina Bífida Oculta' },
-//     { value: 9, label: 'Otros' },
-//   ],
-// }));
-
-// jest.unstable_mockModule('../client/src/utils/validator.js', () => ({
-//   limpiarSoloLetras: (v) => v.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g, ''),
-//   validarCURP: (v) => v.length === 18,
-// }));
-
-jest.unstable_mockModule('../client/src/utils/dateTime.js', () => ({
-  todayDate: () => '2026-06-02',
+jest.unstable_mockModule('../client/src/utils/config.js', () => ({
+  API_URL: 'http://localhost:3000',
 }));
+
+jest.unstable_mockModule('../client/src/utils/espinaBifidaTypes.js', () => ({
+  espinaBifidaOptions: [
+    { value: 1, label: 'Encefalocele' },
+    { value: 2, label: 'Espina Bífida Oculta' },
+    { value: 9, label: 'Otros' },
+  ],
+}));
+
+jest.unstable_mockModule('../client/src/utils/validator.js', () => ({
+  limpiarSoloLetras: (v) => v.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g, ''),
+  validarCURP: (v) => v.length === 18,
+}));
+
+const dateTimeMock = {
+  __esModule: true,
+  todayDate: () => '2026-06-02',
+  nowLocalDateTime: () => '2026-06-02T12:00:00',
+  default: {
+    todayDate: () => '2026-06-02',
+    nowLocalDateTime: () => '2026-06-02T12:00:00',
+  },
+};
+
+jest.unstable_mockModule('../client/src/utils/dateTime', () => dateTimeMock);
+jest.unstable_mockModule('../client/src/utils/dateTime.js', () => dateTimeMock);
 
 const PreregistroModule = await import('../client/src/pages/preregistro/Preregistro.jsx');
 const Preregistro =
