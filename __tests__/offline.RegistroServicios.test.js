@@ -27,17 +27,20 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-jest.mock('lucide-react', () => ({
-  __esModule: true,
-  Search: () => React.createElement('span', { 'data-testid': 'icon-search' }),
-  ClipboardList: () => React.createElement('span', { 'data-testid': 'icon-clipboard' }),
-  Package: () => React.createElement('span', { 'data-testid': 'icon-package' }),
-  Wallet: () => React.createElement('span', { 'data-testid': 'icon-wallet' }),
-  ChevronRight: () => React.createElement('span', { 'data-testid': 'icon-right' }),
-  ChevronLeft: () => React.createElement('span', { 'data-testid': 'icon-left' }),
-  CheckCircle2: () => React.createElement('span', { 'data-testid': 'icon-check' }),
-  CloudOff: () => React.createElement('span', { 'data-testid': 'icon-cloud-off' }),
-}));
+jest.mock('lucide-react', () => {
+  const React = require('react');
+  return {
+    __esModule: true,
+    Search: () => React.createElement('span', { 'data-testid': 'icon-search' }),
+    ClipboardList: () => React.createElement('span', { 'data-testid': 'icon-clipboard' }),
+    Package: () => React.createElement('span', { 'data-testid': 'icon-package' }),
+    Wallet: () => React.createElement('span', { 'data-testid': 'icon-wallet' }),
+    ChevronRight: () => React.createElement('span', { 'data-testid': 'icon-right' }),
+    ChevronLeft: () => React.createElement('span', { 'data-testid': 'icon-left' }),
+    CheckCircle2: () => React.createElement('span', { 'data-testid': 'icon-check' }),
+    CloudOff: () => React.createElement('span', { 'data-testid': 'icon-cloud-off' }),
+  };
+});
 
 jest.mock('../client/src/pages/styles/RegistroServicio.css', () => ({}));
 
@@ -92,238 +95,250 @@ jest.mock('../client/src/hooks/useFondoDonaciones', () => ({
   }),
 }));
 
-jest.mock('../client/src/components/layout/servicios/Registro/StepBusqueda.jsx', () => ({
-  __esModule: true,
-  default: ({
-    query,
-    setQuery,
-    resultados,
-    beneficiarioSeleccionado,
-    setBeneficiarioSeleccionado,
-    CITAS_HOY,
-    citaSeleccionada,
-    setCitaSeleccionada,
-  }) =>
-    React.createElement(
-      'section',
-      { 'data-testid': 'step-busqueda' },
-      React.createElement('h2', null, 'Paso búsqueda'),
-      React.createElement('input', {
-        'data-testid': 'busqueda-input',
-        value: query,
-        onChange: (event) => setQuery(event.target.value),
-      }),
+jest.mock('../client/src/components/layout/servicios/Registro/StepBusqueda.jsx', () => {
+  const React = require('react');
+  return {
+    __esModule: true,
+    default: ({
+      query,
+      setQuery,
+      resultados,
+      beneficiarioSeleccionado,
+      setBeneficiarioSeleccionado,
+      CITAS_HOY,
+      citaSeleccionada,
+      setCitaSeleccionada,
+    }) =>
       React.createElement(
-        'div',
-        { 'data-testid': 'resultados' },
-        resultados.map((b) =>
-          React.createElement(
-            'button',
-            {
-              key: b.folio,
-              type: 'button',
-              'data-testid': `beneficiario-${b.folio}`,
-              onClick: () => {
-                setBeneficiarioSeleccionado(b.folio);
-                setCitaSeleccionada(null);
-              },
-            },
-            `${b.nombre} ${beneficiarioSeleccionado === b.folio ? 'seleccionado' : ''}`
-          )
-        )
-      ),
-      React.createElement(
-        'div',
-        { 'data-testid': 'citas-hoy' },
-        CITAS_HOY.map((c) =>
-          React.createElement(
-            'button',
-            {
-              key: c.id,
-              type: 'button',
-              'data-testid': `cita-${c.id}`,
-              onClick: () => {
-                setCitaSeleccionada(c.id);
-                setBeneficiarioSeleccionado(null);
-              },
-            },
-            `${c.nombre} ${citaSeleccionada === c.id ? 'seleccionada' : ''}`
-          )
-        )
-      )
-    ),
-}));
-
-jest.mock('../client/src/components/layout/servicios/Registro/StepDetalles.jsx', () => ({
-  __esModule: true,
-  default: ({
-    fecha,
-    setFecha,
-    hora,
-    setHora,
-    categoriaServicio,
-    setCategoriaServicio,
-    tipoServicio,
-    setTipoServicio,
-    categoriasOptions,
-    tiposOptions,
-    notas,
-    setNotas,
-  }) =>
-    React.createElement(
-      'section',
-      { 'data-testid': 'step-detalles' },
-      React.createElement('h2', null, 'Paso detalles'),
-      React.createElement('input', {
-        'data-testid': 'fecha-input',
-        type: 'date',
-        value: fecha,
-        onChange: (event) => setFecha(event.target.value),
-      }),
-      React.createElement('input', {
-        'data-testid': 'hora-input',
-        type: 'time',
-        value: hora,
-        onChange: (event) => setHora(event.target.value),
-      }),
-      React.createElement(
-        'select',
-        {
-          'data-testid': 'categoria-select',
-          value: categoriaServicio,
-          onChange: (event) => setCategoriaServicio(event.target.value),
-        },
-        categoriasOptions.map((option) =>
-          React.createElement('option', { key: option.value, value: option.value }, option.label)
-        )
-      ),
-      React.createElement(
-        'select',
-        {
-          'data-testid': 'servicio-select',
-          value: tipoServicio,
-          onChange: (event) => setTipoServicio(event.target.value),
-        },
-        React.createElement('option', { value: '' }, 'Seleccionar servicio'),
-        tiposOptions.map((option) =>
-          React.createElement('option', { key: option.value, value: option.value }, option.label)
-        )
-      ),
-      React.createElement('textarea', {
-        'data-testid': 'notas-input',
-        value: notas,
-        onChange: (event) => setNotas(event.target.value),
-      })
-    ),
-}));
-
-jest.mock('../client/src/components/layout/servicios/Registro/StepInsumos.jsx', () => ({
-  __esModule: true,
-  default: ({ insumos, setInsumos, productos }) =>
-    React.createElement(
-      'section',
-      { 'data-testid': 'step-insumos' },
-      React.createElement('h2', null, 'Paso insumos'),
-      React.createElement('p', null, `Insumos seleccionados: ${insumos.length}`),
-      React.createElement(
-        'button',
-        {
-          type: 'button',
-          'data-testid': 'agregar-insumo',
-          onClick: () =>
-            setInsumos([
-              ...insumos,
+        'section',
+        { 'data-testid': 'step-busqueda' },
+        React.createElement('h2', null, 'Paso búsqueda'),
+        React.createElement('input', {
+          'data-testid': 'busqueda-input',
+          value: query,
+          onChange: (event) => setQuery(event.target.value),
+        }),
+        React.createElement(
+          'div',
+          { 'data-testid': 'resultados' },
+          resultados.map((b) =>
+            React.createElement(
+              'button',
               {
-                id: productos[0]?.id ?? 1,
-                nombre: productos[0]?.nombre ?? 'Sonda',
-                precio: productos[0]?.precio ?? 100,
-                cantidad: 2,
+                key: b.folio,
+                type: 'button',
+                'data-testid': `beneficiario-${b.folio}`,
+                onClick: () => {
+                  setBeneficiarioSeleccionado(b.folio);
+                  setCitaSeleccionada(null);
+                },
               },
-            ]),
-        },
-        'Agregar insumo'
-      )
-    ),
-}));
-
-jest.mock('../client/src/components/layout/servicios/Registro/StepFinanzas.jsx', () => ({
-  __esModule: true,
-  default: ({
-    total,
-    totalConDescuento,
-    saldo,
-    saldoGlobal,
-    donadores,
-    fondoSeleccionado,
-    setFondoSeleccionado,
-    metodoPago,
-    setMetodoPago,
-    montoPagado,
-    setMontoPagado,
-    montoDonacion,
-    setMontoDonacion,
-    descuento,
-    setDescuento,
-    yaAporto,
-    setYaAporto,
-  }) =>
-    React.createElement(
-      'section',
-      { 'data-testid': 'step-finanzas' },
-      React.createElement('h2', null, 'Paso finanzas'),
-      React.createElement('p', { 'data-testid': 'total' }, `Total: ${total}`),
-      React.createElement('p', { 'data-testid': 'total-descuento' }, `Total descuento: ${totalConDescuento}`),
-      React.createElement('p', { 'data-testid': 'saldo' }, `Saldo: ${saldo}`),
-      React.createElement('p', { 'data-testid': 'saldo-global' }, `Saldo global: ${saldoGlobal}`),
-      React.createElement('input', {
-        'data-testid': 'monto-pagado',
-        value: montoPagado,
-        onChange: (event) => setMontoPagado(event.target.value),
-      }),
-      React.createElement('input', {
-        'data-testid': 'monto-donacion',
-        value: montoDonacion,
-        onChange: (event) => setMontoDonacion(event.target.value),
-      }),
-      React.createElement('input', {
-        'data-testid': 'descuento',
-        value: descuento,
-        onChange: (event) => setDescuento(event.target.value),
-      }),
-      React.createElement(
-        'select',
-        {
-          'data-testid': 'metodo-pago',
-          value: metodoPago,
-          onChange: (event) => setMetodoPago(event.target.value),
-        },
-        React.createElement('option', { value: '' }, 'Seleccionar método'),
-        React.createElement('option', { value: 'efectivo' }, 'Efectivo'),
-        React.createElement('option', { value: 'tarjeta' }, 'Tarjeta')
-      ),
-      React.createElement(
-        'select',
-        {
-          'data-testid': 'fondo-select',
-          value: fondoSeleccionado,
-          onChange: (event) => setFondoSeleccionado(event.target.value),
-        },
-        React.createElement('option', { value: '' }, 'Seleccionar fondo'),
-        donadores.map((d) =>
-          React.createElement('option', { key: d.id_fondo, value: d.id_fondo }, d.nombre)
+              `${b.nombre} ${beneficiarioSeleccionado === b.folio ? 'seleccionado' : ''}`
+            )
+          )
+        ),
+        React.createElement(
+          'div',
+          { 'data-testid': 'citas-hoy' },
+          CITAS_HOY.map((c) =>
+            React.createElement(
+              'button',
+              {
+                key: c.id,
+                type: 'button',
+                'data-testid': `cita-${c.id}`,
+                onClick: () => {
+                  setCitaSeleccionada(c.id);
+                  setBeneficiarioSeleccionado(null);
+                },
+              },
+              `${c.nombre} ${citaSeleccionada === c.id ? 'seleccionada' : ''}`
+            )
+          )
         )
       ),
+  };
+});
+
+jest.mock('../client/src/components/layout/servicios/Registro/StepDetalles.jsx', () => {
+  const React = require('react');
+  return {
+    __esModule: true,
+    default: ({
+      fecha,
+      setFecha,
+      hora,
+      setHora,
+      categoriaServicio,
+      setCategoriaServicio,
+      tipoServicio,
+      setTipoServicio,
+      categoriasOptions,
+      tiposOptions,
+      notas,
+      setNotas,
+    }) =>
       React.createElement(
-        'button',
-        {
-          type: 'button',
-          'data-testid': 'ya-aporto',
-          onClick: () => setYaAporto(!yaAporto),
-        },
-        yaAporto ? 'Ya aportó: sí' : 'Ya aportó: no'
-      )
-    ),
-}));
+        'section',
+        { 'data-testid': 'step-detalles' },
+        React.createElement('h2', null, 'Paso detalles'),
+        React.createElement('input', {
+          'data-testid': 'fecha-input',
+          type: 'date',
+          value: fecha,
+          onChange: (event) => setFecha(event.target.value),
+        }),
+        React.createElement('input', {
+          'data-testid': 'hora-input',
+          type: 'time',
+          value: hora,
+          onChange: (event) => setHora(event.target.value),
+        }),
+        React.createElement(
+          'select',
+          {
+            'data-testid': 'categoria-select',
+            value: categoriaServicio,
+            onChange: (event) => setCategoriaServicio(event.target.value),
+          },
+          categoriasOptions.map((option) =>
+            React.createElement('option', { key: option.value, value: option.value }, option.label)
+          )
+        ),
+        React.createElement(
+          'select',
+          {
+            'data-testid': 'servicio-select',
+            value: tipoServicio,
+            onChange: (event) => setTipoServicio(event.target.value),
+          },
+          React.createElement('option', { value: '' }, 'Seleccionar servicio'),
+          tiposOptions.map((option) =>
+            React.createElement('option', { key: option.value, value: option.value }, option.label)
+          )
+        ),
+        React.createElement('textarea', {
+          'data-testid': 'notas-input',
+          value: notas,
+          onChange: (event) => setNotas(event.target.value),
+        })
+      ),
+  };
+});
+
+jest.mock('../client/src/components/layout/servicios/Registro/StepInsumos.jsx', () => {
+  const React = require('react');
+  return {
+    __esModule: true,
+    default: ({ insumos, setInsumos, productos }) =>
+      React.createElement(
+        'section',
+        { 'data-testid': 'step-insumos' },
+        React.createElement('h2', null, 'Paso insumos'),
+        React.createElement('p', null, `Insumos seleccionados: ${insumos.length}`),
+        React.createElement(
+          'button',
+          {
+            type: 'button',
+            'data-testid': 'agregar-insumo',
+            onClick: () =>
+              setInsumos([
+                ...insumos,
+                {
+                  id: productos[0]?.id ?? 1,
+                  nombre: productos[0]?.nombre ?? 'Sonda',
+                  precio: productos[0]?.precio ?? 100,
+                  cantidad: 2,
+                },
+              ]),
+          },
+          'Agregar insumo'
+        )
+      ),
+  };
+});
+
+jest.mock('../client/src/components/layout/servicios/Registro/StepFinanzas.jsx', () => {
+  const React = require('react');
+  return {
+    __esModule: true,
+    default: ({
+      total,
+      totalConDescuento,
+      saldo,
+      saldoGlobal,
+      donadores,
+      fondoSeleccionado,
+      setFondoSeleccionado,
+      metodoPago,
+      setMetodoPago,
+      montoPagado,
+      setMontoPagado,
+      montoDonacion,
+      setMontoDonacion,
+      descuento,
+      setDescuento,
+      yaAporto,
+      setYaAporto,
+    }) =>
+      React.createElement(
+        'section',
+        { 'data-testid': 'step-finanzas' },
+        React.createElement('h2', null, 'Paso finanzas'),
+        React.createElement('p', { 'data-testid': 'total' }, `Total: ${total}`),
+        React.createElement('p', { 'data-testid': 'total-descuento' }, `Total descuento: ${totalConDescuento}`),
+        React.createElement('p', { 'data-testid': 'saldo' }, `Saldo: ${saldo}`),
+        React.createElement('p', { 'data-testid': 'saldo-global' }, `Saldo global: ${saldoGlobal}`),
+        React.createElement('input', {
+          'data-testid': 'monto-pagado',
+          value: montoPagado,
+          onChange: (event) => setMontoPagado(event.target.value),
+        }),
+        React.createElement('input', {
+          'data-testid': 'monto-donacion',
+          value: montoDonacion,
+          onChange: (event) => setMontoDonacion(event.target.value),
+        }),
+        React.createElement('input', {
+          'data-testid': 'descuento',
+          value: descuento,
+          onChange: (event) => setDescuento(event.target.value),
+        }),
+        React.createElement(
+          'select',
+          {
+            'data-testid': 'metodo-pago',
+            value: metodoPago,
+            onChange: (event) => setMetodoPago(event.target.value),
+          },
+          React.createElement('option', { value: '' }, 'Seleccionar método'),
+          React.createElement('option', { value: 'efectivo' }, 'Efectivo'),
+          React.createElement('option', { value: 'tarjeta' }, 'Tarjeta')
+        ),
+        React.createElement(
+          'select',
+          {
+            'data-testid': 'fondo-select',
+            value: fondoSeleccionado,
+            onChange: (event) => setFondoSeleccionado(event.target.value),
+          },
+          React.createElement('option', { value: '' }, 'Seleccionar fondo'),
+          donadores.map((d) =>
+            React.createElement('option', { key: d.id_fondo, value: d.id_fondo }, d.nombre)
+          )
+        ),
+        React.createElement(
+          'button',
+          {
+            type: 'button',
+            'data-testid': 'ya-aporto',
+            onClick: () => setYaAporto(!yaAporto),
+          },
+          yaAporto ? 'Ya aportó: sí' : 'Ya aportó: no'
+        )
+      ),
+  };
+});
 
 const RegistroServiciosModule = await import(
   '../client/src/pages/Servicios/RegistroServicios.jsx'
@@ -446,7 +461,6 @@ describe('RegistroServicios — modo sin conexión', () => {
     mockSaldoFondo = { saldo: 1000 };
     mockDonadores = [{ id_fondo: 7, id_donador: 70, nombre: 'Fondo Empresa XYZ', saldo: 800 }];
 
-    // Comportamiento por defecto: guardado online exitoso
     mockRegistrar.mockResolvedValue({ success: true });
     mockFetchSaldo.mockResolvedValue({ saldo: 1000 });
     mockFetchDonadores.mockResolvedValue(mockDonadores);
@@ -555,7 +569,6 @@ describe('RegistroServicios — modo sin conexión', () => {
   });
 
   test('al reconectarse, un registro normal vuelve a mostrar la pantalla de éxito online', async () => {
-    // Primera vez offline → queued
     mockRegistrar.mockResolvedValueOnce({ queued: true });
 
     await mount();
@@ -564,7 +577,6 @@ describe('RegistroServicios — modo sin conexión', () => {
 
     expect(container.textContent).toContain('Guardado sin conexión');
 
-    // El usuario vuelve a registrar y ahora está online → success
     await clickButton('Registrar otro servicio');
     await irHastaPasoFinanzas();
     await clickButton('Guardar');
