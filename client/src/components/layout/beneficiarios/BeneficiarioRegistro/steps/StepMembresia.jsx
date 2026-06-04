@@ -11,16 +11,40 @@ function StepMembresia({
     <div className="section-block">
       <h2>Membresía</h2>
 
+      <div className="row">
+        <div className="field-group">
+          <label>Meses de vigencia</label>
+          <input
+            type="text"
+            name="meses_membresia"
+            value={12}
+            readOnly
+            disabled
+          />
+        </div>
+
+        <div className="field-group">
+          <label>Costo total</label>
+          <input
+            type="text"
+            value="$150.00"
+            readOnly
+            disabled
+          />
+        </div>
+      </div>
+
       <div className="field-group">
-        <label>Meses de vigencia</label>
-        <input
-          type="number"
-          name="meses_membresia"
-          value={formData.meses_membresia}
-          min={1}
-          max={36}
+        <label>Método de pago</label>
+        <select
+          name="metodo_pago"
+          value={formData.metodo_pago ?? 'efectivo'}
           onChange={handleInputChange}
-        />
+        >
+          <option value="efectivo">Efectivo</option>
+          <option value="tarjeta">Tarjeta</option>
+          <option value="donacion">Donación</option>
+        </select>
       </div>
 
       <div className="section-block">
