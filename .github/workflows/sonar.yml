@@ -35,6 +35,9 @@ jobs:
             cp -r unitTests/__tests__ ./
             cp -r unitTests/__mocks__ ./
             cp unitTests/babel.config.cjs ./
+            cp unitTests/jest.config.cjs ./
+
+
 
 
       - name: Setup Node.js
