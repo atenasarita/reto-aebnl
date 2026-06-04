@@ -1,6 +1,6 @@
 module.exports = {
   testEnvironment: 'jsdom',
-  testMatch: ['**/__tests__/**/*.test.js', '**/__tests__/**/*.test.mjs', '**/?(*.)+(spec|test).js', '**/?(*.)+(spec|test).mjs'],
+  testMatch: ['**/__tests__/**/*.test.js', '**/__tests__/**/*.test.mjs', '**/?(*.)+(spec|test).js', '**/?(*.)+(spec|test).mjs', '**/__tests__/**/*.test.jsx'],
   moduleFileExtensions: ['js', 'mjs', 'cjs', 'json', 'jsx', 'node'],
 //   Ruta para correr en main
 //    roots: ['<rootDir>/client/src', '<rootDir>/unitTests/__tests__'],
@@ -28,9 +28,9 @@ module.exports = {
     '^.*\\/utils\\/config(\\.js)?$': '<rootDir>/__mocks__/configMock.js',
     '^.*\\/utils\\/espinaBifidaTypes(\\.js)?$': '<rootDir>/__mocks__/espinaBifidaMock.js',
     '^framer-motion$': '<rootDir>/__mocks__/framerMotionMock.js',
-    '^lucide-react$': '<rootDir>/__mocks__/lucideReactMock.js',
+    // '^lucide-react$': '<rootDir>/__mocks__/lucideReactMock.js',
     '^.*\\/utils\\/validator(\\.js)?$': '<rootDir>/__mocks__/validatorMock.js',
-    '^.*\\/utils\\/dateTime(\\.js)?$': '<rootDir>/__mocks__/dateTimeMock.js',
+    // '^.*\\/utils\\/dateTime(\\.js)?$': '<rootDir>/__mocks__/dateTimeMock.js',
   },
    coverageReporters: ['lcov', 'text'],
     coverageDirectory: 'coverage',
