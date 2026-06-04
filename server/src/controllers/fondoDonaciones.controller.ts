@@ -12,8 +12,8 @@ export class FondoDonacionesController {
     return this.repository.getSaldo();
   }
 
-  listarMovimientos(limite?: number) {
-    return this.repository.listarMovimientos(limite);
+  listarMovimientos(limite?: number, idDonador?: number | null) {
+    return this.repository.listarMovimientos(limite, idDonador);
   }
 
   listarDonadores() {

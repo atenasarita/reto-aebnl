@@ -18,6 +18,7 @@ import {
   SELECT_DONADORES_CON_FONDO,
   SELECT_FONDO_DONADOR_FOR_UPDATE,
   SELECT_MOVIMIENTOS_FONDO,
+  SELECT_MOVIMIENTOS_FONDO_POR_DONADOR,
   SELECT_NEXT_ID_DONADOR,
   SELECT_NEXT_ID_FONDO,
   SELECT_SALDO_AGREGADO,
@@ -324,16 +325,26 @@ export class FondoDonacionesRepository {
     }
   }
 
-  async listarMovimientos(limite = 100): Promise<MovimientoFondoDonacion[]> {
+  async listarMovimientos(
+    limite = 100,
+    idDonador?: number | null
+  ): Promise<MovimientoFondoDonacion[]> {
     let connection: oracledb.Connection | undefined;
 
     try {
       connection = await this.oracleConnection.getConnection();
-      const result = await connection.execute(
-        SELECT_MOVIMIENTOS_FONDO,
-        { limite },
-        { outFormat: oracledb.OUT_FORMAT_OBJECT }
-      );
+      const query =
+        idDonador != null && idDonador > 0
+          ? SELECT_MOVIMIENTOS_FONDO_POR_DONADOR
+          : SELECT_MOVIMIENTOS_FONDO;
+      const binds =
+        idDonador != null && idDonador > 0
+          ? { limite, id_donador: idDonador }
+          : { limite };
+
+      const result = await connection.execute(query, binds, {
+        outFormat: oracledb.OUT_FORMAT_OBJECT,
+      });
 
       return ((result.rows ?? []) as MovimientoRow[]).map(mapMovimiento);
     } finally {

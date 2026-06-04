@@ -9,6 +9,7 @@ function SearchBar({
   className = '', 
   debounceMs = 300, 
   icon,
+  prefix,
   ...props }) {
   const [search, setSearch] = useState(value ?? '')
   const timerRef = useRef(null)
@@ -46,9 +47,12 @@ function SearchBar({
 
   const { className: inputClassFromProps, style: inputStyle, ...inputProps } = props
 
+  const hasLeadingAffix = Boolean(icon || prefix)
+
   const inputClassName = [
     'search-input',
     icon ? 'search-input--with-icon' : '',
+    prefix ? 'search-input--with-prefix' : '',
     inputClassFromProps,
   ]
     .filter(Boolean)
@@ -57,13 +61,18 @@ function SearchBar({
   return (
     <div className={`searchbar-wrapper ${className}`.trim()}>
       {icon && <span className="search-icon" aria-hidden="true">{icon}</span>}
+      {prefix && !icon && (
+        <span className="search-prefix" aria-hidden="true">
+          {prefix}
+        </span>
+      )}
       <input
         type="text"
         value={search}
         onChange={handleChange}
         placeholder={placeholder}
         className={inputClassName}
-        style={icon ? { paddingLeft: '42px', ...inputStyle } : inputStyle}
+        style={hasLeadingAffix ? { paddingLeft: '42px', ...inputStyle } : inputStyle}
         {...inputProps}
       />
     </div>

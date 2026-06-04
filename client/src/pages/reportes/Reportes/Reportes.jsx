@@ -6,6 +6,7 @@ import "./Reportes.css";
 const REPORTES_NAV = [
   { to: "general", label: "General", icon: "general" },
   { to: "inventario", label: "Inventario", icon: "inventario" },
+  { to: "donaciones", label: "Donaciones", icon: "donaciones" },
   { to: "mensual", label: "Período", icon: "anual" },
   { to: "personalizado", label: "Personalizado", icon: "personalizado" },
 ];

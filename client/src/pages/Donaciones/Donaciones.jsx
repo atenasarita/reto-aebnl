@@ -6,31 +6,13 @@ import "../styles/Recibos.css";
 import "../styles/OperationalPage.css";
 import "../styles/RegistroServicio.css";
 import "../styles/Donaciones.css";
-
-const fmt = (n) =>
-  new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(n ?? 0);
-
-function MontoCell({ tipo, monto }) {
-  const egreso = tipo === "egreso";
-  return (
-    <td className="donaciones-col-numeric">
-      <span className={`donaciones-money donaciones-money--${tipo}`}>
-        <span className="donaciones-money__sign" aria-hidden="true">
-          {egreso ? "−" : "+"}
-        </span>
-        <span className="donaciones-money__value">{fmt(monto)}</span>
-      </span>
-    </td>
-  );
-}
-
-function SaldoCell({ value, variant = "balance" }) {
-  return (
-    <td className={`donaciones-col-numeric donaciones-balance donaciones-balance--${variant}`}>
-      <span className="donaciones-money__value">{fmt(value)}</span>
-    </td>
-  );
-}
+import {
+  fmtMontoFondo as fmt,
+  formatConceptoMovimiento as formatConcepto,
+  formatOrigenMovimiento as formatOrigen,
+  MontoCell,
+  SaldoCell,
+} from "../../components/fondo/FondoMovimientosDisplay";
 
 function Skeleton({ rows = 4 }) {
   return (
@@ -87,30 +69,6 @@ function sanitizeMonto(value) {
   const parts = cleaned.split(".");
   if (parts.length <= 1) return cleaned;
   return `${parts[0]}.${parts.slice(1).join("")}`;
-}
-
-function formatOrigen(m) {
-  if (m.tipo_movimiento?.toLowerCase() === "egreso") {
-    if (m.donador_nombre) return `Fondo: ${m.donador_nombre}`;
-    const folio = m.folio_servicio ?? m.id_servicio_otorgado;
-    return folio ? `Servicio #${folio}` : "Servicio";
-  }
-  if (m.origen_tipo) {
-    const label = m.origen_tipo === "marca" ? "Marca" : "Familia";
-    return `${label}: ${m.origen_nombre ?? m.donador_nombre ?? "—"}`;
-  }
-  if (m.donador_nombre) return m.donador_nombre;
-  return "—";
-}
-
-function formatConcepto(m) {
-  if (m.tipo_movimiento?.toLowerCase() === "egreso") {
-    const folio = m.folio_servicio ?? m.id_servicio_otorgado;
-    const nombre = m.servicio_nombre?.trim();
-    if (folio && nombre) return `Folio #${folio} · ${nombre}`;
-    if (folio) return `Folio #${folio}`;
-  }
-  return m.concepto || m.motivo || "—";
 }
 
 export default function Donaciones() {

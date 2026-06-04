@@ -4,84 +4,15 @@
   gap: var(--space-4);
 }
 
-/* ── Barra ── */
 .barra {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  width: 100%;
 }
 
-.searchWrap {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 8px var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  background: var(--color-surface-card);
-  min-width: 220px;
-  flex: 1;
-}
-
-.searchWrap:focus-within {
-  border-color: var(--color-brand-secondary);
-  box-shadow: 0 0 0 3px var(--color-brand-soft);
-}
-
-.searchIcon {
-  color: var(--color-icon-muted);
-  flex-shrink: 0;
-  font-size: 15px;
-}
-
-.searchInput {
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 14px;
-  font-family: var(--font-sans);
-  color: var(--color-text-primary);
-}
-
-.searchInput::placeholder {
-  color: var(--color-text-muted);
-}
-
-/* ── Filtros por categoría ── */
-.filtrosCats {
-  display: flex;
-  gap: var(--space-2);
-  flex-wrap: wrap;
-}
-
-.catFiltroBtn {
-  padding: 6px var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  background: var(--color-surface-card);
-  color: var(--color-text-secondary);
-  font-size: 13px;
-  font-family: var(--font-sans);
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-  white-space: nowrap;
-}
-
-.catFiltroBtn:hover {
-  background: var(--color-surface-muted);
-  border-color: var(--color-border-strong);
-}
-
-.catFiltroBtnActive {
-  background: var(--color-brand-soft);
-  border-color: var(--color-brand-secondary);
-  color: var(--color-brand);
-  font-weight: 600;
-}
-
-/* ── Chips de categoría en tabla ── */
+/* Chips de categoría en tabla */
 .chip {
   font-size: 12px;
   padding: 3px var(--space-2);

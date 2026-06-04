@@ -21,7 +21,15 @@ export class FondoDonacionesHandler {
   listarMovimientos = async (req: Request, res: Response) => {
     try {
       const limite = Math.min(Number(req.query.limite) || 100, 500);
-      const data = await this.controller.listarMovimientos(limite);
+      const idDonadorRaw = req.query.id_donador;
+      const idDonador =
+        idDonadorRaw != null && String(idDonadorRaw).trim() !== ''
+          ? Number(idDonadorRaw)
+          : undefined;
+      const data = await this.controller.listarMovimientos(
+        limite,
+        Number.isFinite(idDonador) && idDonador > 0 ? idDonador : undefined
+      );
       res.status(200).json({ ok: true, data });
     } catch (error) {
       console.error('Error en listarMovimientos fondo:', error);

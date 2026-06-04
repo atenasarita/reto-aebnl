@@ -90,20 +90,29 @@
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .donaciones-input-prefix-symbol {
   position: absolute;
-  left: var(--space-4);
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  width: 1.25rem;
   font-size: 15px;
   font-weight: 700;
+  font-family: var(--font-mono);
+  text-align: center;
   color: var(--color-text-muted);
   pointer-events: none;
 }
 
-.donaciones-input--monto {
-  padding-left: calc(var(--space-4) + 14px);
+.donaciones-input-prefix .input.donaciones-input.donaciones-input--monto {
+  width: 100%;
+  padding: 0 16px 0 42px;
   font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .donaciones-input.is-invalid,
