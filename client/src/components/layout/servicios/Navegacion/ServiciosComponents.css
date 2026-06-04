@@ -20,7 +20,9 @@
   display: flex;
   margin-bottom: 20px;
   flex-direction: row;
-  gap: 30px;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 12px;
 }
 
 .btn-ver {
@@ -59,11 +61,7 @@
   color: var(--color-success);
 }
 
-.td-acciones {
-  display: flex;
-  gap: 10px;
-  padding: 16px 20px;
-}
+/* Flex solo en el contenedor interno; no en <td> (evita bordes que cortan botones) */
 
 .td-folio{
   width: 60px;

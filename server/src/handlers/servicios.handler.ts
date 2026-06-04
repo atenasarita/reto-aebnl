@@ -69,10 +69,19 @@ export class ServiciosHandler {
         });
       }
 
+      if (montoDonacion > 0 && (!req.body.id_fondo || !req.body.id_donador)) {
+        return res.status(400).json({
+          ok: false,
+          message: 'Debe seleccionar el fondo de donación a utilizar',
+        });
+      }
+
       const data = await this.serviciosController.registrarServicio({
         ...req.body,
         monto_pagado: montoPagado,
         monto_donacion: montoDonacion,
+        id_fondo: req.body.id_fondo ? Number(req.body.id_fondo) : null,
+        id_donador: req.body.id_donador ? Number(req.body.id_donador) : null,
         id_usuario,
       });
 
@@ -84,7 +93,8 @@ export class ServiciosHandler {
       if (
         mensaje.includes('Stock insuficiente') ||
         mensaje.includes('no encontrado en inventario') ||
-        mensaje.includes('Saldo insuficiente en fondo de donaciones')
+        mensaje.includes('Saldo insuficiente en fondo de donaciones') ||
+        mensaje.includes('Debe seleccionar el fondo de donación')
       ) {
         return res.status(409).json({ ok: false, message: mensaje });
       }

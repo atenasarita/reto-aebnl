@@ -15,6 +15,8 @@ type RegistrarServicioInput = {
   cuota_total: number;
   monto_pagado: number;
   monto_donacion: number;
+  id_fondo?: number | null;
+  id_donador?: number | null;
   metodo_pago: string;
   ya_aporto: boolean;
   id_usuario: number;

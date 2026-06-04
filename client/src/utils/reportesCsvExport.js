@@ -258,3 +258,50 @@ export function buildCsvReporteAnual(data, anio) {
 
   return buildCsv(headers, rows);
 }
+
+/**
+ * @param {{ nombre?: string, tipo_origen?: string, saldo?: number }} donador
+ * @param {Array<Record<string, unknown>>} movimientos
+ */
+export function buildCsvReporteDonaciones(donador, movimientos) {
+  const tipoLabel = donador.tipo_origen === "marca" ? "Marca" : "Familia";
+  const headers = [
+    "Fecha",
+    "Tipo",
+    "Origen o destino",
+    "Concepto",
+    "Monto",
+    "Saldo después",
+  ];
+
+  /** @type {Array<Array<string|number>>} */
+  const rows = [
+    ["Donador", donador.nombre ?? "", tipoLabel, "", "", ""],
+    ["Saldo actual", donador.saldo ?? 0, "", "", "", ""],
+    ["", "", "", "", "", ""],
+  ];
+
+  for (const m of movimientos) {
+    const egreso = m.tipo_movimiento === "egreso";
+    const origen =
+      egreso && (m.folio_servicio ?? m.id_servicio_otorgado)
+        ? `Servicio #${m.folio_servicio ?? m.id_servicio_otorgado}`
+        : m.origen_nombre ?? m.donador_nombre ?? "";
+    const concepto =
+      egreso && (m.servicio_nombre || m.folio_servicio)
+        ? [m.folio_servicio ? `#${m.folio_servicio}` : "", m.servicio_nombre]
+            .filter(Boolean)
+            .join(" · ")
+        : m.concepto ?? m.motivo ?? "";
+    rows.push([
+      m.fecha ?? "",
+      m.tipo_movimiento ?? "",
+      origen,
+      concepto,
+      egreso ? -Number(m.monto || 0) : Number(m.monto || 0),
+      m.saldo_nuevo ?? "",
+    ]);
+  }
+
+  return buildCsv(headers, rows);
+}
