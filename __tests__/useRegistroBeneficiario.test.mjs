@@ -129,16 +129,21 @@ describe('useRegistroBeneficiario', () => {
     expect(current.error).toBe('');
   });
 
-  test('calculateFechaVigencia calcula la fecha final del periodo', async () => {
+  test('calculateFechaVigencia calcula la fecha final con 12 meses fijos', async () => {
     await mountHook();
 
     act(() => {
-      current.handleInputChange({ target: { name: 'fecha_inicio_membresia', value: '2025-01-01' } });
-      current.handleInputChange({ target: { name: 'meses_membresia', value: '3' } });
+      current.handleInputChange({
+        target: {
+          name: 'fecha_inicio_membresia',
+          value: '2025-01-01',
+        },
+      });
     });
 
     const result = current.calculateFechaVigencia();
-    expect(result).toBe('2025-03-31');
+
+    expect(result).toBe('2025-12-31');
   });
 
   test('handleNext aumenta el paso y marca los pasos tocados', async () => {

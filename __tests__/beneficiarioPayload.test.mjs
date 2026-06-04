@@ -62,7 +62,7 @@ describe('beneficiarioPayload', () => {
       expect(result.direccion.domicilio_calle).toBe('Calle 1 #100');
       expect(result.membresia.fecha_inicio).toBe('2025-01-01');
       expect(result.membresia.meses).toBe(12);
-      expect(result.membresia.metodo_pago).toBe('donacion');
+      expect(result.membresia.metodo_pago).toBe('efectivo');
     });
 
     test('convierte valvula string a booleano', () => {
@@ -99,12 +99,6 @@ describe('beneficiarioPayload', () => {
       expect(result.identificadores.email).toBeUndefined();
       expect(result.datos_medicos.alergias).toBeNull();
       expect(result.datos_medicos.padres[0].nombre_completo).toBeNull();
-    });
-
-    test('convierte meses_membresia a número', () => {
-      const result = buildBeneficiarioPayload({ ...baseFormData, meses_membresia: '24' }, '2025-01-01', '2000-01-01');
-      expect(result.membresia.meses).toBe(24);
-      expect(typeof result.membresia.meses).toBe('number');
     });
   });
 });
