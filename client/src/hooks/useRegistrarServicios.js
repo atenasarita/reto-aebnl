@@ -1,12 +1,24 @@
 import { useState } from "react";
 import axios from "axios";
 import { API_URL } from "../utils/config";
+import { enqueue } from "../utils/offlineQueue";
 
 export default function useRegistrarServicio() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const registrar = async (payload) => {
+    // When offline, persist the operation locally and return a queued marker
+    if (!navigator.onLine) {
+      enqueue({
+        url: `${API_URL}/api/registro_servicios`,
+        method: "POST",
+        body: payload,
+        label: "Registro de servicio",
+      });
+      return { queued: true };
+    }
+
     setLoading(true);
     setError(null);
 

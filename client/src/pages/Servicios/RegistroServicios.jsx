@@ -8,6 +8,7 @@ import {
   ChevronRight,
   ChevronLeft,
   CheckCircle2,
+  CloudOff,
 } from "lucide-react";
 
 import "../styles/RegistroServicio.css";
@@ -62,6 +63,7 @@ export default function RegistroServicios() {
   const [descuento, setDescuento] = useState(0);
   const [yaAporto, setYaAporto] = useState(false);
   const [guardado, setGuardado] = useState(false);
+  const [queuedOffline, setQueuedOffline] = useState(false);
   const [errorGuardado, setErrorGuardado] = useState(null);
 
   const { registrar, loading: guardando } = useRegistrarServicio();
@@ -141,7 +143,7 @@ export default function RegistroServicios() {
   // ── Citas de hoy — incluye id_beneficiario ─────────────────
   const citasFormateadas = (agendaItems || []).map((c) => ({
     id:              c.id_cita,
-    id_beneficiario: c.id_beneficiario, // 👈 necesario para el guardado
+    id_beneficiario: c.id_beneficiario, 
     nombre:          c.nombre_completo,
     beneficiario:    c.nombre_completo,
     hora:            c.hora,
@@ -171,7 +173,7 @@ export default function RegistroServicios() {
     }
 
     try {
-      await registrar({
+      const result = await registrar({
       id_beneficiario,
       id_catalogo_servicio: tipoServicio,
       fecha,
@@ -200,9 +202,13 @@ export default function RegistroServicios() {
       ya_aporto: yaAporto,
     });
 
+      if (result?.queued) {
+        setQueuedOffline(true);
+      } else {
+        fetchSaldo().catch(() => {});
+        fetchDonadores().catch(() => {});
+      }
       setGuardado(true);
-      fetchSaldo().catch(() => {});
-      fetchDonadores().catch(() => {});
 
     } catch (err) {
       console.error('Error al guardar:', err);
@@ -247,6 +253,7 @@ export default function RegistroServicios() {
     setYaAporto(false);
     setErrorGuardado(null);
     setGuardado(false);
+    setQueuedOffline(false);
   }, []);
 
   // ── Pantalla de éxito ──────────────────────────────────────
@@ -255,13 +262,27 @@ export default function RegistroServicios() {
       <div className='page'>
         <div className='inner'>
           <div className='main'>
-            <CheckCircle2 size={64} color="#1F9D55" />
-            <h2 style={{ margin: '1rem 0 0.5rem', fontSize: '22px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-              Servicio registrado
-            </h2>
-            <p style={{ color: 'var(--color-text-muted)', fontSize: '14px', marginBottom: '2rem' }}>
-              El servicio fue guardado correctamente.
-            </p>
+            {queuedOffline ? (
+              <>
+                <CloudOff size={64} color="#d97706" />
+                <h2 style={{ margin: '1rem 0 0.5rem', fontSize: '22px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                  Guardado sin conexión
+                </h2>
+                <p style={{ color: 'var(--color-text-muted)', fontSize: '14px', marginBottom: '2rem', maxWidth: '360px', textAlign: 'center' }}>
+                  El registro se guardó localmente y se enviará automáticamente cuando se restablezca la conexión.
+                </p>
+              </>
+            ) : (
+              <>
+                <CheckCircle2 size={64} color="#1F9D55" />
+                <h2 style={{ margin: '1rem 0 0.5rem', fontSize: '22px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                  Servicio registrado
+                </h2>
+                <p style={{ color: 'var(--color-text-muted)', fontSize: '14px', marginBottom: '2rem' }}>
+                  El servicio fue guardado correctamente.
+                </p>
+              </>
+            )}
 
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
               <button

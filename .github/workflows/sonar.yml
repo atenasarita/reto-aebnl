@@ -35,6 +35,9 @@ jobs:
             cp -r unitTests/__tests__ ./
             cp -r unitTests/__mocks__ ./
             cp unitTests/babel.config.cjs ./
+            cp unitTests/jest.config.cjs ./
+
+
 
 
       - name: Setup Node.js
@@ -51,7 +54,7 @@ jobs:
         run: npm install
         working-directory: client
  
-      - name: Run tests with coverage
+      - name: Run tests with Coverage
         run: node --experimental-vm-modules ./node_modules/.bin/jest --coverage
 
       - name: Verificar reporte de cobertura

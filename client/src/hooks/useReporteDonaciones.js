@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import axios from "axios";
 import { API_URL } from "../utils/config";
+import { humanizeError } from "../utils/humanizeError";
 
 function getHeaders() {
   return {
@@ -27,7 +28,7 @@ export function useReporteDonaciones() {
       setDonadores(data);
       return data;
     } catch (err) {
-      const msg = err.response?.data?.message || err.message;
+      const msg = humanizeError(err);
       setError(msg);
       throw new Error(msg);
     } finally {
@@ -51,7 +52,7 @@ export function useReporteDonaciones() {
       setMovimientos(data);
       return data;
     } catch (err) {
-      const msg = err.response?.data?.message || err.message;
+      const msg = humanizeError(err);
       setError(msg);
       throw new Error(msg);
     } finally {
