@@ -21,6 +21,29 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.recibos-tabs--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.servicios-page .recibos-tabs--three .recibos-tab {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .servicios-page .recibos-tabs--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .servicios-page .recibos-tabs--three .recibos-tab {
+    font-size: 12px;
+    padding: 0 8px;
+    min-height: 44px;
+  }
+}
+
 .servicios-header {
   align-items: flex-start;
 }
@@ -45,10 +68,80 @@
 
 .servicios-page .servicios-barra-acciones {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: var(--space-3);
   margin: 0;
+  flex-shrink: 0;
+}
+
+.servicios-page .servicios-historial-filtros {
+  width: min(100%, 640px);
+}
+
+.servicios-page .servicios-historial-busqueda {
+  flex: 1 1 220px;
+  min-width: 200px;
+  max-width: 420px;
+}
+
+.servicios-page .servicios-historial-categoria {
+  flex: 0 0 220px;
+  width: 220px;
+  max-width: 100%;
+}
+
+.servicios-page .servicios-catalogo-barra {
+  width: 100%;
+  flex-wrap: nowrap;
+}
+
+.servicios-page .servicios-catalogo-busqueda {
+  flex: 1 1 180px;
+  min-width: 160px;
+  max-width: 360px;
+}
+
+.servicios-page .servicios-catalogo-categoria {
+  flex: 0 0 200px;
+  width: 200px;
+  max-width: 100%;
+}
+
+.servicios-page .servicios-catalogo-nuevo {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+@media (max-width: 640px) {
+  .servicios-page .servicios-historial-filtros {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .servicios-page .servicios-historial-busqueda,
+  .servicios-page .servicios-historial-categoria {
+    flex: 1 1 100%;
+    width: 100%;
+    max-width: none;
+  }
+
+  .servicios-page .servicios-catalogo-barra {
+    flex-wrap: wrap;
+  }
+
+  .servicios-page .servicios-catalogo-busqueda,
+  .servicios-page .servicios-catalogo-categoria {
+    flex: 1 1 100%;
+    width: 100%;
+    max-width: none;
+  }
+
+  .servicios-page .servicios-catalogo-nuevo {
+    width: 100%;
+    margin-left: 0;
+  }
 }
 
 .servicios-page .th-acciones,

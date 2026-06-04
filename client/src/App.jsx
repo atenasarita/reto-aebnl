@@ -19,6 +19,7 @@ import ReporteInventario from "./pages/reportes/ReporteInventario/ReporteInventa
 import ReporteAnual from "./pages/reportes/ReporteAnual/ReporteAnual";
 import ReportesMensual from "./pages/reportes/ReportesMensual/ReportesMensual";
 import ReportePersonalizado from "./pages/reportes/ReportePersonalizado/ReportePersonalizado";
+import ReporteDonaciones from "./pages/reportes/ReporteDonaciones/ReporteDonaciones";
 import Citas from './pages/Citas/AgendaCitas';
 import Dashboard from "./pages/dashboard";
 import RegistroServicios from "./pages/Servicios/RegistroServicios";
@@ -76,6 +77,7 @@ export default function App() {
             <Route index element={<Navigate to="general" replace />} />
             <Route path="general" element={<ReporteGeneral />} />
             <Route path="inventario" element={<ReporteInventario />} />
+            <Route path="donaciones" element={<ReporteDonaciones />} />
             <Route path="mensual" element={<ReportesMensual />} />
             <Route path="anual" element={<ReporteAnual />} />
             <Route path="personalizado" element={<ReportePersonalizado />} />

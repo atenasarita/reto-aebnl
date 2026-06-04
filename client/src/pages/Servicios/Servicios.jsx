@@ -153,7 +153,7 @@ export default function Servicios() {
           Usa las flechas izquierda y derecha para cambiar entre pestañas.
         </p>
         <div
-          className="recibos-tabs recibos-tabs--two"
+          className="recibos-tabs recibos-tabs--three"
           role="tablist"
           aria-describedby={tabsHintId}
           onKeyDown={onTabsKeyDown}
@@ -204,14 +204,16 @@ export default function Servicios() {
                 {loading && historial.length === 0 ? 'Cargando…' : `${historial.length} servicios registrados`}
               </p>
             </div>
-            <div className="servicios-barra-acciones">
+            <div className="servicios-barra-acciones servicios-historial-filtros">
               <SearchBar
                 icon={<FiSearch />}
+                className="search-gestion servicios-historial-busqueda"
                 placeholder="Buscar por servicio o beneficiario…"
                 value={consulta}
                 onChange={(val) => setConsulta(val)}
               />
               <Dropdown
+                className="dropdown-gestion servicios-historial-categoria"
                 value={categoriaFiltro}
                 onChange={(val) => setCategoriaFiltro(val)}
                 options={[

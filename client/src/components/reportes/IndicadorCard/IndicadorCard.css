@@ -59,6 +59,30 @@
   color: var(--color-text-secondary);
 }
 
+.reporte-general-kpi-icon-wrap--success {
+  background: #dcfce7;
+  color: var(--color-success, #1f9d55);
+}
+
+.reporte-general-kpi-icon-wrap--danger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.reporte-general-kpi-number--currency {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 1.35rem;
+}
+
+.reporte-general-kpi-number--success {
+  color: var(--color-success, #1f9d55);
+}
+
+.reporte-general-kpi-number--danger {
+  color: #b91c1c;
+}
+
 .reporte-general-kpi-icon {
   width: 1.35rem;
   height: 1.35rem;

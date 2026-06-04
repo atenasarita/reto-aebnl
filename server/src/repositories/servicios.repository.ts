@@ -44,6 +44,8 @@ type RegistrarServicioInput = {
   cuota_total: number;
   monto_pagado: number;
   monto_donacion: number;
+  id_fondo?: number | null;
+  id_donador?: number | null;
   metodo_pago: string;
   ya_aporto: boolean;
   id_usuario: number; // 👈 necesario para MOVIMIENTOS_INVENTARIO
@@ -270,17 +272,21 @@ export class ServicioRepository {
 
       const montoDonacion = input.monto_donacion || 0;
 
-      // ── 3. Descontar del fondo de donaciones (si aplica) ─────────
       if (montoDonacion > 0) {
+        if (!input.id_fondo || !input.id_donador) {
+          throw new Error('Debe seleccionar el fondo de donación a utilizar.');
+        }
+
         await this.fondoRepository.registrarEgresoEnTransaccion(connection, {
           monto: montoDonacion,
+          id_fondo: input.id_fondo,
+          id_donador: input.id_donador,
           id_servicio_otorgado: idServicio,
           id_usuario: input.id_usuario,
           motivo: 'Pago de servicio con fondo de donaciones',
         });
       }
 
-      // ── 4. Insertar registro financiero ────────────────────────────
       await connection.execute(
         INSERT_SERVICIO_FINANCIERO,
         {
@@ -293,6 +299,8 @@ export class ServicioRepository {
           monto_donacion:       montoDonacion,
           metodo_pago:          metodoPagoParaOracle(input.metodo_pago),
           ya_aporto:            input.ya_aporto ? 1 : 0,
+          id_donador:           montoDonacion > 0 ? input.id_donador : null,
+          id_fondo:             montoDonacion > 0 ? input.id_fondo : null,
         }
       );
 
