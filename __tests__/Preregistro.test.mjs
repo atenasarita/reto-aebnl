@@ -67,7 +67,7 @@ jest.unstable_mockModule('../client/src/utils/validator.js', () => ({
   validarCURP: (v) => v.length === 18,
 }));
 
-const dateTimeMock = {
+jest.mock('../client/src/utils/dateTime.js', () => ({
   __esModule: true,
   todayDate: () => '2026-06-02',
   nowLocalDateTime: () => '2026-06-02T12:00:00',
@@ -75,11 +75,17 @@ const dateTimeMock = {
     todayDate: () => '2026-06-02',
     nowLocalDateTime: () => '2026-06-02T12:00:00',
   },
-};
+}));
 
-jest.unstable_mockModule('../client/src/utils/dateTime', () => dateTimeMock);
-jest.unstable_mockModule('../client/src/utils/dateTime.js', () => dateTimeMock);
-
+jest.mock('../client/src/utils/dateTime', () => ({
+  __esModule: true,
+  todayDate: () => '2026-06-02',
+  nowLocalDateTime: () => '2026-06-02T12:00:00',
+  default: {
+    todayDate: () => '2026-06-02',
+    nowLocalDateTime: () => '2026-06-02T12:00:00',
+  },
+}));
 const PreregistroModule = await import('../client/src/pages/preregistro/Preregistro.jsx');
 const Preregistro =
   PreregistroModule.default?.default ||
