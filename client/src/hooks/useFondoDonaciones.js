@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "../utils/config";
+import { humanizeError } from "../utils/humanizeError";
 
 export default function useFondoDonaciones() {
   const [saldo, setSaldo] = useState(null);
@@ -24,7 +25,7 @@ export default function useFondoDonaciones() {
       setSaldo(res.data.data);
       return res.data.data;
     } catch (err) {
-      const msg = err.response?.data?.message || err.message;
+      const msg = humanizeError(err);
       setError(msg);
       throw new Error(msg);
     } finally {
@@ -42,7 +43,7 @@ export default function useFondoDonaciones() {
       setDonadores(res.data.data ?? []);
       return res.data.data;
     } catch (err) {
-      const msg = err.response?.data?.message || err.message;
+      const msg = humanizeError(err);
       setError(msg);
       throw new Error(msg);
     } finally {
@@ -61,7 +62,7 @@ export default function useFondoDonaciones() {
       setMovimientos(res.data.data ?? []);
       return res.data.data;
     } catch (err) {
-      const msg = err.response?.data?.message || err.message;
+      const msg = humanizeError(err);
       setError(msg);
       throw new Error(msg);
     } finally {
@@ -80,7 +81,7 @@ export default function useFondoDonaciones() {
       );
       return res.data;
     } catch (err) {
-      const msg = err.response?.data?.message || err.message;
+      const msg = humanizeError(err);
       setError(msg);
       throw new Error(msg);
     } finally {
@@ -99,7 +100,7 @@ export default function useFondoDonaciones() {
       );
       return res.data;
     } catch (err) {
-      const msg = err.response?.data?.message || err.message;
+      const msg = humanizeError(err);
       setError(msg);
       throw new Error(msg);
     } finally {

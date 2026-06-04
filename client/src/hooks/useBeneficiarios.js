@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react'
 import { API_URL } from '../utils/config'
+import { humanizeError } from '../utils/humanizeError'
 
+const CACHE_KEY = 'aebnl_cache_beneficiarios'
+
+function getCached() {
+  try { return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null') } catch { return null }
+}
 
 export default function useBeneficiarios() {
   const [data, setData] = useState([])
@@ -31,9 +37,15 @@ export default function useBeneficiarios() {
       }
 
       setData(result)
+      localStorage.setItem(CACHE_KEY, JSON.stringify(result))
 
     } catch (err) {
-      setError(err.message || 'Error de conexión')
+      const cached = getCached()
+      if (cached) {
+        setData(cached)
+      } else {
+        setError(humanizeError(err))
+      }
     } finally {
       setLoading(false)
     }

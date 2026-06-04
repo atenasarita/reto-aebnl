@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { getReporteGeneral } from "../services/reportesService";
+import { humanizeError } from "../utils/humanizeError";
 
 const INITIAL_DATA = {
   totalBeneficiarios: 0,
@@ -23,8 +24,7 @@ export function useReporteGeneral() {
       const response = await getReporteGeneral();
       setData(response);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Error al cargar el reporte general.";
-      setError(message);
+      setError(humanizeError(err));
       setData(INITIAL_DATA);
     } finally {
       setLoading(false);

@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { getInventario } from '../services/inventarioService'
+import { humanizeError } from '../utils/humanizeError'
 
-/*Carga inventario desde el API y expone estado para la UI. */
+const CACHE_KEY = 'aebnl_cache_inventario'
+
+function getCached() {
+  try { return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null') } catch { return null }
+}
+
 export function useInventario() {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
@@ -14,11 +20,15 @@ export function useInventario() {
     try {
       const data = await getInventario()
       setItems(data)
+      localStorage.setItem(CACHE_KEY, JSON.stringify(data))
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Error al cargar el inventario'
-      setError(message)
-      setItems([])
+      const cached = getCached()
+      if (cached) {
+        setItems(cached)
+      } else {
+        setError(humanizeError(err))
+        setItems([])
+      }
       console.error('Error al obtener inventario:', err)
     } finally {
       setLoading(false)

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { getReporteInventario } from "../services/reportesService";
+import { humanizeError } from "../utils/humanizeError";
 
 const INITIAL_DATA = {
   periodo: { desde: "", hasta: "" },
@@ -42,9 +43,7 @@ export function useReporteInventario(desde, hasta) {
       const response = await getReporteInventario(desde, hasta);
       setData(response);
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Error al cargar el reporte de inventario.";
-      setError(message);
+      setError(humanizeError(err));
       setData(INITIAL_DATA);
     } finally {
       setLoading(false);
