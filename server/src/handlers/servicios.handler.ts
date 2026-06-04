@@ -100,7 +100,7 @@ export class ServiciosHandler {
       }
 
       console.error('Error en registrarServicio:', error);
-      return res.status(500).json({ ok: false, message: 'Error al registrar servicio' });
+      return res.status(500).json({ ok: false, message: error?.message ?? 'Error al registrar servicio' });
     }
   };
 

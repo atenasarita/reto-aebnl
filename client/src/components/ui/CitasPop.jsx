@@ -1,4 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
+import {
+  User, Phone, Mail, Clock, ClipboardList,
+  AlertTriangle, Check, Calendar, X, Search,
+} from "lucide-react";
 import "./styles/CitasPop.css";
 import { API_URL } from "../../utils/config";
 import { todayDate } from "../../utils/dateTime";
@@ -103,7 +107,7 @@ function BuscadorBeneficiario({ value, onChange }) {
   return (
     <div className="cp-buscador">
       <div className="cp-search-wrap">
-        <span className="cp-search-icon">⌕</span>
+        <span className="cp-search-icon"><Search size={16} /></span>
         <input
           className="cp-input cp-search-input"
           type="text"
@@ -119,7 +123,7 @@ function BuscadorBeneficiario({ value, onChange }) {
             className="cp-clear"
             onClick={() => { onChange(null); setQuery(""); }}
             type="button"
-          >✕</button>
+          ><X size={14} /></button>
         )}
       </div>
       {abierto && (
@@ -307,7 +311,7 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
       {/* Seccion de Beneficiario*/}
       <section className="cp-section">
         <div className="cp-section-title">
-          <span className="cp-section-icon">👤</span>
+          <span className="cp-section-icon"><User size={16} /></span>
           Selección de Beneficiario
         </div>
         <Field label="Buscar beneficiario" required>
@@ -316,12 +320,12 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
         {beneficiario && (
           <div className="cp-chips-row">
             <InfoChip
-              icon="📞"
+              icon={<Phone size={14} />}
               label="Teléfono de contacto"
               value={beneficiario.telefono ? `+52 ${beneficiario.telefono}` : "No disponible"}
             />
             <InfoChip
-              icon="✉️"
+              icon={<Mail size={14} />}
               label="Correo electrónico"
               value={beneficiario.email || "No disponible"}
             />
@@ -332,7 +336,7 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
       {/* Seccion de horario y servicio */}
       <section className="cp-section">
         <div className="cp-section-title">
-          <span className="cp-section-icon">🕐</span>
+          <span className="cp-section-icon"><Clock size={16} /></span>
           Horario y Servicio
         </div>
         <div className="cp-grid-2">
@@ -410,7 +414,7 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
       {/* Seccion de estado y observaciones */}
       <section className="cp-section">
         <div className="cp-section-title">
-          <span className="cp-section-icon">📋</span>
+          <span className="cp-section-icon"><ClipboardList size={16} /></span>
           Estado y Observaciones
         </div>
         <Field label="Estado de la Cita">
@@ -428,7 +432,7 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
         </Field>
       </section>
 
-      {error && <p className="cp-error">⚠ {error}</p>}
+      {error && <p className="cp-error"><AlertTriangle size={14} /> {error}</p>}
 
       <footer className="cp-footer">
         <button
@@ -447,7 +451,7 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
         >
           {guardando
             ? <><span className="cp-spinner-sm" /> Guardando…</>
-            : (modo === "editar" ? <>✓ Guardar Cambios</> : <>✓ Confirmar Cita</>)
+            : (modo === "editar" ? <><Check size={14} /> Guardar Cambios</> : <><Check size={14} /> Confirmar Cita</>)
           }
         </button>
       </footer>
@@ -482,14 +486,14 @@ export default function CitasPop({ open, onClose, onSuccess, cita = null, modo =
       >
         <div className="cp-header">
           <div className="cp-header-left">
-            <div className="cp-header-icon">📅</div>
+            <div className="cp-header-icon"><Calendar size={20} /></div>
             <h2 className="cp-title">
               {modo === "editar"
                 ? "Modificar cita"
                 : "Nueva cita"}
             </h2>
           </div>
-          <button className="cp-header-close" onClick={onClose} aria-label="Cerrar">✕</button>
+          <button className="cp-header-close" onClick={onClose} aria-label="Cerrar"><X size={18} /></button>
         </div>
         <CitasForm onClose={onClose} onSuccess={onSuccess} cita={cita} modo={modo} />
       </div>

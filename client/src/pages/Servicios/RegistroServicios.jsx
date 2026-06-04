@@ -141,7 +141,7 @@ export default function RegistroServicios() {
   // ── Citas de hoy — incluye id_beneficiario ─────────────────
   const citasFormateadas = (agendaItems || []).map((c) => ({
     id:              c.id_cita,
-    id_beneficiario: c.id_beneficiario, // 👈 necesario para el guardado
+    id_beneficiario: c.id_beneficiario, 
     nombre:          c.nombre_completo,
     beneficiario:    c.nombre_completo,
     hora:            c.hora,

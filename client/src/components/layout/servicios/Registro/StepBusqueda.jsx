@@ -92,6 +92,8 @@ export default function StepBusqueda({
         <div className='resultList'>
           {loadingCitas ? (
             <p className='empty'>Cargando citas...</p>
+          ) : CITAS_HOY.length === 0 ? (
+            <p className='empty'>No hay citas programadas para hoy.</p>
           ) : (
             CITAS_HOY.map((cita) => (
             <div
