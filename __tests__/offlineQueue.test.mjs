@@ -2,13 +2,13 @@
  * @jest-environment jsdom
  */
 
-const { jest, describe, test, expect, beforeEach } = require('@jest/globals');
-const {
+import { jest, describe, test, expect, beforeEach } from '@jest/globals';
+import {
   enqueue,
   getQueue,
   removeFromQueue,
   queueSize,
-} = require('../client/src/utils/offlineQueue.js');
+} from '../client/src/utils/offlineQueue.js';
 
 const QUEUE_KEY = 'aebnl_offline_queue';
 
@@ -152,3 +152,4 @@ describe('offlineQueue', () => {
     expect(getQueue()).toEqual([]);
   });
 });
+
