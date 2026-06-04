@@ -31,11 +31,29 @@
   }
 }
 
+.servicios-page .recibos-table .td-acciones {
+  vertical-align: middle;
+  text-align: right;
+  padding: 10px 14px;
+  background-color: #fff;
+  line-height: 1;
+}
+
+.servicios-page .recibos-table tbody tr:hover .td-acciones {
+  background-color: #f8fafc;
+}
+
 .servicios-acciones-celda {
   display: inline-flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 10px;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 1px 0;
+}
+
+.servicios-page .recibos-table .th-acciones {
+  text-align: right;
 }
 
 .servicios-page .td-monto {
@@ -50,14 +68,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 5px 14px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 6px 12px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
   font-family: var(--font-sans);
-  line-height: 1.25;
+  line-height: 1.2;
   white-space: nowrap;
   cursor: pointer;
+  flex-shrink: 0;
   transition:
     background var(--duration-ui) var(--ease-out),
     color var(--duration-ui) var(--ease-out),
