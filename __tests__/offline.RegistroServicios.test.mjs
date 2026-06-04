@@ -95,7 +95,6 @@ jest.mock('../client/src/hooks/useFondoDonaciones', () => ({
 }));
 
 jest.mock('../client/src/components/layout/servicios/Registro/StepBusqueda.jsx', () => {
-  const React = require('react');
   return {
     __esModule: true,
     default: ({
@@ -107,8 +106,9 @@ jest.mock('../client/src/components/layout/servicios/Registro/StepBusqueda.jsx',
       CITAS_HOY,
       citaSeleccionada,
       setCitaSeleccionada,
-    }) =>
-      React.createElement(
+    }) => {
+      const React = require('react');
+      return React.createElement(
         'section',
         { 'data-testid': 'step-busqueda' },
         React.createElement('h2', null, 'Paso búsqueda'),
