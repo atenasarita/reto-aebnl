@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { jest, describe, test, expect, beforeEach, afterEach } from '@jest/globals';
+import { jest, describe, test, expect, beforeEach, afterEach, beforeAll } from '@jest/globals';
 import React from 'react';
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -340,14 +340,17 @@ jest.mock('../client/src/components/layout/servicios/Registro/StepFinanzas.jsx',
   };
 });
 
-const RegistroServiciosModule = await import(
-  '../client/src/pages/Servicios/RegistroServicios.jsx'
-);
+let RegistroServicios;
 
-const RegistroServicios =
-  RegistroServiciosModule.default?.default ||
-  RegistroServiciosModule.default ||
-  RegistroServiciosModule;
+beforeAll(async () => {
+  const RegistroServiciosModule = await import(
+    '../client/src/pages/Servicios/RegistroServicios.jsx'
+  );
+  RegistroServicios =
+    RegistroServiciosModule.default?.default ||
+    RegistroServiciosModule.default ||
+    RegistroServiciosModule;
+});
 
 let container;
 let root;
