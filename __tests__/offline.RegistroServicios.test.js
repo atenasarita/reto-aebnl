@@ -27,17 +27,20 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-jest.mock('lucide-react', () => ({
-  __esModule: true,
-  Search: () => React.createElement('span', { 'data-testid': 'icon-search' }),
-  ClipboardList: () => React.createElement('span', { 'data-testid': 'icon-clipboard' }),
-  Package: () => React.createElement('span', { 'data-testid': 'icon-package' }),
-  Wallet: () => React.createElement('span', { 'data-testid': 'icon-wallet' }),
-  ChevronRight: () => React.createElement('span', { 'data-testid': 'icon-right' }),
-  ChevronLeft: () => React.createElement('span', { 'data-testid': 'icon-left' }),
-  CheckCircle2: () => React.createElement('span', { 'data-testid': 'icon-check' }),
-  CloudOff: () => React.createElement('span', { 'data-testid': 'icon-cloud-off' }),
-}));
+jest.mock('lucide-react', () => {
+  const React = require('react');
+  return {
+    __esModule: true,
+    Search: () => React.createElement('span', { 'data-testid': 'icon-search' }),
+    ClipboardList: () => React.createElement('span', { 'data-testid': 'icon-clipboard' }),
+    Package: () => React.createElement('span', { 'data-testid': 'icon-package' }),
+    Wallet: () => React.createElement('span', { 'data-testid': 'icon-wallet' }),
+    ChevronRight: () => React.createElement('span', { 'data-testid': 'icon-right' }),
+    ChevronLeft: () => React.createElement('span', { 'data-testid': 'icon-left' }),
+    CheckCircle2: () => React.createElement('span', { 'data-testid': 'icon-check' }),
+    CloudOff: () => React.createElement('span', { 'data-testid': 'icon-cloud-off' }),
+  };
+});
 
 jest.mock('../client/src/pages/styles/RegistroServicio.css', () => ({}));
 
