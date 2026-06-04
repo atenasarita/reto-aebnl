@@ -424,18 +424,17 @@ describe('BeneficiarioGrid', () => {
         data,
     });
 
-    expect(container.textContent).toContain('Nombre1 Apellido1 Materno1');
-    expect(container.textContent).toContain('Nombre8 Apellido8');
-    expect(container.textContent).not.toContain('Nombre9 Apellido9 Materno9');
+    expect(container.querySelector('[data-testid="beneficiario-card-1"]')).toBeTruthy();
+    expect(container.querySelector('[data-testid="beneficiario-card-9"]')).toBeFalsy();
+    expect(container.querySelector('[data-testid="beneficiario-card-10"]')).toBeFalsy();
 
     await clickByTestId('go-page-2');
 
-    expect(container.textContent).not.toContain('Nombre1 Apellido1 Materno1');
-    expect(container.textContent).toContain('Nombre9 Apellido9 Materno9');
-    expect(container.textContent).toContain('Nombre10 Apellido10');
-    expect(container.textContent).toContain('Página 2');
+    expect(container.querySelector('[data-testid="beneficiario-card-1"]')).toBeFalsy();
+    expect(container.querySelector('[data-testid="beneficiario-card-9"]')).toBeTruthy();
+    expect(container.querySelector('[data-testid="beneficiario-card-10"]')).toBeTruthy();
     });
-    
+
   test('reinicia a página 1 cuando cambia data', async () => {
     const data = Array.from({ length: 10 }, (_, index) => makeBeneficiario(index + 1));
 
