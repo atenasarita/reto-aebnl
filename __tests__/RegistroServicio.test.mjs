@@ -7,6 +7,7 @@ import React from 'react';
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
 
+
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 const mockNavigate = jest.fn();

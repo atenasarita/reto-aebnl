@@ -6,7 +6,10 @@ import { jest, describe, test, expect, beforeEach, afterEach } from '@jest/globa
 import React from 'react';
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
+import { TextEncoder, TextDecoder } from 'util';
 
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 const mockNavigate = jest.fn();
@@ -27,19 +30,17 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-jest.mock('lucide-react', () => {
-  return {
-    __esModule: true,
-    Search: () => { const R = require('react'); return R.createElement('span', { 'data-testid': 'icon-search' }); },
-    ClipboardList: () => { const R = require('react'); return R.createElement('span', { 'data-testid': 'icon-clipboard' }); },
-    Package: () => { const R = require('react'); return R.createElement('span', { 'data-testid': 'icon-package' }); },
-    Wallet: () => { const R = require('react'); return R.createElement('span', { 'data-testid': 'icon-wallet' }); },
-    ChevronRight: () => { const R = require('react'); return R.createElement('span', { 'data-testid': 'icon-right' }); },
-    ChevronLeft: () => { const R = require('react'); return R.createElement('span', { 'data-testid': 'icon-left' }); },
-    CheckCircle2: () => { const R = require('react'); return R.createElement('span', { 'data-testid': 'icon-check' }); },
-    CloudOff: () => { const R = require('react'); return R.createElement('span', { 'data-testid': 'icon-cloud-off' }); },
-  };
-});
+jest.mock('lucide-react', () => ({
+  __esModule: true,
+  Search: () => React.createElement('span', { 'data-testid': 'icon-search' }),
+  ClipboardList: () => React.createElement('span', { 'data-testid': 'icon-clipboard' }),
+  Package: () => React.createElement('span', { 'data-testid': 'icon-package' }),
+  Wallet: () => React.createElement('span', { 'data-testid': 'icon-wallet' }),
+  ChevronRight: () => React.createElement('span', { 'data-testid': 'icon-right' }),
+  ChevronLeft: () => React.createElement('span', { 'data-testid': 'icon-left' }),
+  CheckCircle2: () => React.createElement('span', { 'data-testid': 'icon-check' }),
+  CloudOff: () => React.createElement('span', { 'data-testid': 'icon-cloud-off' }),
+}));
 
 jest.mock('../client/src/pages/styles/RegistroServicio.css', () => ({}));
 
@@ -107,7 +108,6 @@ jest.mock('../client/src/components/layout/servicios/Registro/StepBusqueda.jsx',
       citaSeleccionada,
       setCitaSeleccionada,
     }) => {
-      const React = require('react');
       return React.createElement(
         'section',
         { 'data-testid': 'step-busqueda' },
@@ -155,12 +155,11 @@ jest.mock('../client/src/components/layout/servicios/Registro/StepBusqueda.jsx',
             )
           )
         )
-      ),
+    )},
   };
 });
 
 jest.mock('../client/src/components/layout/servicios/Registro/StepDetalles.jsx', () => {
-  const React = require('react');
   return {
     __esModule: true,
     default: ({
@@ -226,7 +225,6 @@ jest.mock('../client/src/components/layout/servicios/Registro/StepDetalles.jsx',
 });
 
 jest.mock('../client/src/components/layout/servicios/Registro/StepInsumos.jsx', () => {
-  const React = require('react');
   return {
     __esModule: true,
     default: ({ insumos, setInsumos, productos }) =>
@@ -258,7 +256,6 @@ jest.mock('../client/src/components/layout/servicios/Registro/StepInsumos.jsx', 
 });
 
 jest.mock('../client/src/components/layout/servicios/Registro/StepFinanzas.jsx', () => {
-  const React = require('react');
   return {
     __esModule: true,
     default: ({
@@ -339,7 +336,12 @@ jest.mock('../client/src/components/layout/servicios/Registro/StepFinanzas.jsx',
   };
 });
 
-import RegistroServicios from '../client/src/pages/Servicios/RegistroServicios.jsx';
+const RegistroServiciosModule = await import('../client/src/pages/Servicios/RegistroServicios.jsx');
+
+const RegistroServicios =
+  RegistroServiciosModule.default?.default ||
+  RegistroServiciosModule.default ||
+  RegistroServiciosModule;
 
 let container;
 let root;
