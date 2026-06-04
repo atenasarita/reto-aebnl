@@ -27,19 +27,17 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }));
 
-jest.mock('lucide-react', () => {
-  return {
-    __esModule: true,
-    Search: () => { const R = require('react'); return R.createElement('span', { 'data-testid': 'icon-search' }); },
-    ClipboardList: () => { const R = require('react'); return R.createElement('span', { 'data-testid': 'icon-clipboard' }); },
-    Package: () => { const R = require('react'); return R.createElement('span', { 'data-testid': 'icon-package' }); },
-    Wallet: () => { const R = require('react'); return R.createElement('span', { 'data-testid': 'icon-wallet' }); },
-    ChevronRight: () => { const R = require('react'); return R.createElement('span', { 'data-testid': 'icon-right' }); },
-    ChevronLeft: () => { const R = require('react'); return R.createElement('span', { 'data-testid': 'icon-left' }); },
-    CheckCircle2: () => { const R = require('react'); return R.createElement('span', { 'data-testid': 'icon-check' }); },
-    CloudOff: () => { const R = require('react'); return R.createElement('span', { 'data-testid': 'icon-cloud-off' }); },
-  };
-});
+jest.mock('lucide-react', () => ({
+  __esModule: true,
+  Search: () => React.createElement('span', { 'data-testid': 'icon-search' }),
+  ClipboardList: () => React.createElement('span', { 'data-testid': 'icon-clipboard' }),
+  Package: () => React.createElement('span', { 'data-testid': 'icon-package' }),
+  Wallet: () => React.createElement('span', { 'data-testid': 'icon-wallet' }),
+  ChevronRight: () => React.createElement('span', { 'data-testid': 'icon-right' }),
+  ChevronLeft: () => React.createElement('span', { 'data-testid': 'icon-left' }),
+  CheckCircle2: () => React.createElement('span', { 'data-testid': 'icon-check' }),
+  CloudOff: () => React.createElement('span', { 'data-testid': 'icon-cloud-off' }),
+}));
 
 jest.mock('../client/src/pages/styles/RegistroServicio.css', () => ({}));
 
@@ -94,10 +92,9 @@ jest.mock('../client/src/hooks/useFondoDonaciones', () => ({
   }),
 }));
 
-jest.mock('../client/src/components/layout/servicios/Registro/StepBusqueda.jsx', () => {
-  return {
-    __esModule: true,
-    default: ({
+jest.mock('../client/src/components/layout/servicios/Registro/StepBusqueda.jsx', () => ({
+  __esModule: true,
+  default: ({
       query,
       setQuery,
       resultados,
@@ -106,9 +103,8 @@ jest.mock('../client/src/components/layout/servicios/Registro/StepBusqueda.jsx',
       CITAS_HOY,
       citaSeleccionada,
       setCitaSeleccionada,
-    }) => {
-      const React = require('react');
-      return React.createElement(
+    }) =>
+      React.createElement(
         'section',
         { 'data-testid': 'step-busqueda' },
         React.createElement('h2', null, 'Paso búsqueda'),
@@ -156,14 +152,11 @@ jest.mock('../client/src/components/layout/servicios/Registro/StepBusqueda.jsx',
           )
         )
       ),
-  };
-});
+}));
 
-jest.mock('../client/src/components/layout/servicios/Registro/StepDetalles.jsx', () => {
-  const React = require('react');
-  return {
-    __esModule: true,
-    default: ({
+jest.mock('../client/src/components/layout/servicios/Registro/StepDetalles.jsx', () => ({
+  __esModule: true,
+  default: ({
       fecha,
       setFecha,
       hora,
@@ -222,14 +215,11 @@ jest.mock('../client/src/components/layout/servicios/Registro/StepDetalles.jsx',
           onChange: (event) => setNotas(event.target.value),
         })
       ),
-  };
-});
+}));
 
-jest.mock('../client/src/components/layout/servicios/Registro/StepInsumos.jsx', () => {
-  const React = require('react');
-  return {
-    __esModule: true,
-    default: ({ insumos, setInsumos, productos }) =>
+jest.mock('../client/src/components/layout/servicios/Registro/StepInsumos.jsx', () => ({
+  __esModule: true,
+  default: ({ insumos, setInsumos, productos }) =>
       React.createElement(
         'section',
         { 'data-testid': 'step-insumos' },
@@ -254,14 +244,11 @@ jest.mock('../client/src/components/layout/servicios/Registro/StepInsumos.jsx', 
           'Agregar insumo'
         )
       ),
-  };
-});
+}));
 
-jest.mock('../client/src/components/layout/servicios/Registro/StepFinanzas.jsx', () => {
-  const React = require('react');
-  return {
-    __esModule: true,
-    default: ({
+jest.mock('../client/src/components/layout/servicios/Registro/StepFinanzas.jsx', () => ({
+  __esModule: true,
+  default: ({
       total,
       totalConDescuento,
       saldo,
@@ -336,10 +323,16 @@ jest.mock('../client/src/components/layout/servicios/Registro/StepFinanzas.jsx',
           yaAporto ? 'Ya aportó: sí' : 'Ya aportó: no'
         )
       ),
-  };
-});
+}));
 
-import RegistroServicios from '../client/src/pages/Servicios/RegistroServicios.jsx';
+const RegistroServiciosModule = await import(
+  '../client/src/pages/Servicios/RegistroServicios.jsx'
+);
+
+const RegistroServicios =
+  RegistroServiciosModule.default?.default ||
+  RegistroServiciosModule.default ||
+  RegistroServiciosModule;
 
 let container;
 let root;
