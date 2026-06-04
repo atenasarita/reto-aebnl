@@ -341,8 +341,6 @@ jest.mock('../client/src/components/layout/servicios/Registro/StepFinanzas.jsx',
 
 import RegistroServicios from '../client/src/pages/Servicios/RegistroServicios.jsx';
 
-const RegistroServicios = RegistroServicios.default || RegistroServicios;
-
 let container;
 let root;
 
