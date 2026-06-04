@@ -173,7 +173,7 @@ export default function RegistroServicios() {
     try {
       await registrar({
       id_beneficiario,
-      id_catalogo_servicio: tipoServicio ? Number(tipoServicio) : null,
+      id_catalogo_servicio: tipoServicio ? Number(tipoServicio) : null, // ← Add Number() conversion
       fecha,
       hora,
       id_cita: citaSeleccionada ?? null,
