@@ -41,7 +41,13 @@ jest.unstable_mockModule('lucide-react', () => ({
   X: () => React.createElement('span', { 'data-testid': 'icon-x' }),
 }));
 
-jest.unstable_mockModule('../client/src/utils/config.js', () => ({
+jest.mock('../client/src/utils/config', () => ({
+  __esModule: true,
+  API_URL: 'http://localhost:3000',
+}));
+
+jest.mock('../client/src/utils/config.js', () => ({
+  __esModule: true,
   API_URL: 'http://localhost:3000',
 }));
 
@@ -59,11 +65,23 @@ jest.mock('../client/src/utils/auth.js', () => ({
   handleUnauthorizedResponse: (...args) => mockHandleUnauthorizedResponse(...args),
 }));
 
-jest.unstable_mockModule('../client/src/utils/agendaUtils.js', () => ({
-  getAgendaTagClass: mockGetAgendaTagClass,
+jest.mock('../client/src/utils/agendaUtils', () => ({
+  __esModule: true,
+  getAgendaTagClass: () => 'tag-test',
 }));
 
-jest.unstable_mockModule('../client/src/utils/dateTime.js', () => ({
+jest.mock('../client/src/utils/agendaUtils.js', () => ({
+  __esModule: true,
+  getAgendaTagClass: () => 'tag-test',
+}));
+
+jest.mock('../client/src/utils/dateTime', () => ({
+  __esModule: true,
+  todayDate: () => '2026-06-04',
+}));
+
+jest.mock('../client/src/utils/dateTime.js', () => ({
+  __esModule: true,
   todayDate: () => '2026-06-04',
 }));
 
