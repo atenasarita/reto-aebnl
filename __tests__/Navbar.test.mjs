@@ -66,6 +66,23 @@ jest.unstable_mockModule('../client/src/components/layout/Navbar/Navbar.module.c
   ),
 }));
 
+let mockOfflineStatus = {
+  isOnline: true,
+  pendingCount: 0,
+  syncing: false,
+  syncError: '',
+};
+
+jest.mock('../client/src/hooks/useOfflineStatus', () => ({
+  __esModule: true,
+  useOfflineStatus: () => mockOfflineStatus,
+}));
+
+jest.mock('../client/src/hooks/useOfflineStatus.js', () => ({
+  __esModule: true,
+  useOfflineStatus: () => mockOfflineStatus,
+}));
+
 const NavbarModule = await import('../client/src/components/layout/Navbar/Navbar.jsx');
 
 const Navbar = NavbarModule.default?.default || NavbarModule.default || NavbarModule;
@@ -267,15 +284,33 @@ describe('Navbar', () => {
     expect(container.textContent).toContain('Administrador');
   });
 
-  test('muestra OfflineBanner cuando el navegador está offline', async () => {
-    setNavigatorOnline(false);
+  test('muestra OfflineBanner cuando el hook reporta offline', async () => {
+    mockOfflineStatus = {
+      isOnline: false,
+      pendingCount: 0,
+      syncing: false,
+      syncError: '',
+    };
 
     await renderNavbar();
 
-    await dispatchOnlineStatus('offline');
-
     expect(container.textContent.toLowerCase()).toMatch(
       /sin conexión|offline|conexión|modo sin conexión|no tienes conexión/
+    );
+  });
+
+  test('no muestra OfflineBanner cuando el hook reporta online', async () => {
+    mockOfflineStatus = {
+      isOnline: true,
+      pendingCount: 0,
+      syncing: false,
+      syncError: '',
+    };
+
+    await renderNavbar();
+
+    expect(container.textContent.toLowerCase()).not.toMatch(
+      /sin conexión|offline|modo sin conexión|no tienes conexión/
     );
   });
 
