@@ -24,7 +24,7 @@ export default function StepDetalles({
         <div className='field'>
           <label htmlFor="fecha" className='fieldLabel'>
             <Calendar size={14} style={{ marginRight: 6 }} />
-            Fecha
+            Fecha de Registro
           </label>
           <input
             id="fecha"
@@ -39,7 +39,7 @@ export default function StepDetalles({
         <div className='field'>
           <label htmlFor="hora" className='fieldLabel'>
             <Clock size={14} style={{ marginRight: 6 }} />
-            Hora de cita
+            Hora
           </label>
           <input
             id="hora"

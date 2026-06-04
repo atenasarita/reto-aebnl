@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useId, useRef } from "react";
+import { X, AlertTriangle } from "lucide-react";
 import { useSearchParams } from 'react-router-dom'
 
 
@@ -95,7 +96,7 @@ function ReciboDetalle({ recibo, onClose }) {
               {recibo.servicio} · {fmtFecha(recibo.fecha)} {recibo.hora}
             </p>
           </div>
-          <button ref={closeBtnRef} className="btn-close" onClick={onClose} aria-label="Cerrar detalle del recibo">✕</button>
+          <button ref={closeBtnRef} className="btn-close" onClick={onClose} aria-label="Cerrar detalle del recibo"><X size={18} /></button>
         </div>
 
         {recibo.items_inventario?.length > 0 && (
@@ -241,7 +242,7 @@ function TablaRecibos({
   animationKey,
 }) {
   if (loading) return <Skeleton rows={4} />;
-  if (error) return <div className="estado-msg estado-error">⚠ {error}</div>;
+  if (error) return <div className="estado-msg estado-error"><AlertTriangle size={14} /> {error}</div>;
   if (!recibos.length) return <div className="estado-msg">{emptyMsg}</div>;
 
   return (

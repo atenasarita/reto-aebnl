@@ -1,3 +1,4 @@
+import { AlertTriangle } from "lucide-react";
 import './ServiciosComponents.css'
 
 function fmt(num) {
@@ -56,7 +57,7 @@ export default function ServiciosTabla({
   mostrarFecha = false,
 }) {
   if (loading) return <Skeleton rows={4} />
-  if (error)   return <div className="estado-msg estado-error">⚠ {error}</div>
+  if (error)   return <div className="estado-msg estado-error"><AlertTriangle size={14} /> {error}</div>
   if (!filas?.length) return <div className="estado-msg">No hay servicios registrados.</div>
 
   return (

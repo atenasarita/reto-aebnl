@@ -48,7 +48,7 @@ type RegistrarServicioInput = {
   id_donador?: number | null;
   metodo_pago: string;
   ya_aporto: boolean;
-  id_usuario: number; // 👈 necesario para MOVIMIENTOS_INVENTARIO
+  id_usuario: number; 
 };
 
 type CantidadRow = {
