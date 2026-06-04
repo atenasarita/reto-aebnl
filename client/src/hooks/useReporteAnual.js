@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { getReporteAnual } from "../services/reportesService";
+import { humanizeError } from "../utils/humanizeError";
 
 const INITIAL_DATA = {
   anio: 0,
@@ -27,9 +28,7 @@ export function useReporteAnual(anio) {
       const response = await getReporteAnual(anio);
       setData(response);
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Error al cargar el reporte anual.";
-      setError(message);
+      setError(humanizeError(err));
       setData(INITIAL_DATA);
     } finally {
       setLoading(false);

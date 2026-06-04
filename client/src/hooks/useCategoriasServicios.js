@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import axios from 'axios'
 import { API_URL } from '../utils/config'
+import { humanizeError } from '../utils/humanizeError'
 
 export default function useCategoriasServicios() {
   const [categorias, setCategorias] = useState([])
@@ -18,7 +19,7 @@ export default function useCategoriasServicios() {
       setCategorias(res.data.data)
     } catch (err) {
       console.error('Error fetching categorias:', err)
-      setError(err.response?.data?.message ?? err.message)
+      setError(humanizeError(err))
     } finally {
       setLoading(false)
     }

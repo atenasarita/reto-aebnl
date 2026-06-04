@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URL } from "../utils/config";
+import { humanizeError } from "../utils/humanizeError";
+
+const CACHE_KEY = 'aebnl_cache_tipos_servicio'
+
+function getCached() {
+  try { return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null') } catch { return null }
+}
 
 export default function useServicios() {
   const [tipos, setTipos] = useState([]);
@@ -24,13 +31,16 @@ export default function useServicios() {
       );
 
       setTipos(res.data.data);
+      localStorage.setItem(CACHE_KEY, JSON.stringify(res.data.data));
 
     } catch (err) {
       console.error("Error fetching tipos servicio:", err);
-
-      setError(
-        err.response?.data?.message || err.message
-      );
+      const cached = getCached();
+      if (cached) {
+        setTipos(cached);
+      } else {
+        setError(humanizeError(err));
+      }
 
     } finally {
       setLoading(false);

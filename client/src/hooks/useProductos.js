@@ -1,5 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
 import { API_URL } from '../utils/config'
+import { humanizeError } from '../utils/humanizeError'
+
+const CACHE_KEY = 'aebnl_cache_productos'
+
+function getCached() {
+  try { return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null') } catch { return null }
+}
 
 export function useProductos() {
   const [productos, setProductos] = useState([])
@@ -24,17 +31,22 @@ export function useProductos() {
         throw new Error(data.message || 'Error al cargar productos')
       }
 
-      setProductos(
-        data.map((row) => ({
-          id: row.ID_INVENTARIO,
-          nombre: row.NOMBRE ?? '',
-          precio: Number(row.PRECIO) || 0,
-          stock: Number(row.CANTIDAD) || 0, 
-        }))
-      )
+      const mapped = data.map((row) => ({
+        id: row.ID_INVENTARIO,
+        nombre: row.NOMBRE ?? '',
+        precio: Number(row.PRECIO) || 0,
+        stock: Number(row.CANTIDAD) || 0,
+      }))
+      setProductos(mapped)
+      localStorage.setItem(CACHE_KEY, JSON.stringify(mapped))
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error de conexión')
-      setProductos([])
+      const cached = getCached()
+      if (cached) {
+        setProductos(cached)
+      } else {
+        setError(humanizeError(err))
+        setProductos([])
+      }
     } finally {
       setLoading(false)
     }

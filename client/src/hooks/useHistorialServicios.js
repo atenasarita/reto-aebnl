@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import axios from 'axios'
 import { API_URL } from '../utils/config'
+import { humanizeError } from '../utils/humanizeError'
 
 const LIMIT = 20
 
@@ -29,7 +30,7 @@ export default function useHistorialServicios() {
       pageRef.current = pageToFetch + 1
     } catch (err) {
       console.error('Error fetching historial servicios:', err)
-      setError(err.response?.data?.message ?? err.message)
+      setError(humanizeError(err))
     } finally {
       setLoading(false)
       loadingRef.current = false

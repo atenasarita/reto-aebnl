@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import logo from "../../../assets/logo.png";
 import { Bell, LogOut, Menu, X } from "lucide-react";
+import OfflineBanner from "../OfflineBanner";
 
 import { API_URL } from '../../../utils/config';
 import { getValidToken, handleUnauthorizedResponse, logout } from '../../../utils/auth';
@@ -196,6 +197,8 @@ function Navbar({
   const userInitial = String(user?.name || "?").charAt(0).toUpperCase();
 
   return (
+    <div className={styles.navbarWrapper}>
+    <OfflineBanner />
     <nav
       className={styles.navbar}
       aria-label="Navegación principal"
@@ -318,6 +321,7 @@ function Navbar({
         </div>
       </div>
     </nav>
+    </div>
   );
 }
 
