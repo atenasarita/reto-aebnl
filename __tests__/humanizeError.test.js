@@ -2,8 +2,8 @@
  * @jest-environment jsdom
  */
 
-import { describe, test, expect } from '@jest/globals';
-import { humanizeError } from '../client/src/utils/humanizeError';
+const { describe, test, expect } = require('@jest/globals');
+const { humanizeError } = require('../client/src/utils/humanizeError');
 
 const MSG_CONEXION = 'No se pudo conectar con el servidor. Verifica tu conexión a internet.';
 const MSG_SERVIDOR = 'Ocurrió un error en el servidor. Intenta de nuevo más tarde.';
@@ -95,4 +95,3 @@ describe('humanizeError', () => {
     });
   });
 });
-
