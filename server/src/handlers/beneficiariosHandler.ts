@@ -7,7 +7,6 @@ import {
   CreateDireccionInput,
   CreateIdentificadoresInput,
 } from '../types/beneficiarios.types';
-import OracleDB from 'oracledb';
 
 export class BeneficiariosHandler {
   beneficiariosController: BeneficiariosController;
@@ -20,7 +19,7 @@ export class BeneficiariosHandler {
     try {
       const data = await this.beneficiariosController.getMembresiasProximas();
       return res.status(200).json(data);
-    } catch (error) {
+    } catch (_error) {
       return res.status(500).json({
         message: 'Error al obtener membresías próximas',
       });
@@ -150,13 +149,13 @@ export class BeneficiariosHandler {
   };
 
   updatePadres = async (req: Request, res: Response, next: NextFunction) => {
-    const id_beneficiario = Number(req.params.id_beneficiario);
-
-    if (!Number.isInteger(id_beneficiario) || id_beneficiario <= 0) {
-      return next(new ValidationError('id_beneficiario invalido'));
-    }
-
     try {
+      const id_beneficiario = Number(req.params.id_beneficiario);
+
+      if (!Number.isInteger(id_beneficiario) || id_beneficiario <= 0) {
+        return next(new ValidationError('id_beneficiario invalido'));
+      }
+
       const result = await this.beneficiariosController.updatePadres(
         id_beneficiario,
         req.body

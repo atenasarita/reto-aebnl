@@ -311,6 +311,10 @@ export default function Landing() {
               Saber más
               <ArrowDown size={18} aria-hidden />
             </a>
+            <a href="/login" className="lp-btn lp-btn--navy lp-btn--lg">
+              Iniciar sesión
+              <ChevronRight size={20} aria-hidden />
+            </a>
           </div>
         </div>
         <a href="#nosotros" className="lp-hero-scroll" aria-hidden tabIndex={-1}>

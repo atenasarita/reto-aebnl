@@ -17,7 +17,6 @@ function Login() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = location.state?.from?.pathname || "/dashboard";
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -33,6 +32,7 @@ function Login() {
 
       const text = await response.text();
       let data;
+
       try {
         data = JSON.parse(text);
       } catch {
@@ -44,7 +44,19 @@ function Login() {
       }
 
       saveSession(data.token, data.user);
-      navigate(redirectTo, { replace: true });
+
+      const rol = data.user?.rol;
+      const fromPath = location.state?.from?.pathname;
+
+      if (fromPath) {
+        navigate(fromPath, { replace: true });
+      } else if (rol === "administrador") {
+        navigate("/recibos", { replace: true });
+      } else if (rol === "operador") {
+        navigate("/dashboard", { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
     } catch (err) {
       setError(err.message || "Error de conexión");
     } finally {
@@ -78,7 +90,9 @@ function Login() {
         <aside className="login-brand" aria-hidden="true">
           <p className="login-brand-eyebrow">Asociación Espina Bífida NL</p>
           <h1 className="login-brand-title">
-            Sistema<br />administrativo
+            Sistema
+            <br />
+            administrativo
           </h1>
           <p className="login-brand-copy">
             Acceso reservado al equipo de la asociación.

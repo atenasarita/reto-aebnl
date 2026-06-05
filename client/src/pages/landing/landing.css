@@ -17,7 +17,6 @@
   font-family: var(--font-sans);
   color: var(--lp-body);
   background: var(--lp-dark);
-  overflow-x: hidden;
 }
 
 .lp-skip {
@@ -39,6 +38,7 @@
   z-index: 50;
   padding: 10px 16px;
   pointer-events: none;
+  background: rgba(6, 14, 31);
 }
 
 .lp-nav-pill {
@@ -65,7 +65,9 @@
   gap: 4px;
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 5px 12px;
+  border-radius: 100px;
+  background: rgb(145, 157, 184, 0.32);
 }
 @media (min-width: 900px) { .lp-nav-links { display: flex; } }
 
@@ -88,7 +90,9 @@
   font-weight: 600;
   color: rgba(255,255,255,0.7);
   text-decoration: none;
-  padding: 0 8px;
+  padding: 7px 15px;
+  border-radius: 100px;
+  background: rgb(145, 157, 184, 0.32);
 }
 .lp-nav-login:hover { color: #fff; }
 @media (min-width: 640px) { .lp-nav-login { display: block; } }

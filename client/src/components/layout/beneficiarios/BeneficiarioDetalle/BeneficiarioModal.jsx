@@ -25,7 +25,13 @@ function BeneficiarioModal({
             activeTab={activeTab}
             setActiveTab={setActiveTab}
           />
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
+          <button
+            type="button"
+            className={styles.closeBtn}
+            onClick={onClose}
+          >
+            ✕
+          </button>
         </div>
 
         {activeTab === 'datos_generales' && (
@@ -42,11 +48,11 @@ function BeneficiarioModal({
         )}
 
         {activeTab === 'historial_padres' && (
-  <HistorialPadres
-    beneficiario={beneficiario}
-    onUpdated={onUpdated}
-  />
-)}
+          <HistorialPadres
+            beneficiario={beneficiario}
+            onUpdated={onUpdated}
+          />
+        )}
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { todayDate } from "../utils/dateTime";
 
 import {
   ArrowRight,
+  BarChart3,
   CalendarDays,
   Check,
   ChevronDown,
@@ -20,37 +21,48 @@ import {
 } from "lucide-react";
 import "./styles/dashboard.css";
 
-const actions = [
-  {
-    title: "Registrar Servicio",
-    subtitle: "Documentar nueva atención",
-    icon: ClipboardPlus,
-    variant: "primary",
-    to: "/registro_servicios",
-  },
-  {
-    title: "Nuevo Beneficiario",
-    subtitle: "Alta manual de beneficiario",
-    icon: UserPlus,
-    variant: "light",
-    to: "/registro_beneficiario",
-  },
-  {
-    title: "Agendar Cita",
-    subtitle: "Gestionar horario médico",
-    icon: CalendarDays,
-    variant: "accent",
-    to: "/citas",
-  },
-  {
-    title: "Recibos",
-    subtitle: "Control de pagos y comprobantes",
-    icon: Receipt,
-    variant: "success",
-    fullRow: true,
-    to: "/recibos",
-  },
-];
+function getActions(isAdministrador) {
+  return [
+    {
+      title: "Registrar Servicio",
+      subtitle: "Documentar nueva atención",
+      icon: ClipboardPlus,
+      variant: "primary",
+      to: "/registro_servicios",
+    },
+    {
+      title: "Nuevo Beneficiario",
+      subtitle: "Alta manual de beneficiario",
+      icon: UserPlus,
+      variant: "light",
+      to: "/registro_beneficiario",
+    },
+    {
+      title: "Agendar Cita",
+      subtitle: "Gestionar horario médico",
+      icon: CalendarDays,
+      variant: "accent",
+      to: "/citas",
+    },
+    isAdministrador
+      ? {
+          title: "Recibos",
+          subtitle: "Control de pagos y comprobantes",
+          icon: Receipt,
+          variant: "success",
+          fullRow: true,
+          to: "/recibos",
+        }
+      : {
+          title: "Reportes",
+          subtitle: "Consulta de métricas y seguimiento",
+          icon: BarChart3,
+          variant: "reports",
+          fullRow: true,
+          to: "/reportes",
+        },
+  ];
+}
 
 function ActionCard({ title, subtitle, icon, variant, fullRow, to }) {
   const Icon = icon;
@@ -355,8 +367,7 @@ export default function Dashboard() {
   const isAdministrador = storedUser?.rol === "administrador";
 
   const visibleActions = useMemo(() => {
-    if (isAdministrador) return actions;
-    return actions.filter((action) => action.title !== "Recibos");
+    return getActions(isAdministrador);
   }, [isAdministrador]);
 
   const fetchAgenda = async () => {

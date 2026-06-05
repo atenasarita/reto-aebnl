@@ -25,6 +25,47 @@ import StepDetalles from "../../components/layout/servicios/Registro/StepDetalle
 import StepInsumos from "../../components/layout/servicios/Registro/StepInsumos.jsx";
 import StepFinanzas from "../../components/layout/servicios/Registro/StepFinanzas.jsx";
 
+function PantallaExito({ offline, onNuevo, onHistorial }) {
+  return (
+    <div className='page'>
+      <div className='inner'>
+        <div className='main'>
+          {offline ? (
+            <>
+              <CloudOff size={64} color="#d97706" />
+              <h2 style={{ margin: '1rem 0 0.5rem', fontSize: '22px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                Guardado sin conexión
+              </h2>
+              <p style={{ color: 'var(--color-text-muted)', fontSize: '14px', marginBottom: '2rem', maxWidth: '360px', textAlign: 'center' }}>
+                El registro se guardó localmente y se enviará automáticamente cuando se restablezca la conexión.
+              </p>
+            </>
+          ) : (
+            <>
+              <CheckCircle2 size={64} color="#1F9D55" />
+              <h2 style={{ margin: '1rem 0 0.5rem', fontSize: '22px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                Servicio registrado
+              </h2>
+              <p style={{ color: 'var(--color-text-muted)', fontSize: '14px', marginBottom: '2rem' }}>
+                El servicio fue guardado correctamente.
+              </p>
+            </>
+          )}
+
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button className='btnSecondary' type="button" onClick={onNuevo}>
+              + Registrar otro servicio
+            </button>
+            <button className='btnPrimary' type="button" onClick={onHistorial}>
+              Ver historial
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const PASOS = [
   { id: 1, tab: "Búsqueda", Icon: Search },
   { id: 2, tab: "Detalles", Icon: ClipboardList },
@@ -152,11 +193,12 @@ export default function RegistroServicios() {
   }));
 
   // ── Beneficiario mostrado en el resumen ────────────────────
-  const beneficiarioFinal = beneficiarioSeleccionado
-    ? resultados.find((b) => b.folio === beneficiarioSeleccionado)
-    : citaSeleccionada
-    ? citasFormateadas.find((c) => c.id === citaSeleccionada)
-    : null;
+  const resolveBeneficiarioFinal = () => {
+    if (beneficiarioSeleccionado) return resultados.find((b) => b.folio === beneficiarioSeleccionado);
+    if (citaSeleccionada) return citasFormateadas.find((c) => c.id === citaSeleccionada);
+    return null;
+  };
+  const beneficiarioFinal = resolveBeneficiarioFinal();
 
   // ── Guardar ────────────────────────────────────────────────
   const handleGuardar = async () => {
@@ -216,19 +258,21 @@ export default function RegistroServicios() {
     }
   };
 
+  const validarPasoFinanzas = () => {
+    const pagado = parseFloat(montoPagado) || 0;
+    const donacion = parseFloat(montoDonacion) || 0;
+    if (pagado + donacion > totalConDescuento + 0.001) return false;
+    if (donacion > 0 && !fondoSeleccionado) return false;
+    if (donacion > saldoFondoSel + 0.001) return false;
+    if (pagado > 0 && !metodoPago) return false;
+    return true;
+  };
+
   const puedeAvanzar = () => {
     if (pasoActual === 1) return !!(beneficiarioSeleccionado || citaSeleccionada);
     if (pasoActual === 2) return !!(fecha && hora);
     if (pasoActual === 3) return !!(tipoServicio || insumos.length > 0);
-    if (pasoActual === 4) {
-      const pagado = parseFloat(montoPagado) || 0;
-      const donacion = parseFloat(montoDonacion) || 0;
-      if (pagado + donacion > totalConDescuento + 0.001) return false;
-      if (donacion > 0 && !fondoSeleccionado) return false;
-      if (donacion > saldoFondoSel + 0.001) return false;
-      if (pagado > 0 && !metodoPago) return false;
-      return true;
-    }
+    if (pasoActual === 4) return validarPasoFinanzas();
     return true;
   };
 
@@ -259,52 +303,16 @@ export default function RegistroServicios() {
   // ── Pantalla de éxito ──────────────────────────────────────
   if (guardado) {
     return (
-      <div className='page'>
-        <div className='inner'>
-          <div className='main'>
-            {queuedOffline ? (
-              <>
-                <CloudOff size={64} color="#d97706" />
-                <h2 style={{ margin: '1rem 0 0.5rem', fontSize: '22px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                  Guardado sin conexión
-                </h2>
-                <p style={{ color: 'var(--color-text-muted)', fontSize: '14px', marginBottom: '2rem', maxWidth: '360px', textAlign: 'center' }}>
-                  El registro se guardó localmente y se enviará automáticamente cuando se restablezca la conexión.
-                </p>
-              </>
-            ) : (
-              <>
-                <CheckCircle2 size={64} color="#1F9D55" />
-                <h2 style={{ margin: '1rem 0 0.5rem', fontSize: '22px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                  Servicio registrado
-                </h2>
-                <p style={{ color: 'var(--color-text-muted)', fontSize: '14px', marginBottom: '2rem' }}>
-                  El servicio fue guardado correctamente.
-                </p>
-              </>
-            )}
-
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <button
-                className='btnSecondary'
-                type="button"
-                onClick={iniciarNuevoServicio}
-              >
-                + Registrar otro servicio
-              </button>
-              <button
-                className='btnPrimary'
-                type="button"
-                onClick={() => navigate('/servicios')}
-              >
-                Ver historial
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
+      <PantallaExito
+        offline={queuedOffline}
+        onNuevo={iniciarNuevoServicio}
+        onHistorial={() => navigate('/servicios')}
+      />
+    );
   }
+
+  const puedeContinuar = puedeAvanzar();
+  const etiquetaGuardar = guardando ? 'Guardando...' : 'Guardar';
 
   return (
     <div className='page'>
@@ -416,8 +424,8 @@ export default function RegistroServicios() {
               {pasoActual < totalPasos ? (
                 <button
                   className='btnPrimary'
-                  style={{ opacity: puedeAvanzar() ? 1 : 0.2 }}
-                  onClick={() => puedeAvanzar() && setPasoActual(pasoActual + 1)}
+                  style={{ opacity: puedeContinuar ? 1 : 0.2 }}
+                  onClick={() => puedeContinuar && setPasoActual(pasoActual + 1)}
                 >
                   Continuar <ChevronRight size={16} />
                 </button>
@@ -425,9 +433,9 @@ export default function RegistroServicios() {
                 <button
                   className='btnPrimary'
                   onClick={handleGuardar}
-                  disabled={guardando || !puedeAvanzar()}
+                  disabled={guardando || !puedeContinuar}
                 >
-                  {guardando ? 'Guardando...' : 'Guardar'} <CheckCircle2 size={16} />
+                  {etiquetaGuardar} <CheckCircle2 size={16} />
                 </button>
               )}
             </div>
@@ -459,7 +467,7 @@ export default function RegistroServicios() {
             <dl className='dl'>
               <div className='dlRow'>
                 <dt>Beneficiario:</dt>
-                <dd>{beneficiarioFinal?.nombre || beneficiarioFinal?.beneficiario || "—"}</dd>
+                <dd>{beneficiarioFinal?.nombre || "—"}</dd>
               </div>
               <div className='dlRow'>
                 <dt>Fecha:</dt>

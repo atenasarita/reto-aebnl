@@ -106,16 +106,7 @@ function Navbar({
     };
   }, []);
 
-  const normalizedRole = String(user?.role || "").toLowerCase().trim();
-
-  const visibleLinks = useMemo(() => {
-    if (normalizedRole === "operador") {
-      return NAV_LINKS.filter(
-        (link) => link.label !== "Reportes" && link.label !== "Recibos"
-      );
-    }
-    return NAV_LINKS;
-  }, [normalizedRole]);
+  const visibleLinks = useMemo(() => NAV_LINKS, []);
 
   const totalAlerts = useMemo(() => {
     return alertItems.reduce((acc, item) => acc + item.count, 0);
@@ -198,129 +189,129 @@ function Navbar({
 
   return (
     <div className={styles.navbarWrapper}>
-    <OfflineBanner />
-    <nav
-      className={styles.navbar}
-      aria-label="Navegación principal"
-    >
-      <Link to="/dashboard" className={styles.brandMark} aria-label="Ir al inicio">
-        <img
-          src={logo}
-          alt="Asociación de Espina Bífida de Nuevo León"
-          className={styles.brandImage}
-          decoding="async"
-        />
-      </Link>
-
-      <button
-        type="button"
-        className={styles.menuToggle}
-        onClick={() => setMenuOpen((prev) => !prev)}
-        aria-expanded={menuOpen}
-        aria-controls="navbar-links"
-        aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+      <OfflineBanner />
+      <nav
+        className={styles.navbar}
+        aria-label="Navegación principal"
       >
-        {menuOpen ? <X size={22} /> : <Menu size={22} />}
-      </button>
-
-      <div
-        id="navbar-links"
-        className={`${styles.links} ${menuOpen ? styles.linksOpen : ""}`}
-      >
-        {visibleLinks.map((link) => {
-          const isActive = activeLink === link.label;
-          return (
-            <button
-              key={link.label}
-              type="button"
-              className={`${styles.link} ${isActive ? styles.linkActive : ""}`}
-              aria-current={isActive ? "page" : undefined}
-              onClick={() => goTo(link.to)}
-            >
-              {link.label}
-            </button>
-          );
-        })}
-      </div>
-
-      <div className={styles.right}>
-        <div className={styles.alertWrapper} ref={alertsRef}>
-          <button
-            className={styles.iconBtn}
-            title="Alertas"
-            aria-expanded={alertsOpen}
-            aria-haspopup="true"
-            onClick={() => setAlertsOpen((prev) => !prev)}
-            type="button"
-          >
-            <Bell size={20} aria-hidden />
-            {totalAlerts > 0 && (
-              <span className={styles.alertBadge} aria-label={`${totalAlerts} alertas`}>
-                {totalAlerts > 99 ? "99+" : totalAlerts}
-              </span>
-            )}
-          </button>
-
-          {alertsOpen && (
-            <div className={styles.alertDropdown} role="menu">
-              <div className={styles.alertDropdownHeader}>Alertas</div>
-
-              {alertsLoading ? (
-                <div className={styles.alertEmpty}>Cargando alertas...</div>
-              ) : (
-                alertItems.map((item) => (
-                  <button
-                    key={item.key}
-                    type="button"
-                    role="menuitem"
-                    className={styles.alertItem}
-                    onClick={() => {
-                      setAlertsOpen(false);
-                      navigate(item.to);
-                    }}
-                  >
-                    <div className={styles.alertItemTop}>
-                      <div className={styles.alertItemTitle}>{item.title}</div>
-                      <div
-                        className={`${styles.alertItemCount} ${
-                          item.count > 0 ? styles.alertItemCountActive : ""
-                        }`}
-                      >
-                        {item.count}
-                      </div>
-                    </div>
-
-                    <div className={styles.alertItemText}>{item.text}</div>
-                  </button>
-                ))
-              )}
-            </div>
-          )}
-        </div>
-
-        <span className={styles.toolbarDivider} aria-hidden />
+        <Link to="/dashboard" className={styles.brandMark} aria-label="Ir al inicio">
+          <img
+            src={logo}
+            alt="Asociación de Espina Bífida de Nuevo León"
+            className={styles.brandImage}
+            decoding="async"
+          />
+        </Link>
 
         <button
           type="button"
-          className={`${styles.iconBtn} ${styles.logoutBtn}`}
-          onClick={() => logout()}
-          title="Cerrar sesión"
-          aria-label="Cerrar sesión"
+          className={styles.menuToggle}
+          onClick={() => setMenuOpen((prev) => !prev)}
+          aria-expanded={menuOpen}
+          aria-controls="navbar-links"
+          aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
         >
-          <LogOut size={20} aria-hidden />
+          {menuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
 
-        <div className={styles.user}>
-          <div className={styles.userInfo}>
-            <div className={styles.userName}>{user.name}</div>
-            <div className={styles.userRole}>{user.role}</div>
+        <div
+          id="navbar-links"
+          className={`${styles.links} ${menuOpen ? styles.linksOpen : ""}`}
+        >
+          {visibleLinks.map((link) => {
+            const isActive = activeLink === link.label;
+            return (
+              <button
+                key={link.label}
+                type="button"
+                className={`${styles.link} ${isActive ? styles.linkActive : ""}`}
+                aria-current={isActive ? "page" : undefined}
+                onClick={() => goTo(link.to)}
+              >
+                {link.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className={styles.right}>
+          <div className={styles.alertWrapper} ref={alertsRef}>
+            <button
+              className={styles.iconBtn}
+              title="Alertas"
+              aria-expanded={alertsOpen}
+              aria-haspopup="true"
+              onClick={() => setAlertsOpen((prev) => !prev)}
+              type="button"
+            >
+              <Bell size={20} aria-hidden />
+              {totalAlerts > 0 && (
+                <span className={styles.alertBadge} aria-label={`${totalAlerts} alertas`}>
+                  {totalAlerts > 99 ? "99+" : totalAlerts}
+                </span>
+              )}
+            </button>
+
+            {alertsOpen && (
+              <div className={styles.alertDropdown} role="menu">
+                <div className={styles.alertDropdownHeader}>Alertas</div>
+
+                {alertsLoading ? (
+                  <div className={styles.alertEmpty}>Cargando alertas...</div>
+                ) : (
+                  alertItems.map((item) => (
+                    <button
+                      key={item.key}
+                      type="button"
+                      role="menuitem"
+                      className={styles.alertItem}
+                      onClick={() => {
+                        setAlertsOpen(false);
+                        navigate(item.to);
+                      }}
+                    >
+                      <div className={styles.alertItemTop}>
+                        <div className={styles.alertItemTitle}>{item.title}</div>
+                        <div
+                          className={`${styles.alertItemCount} ${
+                            item.count > 0 ? styles.alertItemCountActive : ""
+                          }`}
+                        >
+                          {item.count}
+                        </div>
+                      </div>
+
+                      <div className={styles.alertItemText}>{item.text}</div>
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
           </div>
-          <div className={styles.avatar} aria-hidden>
-            {user.avatar ? <img src={user.avatar} alt="" /> : userInitial}
+
+          <span className={styles.toolbarDivider} aria-hidden />
+
+          <button
+            type="button"
+            className={`${styles.iconBtn} ${styles.logoutBtn}`}
+            onClick={() => logout()}
+            title="Cerrar sesión"
+            aria-label="Cerrar sesión"
+          >
+            <LogOut size={20} aria-hidden />
+          </button>
+
+          <div className={styles.user}>
+            <div className={styles.userInfo}>
+              <div className={styles.userName}>{user.name}</div>
+              <div className={styles.userRole}>{user.role}</div>
+            </div>
+            <div className={styles.avatar} aria-hidden>
+              {user.avatar ? <img src={user.avatar} alt="" /> : userInitial}
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
     </div>
   );
 }
