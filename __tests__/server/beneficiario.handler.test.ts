@@ -89,8 +89,10 @@ describe('BeneficiariosHandler', () => {
 
     expect(controller.getBeneficiarioById).not.toHaveBeenCalled();
     expect(next).toHaveBeenCalledTimes(1);
-    expect(next.mock.calls[0][0]).toBeInstanceOf(ValidationError);
-    expect(next.mock.calls[0][0].message).toBe('id_beneficiario invalido');
+    const error = next.mock.calls[0][0] as ValidationError;
+
+    expect(error).toBeInstanceOf(ValidationError);
+    expect(error.message).toBe('id_beneficiario invalido');
   });
 
   test('getBeneficiarioByFolio responde 200 si el folio es válido', async () => {
@@ -116,8 +118,10 @@ describe('BeneficiariosHandler', () => {
     await handler.getBeneficiarioByFolio(req as any, res, next);
 
     expect(controller.getBeneficiarioByFolio).not.toHaveBeenCalled();
-    expect(next.mock.calls[0][0]).toBeInstanceOf(ValidationError);
-    expect(next.mock.calls[0][0].message).toBe('folio invalido');
+    const error = next.mock.calls[0][0] as ValidationError;
+
+    expect(error).toBeInstanceOf(ValidationError);
+    expect(error.message).toBe('folio invalido');
   });
 
   test('createBeneficiario responde 201 con el beneficiario creado', async () => {
@@ -174,4 +178,367 @@ describe('BeneficiariosHandler', () => {
       message: 'Error al obtener membresías próximas',
     });
   });
+
+  test('getMembresiasProximas responde 200 con las membresías próximas', async () => {
+  const data = [{ id_beneficiario: 1, folio: 'BEN-001' }];
+
+  controller.getMembresiasProximas.mockResolvedValue(data);
+
+  await handler.getMembresiasProximas({} as any, res);
+
+  expect(controller.getMembresiasProximas).toHaveBeenCalledTimes(1);
+  expect(res.status).toHaveBeenCalledWith(200);
+  expect(res.json).toHaveBeenCalledWith(data);
+});
+
+test('getBeneficiarioById manda ValidationError si el id es cero', async () => {
+  const req = {
+    params: { id_beneficiario: '0' },
+  };
+
+  await handler.getBeneficiarioById(req as any, res, next);
+
+  expect(controller.getBeneficiarioById).not.toHaveBeenCalled();
+  const error = next.mock.calls[0][0] as ValidationError;
+
+    expect(error).toBeInstanceOf(ValidationError);
+    expect(error.message).toBe('id_beneficiario invalido');
+});
+
+test('getBeneficiarioById manda error a next si falla el controller', async () => {
+  const req = {
+    params: { id_beneficiario: '1' },
+  };
+
+  const error = new Error('Error al buscar beneficiario');
+  controller.getBeneficiarioById.mockRejectedValue(error);
+
+  await handler.getBeneficiarioById(req as any, res, next);
+
+  expect(controller.getBeneficiarioById).toHaveBeenCalledWith(1);
+  expect(next).toHaveBeenCalledWith(error);
+});
+
+test('getBeneficiarioByFolio manda error a next si falla el controller', async () => {
+  const req = {
+    params: { folio: 'BEN-001' },
+  };
+
+  const error = new Error('Error al buscar por folio');
+  controller.getBeneficiarioByFolio.mockRejectedValue(error);
+
+  await handler.getBeneficiarioByFolio(req as any, res, next);
+
+  expect(controller.getBeneficiarioByFolio).toHaveBeenCalledWith('BEN-001');
+  expect(next).toHaveBeenCalledWith(error);
+});
+
+test('createBeneficiario manda error a next si falla el controller', async () => {
+  const req = {
+    body: { folio: 'BEN-001' },
+  };
+
+  const error = new Error('Error al crear beneficiario');
+  controller.createBeneficiario.mockRejectedValue(error);
+
+  await handler.createBeneficiario(req as any, res, next);
+
+  expect(controller.createBeneficiario).toHaveBeenCalledWith(req.body);
+  expect(next).toHaveBeenCalledWith(error);
+});
+
+test('createIdentificadores responde 201 con identificadores creados', async () => {
+  const req = {
+    params: { id_beneficiario: '1' },
+    body: { CURP: 'CURP123', nombres: 'Ana' },
+  };
+
+  const identificadores = {
+    id_identificadores: 10,
+    id_beneficiario: 1,
+    CURP: 'CURP123',
+    nombres: 'Ana',
+  };
+
+  controller.createIdentificadores.mockResolvedValue(identificadores);
+
+  await handler.createIdentificadores(req as any, res, next);
+
+  expect(controller.createIdentificadores).toHaveBeenCalledWith(1, req.body);
+  expect(res.status).toHaveBeenCalledWith(201);
+  expect(res.json).toHaveBeenCalledWith(identificadores);
+});
+
+test('createIdentificadores manda ValidationError si el id es inválido', async () => {
+  const req = {
+    params: { id_beneficiario: 'abc' },
+    body: {},
+  };
+
+  await handler.createIdentificadores(req as any, res, next);
+
+  expect(controller.createIdentificadores).not.toHaveBeenCalled();
+  const error = next.mock.calls[0][0] as ValidationError;
+
+    expect(error).toBeInstanceOf(ValidationError);
+    expect(error.message).toBe('id_beneficiario invalido');
+});
+
+test('createIdentificadores manda error a next si falla el controller', async () => {
+  const req = {
+    params: { id_beneficiario: '1' },
+    body: { CURP: 'CURP123' },
+  };
+
+  const error = new Error('Error al crear identificadores');
+  controller.createIdentificadores.mockRejectedValue(error);
+
+  await handler.createIdentificadores(req as any, res, next);
+
+  expect(controller.createIdentificadores).toHaveBeenCalledWith(1, req.body);
+  expect(next).toHaveBeenCalledWith(error);
+});
+
+test('createDatosMedicos responde 201 con datos médicos creados', async () => {
+  const req = {
+    params: { id_beneficiario: '1' },
+    body: { tipo_sanguineo: 'O+', valvula: true },
+  };
+
+  const datosMedicos = {
+    id_datos_medicos: 20,
+    id_beneficiario: 1,
+    tipo_sanguineo: 'O+',
+    valvula: true,
+  };
+
+  controller.createDatosMedicos.mockResolvedValue(datosMedicos);
+
+  await handler.createDatosMedicos(req as any, res, next);
+
+  expect(controller.createDatosMedicos).toHaveBeenCalledWith(1, req.body);
+  expect(res.status).toHaveBeenCalledWith(201);
+  expect(res.json).toHaveBeenCalledWith(datosMedicos);
+});
+
+test('createDatosMedicos manda ValidationError si el id es inválido', async () => {
+  const req = {
+    params: { id_beneficiario: '-1' },
+    body: {},
+  };
+
+  await handler.createDatosMedicos(req as any, res, next);
+
+  expect(controller.createDatosMedicos).not.toHaveBeenCalled();
+  const error = next.mock.calls[0][0] as ValidationError;
+
+    expect(error).toBeInstanceOf(ValidationError);
+    expect(error.message).toBe('id_beneficiario invalido');
+});
+
+test('createDatosMedicos manda error a next si falla el controller', async () => {
+  const req = {
+    params: { id_beneficiario: '1' },
+    body: { tipo_sanguineo: 'O+' },
+  };
+
+  const error = new Error('Error al crear datos médicos');
+  controller.createDatosMedicos.mockRejectedValue(error);
+
+  await handler.createDatosMedicos(req as any, res, next);
+
+  expect(controller.createDatosMedicos).toHaveBeenCalledWith(1, req.body);
+  expect(next).toHaveBeenCalledWith(error);
+});
+
+test('createDireccion responde 201 con dirección creada', async () => {
+  const req = {
+    params: { id_beneficiario: '1' },
+    body: { domicilio_calle: 'Calle 1', domicilio_cp: '64000' },
+  };
+
+  const direccion = {
+    id_direccion: 30,
+    id_beneficiario: 1,
+    domicilio_calle: 'Calle 1',
+    domicilio_cp: '64000',
+  };
+
+  controller.createDireccion.mockResolvedValue(direccion);
+
+  await handler.createDireccion(req as any, res, next);
+
+  expect(controller.createDireccion).toHaveBeenCalledWith(1, req.body);
+  expect(res.status).toHaveBeenCalledWith(201);
+  expect(res.json).toHaveBeenCalledWith(direccion);
+});
+
+test('createDireccion manda ValidationError si el id es inválido', async () => {
+  const req = {
+    params: { id_beneficiario: 'abc' },
+    body: {},
+  };
+
+  await handler.createDireccion(req as any, res, next);
+
+  expect(controller.createDireccion).not.toHaveBeenCalled();
+    const error = next.mock.calls[0][0] as ValidationError;
+
+    expect(error).toBeInstanceOf(ValidationError);
+    expect(error.message).toBe('id_beneficiario invalido');
+});
+
+test('createDireccion manda error a next si falla el controller', async () => {
+  const req = {
+    params: { id_beneficiario: '1' },
+    body: { domicilio_calle: 'Calle 1' },
+  };
+
+  const error = new Error('Error al crear dirección');
+  controller.createDireccion.mockRejectedValue(error);
+
+  await handler.createDireccion(req as any, res, next);
+
+  expect(controller.createDireccion).toHaveBeenCalledWith(1, req.body);
+  expect(next).toHaveBeenCalledWith(error);
+});
+
+test('getSiguienteFolio manda error a next si falla el controller', async () => {
+  const error = new Error('Error al obtener folio');
+  controller.getSiguienteFolio.mockRejectedValue(error);
+
+  await handler.getSiguienteFolio({} as any, res, next);
+
+  expect(controller.getSiguienteFolio).toHaveBeenCalledTimes(1);
+  expect(next).toHaveBeenCalledWith(error);
+});
+
+test('getPadresByBeneficiarioId responde 200 con los padres del beneficiario', async () => {
+  const req = {
+    params: { id_beneficiario: '1' },
+  };
+
+  const padres = [
+    { tipo_padre: 'madre', nombre_completo: 'María García' },
+    { tipo_padre: 'padre', nombre_completo: 'Juan López' },
+  ];
+
+  controller.getPadresByBeneficiarioId.mockResolvedValue(padres);
+
+  await handler.getPadresByBeneficiarioId(req as any, res, next);
+
+  expect(controller.getPadresByBeneficiarioId).toHaveBeenCalledWith(1);
+  expect(res.status).toHaveBeenCalledWith(200);
+  expect(res.json).toHaveBeenCalledWith(padres);
+});
+
+test('getPadresByBeneficiarioId manda ValidationError si el id es inválido', async () => {
+  const req = {
+    params: { id_beneficiario: 'abc' },
+  };
+
+  await handler.getPadresByBeneficiarioId(req as any, res, next);
+
+  expect(controller.getPadresByBeneficiarioId).not.toHaveBeenCalled();
+ const error = next.mock.calls[0][0] as ValidationError;
+
+    expect(error).toBeInstanceOf(ValidationError);
+    expect(error.message).toBe('id_beneficiario invalido');
+});
+
+test('getPadresByBeneficiarioId manda error a next si falla el controller', async () => {
+  const req = {
+    params: { id_beneficiario: '1' },
+  };
+
+  const error = new Error('Error al obtener padres');
+  controller.getPadresByBeneficiarioId.mockRejectedValue(error);
+
+  await handler.getPadresByBeneficiarioId(req as any, res, next);
+
+  expect(controller.getPadresByBeneficiarioId).toHaveBeenCalledWith(1);
+  expect(next).toHaveBeenCalledWith(error);
+});
+
+test('updatePadres responde 200 con el resultado del controller', async () => {
+  const req = {
+    params: { id_beneficiario: '1' },
+    body: {
+      madre_nombre_completo: 'María García',
+      padre_nombre_completo: 'Juan López',
+    },
+  };
+
+  const result = {
+    message: 'Padres actualizados correctamente',
+  };
+
+  controller.updatePadres.mockResolvedValue(result);
+
+  await handler.updatePadres(req as any, res, next);
+
+  expect(controller.updatePadres).toHaveBeenCalledWith(1, req.body);
+  expect(res.status).toHaveBeenCalledWith(200);
+  expect(res.json).toHaveBeenCalledWith(result);
+});
+
+test('updatePadres manda ValidationError si el id es inválido', async () => {
+  const req = {
+    params: { id_beneficiario: 'abc' },
+    body: {},
+  };
+
+  await handler.updatePadres(req as any, res, next);
+
+  expect(controller.updatePadres).not.toHaveBeenCalled();
+  const error = next.mock.calls[0][0] as ValidationError;
+
+    expect(error).toBeInstanceOf(ValidationError);
+    expect(error.message).toBe('id_beneficiario invalido');
+});
+
+test('updatePadres manda error a next si falla el controller', async () => {
+  const req = {
+    params: { id_beneficiario: '1' },
+    body: {},
+  };
+
+  const error = new Error('Error al actualizar padres');
+  controller.updatePadres.mockRejectedValue(error);
+
+  await handler.updatePadres(req as any, res, next);
+
+  expect(controller.updatePadres).toHaveBeenCalledWith(1, req.body);
+  expect(next).toHaveBeenCalledWith(error);
+});
+
+test('updateBeneficiario manda ValidationError si el id es inválido', async () => {
+  const req = {
+    params: { id_beneficiario: 'abc' },
+    body: {},
+  };
+
+  await handler.updateBeneficiario(req as any, res, next);
+
+  expect(controller.updateBeneficiario).not.toHaveBeenCalled();
+  const error = next.mock.calls[0][0] as ValidationError;
+
+    expect(error).toBeInstanceOf(ValidationError);
+    expect(error.message).toBe('id_beneficiario invalido');
+});
+
+test('updateBeneficiario manda error a next si falla el controller', async () => {
+  const req = {
+    params: { id_beneficiario: '1' },
+    body: { estado: 'activo' },
+  };
+
+  const error = new Error('Error al actualizar beneficiario');
+  controller.updateBeneficiario.mockRejectedValue(error);
+
+  await handler.updateBeneficiario(req as any, res, next);
+
+  expect(controller.updateBeneficiario).toHaveBeenCalledWith(1, req.body);
+  expect(next).toHaveBeenCalledWith(error);
+});
 });
