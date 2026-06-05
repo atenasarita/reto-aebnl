@@ -6,6 +6,10 @@ import { jest, describe, test, expect, beforeEach, beforeAll, afterEach } from "
 
 const mockGenerateNextBeneficiarioFolio = jest.fn() as any;
 
+const mockGetConnection = jest.fn() as any;
+
+
+
 jest.unstable_mockModule(
   "oracledb",
   () => ({
@@ -21,6 +25,12 @@ jest.unstable_mockModule(
   }),
   { virtual: true }
 );
+
+jest.unstable_mockModule("../../server/src/db/oracle", () => ({
+  OracleConnection: jest.fn().mockImplementation(() => ({
+    getConnection: mockGetConnection,
+  })),
+}));
 
 jest.unstable_mockModule("../../server/src/utils/beneficiarioFolio", () => ({
   generateNextBeneficiarioFolio: mockGenerateNextBeneficiarioFolio,
@@ -119,7 +129,8 @@ describe("OracleBeneficiarioRepository", () => {
 
   beforeEach(() => {
     connection = createMockConnection();
-    repository = createRepository(connection);
+    mockGetConnection.mockResolvedValue(connection);
+    repository = new OracleBeneficiarioRepository();
     jest.clearAllMocks();
   });
 

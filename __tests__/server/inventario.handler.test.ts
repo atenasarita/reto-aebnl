@@ -2,13 +2,24 @@
  * @jest-environment node
  */
 
-import { jest, describe, test, expect, beforeEach } from "@jest/globals";
-import { InventarioHandler } from "../../server/src/handlers/inventario.handler";
+import { jest, describe, test, expect, beforeEach, beforeAll } from "@jest/globals";
 import {
   ConflictError,
   NotFoundError,
   ValidationError,
 } from "../../server/src/errors/appError";
+
+jest.unstable_mockModule("../../server/src/controllers/inventario.controller", () => ({
+  InventarioController: jest.fn().mockImplementation(() => ({})),
+}));
+
+let InventarioHandler: any;
+
+beforeAll(async () => {
+  const module = await import("../../server/src/handlers/inventario.handler");
+  InventarioHandler = module.InventarioHandler;
+});
+
 
 function createMockResponse() {
   return {
@@ -20,7 +31,7 @@ function createMockResponse() {
 
 describe("InventarioHandler", () => {
   let controller: any;
-  let handler: InventarioHandler;
+  let handler: any;
   let res: any;
 
   beforeEach(() => {
