@@ -118,10 +118,10 @@ export const downloadBeneficiarioPdf = (data, id) => {
   doc.text('ASOCIACION DE ESPINA BIFIDA', oR + 17, 40, { align: 'center' });
   doc.text('DE NUEVO LEON ABP', oR + 17, 43, { align: 'center' });
   
-  doc.text('***********************', oR + 17, 48, { align: 'center' }); 
+  doc.text('J. Villagrán #344 Sur, Col. Centro', oR + 17, 48, { align: 'center' }); 
   
   doc.text('Monterrey, NL', oR + 17, 52, { align: 'center' });
-  doc.text('Teléfono: **********', oR + 17, 55, { align: 'center' });
+  doc.text('Teléfono: 81 1099 0168', oR + 17, 55, { align: 'center' });
   doc.text('www.espinabifida.org.mx', oR + 17, 58, { align: 'center' });
 
   doc.setFontSize(8);
