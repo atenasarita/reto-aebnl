@@ -1,5 +1,4 @@
 import styles from './BeneficiarioCard.module.css'
-import { BsCardText } from "react-icons/bs";
 import { FiEdit, FiEye, FiDownload } from "react-icons/fi";
 
 function getInitials(name) {

@@ -205,27 +205,9 @@ function BeneficiarioDetalle({
   }
 
   const resetForm = () => {
-    setFormData({
-      nombres: nombres || '',
-      apellido_paterno: apellido_paterno || '',
-      apellido_materno: apellido_materno || '',
-      CURP: CURP || '',
-      fecha_nacimiento: formatInputDate(fecha_nacimiento),
-      genero: genero || '',
-      telefono: telefono || '',
-      email: email || '',
-      estado_nacimiento: estado_nacimiento || '',
-      contacto_nombre: contacto_nombre || '',
-      contacto_telefono: contacto_telefono || '',
-      contacto_parentesco: contacto_parentesco || '',
-      tipo_sanguineo: tipo_sanguineo || '',
-      hospital: hospital || '',
-      domicilio_calle: domicilio_calle || '',
-      domicilio_ciudad: domicilio_ciudad || '',
-      domicilio_estado: domicilio_estado || '',
-      domicilio_cp: domicilio_cp || ''
-    })
+    setFormData(buildInitialFormData(beneficiario))
   }
+
 
   const handleCancel = () => {
     resetForm()
