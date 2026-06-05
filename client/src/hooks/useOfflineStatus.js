@@ -45,9 +45,12 @@ export function useOfflineStatus() {
 
     setPendingCount(queueSize())
     setSyncing(false)
+
     if (failures > 0) {
       setSyncError(
-        `${failures} cambio${failures !== 1 ? 's' : ''} no pudo${failures !== 1 ? 'ieron' : ''} sincronizarse.`
+        failures === 1
+          ? '1 cambio no pudo sincronizarse.'
+          : `${failures} cambios no pudieron sincronizarse.`
       )
     }
   }, [])
