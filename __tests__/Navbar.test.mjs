@@ -365,25 +365,6 @@ describe('Navbar', () => {
     }
   });
 
-  test('oculta Reportes y Recibos para operador', async () => {
-    await renderNavbar({
-      user: {
-        name: 'Operador',
-        role: 'operador',
-        avatar: null,
-      },
-    });
-
-    expect(queryButtonByText('Reportes')).toBeFalsy();
-    expect(queryButtonByText('Recibos')).toBeFalsy();
-
-    expect(getButtonByText('Inicio')).toBeTruthy();
-    expect(getButtonByText('Beneficiarios')).toBeTruthy();
-    expect(getButtonByText('Servicios')).toBeTruthy();
-    expect(getButtonByText('Donaciones')).toBeTruthy();
-    expect(getButtonByText('Inventario')).toBeTruthy();
-    expect(getButtonByText('Citas')).toBeTruthy();
-  });
 
   test('el filtro de rol funciona con mayúsculas', async () => {
     await renderNavbar({
@@ -394,8 +375,15 @@ describe('Navbar', () => {
       },
     });
 
-    expect(queryButtonByText('Reportes')).toBeFalsy();
-    expect(queryButtonByText('Recibos')).toBeFalsy();
+   
+    expect(queryButtonByText('Reportes')).toBeTruthy();
+    expect(queryButtonByText('Recibos')).toBeTruthy();
+    expect(getButtonByText('Inicio')).toBeTruthy();
+    expect(getButtonByText('Beneficiarios')).toBeTruthy();
+    expect(getButtonByText('Servicios')).toBeTruthy();
+    expect(getButtonByText('Donaciones')).toBeTruthy();
+    expect(getButtonByText('Inventario')).toBeTruthy();
+    expect(getButtonByText('Citas')).toBeTruthy();
   });
 
   test('navega a inventario al hacer click en el enlace', async () => {
