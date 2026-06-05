@@ -156,6 +156,8 @@ export default function RegistroServicios() {
   const descuentoNum = Math.max(0, parseFloat(descuento) || 0);
   const totalConDescuento = Math.max(0, subtotal - descuentoNum);
   const saldoRestante = totalConDescuento - pagadoNum - donacionNum;
+  const etiquetaSaldo = saldoRestante > 0 ? "Saldo pendiente:" : saldoRestante < 0 ? "Cambio:" : "Saldo:";
+  const colorSaldo = saldoRestante > 0 ? "#dc2626" : "#0f766e";
 
   const servicioLabel = tiposOptions.find(
     t => String(t.value) === String(tipoServicio)
@@ -527,22 +529,11 @@ export default function RegistroServicios() {
               </div>
 
               <div className='totalesRow'>
-                <span>
-                  {saldoRestante > 0
-                    ? "Saldo pendiente:"
-                    : saldoRestante < 0
-                    ? "Cambio:"
-                    : "Saldo:"}
-                </span>
+                <span>{etiquetaSaldo}</span>
 
                 <strong
                   className='totalesSaldo'
-                  style={{
-                    color:
-                      saldoRestante > 0
-                        ? "#dc2626"
-                        : "#0f766e",
-                  }}
+                  style={{ color: colorSaldo }}
                 >
                   ${Math.abs(saldoRestante).toFixed(2)}
                 </strong>
