@@ -1,16 +1,30 @@
 module.exports = {
   testEnvironment: 'jsdom',
-  testMatch: ['**/__tests__/**/*.test.js', '**/__tests__/**/*.test.mjs', '**/?(*.)+(spec|test).js', '**/?(*.)+(spec|test).mjs', '**/__tests__/**/*.test.jsx'],
-  moduleFileExtensions: ['js', 'mjs', 'cjs', 'json', 'jsx', 'node'],
+  testMatch: ['**/__tests__/**/*.test.js', '**/__tests__/**/*.test.mjs', '**/?(*.)+(spec|test).js', '**/?(*.)+(spec|test).mjs', '**/__tests__/**/*.test.jsx','**/__tests__/**/*.test.ts'],
+  extensionsToTreatAsEsm: ['.ts'],
+
+  moduleFileExtensions: ['js', 'mjs', 'cjs', 'json', 'jsx', 'node', 'ts'],
 //   Ruta para correr en main
 //    roots: ['<rootDir>/client/src', '<rootDir>/unitTests/__tests__'],
 
 // Ruta para correr en local
-   roots: ['<rootDir>/client/src', '<rootDir>/__tests__'],
+   roots: ['<rootDir>/client/src','<rootDir>/server/src', '<rootDir>/__tests__'], 
 
    moduleDirectories: ['node_modules', 'client/node_modules'],
    transform:{
     '^.+\\.(js|jsx)$': 'babel-jest', 
+      '^.+\\.ts$': [
+    'ts-jest',
+      {
+        useESM: true,
+        tsconfig: {
+          module: 'ESNext',
+          target: 'ES2022',
+          esModuleInterop: true,
+          allowSyntheticDefaultImports: true,
+        },
+      },
+    ],
    },
    transformIgnorePatterns: [
     '/node_modules/(?!(your-esm-package)/)',
