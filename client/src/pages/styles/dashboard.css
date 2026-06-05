@@ -1121,3 +1121,25 @@
 .btn-secondary-modal:hover {
   background: #cbd5e1;
 }
+
+.action-card-reports {
+  background: linear-gradient(135deg, #166534 0%, #14532d 100%);
+  color: white;
+  border: none;
+}
+
+.action-card-icon-reports {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.action-card-reports .action-card-text h3 {
+  color: white;
+}
+
+.action-card-reports .action-card-text p {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.action-card-reports .action-card-arrow {
+  color: white;
+}
