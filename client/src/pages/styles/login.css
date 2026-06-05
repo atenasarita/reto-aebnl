@@ -79,6 +79,8 @@
   padding: 7px 14px;
   border-radius: 100px;
   transition: color 0.15s ease, background 0.15s ease;
+  border-radius: 100px;
+  background: rgb(145, 157, 184, 0.32);
 }
 .login-nav-back:hover {
   color: #fff;
