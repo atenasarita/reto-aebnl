@@ -47,7 +47,7 @@ export function useOfflineStatus() {
     setSyncing(false)
     if (failures > 0) {
       setSyncError(
-        `${failures} cambio${failures !== 1 ? 's' : ''} no pudo${failures !== 1 ? 'ieron' : ''} sincronizarse.`
+        `${failures} cambio${failures !== 1 ? 's' : ''} no pud${failures !== 1 ? 'ieron' : ''} sincronizarse.`
       )
     }
   }, [])
