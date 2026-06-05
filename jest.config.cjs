@@ -56,18 +56,4 @@ testMatch: [
   },
    coverageReporters: ['lcov', 'text'],
     coverageDirectory: 'coverage',
-
-  collectCoverageFrom: [
-    'client/src/**/*.{js,jsx}',
-    'server/src/{controllers,handlers,middlewares,repositories,routes,schemas,services,utils}/**/*.{ts}',
-
-    '!client/src/**/*.test.{js,jsx,mjs}',
-    '!server/src/**/*.test.{ts}',
-    '!client/src/main.jsx',
-    '!client/src/App.jsx',
-    '!server/src/**/*.d.ts',
-    '!server/src/types/**',
-    '!server/src/interfaces/**',
-    '!server/dist/**',
-  ],
 };
