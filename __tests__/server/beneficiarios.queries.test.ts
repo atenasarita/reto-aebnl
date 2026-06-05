@@ -4,10 +4,7 @@
 
 /// <reference types="jest" />
 
-import * as queries from '../server/src/repositories/beneficiario.queries.ts';
-
-console.log(Object.keys(queries));
-
+import * as queries from '../../server/src/repositories/beneficiario.queries.ts';
 const {
   SELECT_BENEFICIARIO_DETALLE_BASE,
   SELECT_BENEFICIARIOS_WITH_MEMBRESIAS_ENDING_SOON,

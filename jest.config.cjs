@@ -1,6 +1,16 @@
 module.exports = {
   testEnvironment: 'jsdom',
-  testMatch: ['**/__tests__/**/*.test.js', '**/__tests__/**/*.test.mjs', '**/?(*.)+(spec|test).js', '**/?(*.)+(spec|test).mjs', '**/__tests__/**/*.test.jsx','**/__tests__/**/*.test.ts'],
+testMatch: [
+  '**/__tests__/**/*.test.js',
+  '**/__tests__/**/*.test.mjs',
+  '**/__tests__/**/*.test.jsx',
+  '**/__tests__/**/*.test.ts',
+
+  '**/?(*.)+(spec|test).js',
+  '**/?(*.)+(spec|test).mjs',
+  '**/?(*.)+(spec|test).jsx',
+  '**/?(*.)+(spec|test).ts',
+],
   extensionsToTreatAsEsm: ['.ts'],
 
   moduleFileExtensions: ['js', 'mjs', 'cjs', 'json', 'jsx', 'node', 'ts'],
@@ -46,4 +56,18 @@ module.exports = {
   },
    coverageReporters: ['lcov', 'text'],
     coverageDirectory: 'coverage',
+
+  collectCoverageFrom: [
+    'client/src/**/*.{js,jsx}',
+    'server/src/{controllers,handlers,middlewares,repositories,routes,schemas,services,utils}/**/*.{ts}',
+
+    '!client/src/**/*.test.{js,jsx,mjs}',
+    '!server/src/**/*.test.{ts}',
+    '!client/src/main.jsx',
+    '!client/src/App.jsx',
+    '!server/src/**/*.d.ts',
+    '!server/src/types/**',
+    '!server/src/interfaces/**',
+    '!server/dist/**',
+  ],
 };
