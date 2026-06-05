@@ -216,19 +216,21 @@ export default function RegistroServicios() {
     }
   };
 
+  const validarPasoFinanzas = () => {
+    const pagado = parseFloat(montoPagado) || 0;
+    const donacion = parseFloat(montoDonacion) || 0;
+    if (pagado + donacion > totalConDescuento + 0.001) return false;
+    if (donacion > 0 && !fondoSeleccionado) return false;
+    if (donacion > saldoFondoSel + 0.001) return false;
+    if (pagado > 0 && !metodoPago) return false;
+    return true;
+  };
+
   const puedeAvanzar = () => {
     if (pasoActual === 1) return !!(beneficiarioSeleccionado || citaSeleccionada);
     if (pasoActual === 2) return !!(fecha && hora);
     if (pasoActual === 3) return !!(tipoServicio || insumos.length > 0);
-    if (pasoActual === 4) {
-      const pagado = parseFloat(montoPagado) || 0;
-      const donacion = parseFloat(montoDonacion) || 0;
-      if (pagado + donacion > totalConDescuento + 0.001) return false;
-      if (donacion > 0 && !fondoSeleccionado) return false;
-      if (donacion > saldoFondoSel + 0.001) return false;
-      if (pagado > 0 && !metodoPago) return false;
-      return true;
-    }
+    if (pasoActual === 4) return validarPasoFinanzas();
     return true;
   };
 
