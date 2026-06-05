@@ -152,11 +152,12 @@ export default function RegistroServicios() {
   }));
 
   // ── Beneficiario mostrado en el resumen ────────────────────
-  const beneficiarioFinal = beneficiarioSeleccionado
-    ? resultados.find((b) => b.folio === beneficiarioSeleccionado)
-    : citaSeleccionada
-    ? citasFormateadas.find((c) => c.id === citaSeleccionada)
-    : null;
+  const resolveBeneficiarioFinal = () => {
+    if (beneficiarioSeleccionado) return resultados.find((b) => b.folio === beneficiarioSeleccionado);
+    if (citaSeleccionada) return citasFormateadas.find((c) => c.id === citaSeleccionada);
+    return null;
+  };
+  const beneficiarioFinal = resolveBeneficiarioFinal();
 
   // ── Guardar ────────────────────────────────────────────────
   const handleGuardar = async () => {
@@ -461,7 +462,7 @@ export default function RegistroServicios() {
             <dl className='dl'>
               <div className='dlRow'>
                 <dt>Beneficiario:</dt>
-                <dd>{beneficiarioFinal?.nombre || beneficiarioFinal?.beneficiario || "—"}</dd>
+                <dd>{beneficiarioFinal?.nombre || "—"}</dd>
               </div>
               <div className='dlRow'>
                 <dt>Fecha:</dt>
