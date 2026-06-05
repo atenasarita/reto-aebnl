@@ -45,10 +45,11 @@ function formatInputDate(dateStr) {
   return String(dateStr).split('T')[0]
 }
 
-function buildInitialFormData(beneficiario){
+function buildInitialFormData(beneficiario) {
   const identificadores = beneficiario.identificadores || {}
   const datosMedicos = beneficiario.datos_medicos || {}
   const direccion = beneficiario.direccion || {}
+  const membresia = beneficiario.membresia || {}
 
   return {
     nombres: identificadores.nombres || '',
@@ -68,7 +69,16 @@ function buildInitialFormData(beneficiario){
     domicilio_calle: direccion.domicilio_calle || '',
     domicilio_ciudad: direccion.domicilio_ciudad || '',
     domicilio_estado: direccion.domicilio_estado || '',
-    domicilio_cp: direccion.domicilio_cp || ''
+    domicilio_cp: direccion.domicilio_cp || '',
+    valvula:
+      datosMedicos.valvula === 1 ||
+      datosMedicos.valvula === '1' ||
+      datosMedicos.valvula === true
+        ? 'Sí'
+        : 'No',
+    diagnostico: formatDiagnostico(beneficiario.tipo_espina),
+    fecha_inicio: formatInputDate(membresia.fecha_inicio),
+    fecha_fin: formatInputDate(membresia.fecha_fin)
   }
 }
 
@@ -176,14 +186,10 @@ function BeneficiarioDetalle({
   const fecha_inicio = beneficiario.membresia?.fecha_inicio ?? null
   const fecha_fin = beneficiario.membresia?.fecha_fin ?? null
 
-  const diagnostico = formatDiagnostico(tipo_espina)
-  const valvulaTexto = formatValvula(valvula)
-
   const fotoURL = fotografia || null
 
   const [isEditing, setIsEditing] = useState(startInEditMode)
   const [saving, setSaving] = useState(false)
-
   const [formData, setFormData] = useState(() => buildInitialFormData(beneficiario))
 
   useEffect(() => {
@@ -205,26 +211,7 @@ function BeneficiarioDetalle({
   }
 
   const resetForm = () => {
-    setFormData({
-      nombres: nombres || '',
-      apellido_paterno: apellido_paterno || '',
-      apellido_materno: apellido_materno || '',
-      CURP: CURP || '',
-      fecha_nacimiento: formatInputDate(fecha_nacimiento),
-      genero: genero || '',
-      telefono: telefono || '',
-      email: email || '',
-      estado_nacimiento: estado_nacimiento || '',
-      contacto_nombre: contacto_nombre || '',
-      contacto_telefono: contacto_telefono || '',
-      contacto_parentesco: contacto_parentesco || '',
-      tipo_sanguineo: tipo_sanguineo || '',
-      hospital: hospital || '',
-      domicilio_calle: domicilio_calle || '',
-      domicilio_ciudad: domicilio_ciudad || '',
-      domicilio_estado: domicilio_estado || '',
-      domicilio_cp: domicilio_cp || ''
-    })
+    setFormData(buildInitialFormData(beneficiario))
   }
 
   const handleCancel = () => {
@@ -236,7 +223,12 @@ function BeneficiarioDetalle({
     try {
       setSaving(true)
 
-      await updateBeneficiario(id_beneficiario, formData)
+      const payload = {
+        ...formData,
+        valvula: formData.valvula === 'Sí'
+      }
+
+      await updateBeneficiario(id_beneficiario, payload)
 
       if (onUpdated) await onUpdated()
 
@@ -289,7 +281,7 @@ function BeneficiarioDetalle({
                   className={`${styles.field} ${styles.full}`}
                 />
 
-                 <EditableField
+                <EditableField
                   label="Apellido materno"
                   name="apellido_materno"
                   value={formData.apellido_materno}
@@ -492,10 +484,14 @@ function BeneficiarioDetalle({
         </div>
 
         <div className={styles.row}>
-          <div className={`${styles.field} ${styles.full}`}>
-            <span className={styles.fieldLabel}>Diagnóstico</span>
-            <span className={styles.fieldValue}>{diagnostico}</span>
-          </div>
+          <EditableField
+            label="Diagnóstico"
+            name="diagnostico"
+            value={formData.diagnostico}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={`${styles.field} ${styles.full}`}
+          />
         </div>
 
         <div className={styles.row}>
@@ -525,22 +521,69 @@ function BeneficiarioDetalle({
             </select>
           </EditableField>
 
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Válvula</span>
-            <span className={styles.fieldValue}>{valvulaTexto}</span>
-          </div>
+          <EditableField
+            label="Válvula"
+            name="valvula"
+            value={isEditing ? formData.valvula : formatValvula(valvula)}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={styles.field}
+          >
+            <select
+              className={styles.input}
+              name="valvula"
+              value={formData.valvula}
+              onChange={handleChange}
+            >
+              <option value="Sí">Sí</option>
+              <option value="No">No</option>
+            </select>
+          </EditableField>
         </div>
 
-        <div className={styles.row}>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Desde</span>
-            <span className={styles.fieldValue}>{fecha_inicio ? formatDate(fecha_inicio) : '—'}</span>
+        {isEditing ? (
+          <div className={styles.row}>
+            <EditableField
+              label="Desde"
+              name="fecha_inicio"
+              value={formData.fecha_inicio}
+              isEditing={isEditing}
+              onChange={handleChange}
+              type="date"
+              className={styles.field}
+            />
+
+            <EditableField
+              label="Hasta"
+              name="fecha_fin"
+              value={formData.fecha_fin}
+              isEditing={isEditing}
+              onChange={handleChange}
+              type="date"
+              className={styles.field}
+            />
           </div>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Hasta</span>
-            <span className={styles.fieldValue}>{fecha_fin ? formatDate(fecha_fin) : '—'}</span>
-          </div>
-        </div>
+        ) : (
+          <>
+            <div className={styles.row}>
+              <div className={`${styles.field} ${styles.full}`}>
+                <span className={styles.fieldLabel}>Vigencia de membresía</span>
+                <span className={styles.fieldValue}>
+                  {fecha_inicio && fecha_fin
+                    ? `${formatDate(fecha_inicio)} al ${formatDate(fecha_fin)}`
+                    : 'Sin membresía activa'}
+                </span>
+              </div>
+            </div>
+
+            <div className={styles.row}>
+              <div className={styles.field}>
+                <span className={styles.fieldLabel}>Renovación</span>
+                <span className={styles.fieldValue}>$150 MXN por renovación</span>
+              </div>
+            </div>
+          </>
+        )}
 
         {isEditing && (
           <div className={styles.editButtonWrapper}>
