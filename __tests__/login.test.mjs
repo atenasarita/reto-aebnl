@@ -79,7 +79,7 @@ jest.unstable_mockModule('../client/src/pages/styles/login.css', () => ({
   default: {},
 }));
 
-const LoginModule = await import('../client/src/pages/Login/Login.jsx');
+const LoginModule = await import('../client/src/pages/login/login.jsx');
 
 const Login = LoginModule.default?.default || LoginModule.default || LoginModule;
 
