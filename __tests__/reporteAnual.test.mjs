@@ -28,30 +28,49 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('recharts', () => ({
   __esModule: true,
+
   ResponsiveContainer: ({ children }) =>
-    React.createElement('div', { 'data-testid': 'responsive-container' }, children),
-  AreaChart: ({ children, data }) =>
     React.createElement(
+      'div',
+      { 'data-testid': 'responsive-container' },
+      children
+    ),
+
+  AreaChart: ({ children, data }) => {
+    const childrenSinSvg = React.Children.toArray(children).filter(
+      (child) => child?.type !== 'defs'
+    );
+
+    return React.createElement(
       'div',
       {
         'data-testid': 'area-chart',
         'data-items': data.length,
       },
-      children
-    ),
+      childrenSinSvg
+    );
+  },
+
   Area: ({ dataKey }) =>
     React.createElement('div', {
       'data-testid': 'area',
       'data-datakey': dataKey,
     }),
-  CartesianGrid: () => React.createElement('div', { 'data-testid': 'grid' }),
-  Tooltip: () => React.createElement('div', { 'data-testid': 'tooltip' }),
+
+  CartesianGrid: () =>
+    React.createElement('div', { 'data-testid': 'grid' }),
+
+  Tooltip: () =>
+    React.createElement('div', { 'data-testid': 'tooltip' }),
+
   XAxis: ({ dataKey }) =>
     React.createElement('div', {
       'data-testid': 'x-axis',
       'data-datakey': dataKey,
     }),
-  YAxis: () => React.createElement('div', { 'data-testid': 'y-axis' }),
+
+  YAxis: () =>
+    React.createElement('div', { 'data-testid': 'y-axis' }),
 }));
 
 jest.mock('lucide-react', () => ({
@@ -545,4 +564,73 @@ describe('ReporteAnual', () => {
       'csv-anual'
     );
   });
+
+  test('la gráfica recibe todos los meses de porMes como data', async () => {
+    await mount();
+    const chart = container.querySelector('[data-testid="area-chart"]');
+    expect(chart.dataset.items).toBe('2'); // baseData.porMes.length
+  });
+  
+  test('el eje X usa mesLabel como dataKey', async () => {
+    await mount();
+    const xAxis = container.querySelector('[data-testid="x-axis"]');
+    expect(xAxis.dataset.datakey).toBe('mesLabel');
+   });
+
+   test('el selector de año muestra los últimos 6 años', async () => {
+        await mount();
+        const select = container.querySelector('select');
+        const options = Array.from(select.querySelectorAll('option'));
+        const currentYear = new Date().getFullYear();
+
+        expect(options).toHaveLength(6);
+        expect(options[0].value).toBe(String(currentYear));
+        expect(options[5].value).toBe(String(currentYear - 5));
+    });
+
+    test('el enlace Mensual apunta a /reportes/mensual', async () => {
+        await mount();
+        const link = container.querySelector('a[href="/reportes/mensual"]');
+        expect(link).toBeTruthy();
+        expect(link.textContent).toContain('Mensual');
+    });
+
+    test('el botón Anual tiene clase is-active al estar en esta vista', async () => {
+        await mount();
+        const anualButton = Array.from(container.querySelectorAll('button'))
+            .find(btn => btn.textContent.trim() === 'Anual');
+        expect(anualButton.classList.contains('is-active')).toBe(true);
+    });
+
+    test('no registra handler CSV si registerCsvExportHandler no existe', async () => {
+        // Montamos sin registerCsvExportHandler disponible
+        await act(async () => {
+            root.render(React.createElement(ReporteAnual));
+        });
+
+        await act(async () => {
+            await Promise.resolve();
+            await Promise.resolve();
+        });
+
+        // El componente no debe lanzar error y buildCsv no se llama al montar
+        expect(mockBuildCsvReporteAnual).not.toHaveBeenCalled();
+    });
+
+    test('aria-pressed refleja la serie activa correctamente', async () => {
+        await mount();
+
+        const serviciosBtn = Array.from(container.querySelectorAll('button'))
+            .find(btn => btn.textContent.includes('Servicios'));
+        const nuevosBtn = Array.from(container.querySelectorAll('button'))
+            .find(btn => btn.textContent.includes('Nuevos beneficiarios'));
+
+        expect(serviciosBtn.getAttribute('aria-pressed')).toBe('true');
+        expect(nuevosBtn.getAttribute('aria-pressed')).toBe('false');
+
+        await act(async () => { nuevosBtn.click(); });
+
+        expect(serviciosBtn.getAttribute('aria-pressed')).toBe('false');
+        expect(nuevosBtn.getAttribute('aria-pressed')).toBe('true');
+    });
 });
