@@ -37,7 +37,7 @@ testMatch: [
     ],
    },
    transformIgnorePatterns: [
-    '/node_modules/(?!(your-esm-package)/)',
+    '/node_modules/(?!(react-simple-maps|d3-geo|d3-array|d3-color|d3-format|d3-interpolate|d3-scale|d3-time|internmap|delaunator|robust-predicates)/)',
     ],
     moduleNameMapper: {
   '^react$': '<rootDir>/client/node_modules/react',
@@ -45,8 +45,11 @@ testMatch: [
   '^react-dom$': '<rootDir>/client/node_modules/react-dom',
   '^react-dom/client$': '<rootDir>/client/node_modules/react-dom/client',
 
-  '\\.module\\.(css|less|scss|sass)$': '<rootDir>/__mocks__/styleMock.js',
-  '\\.(css|less|scss|sass)$': '<rootDir>/__mocks__/styleMock.js',
+  '\\.module\\.(css|less|scss|sass)$': '<rootDir>/__mocks__/styleMock.cjs',
+  '\\.(css|less|scss|sass)$': '<rootDir>/__mocks__/styleMock.cjs',
+
+  // '\\.module\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+  // '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
 
   '\\.(png|jpg|jpeg|svg|gif)$': '<rootDir>/__mocks__/fileMock.js',
 
