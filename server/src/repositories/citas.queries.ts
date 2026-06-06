@@ -68,6 +68,16 @@ getCitas: `
         notas = :notas,
         estatus = :estatus
     WHERE id_cita = :id_cita
-    `.trim()
+    `.trim(),
+
+    checkEmpalme: `
+  SELECT COUNT(*) AS "total"
+  FROM citas
+  WHERE id_especialista = :id_especialista
+    AND fecha = TO_DATE(:fecha, 'YYYY-MM-DD')
+    AND hora = :hora
+    AND estatus != 'cancelada'
+    AND (:id_cita IS NULL OR id_cita != :id_cita)
+`.trim(),
 }
 
