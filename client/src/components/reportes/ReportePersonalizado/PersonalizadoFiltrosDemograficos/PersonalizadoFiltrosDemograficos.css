@@ -9,6 +9,52 @@
   }
 }
 
+.reporte-personalizado-dem-columns--stacked,
+.reporte-personalizado-dem-columns--stacked.reporte-personalizado-dem-columns {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.reporte-personalizado-dem-columns--stacked .reporte-personalizado-dem-col {
+  border-right: none;
+}
+
+.reporte-personalizado-dem-columns--stacked .reporte-personalizado-dem-estados-scroll {
+  max-height: 9.5rem;
+}
+
+.reporte-personalizado-dem-columns--panel {
+  gap: 0.875rem;
+}
+
+.reporte-personalizado-dem-columns--panel .reporte-personalizado-dem-col {
+  border: none;
+  gap: 0.25rem;
+}
+
+.reporte-personalizado-dem-columns--panel .reporte-personalizado-dem-col-head {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.reporte-personalizado-dem-columns--panel .reporte-personalizado-dem-col-title {
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+}
+
+.reporte-personalizado-dem-columns--panel .reporte-personalizado-dem-col-body {
+  padding: 0;
+}
+
+.reporte-personalizado-dem-columns--panel .reporte-personalizado-dem-check {
+  padding: 0.4rem 0.25rem;
+  margin: 0;
+}
+
+.reporte-personalizado-dem-columns--panel .reporte-personalizado-dem-estados-scroll {
+  max-height: none;
+}
+
 .reporte-personalizado-dem-col {
   display: flex;
   flex-direction: column;
