@@ -1,4 +1,4 @@
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, SlidersHorizontal } from "lucide-react";
 import "../reportePersonalizado.ledger.chrome.css";
 import "./PersonalizadoRangoFechasCard.css";
 
@@ -8,6 +8,10 @@ export default function PersonalizadoRangoFechasCard({
   onDesdeChange,
   onHastaChange,
   errorRango,
+  onGenerarReporte,
+  onAbrirFiltros,
+  filtrosAbiertos = false,
+  hayReporte = false,
 }) {
   return (
     <section
@@ -22,41 +26,65 @@ export default function PersonalizadoRangoFechasCard({
           </h2>
         </div>
       </header>
+
       <div className="reporte-personalizado-ledger-panel">
-        <div className="reporte-personalizado-ledger-fields">
-          <div className="reporte-personalizado-ledger-field">
-            <label className="reporte-personalizado-ledger-label" htmlFor="reporte-personalizado-desde">
-              Fecha inicial
-            </label>
-            <div className="reporte-personalizado-ledger-input-wrap">
-              <input
-                id="reporte-personalizado-desde"
-                type="date"
-                className="reporte-personalizado-ledger-date"
-                value={desdeDraft}
-                onChange={(e) => onDesdeChange(e.target.value)}
-                aria-invalid={Boolean(errorRango)}
-              />
-              <CalendarDays className="reporte-personalizado-ledger-date-icon" size={18} aria-hidden />
+        <div className="reporte-personalizado-ledger-panel-row">
+          <div className="reporte-personalizado-ledger-fields">
+            <div className="reporte-personalizado-ledger-field">
+              <label className="reporte-personalizado-ledger-label" htmlFor="reporte-personalizado-desde">
+                Fecha inicial
+              </label>
+              <div className="reporte-personalizado-ledger-input-wrap">
+                <input
+                  id="reporte-personalizado-desde"
+                  type="date"
+                  className="reporte-personalizado-ledger-date"
+                  value={desdeDraft}
+                  onChange={(e) => onDesdeChange(e.target.value)}
+                  aria-invalid={Boolean(errorRango)}
+                />
+                <CalendarDays className="reporte-personalizado-ledger-date-icon" size={18} aria-hidden />
+              </div>
+            </div>
+
+            <div className="reporte-personalizado-ledger-field">
+              <label className="reporte-personalizado-ledger-label" htmlFor="reporte-personalizado-hasta">
+                Fecha final
+              </label>
+              <div className="reporte-personalizado-ledger-input-wrap">
+                <input
+                  id="reporte-personalizado-hasta"
+                  type="date"
+                  className="reporte-personalizado-ledger-date"
+                  value={hastaDraft}
+                  onChange={(e) => onHastaChange(e.target.value)}
+                  aria-invalid={Boolean(errorRango)}
+                />
+                <CalendarDays className="reporte-personalizado-ledger-date-icon" size={18} aria-hidden />
+              </div>
             </div>
           </div>
-          <div className="reporte-personalizado-ledger-field">
-            <label className="reporte-personalizado-ledger-label" htmlFor="reporte-personalizado-hasta">
-              Fecha final
-            </label>
-            <div className="reporte-personalizado-ledger-input-wrap">
-              <input
-                id="reporte-personalizado-hasta"
-                type="date"
-                className="reporte-personalizado-ledger-date"
-                value={hastaDraft}
-                onChange={(e) => onHastaChange(e.target.value)}
-                aria-invalid={Boolean(errorRango)}
-              />
-              <CalendarDays className="reporte-personalizado-ledger-date-icon" size={18} aria-hidden />
-            </div>
+
+          <div className="reporte-personalizado-ledger-actions">
+            {hayReporte && onAbrirFiltros ? (
+              <button
+                type="button"
+                className={`reporte-personalizado-ledger-filtros${filtrosAbiertos ? " is-active" : ""}`}
+                aria-expanded={filtrosAbiertos}
+                aria-label="Abrir filtros del reporte"
+                onClick={onAbrirFiltros}
+              >
+                <SlidersHorizontal size={16} strokeWidth={2.25} aria-hidden />
+                <span>Filtros</span>
+              </button>
+            ) : null}
+
+            <button type="button" className="reporte-personalizado-ledger-cta" onClick={onGenerarReporte}>
+              {hayReporte ? "Actualizar" : "Generar reporte"}
+            </button>
           </div>
         </div>
+
         {errorRango ? (
           <p className="reporte-personalizado-ledger-error" role="alert">
             {errorRango}

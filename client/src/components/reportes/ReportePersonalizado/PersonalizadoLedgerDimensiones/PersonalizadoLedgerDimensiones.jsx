@@ -4,13 +4,19 @@ import "../reportePersonalizado.ledger.chrome.css";
 import "./PersonalizadoLedgerDimensiones.css";
 
 export default function PersonalizadoLedgerDimensiones({
+  variant = "inline",
   muestraDemografia,
   metricas,
   onToggleMetrica,
   children,
 }) {
+  const variantClass =
+    variant === "panel"
+      ? " reporte-personalizado-ledger--panel"
+      : "";
+
   return (
-    <section className="reporte-personalizado-ledger reporte-personalizado-ledger--dimensiones">
+    <section className={`reporte-personalizado-ledger reporte-personalizado-ledger--dimensiones${variantClass}`}>
       <header className="reporte-personalizado-ledger-toolbar reporte-personalizado-ledger-toolbar--stretch">
         <div className="reporte-personalizado-ledger-toolbar-lead">
           <BarChart3 className="reporte-personalizado-ledger-toolbar-icon" strokeWidth={2} aria-hidden />
