@@ -75,6 +75,7 @@ const servicioCompleto = {
   nombre: 'Consulta general',
   beneficiario: 'Juan García',
   categoria: 'Consulta',
+  fechaFormateada: '05/06/2026',
   metodoPago: 'Efectivo',
   montoServicioFormateado: '$500.00',
   montoInventarioFormateado: '$50.00',
@@ -88,14 +89,15 @@ const servicioCompleto = {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function getInputByLabel(label) {
-  const labels = Array.from(container.querySelectorAll('label'));
-  const found = labels.find((l) => l.querySelector('span')?.textContent === label);
-  return found?.querySelector('input') ?? null;
-}
-
-function getYaAportoValue() {
-  return getInputByLabel('Ya aportó')?.value ?? null;
+/**
+ * Finds the label span with matching text and returns its sibling value span's
+ * textContent. Works for both Campo fields and the custom yaAporto field.
+ */
+function getValueByLabel(label) {
+  const allSpans = Array.from(container.querySelectorAll('span'));
+  const labelSpan = allSpans.find((s) => s.textContent === label);
+  if (!labelSpan) return null;
+  return labelSpan.nextElementSibling?.textContent ?? null;
 }
 
 // ---------------------------------------------------------------------------
@@ -139,98 +141,119 @@ describe('ServiciosDetalleModal — título y subtítulo', () => {
       .toBe('Detalle del servicio');
   });
 
-  test('muestra el subtítulo con el id y nombre del servicio', async () => {
+  test('muestra el subtítulo con el folio y nombre del servicio', async () => {
     await mount({ open: true, onClose: jest.fn(), servicio: servicioCompleto });
 
     expect(container.querySelector('[data-testid="modal-subtitle"]').textContent)
-      .toBe('ID #7 · Consulta general');
+      .toBe('Folio #7 · Consulta general');
+  });
+
+});
+
+describe('ServiciosDetalleModal — secciones', () => {
+
+  test('muestra el encabezado de la sección financiera', async () => {
+    await mount({ open: true, onClose: jest.fn(), servicio: servicioCompleto });
+
+    const headings = Array.from(container.querySelectorAll('h3'));
+    expect(headings.some((h) => h.textContent === 'Información financiera')).toBe(true);
   });
 
 });
 
 describe('ServiciosDetalleModal — campos', () => {
 
+  test('muestra el campo Fecha de registro con el valor correcto', async () => {
+    await mount({ open: true, onClose: jest.fn(), servicio: servicioCompleto });
+
+    expect(getValueByLabel('Fecha de registro')).toBe('05/06/2026');
+  });
+
   test('muestra el campo Beneficiario con el valor correcto', async () => {
     await mount({ open: true, onClose: jest.fn(), servicio: servicioCompleto });
 
-    expect(getInputByLabel('Beneficiario').value).toBe('Juan García');
+    expect(getValueByLabel('Beneficiario')).toBe('Juan García');
   });
 
   test('muestra el campo Servicio con el valor correcto', async () => {
     await mount({ open: true, onClose: jest.fn(), servicio: servicioCompleto });
 
-    expect(getInputByLabel('Servicio').value).toBe('Consulta general');
+    expect(getValueByLabel('Servicio')).toBe('Consulta general');
   });
 
   test('muestra el campo Categoría con el valor correcto', async () => {
     await mount({ open: true, onClose: jest.fn(), servicio: servicioCompleto });
 
-    expect(getInputByLabel('Categoría').value).toBe('Consulta');
+    expect(getValueByLabel('Categoría')).toBe('Consulta');
   });
 
   test('muestra el campo Método de pago con el valor correcto', async () => {
     await mount({ open: true, onClose: jest.fn(), servicio: servicioCompleto });
 
-    expect(getInputByLabel('Método de pago').value).toBe('Efectivo');
+    expect(getValueByLabel('Método de pago')).toBe('Efectivo');
   });
 
   test('muestra el campo Monto servicio con el valor formateado', async () => {
     await mount({ open: true, onClose: jest.fn(), servicio: servicioCompleto });
 
-    expect(getInputByLabel('Monto servicio').value).toBe('$500.00');
+    expect(getValueByLabel('Monto servicio')).toBe('$500.00');
   });
 
-  test('muestra el campo Monto inventario con el valor formateado', async () => {
+  test('muestra el campo Monto insumos con el valor formateado', async () => {
     await mount({ open: true, onClose: jest.fn(), servicio: servicioCompleto });
 
-    expect(getInputByLabel('Monto inventario').value).toBe('$50.00');
+    expect(getValueByLabel('Monto insumos')).toBe('$50.00');
   });
 
   test('muestra el campo Descuento con el valor formateado', async () => {
     await mount({ open: true, onClose: jest.fn(), servicio: servicioCompleto });
 
-    expect(getInputByLabel('Descuento').value).toBe('$0.00');
+    expect(getValueByLabel('Descuento')).toBe('$0.00');
   });
 
   test('muestra el campo Cuota total con el valor formateado', async () => {
     await mount({ open: true, onClose: jest.fn(), servicio: servicioCompleto });
 
-    expect(getInputByLabel('Cuota total').value).toBe('$550.00');
+    expect(getValueByLabel('Cuota total')).toBe('$550.00');
   });
 
   test('muestra el campo Monto pagado con el valor formateado', async () => {
     await mount({ open: true, onClose: jest.fn(), servicio: servicioCompleto });
 
-    expect(getInputByLabel('Monto pagado').value).toBe('$550.00');
+    expect(getValueByLabel('Monto pagado')).toBe('$550.00');
   });
 
   test('muestra "—" para un campo cuyo valor es null', async () => {
     const servicio = { ...servicioCompleto, metodoPago: null };
     await mount({ open: true, onClose: jest.fn(), servicio });
 
-    expect(getInputByLabel('Método de pago').value).toBe('—');
+    expect(getValueByLabel('Método de pago')).toBe('—');
   });
 
   test('muestra "—" para un campo cuyo valor es undefined', async () => {
     const servicio = { ...servicioCompleto, categoria: undefined };
     await mount({ open: true, onClose: jest.fn(), servicio });
 
-    expect(getInputByLabel('Categoría').value).toBe('—');
+    expect(getValueByLabel('Categoría')).toBe('—');
   });
 
-  test('todos los campos tienen readOnly', async () => {
+  test('los campos no son inputs editables', async () => {
     await mount({ open: true, onClose: jest.fn(), servicio: servicioCompleto });
 
-    const inputs = container.querySelectorAll('input');
-    inputs.forEach((input) => {
-      expect(input.readOnly).toBe(true);
-    });
+    expect(container.querySelectorAll('input').length).toBe(0);
   });
 
-  test('se renderizan exactamente 10 campos', async () => {
+  test('se renderizan los 11 campos esperados', async () => {
     await mount({ open: true, onClose: jest.fn(), servicio: servicioCompleto });
 
-    expect(container.querySelectorAll('input').length).toBe(10);
+    const expectedLabels = [
+      'Fecha de registro', 'Beneficiario', 'Servicio', 'Categoría',
+      'Método de pago', 'Monto servicio', 'Monto insumos',
+      'Descuento', 'Cuota total', 'Monto pagado', 'Ya aportó',
+    ];
+    for (const label of expectedLabels) {
+      expect(getValueByLabel(label)).not.toBeNull();
+    }
   });
 
 });
@@ -240,32 +263,32 @@ describe('ServiciosDetalleModal — campo Ya aportó', () => {
   test('muestra "Sí" cuando yaAporto es 1', async () => {
     await mount({ open: true, onClose: jest.fn(), servicio: { ...servicioCompleto, yaAporto: 1 } });
 
-    expect(getYaAportoValue()).toBe('Sí');
+    expect(getValueByLabel('Ya aportó')).toBe('Sí');
   });
 
   test('muestra "No" cuando yaAporto es 0', async () => {
     await mount({ open: true, onClose: jest.fn(), servicio: { ...servicioCompleto, yaAporto: 0 } });
 
-    expect(getYaAportoValue()).toBe('No');
+    expect(getValueByLabel('Ya aportó')).toBe('No');
   });
 
   test('muestra "—" cuando yaAporto es null', async () => {
     await mount({ open: true, onClose: jest.fn(), servicio: { ...servicioCompleto, yaAporto: null } });
 
-    expect(getYaAportoValue()).toBe('—');
+    expect(getValueByLabel('Ya aportó')).toBe('—');
   });
 
   test('muestra "—" cuando yaAporto es undefined', async () => {
     const { yaAporto: _, ...sinYaAporto } = servicioCompleto;
     await mount({ open: true, onClose: jest.fn(), servicio: sinYaAporto });
 
-    expect(getYaAportoValue()).toBe('—');
+    expect(getValueByLabel('Ya aportó')).toBe('—');
   });
 
   test('muestra "—" cuando yaAporto es un valor distinto de 0 y 1', async () => {
     await mount({ open: true, onClose: jest.fn(), servicio: { ...servicioCompleto, yaAporto: 2 } });
 
-    expect(getYaAportoValue()).toBe('—');
+    expect(getValueByLabel('Ya aportó')).toBe('—');
   });
 
 });
