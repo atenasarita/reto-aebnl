@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
-import {
-  ArrowDownCircle,
-  ArrowUpCircle,
-  ExternalLink,
-  Search,
-  Wallet,
-} from "lucide-react";
+import { ExternalLink, Search } from "lucide-react";
 import { Card, CardContent, CardHeader } from "../../../components/ui/card";
 import Dropdown from "../../../components/ui/Dropdown";
 import SearchBar from "../../../components/ui/SearchBar";
@@ -304,36 +298,22 @@ export default function ReporteDonaciones() {
                     label="Abonos del periodo"
                     value={resumen.abonos}
                     displayValue={fmtMontoFondo(resumen.abonos)}
-                    icon={ArrowUpCircle}
-                    iconVariant="success"
                     numberVariant="success"
                   />
                   <IndicadorCard
                     label="Egresos del periodo"
                     value={resumen.egresos}
                     displayValue={fmtMontoFondo(resumen.egresos)}
-                    icon={ArrowDownCircle}
-                    iconVariant="danger"
                     numberVariant="danger"
                   />
                   <IndicadorCard
                     label="Saldo actual"
                     value={donadorActivo.saldo}
                     displayValue={fmtMontoFondo(donadorActivo.saldo)}
-                    icon={Wallet}
-                    iconVariant="primary"
                   />
                 </div>
               </div>
-            ) : (
-              <div className="reporte-donaciones-idle" role="status">
-                <Wallet className="reporte-donaciones-idle-icon" aria-hidden />
-                <p className="reporte-donaciones-idle-title">Elija un fondo</p>
-                <p className="reporte-donaciones-idle-text">
-                  Los indicadores y el historial aparecerán al seleccionar una marca o familia.
-                </p>
-              </div>
-            )}
+            ) : null}
           </div>
         )}
       </section>
