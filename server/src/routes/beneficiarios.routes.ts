@@ -75,6 +75,13 @@ router.put(
   beneficiariosHandler.updateBeneficiario
 );
 
+router.put(
+  '/beneficiarios/:id_beneficiario/membresia',
+  authenticateJWT,
+  authorizeRoles('administrador', 'operador'),
+  beneficiariosHandler.updateMembresia
+);
+
 router.post(
   '/beneficiarios',
   authenticateJWT,

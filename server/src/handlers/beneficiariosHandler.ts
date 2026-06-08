@@ -19,7 +19,7 @@ export class BeneficiariosHandler {
     try {
       const data = await this.beneficiariosController.getMembresiasProximas();
       return res.status(200).json(data);
-    } catch (_error) {
+    } catch (error) {
       return res.status(500).json({
         message: 'Error al obtener membresías próximas',
       });
@@ -177,6 +177,21 @@ export class BeneficiariosHandler {
     try {
       await this.beneficiariosController.updateBeneficiario(id_beneficiario, req.body);
       return res.status(200).json({ message: 'Beneficiario actualizado correctamente' });
+    } catch (error) {
+      return next(error);
+    }
+  };
+
+  updateMembresia = async (req: Request, res: Response, next: NextFunction) => {
+    const id_beneficiario = Number(req.params.id_beneficiario);
+
+    if (!Number.isInteger(id_beneficiario) || id_beneficiario <= 0) {
+      return next(new ValidationError('id_beneficiario invalido'));
+    }
+
+    try {
+      await this.beneficiariosController.updateMembresia(id_beneficiario, req.body);
+      return res.status(200).json({ message: 'Membresía actualizada correctamente' });
     } catch (error) {
       return next(error);
     }
