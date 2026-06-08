@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react'
-import { FiSearch, FiX } from 'react-icons/fi'
+import { FiSearch, FiX, FiDownload } from 'react-icons/fi'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
 import styles from './ServiciosBeneficiario.module.css'
 
 function fmt(num) {
@@ -33,6 +35,40 @@ export default function ServiciosBeneficiario({ historial = [], onVerDetalle }) 
   const handleSeleccionar = (nombre) => {
     setSeleccionado(nombre)
     setQuery(nombre)
+  }
+
+  const exportarPDF = () => {
+    const doc = new jsPDF()
+    const totalAcumulado = serviciosBeneficiario.reduce((acc, s) => acc + (s.cuotaTotal ?? 0), 0)
+    const totalPagado    = serviciosBeneficiario.reduce((acc, s) => acc + (s.montoPagado ?? 0), 0)
+
+    doc.setFontSize(16)
+    doc.setFont('helvetica', 'bold')
+    doc.text('Historial de Servicios por Beneficiario', 14, 18)
+
+    doc.setFontSize(12)
+    doc.setFont('helvetica', 'normal')
+    doc.text(`Beneficiario: ${seleccionado}`, 14, 30)
+    doc.text(`Servicios registrados: ${serviciosBeneficiario.length}`, 14, 38)
+    doc.text(`Total acumulado: ${fmt(totalAcumulado)}`, 14, 46)
+    doc.text(`Total pagado: ${fmt(totalPagado)}`, 14, 54)
+
+    autoTable(doc, {
+      startY: 62,
+      head: [['Folio', 'Servicio', 'Categoría', 'Cuota total', 'Estado']],
+      body: serviciosBeneficiario.map((s) => [
+        `#${s.id}`,
+        s.nombre,
+        s.categoria ?? '—',
+        fmt(s.cuotaTotal),
+        s.yaAporto ? 'Pagado' : 'Pendiente',
+      ]),
+      styles: { fontSize: 11 },
+      headStyles: { fillColor: [79, 70, 229] },
+      alternateRowStyles: { fillColor: [245, 245, 250] },
+    })
+
+    doc.save(`servicios-${seleccionado.replace(/\s+/g, '_')}.pdf`)
   }
 
   const handleLimpiar = () => {
@@ -91,19 +127,25 @@ export default function ServiciosBeneficiario({ historial = [], onVerDetalle }) 
                 {serviciosBeneficiario.length} servicio{serviciosBeneficiario.length !== 1 ? 's' : ''} registrado{serviciosBeneficiario.length !== 1 ? 's' : ''}
               </p>
             </div>
-            <div className={styles.tarjetaStats}>
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>Total acumulado</span>
-                <span className={styles.statValor}>
-                  {fmt(serviciosBeneficiario.reduce((acc, s) => acc + (s.cuotaTotal ?? 0), 0))}
-                </span>
+            <div className={styles.tarjetaActions}>
+              <div className={styles.tarjetaStats}>
+                <div className={styles.stat}>
+                  <span className={styles.statLabel}>Total acumulado</span>
+                  <span className={styles.statValor}>
+                    {fmt(serviciosBeneficiario.reduce((acc, s) => acc + (s.cuotaTotal ?? 0), 0))}
+                  </span>
+                </div>
+                <div className={styles.stat}>
+                  <span className={styles.statLabel}>Total pagado</span>
+                  <span className={styles.statValor}>
+                    {fmt(serviciosBeneficiario.reduce((acc, s) => acc + (s.montoPagado ?? 0), 0))}
+                  </span>
+                </div>
               </div>
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>Total pagado</span>
-                <span className={styles.statValor}>
-                  {fmt(serviciosBeneficiario.reduce((acc, s) => acc + (s.montoPagado ?? 0), 0))}
-                </span>
-              </div>
+              <button className={styles.exportBtn} onClick={exportarPDF} title="Exportar PDF">
+                <FiDownload size={14} />
+                Exportar PDF
+              </button>
             </div>
           </div>
 
