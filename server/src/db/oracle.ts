@@ -11,7 +11,7 @@ export class OracleConnection {
         const password = process.env.ORACLE_PASSWORD;
         const connectString = process.env.ORACLE_CONNECT_STRING;
         const walletPassword = process.env.ORACLE_WALLET_PASSWORD;
-        const walletLocation = process.env.TNS_ADMIN || '/tmp/wallet';
+        const walletLocation = process.env.TNS_ADMIN;
 
         if (!user || !password || !connectString || !walletPassword) {
             throw new Error('Faltan variables de entorno de Oracle.');
