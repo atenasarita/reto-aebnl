@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { verifyAccessToken } from '../utils/jwt';
+import { isTokenRevoked } from '../utils/tokenBlacklist';
 import { ForbiddenError, UnauthorizedError } from '../errors/appError';
 import { TokenPayload } from '../types/auth.types';
 
@@ -16,6 +17,11 @@ export const authenticateJWT = (req: Request, res: Response, next: NextFunction)
 
 	try {
 		const payload = verifyAccessToken(token);
+
+		if (isTokenRevoked(payload.jti)) {
+			return next(new UnauthorizedError('Token revocado.'));
+		}
+
 		(req as AuthenticatedRequest).user = payload;
 		next();
 	} catch {

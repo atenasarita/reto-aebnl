@@ -6,6 +6,7 @@ import { useSearchParams } from 'react-router-dom'
 import "../styles/Recibos.css";
 
 import { API_URL } from '../../utils/config'
+import { authFetch } from '../../utils/auth'
 import { todayDate } from '../../utils/dateTime';
 
 const fmt = (n) =>
@@ -183,8 +184,7 @@ function ReciboDetalle({ recibo, onClose }) {
 function ReciboRow({ recibo, onVerDetalle, mostrarFecha = false, index = 0 }) {
   return (
     <tr
-      className="recibo-row recibos-fade-up"
-      style={{ animationDelay: `${index * 0.05}s` }}
+      className="recibo-row"
     >
       <th scope="row" className="td-folio">#{recibo.id_servicio_otorgado}</th>
       <td>{recibo.beneficiario}</td>
@@ -220,8 +220,7 @@ function ReciboRow({ recibo, onVerDetalle, mostrarFecha = false, index = 0 }) {
 function ResumenCard({ label, value, sub, index = 0 }) {
   return (
     <div
-      className="resumen-card recibos-fade-up"
-      style={{ animationDelay: `${index * 0.06}s` }}
+      className="resumen-card"
     >
       <p className="resumen-label">{label}</p>
       <p className="resumen-value">{value}</p>
@@ -246,7 +245,7 @@ function TablaRecibos({
   if (!recibos.length) return <div className="estado-msg">{emptyMsg}</div>;
 
   return (
-    <div className="table-wrap recibos-fade-panel">
+    <div className="table-wrap">
       <table className="recibos-table">
         <caption className="sr-only">{caption}</caption>
         <thead>
@@ -323,8 +322,7 @@ export default function Recibos() {
   const cargarDia = useCallback(async (f) => {
     setLoadingDay(true); setErrorDay("");
     try {
-      const res = await fetch(`${API_URL}/api/recibos?fecha=${f}`, { signal });
-
+      const res = await authFetch(`${API_URL}/api/recibos?fecha=${f}`);
       if (!res.ok) throw new Error(`Error ${res.status}`);
 
       const data = await res.json();
@@ -347,7 +345,7 @@ export default function Recibos() {
 
     try {
       const mes = f.slice(0, 7);
-      const res = await fetch(`${API_URL}/api/recibos/resumen-mes?fecha=${mes}`);
+      const res = await authFetch(`${API_URL}/api/recibos/resumen-mes?fecha=${mes}`);
       if (!res.ok) throw new Error(`Error ${res.status}`);
       setRecibosMes(await res.json());
     } catch (e) {
@@ -358,7 +356,7 @@ export default function Recibos() {
   const cargarRango = useCallback(async (desde, hasta) => {
     setLoadingRango(true); setErrorRango("");
     try {
-      const res = await fetch(
+      const res = await authFetch(
         `${API_URL}/api/recibos/rango-fechas?desde=${desde}&hasta=${hasta}`
       );
       if (!res.ok) throw new Error(`Error ${res.status}`);
@@ -440,7 +438,7 @@ export default function Recibos() {
 
   return (
     <main className="recibos-page" aria-labelledby="recibos-page-title">
-      <header className="recibos-header page-header recibos-fade-panel">
+      <header className="recibos-header page-header">
         <div className="recibos-heading">
           <h1 id="recibos-page-title" className="page-header-title">Recibos</h1>
           <p className="page-header-subtitle">Registro de servicios y cobros</p>
@@ -460,7 +458,7 @@ export default function Recibos() {
         )}
       </header>
 
-      <div className="recibos-tabs-wrap recibos-fade-panel">
+      <div className="recibos-tabs-wrap">
         <p id={tabsHintId} className="sr-only">
           Usa las flechas izquierda y derecha para cambiar entre recibos del día y del mes.
         </p>
@@ -514,7 +512,7 @@ export default function Recibos() {
       {vistaActiva === "dia" && (
         <section
           id={panelDiaId}
-          className="recibos-section recibos-fade-panel"
+          className="recibos-section"
           role="tabpanel"
           aria-labelledby={tabDiaId}
           key={`dia-${fecha}`}
@@ -552,7 +550,7 @@ export default function Recibos() {
             </div>
           )}
 
-          <div className="recibos-card recibos-fade-panel">
+          <div className="recibos-card">
             <TablaRecibos
               recibos={filtradosDia}
               loading={loadingDay}
@@ -575,7 +573,7 @@ export default function Recibos() {
       {vistaActiva === "mes" && (
         <section
           id={panelMesId}
-          className="recibos-section recibos-fade-panel"
+          className="recibos-section"
           role="tabpanel"
           aria-labelledby={tabMesId}
           key={`mes-${fecha}`}
@@ -613,7 +611,7 @@ export default function Recibos() {
             </div>
           )}
 
-          <div className="recibos-card recibos-fade-panel">
+          <div className="recibos-card">
             <TablaRecibos
               recibos={filtradosMes}
               loading={loadingMes}
@@ -634,7 +632,7 @@ export default function Recibos() {
       )}
 
       {vistaActiva === "rango" && (
-        <section className="recibos-section recibos-fade-panel" role="tabpanel">
+        <section className="recibos-section" role="tabpanel">
           <div className="section-title-row">
             <div>
               <h2 className="section-title">Rango personalizado</h2>

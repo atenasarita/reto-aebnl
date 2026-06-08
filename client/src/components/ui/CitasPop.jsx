@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import "./styles/CitasPop.css";
 import { API_URL } from "../../utils/config";
+import { authFetch } from "../../utils/auth";
 import { todayDate } from "../../utils/dateTime";
 
 
@@ -69,7 +70,7 @@ function BuscadorBeneficiario({ value, onChange }) {
     if (q.length < 2) { setResultados([]); setAbierto(false); return; }
     setBuscando(true);
     try {
-      const res = await fetch(`${API_URL}/api/buscar-beneficiarios?q=${encodeURIComponent(q)}`);
+      const res = await authFetch(`${API_URL}/api/buscar-beneficiarios?q=${encodeURIComponent(q)}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
       // [{ id_beneficiario, nombres, apellido_paterno, folio, telefono, email }]
@@ -203,8 +204,8 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
       setCargandoCat(true);
       try {
         const [resEsp, resSer] = await Promise.all([
-          fetch(`${API_URL}/api/especialistas`),
-          fetch(`${API_URL}/api/catalogo-servicios`),
+          authFetch(`${API_URL}/api/especialistas`),
+          authFetch(`${API_URL}/api/catalogo-servicios`),
         ]);
 
         if (resEsp.ok) {
@@ -274,11 +275,8 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
           ? "PUT"
           : "POST";
 
-      const res = await fetch(url, {
+      const res = await authFetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(payload),
       });
 

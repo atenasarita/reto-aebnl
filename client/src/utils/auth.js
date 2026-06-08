@@ -1,3 +1,5 @@
+import { API_URL } from './config';
+
 const TOKEN_KEY = 'token';
 const USER_KEY = 'user';
 
@@ -58,8 +60,22 @@ export function saveSession(token, user) {
   localStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 
-export function logout({ redirect = true } = {}) {
+export async function logout({ redirect = true } = {}) {
+  const token = localStorage.getItem(TOKEN_KEY);
+
+  if (token) {
+    try {
+      await fetch(`${API_URL}/api/usuarios/logout`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch {
+      // Limpia sesion local aunque falle la revocacion remota.
+    }
+  }
+
   clearSession();
+
   if (redirect && typeof window !== 'undefined') {
     window.location.replace('/login');
   }

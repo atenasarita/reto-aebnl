@@ -1,60 +1,21 @@
-/* Complementos sobre Recibos.css + BusquedaBeneficiarioVista.css */
+/* Complementos sobre Recibos.css + OperationalPage.css */
 
 .donaciones-page {
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
-.donaciones-header {
-  align-items: flex-end;
-}
-
-.donaciones-saldo {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--space-2);
-  flex-shrink: 0;
-}
-
-.donaciones-saldo-label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-text-muted);
-}
-
-.donaciones-saldo-value {
-  font-size: 28px;
-  font-weight: 700;
+.donaciones-subtitle-saldo {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+  font-weight: 700;
   color: var(--color-brand);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-}
-
-@media (max-width: 640px) {
-  .donaciones-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-4);
-  }
-
-  .donaciones-saldo {
-    align-items: flex-start;
-  }
-
-  .donaciones-saldo-value {
-    font-size: 24px;
-  }
 }
 
 .donaciones-page .recibos-tabs-wrap {
   margin-bottom: 0;
 }
 
-.donaciones-form-panel .recibos-tabs {
+.donaciones-form .recibos-tabs {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -69,15 +30,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  font-family: var(--font);
-}
-
-.donaciones-form-panel {
   margin-bottom: var(--space-6);
-  padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  background: var(--color-surface-muted);
+  font-family: var(--font);
 }
 
 .donaciones-input {
@@ -167,24 +121,9 @@
   margin: var(--space-2) 0 0;
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   text-align: right;
   letter-spacing: 0.02em;
-}
-
-.donaciones-exito {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-control);
-  background: var(--green-soft);
-  border: 1px solid var(--green);
-  color: var(--green);
-  font-family: var(--font);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.45;
 }
 
 .donaciones-col-concepto {
@@ -200,7 +139,6 @@
   word-break: break-word;
 }
 
-/* Columnas numéricas: mono tabular, alineación y respiro */
 .donaciones-page .recibos-table th.text-right {
   padding-right: 20px;
   min-width: 7.5rem;
@@ -263,7 +201,6 @@
   color: var(--color-brand);
 }
 
-/* Badges tipo movimiento (azules, coherente con marca) */
 .donaciones-page .badge-donacion--abono {
   background: var(--color-brand-soft);
   color: var(--color-brand);
@@ -272,15 +209,6 @@
 .donaciones-page .badge-egreso--egreso {
   background: #e8eef8;
   color: var(--color-brand-secondary);
-}
-
-.donaciones-skeleton-value {
-  height: 28px;
-  width: 140px;
-  border-radius: var(--radius-card);
-  background: linear-gradient(90deg, #e9edf5 25%, #f4f6fb 50%, #e9edf5 75%);
-  background-size: 400% 100%;
-  animation: shimmer 1.4s ease infinite;
 }
 
 .donaciones-page .estado-msg {
@@ -310,10 +238,5 @@
 @media (prefers-reduced-motion: reduce) {
   .donaciones-spin {
     animation: none;
-  }
-
-  .donaciones-skeleton-value {
-    animation: none;
-    background: #e9edf5;
   }
 }
