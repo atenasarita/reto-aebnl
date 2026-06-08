@@ -23,6 +23,7 @@ export default function ServiciosDetalleModal({ open, onClose, servicio }) {
     >
       <div className="inventario-form inventario-form--modal">
         <div className="inventario-form__grid">
+          <Campo label="Fecha de registro"  value={servicio.fechaFormateada} />
           <Campo label="Beneficiario"      value={servicio.beneficiario} />
           <Campo label="Servicio"          value={servicio.nombre} />
           <Campo label="Categoría"         value={servicio.categoria} />
