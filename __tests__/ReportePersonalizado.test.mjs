@@ -40,7 +40,16 @@ jest.mock(
   '../client/src/components/reportes/ReportePersonalizado/PersonalizadoRangoFechasCard/PersonalizadoRangoFechasCard',
   () => ({
     __esModule: true,
-    default: ({ desdeDraft, hastaDraft, onDesdeChange, onHastaChange, errorRango, onGenerarReporte, onAbrirFiltros, filtrosAbiertos }) =>
+    default: ({
+      desdeDraft,
+      hastaDraft,
+      onDesdeChange,
+      onHastaChange,
+      errorRango,
+      onGenerarReporte,
+      onAbrirFiltros,
+      filtrosAbiertos,
+    }) =>
       React.createElement(
         'section',
         { 'data-testid': 'rango-card' },
@@ -73,9 +82,6 @@ jest.mock(
   })
 );
 
-// PersonalizadoFiltrosPanel replaces PersonalizadoLedgerDimensiones +
-// PersonalizadoFiltrosDemograficos. Only mounted when hayDatos=true,
-// only renders its body when open=true.
 jest.mock(
   '../client/src/components/reportes/ReportePersonalizado/PersonalizadoFiltrosPanel/PersonalizadoFiltrosPanel',
   () => ({
@@ -99,40 +105,76 @@ jest.mock(
         { 'data-testid': 'filtros-panel' },
         React.createElement(
           'button',
-          { type: 'button', 'data-testid': 'toggle-servicios', onClick: () => onToggleMetrica('servicios') },
+          {
+            type: 'button',
+            'data-testid': 'toggle-servicios',
+            onClick: () => onToggleMetrica('servicios'),
+          },
           metricas.has('servicios') ? 'Servicios activo' : 'Servicios inactivo'
         ),
         React.createElement(
           'button',
-          { type: 'button', 'data-testid': 'toggle-nuevos', onClick: () => onToggleMetrica('nuevos') },
+          {
+            type: 'button',
+            'data-testid': 'toggle-nuevos',
+            onClick: () => onToggleMetrica('nuevos'),
+          },
           metricas.has('nuevos') ? 'Nuevos activo' : 'Nuevos inactivo'
         ),
         React.createElement(
           'button',
-          { type: 'button', 'data-testid': 'toggle-demograficos', onClick: () => onToggleMetrica('demograficos') },
+          {
+            type: 'button',
+            'data-testid': 'toggle-demograficos',
+            onClick: () => onToggleMetrica('demograficos'),
+          },
           metricas.has('demograficos') ? 'Demográficos activo' : 'Demográficos inactivo'
         ),
         muestraDemografia
           ? React.createElement(
               'div',
               { 'data-testid': 'filtros-demo' },
-              React.createElement('p', { 'data-testid': 'generos-count' }, `Géneros: ${generosEfectivos.size}`),
-              React.createElement('p', { 'data-testid': 'etapas-count' }, `Etapas: ${etapasEfectivas.size}`),
-              React.createElement('p', { 'data-testid': 'estados-count' }, `Estados: ${estadosEfectivos.size}`),
+              React.createElement(
+                'p',
+                { 'data-testid': 'generos-count' },
+                `Géneros: ${generosEfectivos.size}`
+              ),
+              React.createElement(
+                'p',
+                { 'data-testid': 'etapas-count' },
+                `Etapas: ${etapasEfectivas.size}`
+              ),
+              React.createElement(
+                'p',
+                { 'data-testid': 'estados-count' },
+                `Estados: ${estadosEfectivos.size}`
+              ),
               React.createElement(
                 'button',
-                { type: 'button', 'data-testid': 'toggle-genero-f', onClick: () => onToggleGenero('F') },
+                {
+                  type: 'button',
+                  'data-testid': 'toggle-genero-f',
+                  onClick: () => onToggleGenero('F'),
+                },
                 'Toggle género F'
               ),
               React.createElement(
                 'button',
-                { type: 'button', 'data-testid': 'toggle-etapa-ninez', onClick: () => onToggleEtapa('ninez') },
+                {
+                  type: 'button',
+                  'data-testid': 'toggle-etapa-ninez',
+                  onClick: () => onToggleEtapa('ninez'),
+                },
                 'Toggle etapa niñez'
               ),
               distribucionEstado[0]
                 ? React.createElement(
                     'button',
-                    { type: 'button', 'data-testid': 'toggle-estado-nl', onClick: () => onToggleEstado(distribucionEstado[0].key) },
+                    {
+                      type: 'button',
+                      'data-testid': 'toggle-estado-nl',
+                      onClick: () => onToggleEstado(distribucionEstado[0].key),
+                    },
                     'Toggle estado'
                   )
                 : null
