@@ -57,7 +57,7 @@
 .reporte-mensual-estados-bar-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #1e3b8a 0%, #3b82f6 100%);
+  background: var(--color-brand, #1e3b8a);
   min-width: 2px;
   transition: width 0.35s ease;
 }
