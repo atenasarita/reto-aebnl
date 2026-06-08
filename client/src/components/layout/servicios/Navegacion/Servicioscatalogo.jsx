@@ -3,14 +3,18 @@ import { FiSearch } from 'react-icons/fi'
 import SearchBar from '../../../ui/SearchBar'
 import Dropdown from '../../../ui/Dropdown'
 import styles from './Servicioscatalogo.module.css'
+import PropTypes from 'prop-types'
 
 function fmt(num) {
   if (num == null) return '—'
   return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(num)
 }
-
 function CategoriaChip({ categoria }) {
   return <span className={`${styles.chip} ${styles[`chip-${categoria?.toLowerCase().replace(/[^a-z]/g, '')}`] ?? ''}`}>{categoria}</span>
+}
+
+CategoriaChip.propTypes = {
+  categoria: PropTypes.string,
 }
 
 export default function ServiciosCatalogo({ tipos = [], loading, onNuevoServicio }) {
