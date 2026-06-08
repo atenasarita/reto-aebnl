@@ -56,3 +56,25 @@
   border-color: transparent;
   box-shadow: none;
 }
+
+.reporte-personalizado-ledger--panel .reporte-personalizado-ledger-toolbar--stretch {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+}
+
+.reporte-personalizado-ledger--panel .reporte-personalizado-ledger-toolbar-title {
+  font-size: 0.6875rem;
+}
+
+.reporte-personalizado-ledger--panel .reporte-personalizado-metrics-bar--ledger {
+  margin-left: 0;
+  width: 100%;
+}
+
+.reporte-personalizado-ledger--panel .reporte-personalizado-metrics-bar--ledger .reporte-personalizado-metric-pill {
+  flex: 1 1 calc(50% - 0.125rem);
+  justify-content: center;
+  text-align: center;
+}

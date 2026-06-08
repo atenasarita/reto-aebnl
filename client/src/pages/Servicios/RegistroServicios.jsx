@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Search,
   ClipboardList,
@@ -7,20 +8,63 @@ import {
   ChevronRight,
   ChevronLeft,
   CheckCircle2,
+  CloudOff,
 } from "lucide-react";
 
-import "../styles/BusquedaBeneficiarioVista.css";
+import "../styles/RegistroServicio.css";
 
 import { useProductos } from "../../hooks/useProductos";
 import useBeneficiarios from "../../hooks/useBeneficiarios"
 import useAgendaHoy from "../../hooks/useCitasHoy";
 import useServicios from "../../hooks/useServicios";
 import useRegistrarServicio from "../../hooks/useRegistrarServicios";
+import useFondoDonaciones from "../../hooks/useFondoDonaciones";
 
-import StepBusqueda from "../../components/layout/registroServicios/StepBusqueda";
-import StepDetalles from "../../components/layout/registroServicios/StepDetalles";
-import StepInsumos from "../../components/layout/registroServicios/StepInsumos";
-import StepFinanzas from "../../components/layout/registroServicios/StepFinanzas.jsx";
+import StepBusqueda from "../../components/layout/servicios/Registro/StepBusqueda.jsx";
+import StepDetalles from "../../components/layout/servicios/Registro/StepDetalles.jsx";
+import StepInsumos from "../../components/layout/servicios/Registro/StepInsumos.jsx";
+import StepFinanzas from "../../components/layout/servicios/Registro/StepFinanzas.jsx";
+
+function PantallaExito({ offline, onNuevo, onHistorial }) {
+  return (
+    <div className='page'>
+      <div className='inner'>
+        <div className='main'>
+          {offline ? (
+            <>
+              <CloudOff size={64} color="#d97706" />
+              <h2 style={{ margin: '1rem 0 0.5rem', fontSize: '22px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                Guardado sin conexión
+              </h2>
+              <p style={{ color: 'var(--color-text-muted)', fontSize: '14px', marginBottom: '2rem', maxWidth: '360px', textAlign: 'center' }}>
+                El registro se guardó localmente y se enviará automáticamente cuando se restablezca la conexión.
+              </p>
+            </>
+          ) : (
+            <>
+              <CheckCircle2 size={64} color="#1F9D55" />
+              <h2 style={{ margin: '1rem 0 0.5rem', fontSize: '22px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                Servicio registrado
+              </h2>
+              <p style={{ color: 'var(--color-text-muted)', fontSize: '14px', marginBottom: '2rem' }}>
+                El servicio fue guardado correctamente.
+              </p>
+            </>
+          )}
+
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button className='btnSecondary' type="button" onClick={onNuevo}>
+              + Registrar otro servicio
+            </button>
+            <button className='btnPrimary' type="button" onClick={onHistorial}>
+              Ver historial
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const PASOS = [
   { id: 1, tab: "Búsqueda", Icon: Search },
@@ -30,6 +74,8 @@ const PASOS = [
 ];
 
 export default function RegistroServicios() {
+  const navigate = useNavigate()
+
   const [pasoActual, setPasoActual] = useState(1);
   const [query, setQuery] = useState("");
 
@@ -53,12 +99,28 @@ export default function RegistroServicios() {
 
   const [metodoPago, setMetodoPago] = useState("");
   const [montoPagado, setMontoPagado] = useState("");
+  const [montoDonacion, setMontoDonacion] = useState("");
+  const [fondoSeleccionado, setFondoSeleccionado] = useState("");
   const [descuento, setDescuento] = useState(0);
   const [yaAporto, setYaAporto] = useState(false);
   const [guardado, setGuardado] = useState(false);
+  const [queuedOffline, setQueuedOffline] = useState(false);
   const [errorGuardado, setErrorGuardado] = useState(null);
 
   const { registrar, loading: guardando } = useRegistrarServicio();
+  const { saldo: saldoFondo, donadores, fetchSaldo, fetchDonadores } = useFondoDonaciones();
+
+  const donacionNum = Math.max(0, parseFloat(montoDonacion) || 0);
+  const pagadoNum = Math.max(0, parseFloat(montoPagado) || 0);
+  const fondoActivo = donadores.find((d) => String(d.id_fondo) === String(fondoSeleccionado));
+  const saldoFondoSel = fondoActivo ? Number(fondoActivo.saldo) : 0;
+
+  useEffect(() => {
+    if (pasoActual === 4) {
+      fetchSaldo().catch(() => {});
+      fetchDonadores().catch(() => {});
+    }
+  }, [pasoActual, fetchSaldo, fetchDonadores]);
 
   const totalPasos = PASOS.length;
   const progresoPct = (pasoActual / totalPasos) * 100;
@@ -89,9 +151,11 @@ export default function RegistroServicios() {
 
   const subtotalInsumos = insumos.reduce((acc, i) => acc + i.precio * i.cantidad, 0);
   const totalServicio = precioServicio;
-  const totalFinal = totalServicio + subtotalInsumos;
-  const totalConDescuento = Math.max(0, totalFinal - (parseFloat(descuento) || 0));
-  const saldoRestante = totalConDescuento - (parseFloat(montoPagado) || 0);
+
+  const subtotal = totalServicio + subtotalInsumos;
+  const descuentoNum = Math.max(0, parseFloat(descuento) || 0);
+  const totalConDescuento = Math.max(0, subtotal - descuentoNum);
+  const saldoRestante = totalConDescuento - pagadoNum - donacionNum;
 
   const servicioLabel = tiposOptions.find(
     t => String(t.value) === String(tipoServicio)
@@ -120,7 +184,7 @@ export default function RegistroServicios() {
   // ── Citas de hoy — incluye id_beneficiario ─────────────────
   const citasFormateadas = (agendaItems || []).map((c) => ({
     id:              c.id_cita,
-    id_beneficiario: c.id_beneficiario, // 👈 necesario para el guardado
+    id_beneficiario: c.id_beneficiario, 
     nombre:          c.nombre_completo,
     beneficiario:    c.nombre_completo,
     hora:            c.hora,
@@ -129,11 +193,12 @@ export default function RegistroServicios() {
   }));
 
   // ── Beneficiario mostrado en el resumen ────────────────────
-  const beneficiarioFinal = beneficiarioSeleccionado
-    ? resultados.find((b) => b.folio === beneficiarioSeleccionado)
-    : citaSeleccionada
-    ? citasFormateadas.find((c) => c.id === citaSeleccionada)
-    : null;
+  const resolveBeneficiarioFinal = () => {
+    if (beneficiarioSeleccionado) return resultados.find((b) => b.folio === beneficiarioSeleccionado);
+    if (citaSeleccionada) return citasFormateadas.find((c) => c.id === citaSeleccionada);
+    return null;
+  };
+  const beneficiarioFinal = resolveBeneficiarioFinal();
 
   // ── Guardar ────────────────────────────────────────────────
   const handleGuardar = async () => {
@@ -150,7 +215,7 @@ export default function RegistroServicios() {
     }
 
     try {
-      await registrar({
+      const result = await registrar({
       id_beneficiario,
       id_catalogo_servicio: tipoServicio,
       fecha,
@@ -171,11 +236,20 @@ export default function RegistroServicios() {
       monto_inventario: subtotalInsumos,
       descuento: parseFloat(descuento) || 0,
       cuota_total: totalConDescuento,
-      monto_pagado: parseFloat(montoPagado) || 0,
+      monto_pagado: pagadoNum,
+      monto_donacion: donacionNum,
+      id_fondo: donacionNum > 0 ? Number(fondoSeleccionado) : null,
+      id_donador: donacionNum > 0 ? fondoActivo?.id_donador : null,
       metodo_pago: metodoPago,
       ya_aporto: yaAporto,
     });
 
+      if (result?.queued) {
+        setQueuedOffline(true);
+      } else {
+        fetchSaldo().catch(() => {});
+        fetchDonadores().catch(() => {});
+      }
       setGuardado(true);
 
     } catch (err) {
@@ -184,11 +258,21 @@ export default function RegistroServicios() {
     }
   };
 
+  const validarPasoFinanzas = () => {
+    const pagado = parseFloat(montoPagado) || 0;
+    const donacion = parseFloat(montoDonacion) || 0;
+    if (pagado + donacion > totalConDescuento + 0.001) return false;
+    if (donacion > 0 && !fondoSeleccionado) return false;
+    if (donacion > saldoFondoSel + 0.001) return false;
+    if (pagado > 0 && !metodoPago) return false;
+    return true;
+  };
+
   const puedeAvanzar = () => {
     if (pasoActual === 1) return !!(beneficiarioSeleccionado || citaSeleccionada);
     if (pasoActual === 2) return !!(fecha && hora);
     if (pasoActual === 3) return !!(tipoServicio || insumos.length > 0);
-    if (pasoActual === 4) return !!(metodoPago && montoPagado);
+    if (pasoActual === 4) return validarPasoFinanzas();
     return true;
   };
 
@@ -207,28 +291,28 @@ export default function RegistroServicios() {
     setInsumos([]);
     setMetodoPago("");
     setMontoPagado("");
+    setMontoDonacion("");
+    setFondoSeleccionado("");
     setDescuento(0);
     setYaAporto(false);
     setErrorGuardado(null);
     setGuardado(false);
+    setQueuedOffline(false);
   }, []);
 
   // ── Pantalla de éxito ──────────────────────────────────────
   if (guardado) {
     return (
-      <div className='page'>
-        <div className='inner'>
-          <div className='main'>
-            <CheckCircle2 size={64} color="#0f766e" />
-            <h2>Servicio registrado</h2>
-            <button className='btnPrimary' type="button" onClick={iniciarNuevoServicio}>
-              Nuevo servicio
-            </button>
-          </div>
-        </div>
-      </div>
+      <PantallaExito
+        offline={queuedOffline}
+        onNuevo={iniciarNuevoServicio}
+        onHistorial={() => navigate('/servicios')}
+      />
     );
   }
+
+  const puedeContinuar = puedeAvanzar();
+  const etiquetaGuardar = guardando ? 'Guardando...' : 'Guardar';
 
   return (
     <div className='page'>
@@ -303,11 +387,19 @@ export default function RegistroServicios() {
 
             {pasoActual === 4 && (
               <StepFinanzas
-                total={totalConDescuento}
+                total={subtotal}
+                totalConDescuento={totalConDescuento}
+                saldo={saldoRestante}
+                saldoGlobal={saldoFondo?.saldo ?? 0}
+                donadores={donadores}
+                fondoSeleccionado={fondoSeleccionado}
+                setFondoSeleccionado={setFondoSeleccionado}
                 metodoPago={metodoPago}
                 setMetodoPago={setMetodoPago}
                 montoPagado={montoPagado}
                 setMontoPagado={setMontoPagado}
+                montoDonacion={montoDonacion}
+                setMontoDonacion={setMontoDonacion}
                 descuento={descuento}
                 setDescuento={setDescuento}
                 yaAporto={yaAporto}
@@ -332,8 +424,8 @@ export default function RegistroServicios() {
               {pasoActual < totalPasos ? (
                 <button
                   className='btnPrimary'
-                  style={{ opacity: puedeAvanzar() ? 1 : 0.2 }}
-                  onClick={() => puedeAvanzar() && setPasoActual(pasoActual + 1)}
+                  style={{ opacity: puedeContinuar ? 1 : 0.2 }}
+                  onClick={() => puedeContinuar && setPasoActual(pasoActual + 1)}
                 >
                   Continuar <ChevronRight size={16} />
                 </button>
@@ -341,9 +433,9 @@ export default function RegistroServicios() {
                 <button
                   className='btnPrimary'
                   onClick={handleGuardar}
-                  disabled={guardando || !puedeAvanzar()}
+                  disabled={guardando || !puedeContinuar}
                 >
-                  {guardando ? 'Guardando...' : 'Guardar'} <CheckCircle2 size={16} />
+                  {etiquetaGuardar} <CheckCircle2 size={16} />
                 </button>
               )}
             </div>
@@ -375,7 +467,7 @@ export default function RegistroServicios() {
             <dl className='dl'>
               <div className='dlRow'>
                 <dt>Beneficiario:</dt>
-                <dd>{beneficiarioFinal?.nombre || beneficiarioFinal?.beneficiario || "—"}</dd>
+                <dd>{beneficiarioFinal?.nombre || "—"}</dd>
               </div>
               <div className='dlRow'>
                 <dt>Fecha:</dt>
@@ -402,37 +494,68 @@ export default function RegistroServicios() {
             </dl>
 
             <div className='totales'>
+
               <div className='totalesRow'>
                 <span>Servicio:</span>
                 <strong>${totalServicio.toFixed(2)}</strong>
               </div>
+
               <div className='totalesRow'>
                 <span>Insumos:</span>
                 <strong>${subtotalInsumos.toFixed(2)}</strong>
               </div>
+
               <div className='totalesRow'>
-                <span>Descuento:</span>
-                <strong>- ${(parseFloat(descuento) || 0).toFixed(2)}</strong>
-              </div>
-              <div className='totalesRow'>
-                <span>Total:</span>
-                <strong className='totalesTotal'>${totalConDescuento.toFixed(2)}</strong>
-              </div>
-              <div className='totalesRow'>
-                <span>Aportación:</span>
-                <strong>${(parseFloat(montoPagado) || 0).toFixed(2)}</strong>
-              </div>
-              <div className='totalesRow'>
-                <span>Saldo:</span>
-                <strong
-                  className='totalesSaldo'
-                  style={{ color: saldoRestante > 0 ? "#dc2626" : "#0f766e" }}
-                >
-                  ${saldoRestante.toFixed(2)}
+                <span>Aporte Asociación:</span>
+                <strong>
+                  - ${descuentoNum.toFixed(2)}
                 </strong>
               </div>
-              <p className='totalesExtra'>Método: {metodoPago || "Pendiente"}</p>
-              <p className='totalesExtra'>Cita: {citaSeleccionada ?? "Sin cita"}</p>
+
+              <div className='totalesRow'>
+                <span>Total a pagar:</span>
+                <strong className='totalesTotal'>
+                  ${totalConDescuento.toFixed(2)}
+                </strong>
+              </div>
+
+              <div className='totalesRow'>
+                <span>Aportación familia:</span>
+                <strong>
+                  ${pagadoNum.toFixed(2)}
+                </strong>
+              </div>
+
+              <div className='totalesRow'>
+                <span>
+                  {saldoRestante > 0
+                    ? "Saldo pendiente:"
+                    : saldoRestante < 0
+                    ? "Cambio:"
+                    : "Saldo:"}
+                </span>
+
+                <strong
+                  className='totalesSaldo'
+                  style={{
+                    color:
+                      saldoRestante > 0
+                        ? "#dc2626"
+                        : "#0f766e",
+                  }}
+                >
+                  ${Math.abs(saldoRestante).toFixed(2)}
+                </strong>
+              </div>
+
+              <p className='totalesExtra'>
+                Método: {metodoPago || "Pendiente"}
+              </p>
+
+              <p className='totalesExtra'>
+                Cita: {citaSeleccionada ?? "Sin cita"}
+              </p>
+
             </div>
           </aside>
         </div>

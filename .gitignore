@@ -3,4 +3,13 @@
 /.cursor
 /node_modules
 server/INSERT INTO Citas (.sql
-Pruebas/tests/test-2.spec.ts
+.impeccable
+.clj-kondo/.cache/
+.lsp/.cache/
+.impeccable
+node_modules/
+
+.lsp/
+.clj-kondo/
+.vscode/
+coverage/

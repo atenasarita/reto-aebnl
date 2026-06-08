@@ -142,8 +142,8 @@
 .inventario-form__acciones {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 28px;
+  gap: 10px;
+  margin-top: 22px;
   justify-content: flex-end;
 }
 

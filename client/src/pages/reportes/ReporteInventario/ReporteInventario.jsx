@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import PropTypes from "prop-types";
 import { useOutletContext } from "react-router-dom";
 import { AlertTriangle, Package, Search } from "lucide-react";
 import { Card, CardContent, CardHeader } from "../../../components/ui/card";
@@ -52,6 +53,258 @@ function getInitials(value) {
 }
 
 const ITEMS_POR_PAGINA_HISTORIAL = 10;
+
+function getHistorialMeta({
+  loadingHistorial,
+  historialErrorRango,
+  historialFetchError,
+  totalHistorial,
+  historialRangoLabel,
+  historialRangoValido,
+}) {
+  if (loadingHistorial) return "Cargando movimientos…";
+  if (historialErrorRango) return historialErrorRango;
+  if (historialFetchError) return "Error al cargar el historial.";
+
+  if (totalHistorial > 0) {
+    const rango = historialRangoLabel ? ` · ${historialRangoLabel}` : "";
+    return `${formatNumber(totalHistorial)} registros${rango}`;
+  }
+
+  if (historialRangoValido) return "Sin movimientos en el periodo.";
+
+  return "Selecciona un rango de fechas válido.";
+}
+
+function getStockVariant(cantidad) {
+  if (cantidad <= 5) return "critico";
+  if (cantidad <= 10) return "medio";
+  return "bajo";
+}
+
+function getStockPercent(cantidad, maxBajoStock) {
+  if (!maxBajoStock) return 0;
+  return Math.max(8, Math.round((cantidad / maxBajoStock) * 100));
+}
+
+function filtrarHistorial(historial, filtroBusquedaHistorial, filtroTipoHistorial) {
+  const q = filtroBusquedaHistorial.trim().toLowerCase();
+
+  return historial.filter((row) => {
+    const matchTipo = !filtroTipoHistorial || row.tipo === filtroTipoHistorial;
+    if (!matchTipo) return false;
+    if (!q) return true;
+
+    const texto = `${row.fecha} ${row.clave} ${row.nombre} ${row.motivo} ${row.usuario}`.toLowerCase();
+    return texto.includes(q);
+  });
+}
+
+function validarRangoFechas(desde, hasta) {
+  if (desde && hasta && desde > hasta) {
+    return "La fecha inicial no puede ser posterior a la fecha final.";
+  }
+
+  return "";
+}
+
+function HistorialMovimientosContent({
+  historialFetchError,
+  historialErrorRango,
+  historialRangoValido,
+  loadingHistorial,
+  totalHistorial,
+  tieneHistorial,
+  mostrarHistorialVacio,
+  historialPaginado,
+  historialDesde,
+  historialHasta,
+  paginaHistorial,
+  refetchHistorial,
+  setPaginaHistorial,
+}) {
+  if (historialFetchError) {
+    return (
+      <div className="reporte-general-alert" role="alert">
+        <p>{historialFetchError}</p>
+        <button type="button" onClick={refetchHistorial}>
+          Reintentar
+        </button>
+      </div>
+    );
+  }
+
+  if (historialErrorRango) {
+    return (
+      <p className="reporte-mxmap-hint" role="alert">
+        {historialErrorRango}
+      </p>
+    );
+  }
+
+  if (historialRangoValido && loadingHistorial) {
+    return (
+      <ReportesLoading
+        message="Cargando historial de movimientos…"
+        className="reportes-loading--personalizado"
+      />
+    );
+  }
+
+  if (tieneHistorial) {
+    return (
+      <>
+        <section
+          className="reporte-inventario-tabla-wrap"
+          aria-labelledby="reporte-inventario-historial-titulo reporte-inventario-historial-meta"
+        >
+          <table className="reporte-inventario-tabla reporte-inventario-tabla--movimientos">
+            <caption>
+              Historial del {historialDesde} al {historialHasta}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Fecha</th>
+                <th scope="col">Item</th>
+                <th scope="col" className="reporte-inventario-col-tipo">
+                  Tipo de movimiento
+                </th>
+                <th scope="col" className="reporte-inventario-col-cantidad">
+                  Cantidad
+                </th>
+                <th scope="col">Usuario</th>
+              </tr>
+            </thead>
+            <tbody>
+              {historialPaginado.map((row) => (
+                <HistorialMovimientoRow key={row.id} row={row} />
+              ))}
+            </tbody>
+          </table>
+        </section>
+
+        <Pagination
+          currentPage={paginaHistorial}
+          totalItems={totalHistorial}
+          itemsPerPage={ITEMS_POR_PAGINA_HISTORIAL}
+          onPageChange={setPaginaHistorial}
+        />
+      </>
+    );
+  }
+
+  if (mostrarHistorialVacio) {
+    return (
+      <output className="reporte-mxmap-hint" aria-live="polite">
+        No hay movimientos para los filtros seleccionados.
+      </output>
+    );
+  }
+
+  return null;
+}
+
+HistorialMovimientosContent.propTypes = {
+  historialFetchError: PropTypes.string,
+  historialErrorRango: PropTypes.string,
+  historialRangoValido: PropTypes.bool.isRequired,
+  loadingHistorial: PropTypes.bool.isRequired,
+  totalHistorial: PropTypes.number.isRequired,
+  tieneHistorial: PropTypes.bool.isRequired,
+  mostrarHistorialVacio: PropTypes.bool.isRequired,
+  historialPaginado: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      fecha: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      clave: PropTypes.string,
+      nombre: PropTypes.string,
+      tipo: PropTypes.string,
+      tipoLabel: PropTypes.string,
+      cantidad: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      usuario: PropTypes.string,
+    })
+  ).isRequired,
+  historialDesde: PropTypes.string.isRequired,
+  historialHasta: PropTypes.string.isRequired,
+  paginaHistorial: PropTypes.number.isRequired,
+  refetchHistorial: PropTypes.func.isRequired,
+  setPaginaHistorial: PropTypes.func.isRequired,
+};
+
+function HistorialMovimientoRow({ row }) {
+  const { fecha, hora } = splitFecha(row.fecha);
+  const usuario = row.usuario || "—";
+  const iniciales = getInitials(usuario);
+
+  return (
+    <tr aria-label={`${row.tipoLabel} de ${row.nombre}, ${row.fecha}`}>
+      <td>
+        <div className="reporte-inventario-fecha">
+          <time dateTime={row.fecha ? String(row.fecha) : undefined}>
+            {fecha}
+          </time>
+          {hora ? (
+            <span className="reporte-inventario-hora">{hora}</span>
+          ) : null}
+        </div>
+      </td>
+
+      <td>
+        <div className="reporte-inventario-item">
+          <span className="reporte-inventario-item-icon" aria-hidden="true">
+            <Package size={16} />
+          </span>
+          <div className="reporte-inventario-item-text">
+            <span className="reporte-inventario-item-nombre">
+              {row.nombre || "—"}
+            </span>
+            <span className="reporte-inventario-item-clave">
+              {row.clave || "—"}
+            </span>
+          </div>
+        </div>
+      </td>
+
+      <td className="reporte-inventario-col-tipo">
+        <span className={`reporte-inventario-tipo reporte-inventario-tipo--${row.tipo}`}>
+          <span className="visually-hidden">Tipo de movimiento: </span>
+          {row.tipoLabel}
+        </span>
+      </td>
+
+      <td className="reporte-inventario-col-cantidad">
+        <span className="reporte-inventario-cantidad">
+          {formatNumber(row.cantidad)}
+        </span>
+      </td>
+
+      <td>
+        <div className="reporte-inventario-usuario">
+          <span className="reporte-inventario-avatar" aria-hidden="true">
+            {iniciales}
+          </span>
+          <span className="reporte-inventario-usuario-nombre">
+            {usuario}
+          </span>
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+HistorialMovimientoRow.propTypes = {
+  row: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    fecha: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    clave: PropTypes.string,
+    nombre: PropTypes.string,
+    tipo: PropTypes.string,
+    tipoLabel: PropTypes.string,
+    cantidad: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    usuario: PropTypes.string,
+  }).isRequired,
+};
+
 
 export default function ReporteInventario() {
   const { registerCsvExportHandler } = useOutletContext() || {};
@@ -117,21 +370,42 @@ export default function ReporteInventario() {
   ]);
 
   const [paginaHistorial, setPaginaHistorial] = useState(1);
-  const historialFiltrado = useMemo(() => {
-    const q = filtroBusquedaHistorial.trim().toLowerCase();
-    return historialData.historial.filter((row) => {
-      const matchTipo = !filtroTipoHistorial || row.tipo === filtroTipoHistorial;
-      if (!matchTipo) return false;
-      if (!q) return true;
-      const texto = `${row.fecha} ${row.clave} ${row.nombre} ${row.motivo} ${row.usuario}`.toLowerCase();
-      return texto.includes(q);
-    });
-  }, [historialData.historial, filtroBusquedaHistorial, filtroTipoHistorial]);
+  const historialFiltrado = useMemo(
+    () => filtrarHistorial(
+      historialData.historial,
+      filtroBusquedaHistorial,
+      filtroTipoHistorial
+    ),
+    [historialData.historial, filtroBusquedaHistorial, filtroTipoHistorial]
+  );
   const totalHistorial = historialFiltrado.length;
-  const historialPaginado = useMemo(() => {
-    const inicio = (paginaHistorial - 1) * ITEMS_POR_PAGINA_HISTORIAL;
-    return historialFiltrado.slice(inicio, inicio + ITEMS_POR_PAGINA_HISTORIAL);
-  }, [historialFiltrado, paginaHistorial]);
+
+  const historialRangoLabel = historialRangoValido
+  ? formatRangoLegible(historialDesde, historialHasta)
+  : "";
+
+  const historialMeta = getHistorialMeta({
+    loadingHistorial,
+    historialErrorRango,
+    historialFetchError,
+    totalHistorial,
+    historialRangoLabel,
+    historialRangoValido,
+  });
+
+  const puedeMostrarHistorial =
+  !historialFetchError &&
+  !historialErrorRango &&
+  historialRangoValido &&
+  !loadingHistorial;
+
+const tieneHistorial = puedeMostrarHistorial && totalHistorial > 0;
+const mostrarHistorialVacio = puedeMostrarHistorial && totalHistorial === 0;
+
+const historialPaginado = useMemo(() => {
+  const inicio = (paginaHistorial - 1) * ITEMS_POR_PAGINA_HISTORIAL;
+  return historialFiltrado.slice(inicio, inicio + ITEMS_POR_PAGINA_HISTORIAL);
+}, [historialFiltrado, paginaHistorial]);
 
   useEffect(() => {
     setPaginaHistorial(1);
@@ -139,43 +413,28 @@ export default function ReporteInventario() {
 
   const handleHistorialDesdeChange = (value) => {
     setHistorialDesde(value);
-    if (value && historialHasta && value > historialHasta) {
-      setHistorialErrorRango(
-        "La fecha inicial no puede ser posterior a la fecha final.",
-      );
-    } else {
-      setHistorialErrorRango("");
-    }
+    setHistorialErrorRango(validarRangoFechas(value, historialHasta));
   };
 
   const handleHistorialHastaChange = (value) => {
     setHistorialHasta(value);
-    if (historialDesde && value && historialDesde > value) {
-      setHistorialErrorRango(
-        "La fecha inicial no puede ser posterior a la fecha final.",
-      );
-    } else {
-      setHistorialErrorRango("");
-    }
+    setHistorialErrorRango(validarRangoFechas(historialDesde, value));
   };
 
-  const historialRangoLabel = historialRangoValido
-    ? formatRangoLegible(historialDesde, historialHasta)
-    : "";
 
   useEffect(() => {
     if (!registerCsvExportHandler) return undefined;
     registerCsvExportHandler(() => {
       if (!historialRangoValido) {
-        window.alert("Selecciona un rango de fechas válido para exportar el historial.");
+        globalThis.alert("Selecciona un rango de fechas válido para exportar el historial.");
         return;
       }
       if (loadingHistorial) {
-        window.alert("Espera a que termine de cargar el historial de movimientos.");
+        globalThis.alert("Espera a que termine de cargar el historial de movimientos.");
         return;
       }
       if (historialFetchError) {
-        window.alert("No se puede exportar: el historial no se cargó correctamente.");
+        globalThis.alert("No se puede exportar: el historial no se cargó correctamente.");
         return;
       }
       const csv = buildCsvReporteInventarioHistorial(
@@ -253,10 +512,8 @@ export default function ReporteInventario() {
                       <ul className="reporte-inventario-bajo-stock-lista">
                         {bajoStockOrdenado.map((item) => {
                           const cantidad = Number(item.cantidad || 0);
-                          const percent = maxBajoStock
-                            ? Math.max(8, Math.round((cantidad / maxBajoStock) * 100))
-                            : 0;
-                          const variant = cantidad <= 5 ? "critico" : cantidad <= 10 ? "medio" : "bajo";
+                          const percent = getStockPercent(cantidad, maxBajoStock);
+                          const variant = getStockVariant(cantidad);
                           const unidad = item.unidadMedida || "u";
                           return (
                             <li
@@ -285,9 +542,9 @@ export default function ReporteInventario() {
                         })}
                       </ul>
                     ) : (
-                      <p className="reporte-mxmap-hint" role="status">
+                      <output className="reporte-mxmap-hint">
                         Sin productos en nivel de bajo stock.
-                      </p>
+                      </output>
                     )}
                   </CardContent>
                 </Card>
@@ -320,45 +577,37 @@ export default function ReporteInventario() {
                         className="reporte-mensual-trend-sub"
                         id="reporte-inventario-historial-meta"
                       >
-                        {loadingHistorial
-                          ? "Cargando movimientos…"
-                          : historialErrorRango
-                            ? historialErrorRango
-                            : historialFetchError
-                              ? "Error al cargar el historial."
-                              : totalHistorial > 0
-                                ? `${formatNumber(totalHistorial)} registros${historialRangoLabel ? ` · ${historialRangoLabel}` : ""}`
-                                : historialRangoValido
-                                  ? "Sin movimientos en el periodo."
-                                  : "Selecciona un rango de fechas válido."}
+                        {historialMeta}
                       </p>
                     </div>
                     <div className="reporte-inventario-historial-filtros">
-                      <div
-                        className="reporte-inventario-historial-fechas"
-                        role="group"
-                        aria-label="Rango de fechas del historial"
-                      >
-                        <input
-                          type="date"
-                          className="reporte-inventario-historial-fecha"
-                          value={historialDesde}
-                          onChange={(e) => handleHistorialDesdeChange(e.target.value)}
-                          aria-label="Fecha inicial"
-                          aria-invalid={Boolean(historialErrorRango)}
-                        />
-                        <span className="reporte-inventario-historial-fecha-sep" aria-hidden>
-                          —
-                        </span>
-                        <input
-                          type="date"
-                          className="reporte-inventario-historial-fecha"
-                          value={historialHasta}
-                          onChange={(e) => handleHistorialHastaChange(e.target.value)}
-                          aria-label="Fecha final"
-                          aria-invalid={Boolean(historialErrorRango)}
-                        />
-                      </div>
+                      <fieldset className="reporte-inventario-historial-fechas">
+                          <legend className="visually-hidden">
+                            Rango de fechas del historial
+                          </legend>
+
+                          <input
+                            type="date"
+                            className="reporte-inventario-historial-fecha"
+                            value={historialDesde}
+                            onChange={(e) => handleHistorialDesdeChange(e.target.value)}
+                            aria-label="Fecha inicial"
+                            aria-invalid={Boolean(historialErrorRango)}
+                          />
+
+                          <span className="reporte-inventario-historial-fecha-sep" aria-hidden>
+                            —
+                          </span>
+
+                          <input
+                            type="date"
+                            className="reporte-inventario-historial-fecha"
+                            value={historialHasta}
+                            onChange={(e) => handleHistorialHastaChange(e.target.value)}
+                            aria-label="Fecha final"
+                            aria-invalid={Boolean(historialErrorRango)}
+                          />
+                        </fieldset>
                       <SearchBar
                         icon={<Search size={16} />}
                         className="search-gestion reporte-inventario-historial-busqueda"
@@ -380,136 +629,21 @@ export default function ReporteInventario() {
                     </div>
                   </CardHeader>
                   <CardContent className="reporte-inventario-historial-content">
-                    {historialFetchError ? (
-                      <div className="reporte-general-alert" role="alert">
-                        <p>{historialFetchError}</p>
-                        <button type="button" onClick={refetchHistorial}>
-                          Reintentar
-                        </button>
-                      </div>
-                    ) : null}
-                    {!historialFetchError && historialErrorRango ? (
-                      <p className="reporte-mxmap-hint" role="alert">
-                        {historialErrorRango}
-                      </p>
-                    ) : null}
-                    {!historialFetchError &&
-                    !historialErrorRango &&
-                    historialRangoValido &&
-                    loadingHistorial ? (
-                      <ReportesLoading
-                        message="Cargando historial de movimientos…"
-                        className="reportes-loading--personalizado"
-                      />
-                    ) : null}
-                    {!historialFetchError &&
-                    !historialErrorRango &&
-                    historialRangoValido &&
-                    !loadingHistorial &&
-                    totalHistorial > 0 ? (
-                      <>
-                        <div
-                          className="reporte-inventario-tabla-wrap"
-                          tabIndex={0}
-                          role="region"
-                          aria-labelledby="reporte-inventario-historial-titulo reporte-inventario-historial-meta"
-                        >
-                          <table className="reporte-inventario-tabla reporte-inventario-tabla--movimientos">
-                            <caption>
-                              Historial del {historialDesde} al {historialHasta}
-                            </caption>
-                            <thead>
-                              <tr>
-                                <th scope="col">Fecha</th>
-                                <th scope="col">Item</th>
-                                <th scope="col" className="reporte-inventario-col-tipo">
-                                  Tipo de movimiento
-                                </th>
-                                <th scope="col" className="reporte-inventario-col-cantidad">
-                                  Cantidad
-                                </th>
-                                <th scope="col">Usuario</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {historialPaginado.map((row) => {
-                                const { fecha, hora } = splitFecha(row.fecha);
-                                const usuario = row.usuario || "—";
-                                const iniciales = getInitials(usuario);
-                                return (
-                                  <tr
-                                    key={row.id}
-                                    aria-label={`${row.tipoLabel} de ${row.nombre}, ${row.fecha}`}
-                                  >
-                                    <td>
-                                      <div className="reporte-inventario-fecha">
-                                        <time dateTime={row.fecha ? String(row.fecha) : undefined}>
-                                          {fecha}
-                                        </time>
-                                        {hora ? (
-                                          <span className="reporte-inventario-hora">{hora}</span>
-                                        ) : null}
-                                      </div>
-                                    </td>
-                                    <td>
-                                      <div className="reporte-inventario-item">
-                                        <span className="reporte-inventario-item-icon" aria-hidden="true">
-                                          <Package size={16} />
-                                        </span>
-                                        <div className="reporte-inventario-item-text">
-                                          <span className="reporte-inventario-item-nombre">
-                                            {row.nombre || "—"}
-                                          </span>
-                                          <span className="reporte-inventario-item-clave">
-                                            {row.clave || "—"}
-                                          </span>
-                                        </div>
-                                      </div>
-                                    </td>
-                                    <td className="reporte-inventario-col-tipo">
-                                      <span
-                                        className={`reporte-inventario-tipo reporte-inventario-tipo--${row.tipo}`}
-                                      >
-                                        <span className="visually-hidden">Tipo de movimiento: </span>
-                                        {row.tipoLabel}
-                                      </span>
-                                    </td>
-                                    <td className="reporte-inventario-col-cantidad">
-                                      <span className="reporte-inventario-cantidad">
-                                        {formatNumber(row.cantidad)}
-                                      </span>
-                                    </td>
-                                    <td>
-                                      <div className="reporte-inventario-usuario">
-                                        <span className="reporte-inventario-avatar" aria-hidden="true">
-                                          {iniciales}
-                                        </span>
-                                        <span className="reporte-inventario-usuario-nombre">
-                                          {usuario}
-                                        </span>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
-                        <Pagination
-                          currentPage={paginaHistorial}
-                          totalItems={totalHistorial}
-                          itemsPerPage={ITEMS_POR_PAGINA_HISTORIAL}
-                          onPageChange={setPaginaHistorial}
-                        />
-                      </>
-                    ) : !historialFetchError &&
-                      !historialErrorRango &&
-                      historialRangoValido &&
-                      !loadingHistorial ? (
-                      <p className="reporte-mxmap-hint" role="status">
-                        No hay movimientos para los filtros seleccionados.
-                      </p>
-                    ) : null}
+                    <HistorialMovimientosContent
+                      historialFetchError={historialFetchError}
+                      historialErrorRango={historialErrorRango}
+                      historialRangoValido={historialRangoValido}
+                      loadingHistorial={loadingHistorial}
+                      totalHistorial={totalHistorial}
+                      tieneHistorial={tieneHistorial}
+                      mostrarHistorialVacio={mostrarHistorialVacio}
+                      historialPaginado={historialPaginado}
+                      historialDesde={historialDesde}
+                      historialHasta={historialHasta}
+                      paginaHistorial={paginaHistorial}
+                      refetchHistorial={refetchHistorial}
+                      setPaginaHistorial={setPaginaHistorial}
+                    />
                   </CardContent>
                 </Card>
             </section>

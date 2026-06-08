@@ -1,4 +1,8 @@
 import { useState, useEffect, useCallback, useId, useRef } from "react";
+import { X, AlertTriangle } from "lucide-react";
+import { useSearchParams } from 'react-router-dom'
+
+
 import "../styles/Recibos.css";
 
 import { API_URL } from '../../utils/config'
@@ -92,7 +96,7 @@ function ReciboDetalle({ recibo, onClose }) {
               {recibo.servicio} · {fmtFecha(recibo.fecha)} {recibo.hora}
             </p>
           </div>
-          <button ref={closeBtnRef} className="btn-close" onClick={onClose} aria-label="Cerrar detalle del recibo">✕</button>
+          <button ref={closeBtnRef} className="btn-close" onClick={onClose} aria-label="Cerrar detalle del recibo"><X size={18} /></button>
         </div>
 
         {recibo.items_inventario?.length > 0 && (
@@ -145,8 +149,23 @@ function ReciboDetalle({ recibo, onClose }) {
               <span>{fmt(recibo.financiero?.cuota_total)}</span>
             </div>
             <div className="fin-row fin-pagado">
-              <span>Pagado</span>
+              <span>Aportación familia</span>
               <span>{fmt(recibo.financiero?.monto_pagado)}</span>
+            </div>
+            {(recibo.financiero?.monto_donacion ?? 0) > 0 && (
+              <div className="fin-row fin-donacion">
+                <span>Fondo donaciones</span>
+                <span>{fmt(recibo.financiero.monto_donacion)}</span>
+              </div>
+            )}
+            <div className="fin-row fin-total-cobrado">
+              <span>Total cobrado</span>
+              <span>
+                {fmt(
+                  Number(recibo.financiero?.monto_pagado ?? 0) +
+                    Number(recibo.financiero?.monto_donacion ?? 0)
+                )}
+              </span>
             </div>
           </div>
           {recibo.financiero?.metodo_pago && (
@@ -174,6 +193,11 @@ function ReciboRow({ recibo, onVerDetalle, mostrarFecha = false, index = 0 }) {
       <td>{recibo.hora}</td>
       <td className="text-right">{fmt(recibo.financiero?.cuota_total)}</td>
       <td className="text-right">{fmt(recibo.financiero?.monto_pagado)}</td>
+      <td className="text-right">
+        {(recibo.financiero?.monto_donacion ?? 0) > 0
+          ? fmt(recibo.financiero.monto_donacion)
+          : <span className="text-muted">—</span>}
+      </td>
       <td>
         {recibo.financiero?.metodo_pago
           ? <PagoBadge metodo={recibo.financiero.metodo_pago} />
@@ -218,7 +242,7 @@ function TablaRecibos({
   animationKey,
 }) {
   if (loading) return <Skeleton rows={4} />;
-  if (error) return <div className="estado-msg estado-error">⚠ {error}</div>;
+  if (error) return <div className="estado-msg estado-error"><AlertTriangle size={14} /> {error}</div>;
   if (!recibos.length) return <div className="estado-msg">{emptyMsg}</div>;
 
   return (
@@ -234,6 +258,7 @@ function TablaRecibos({
             <th>Hora</th>
             <th className="text-right">Total</th>
             <th className="text-right">Pagado</th>
+            <th className="text-right">Donación</th>
             <th>Método</th>
             <th>Detalles</th>
           </tr>
@@ -269,25 +294,34 @@ export default function Recibos() {
   const tabDiaRef = useRef(null);
   const tabMesRef = useRef(null);
 
-  const [fecha, setFecha] = useState(hoy());
-  const [busquedaDia, setBusquedaDia] = useState("");
-  const [busquedaMes, setBusquedaMes] = useState("");
-  const [vistaActiva, setVistaActiva] = useState("dia");
+  const [fecha,        setFecha]        = useState(hoy());
+  const [busquedaDia,  setBusquedaDia]  = useState("");
+  const [busquedaMes,  setBusquedaMes]  = useState("");
+  const [vistaActiva,  setVistaActiva]  = useState("dia");
+ 
+  const [recibosDay,   setRecibosDay]   = useState([]);
+  const [loadingDay,   setLoadingDay]   = useState(false);
+  const [errorDay,     setErrorDay]     = useState("");
+ 
+  const [recibosMes,   setRecibosMes]   = useState([]);
+  const [loadingMes,   setLoadingMes]   = useState(false);
+  const [errorMes,     setErrorMes]     = useState("");
+ 
+  const [seleccion,    setSeleccion]    = useState(null);
 
-  const [recibosDay, setRecibosDay] = useState([]);
-  const [loadingDay, setLoadingDay] = useState(false);
-  const [errorDay, setErrorDay] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams()
 
-  const [recibosMes, setRecibosMes] = useState([]);
-  const [loadingMes, setLoadingMes] = useState(false);
-  const [errorMes, setErrorMes] = useState("");
 
-  const [seleccion, setSeleccion] = useState(null);
+  const [fechaDesde, setFechaDesde] = useState(hoy());
+  const [fechaHasta, setFechaHasta] = useState(hoy());
+  const [busquedaRango, setBusquedaRango] = useState("");
+  const [recibosRango, setRecibosRango] = useState([]);
+  const [loadingRango, setLoadingRango] = useState(false);
+  const [errorRango, setErrorRango] = useState("");
 
-  const cargarDia = useCallback(async (f, signal) => {
-    setLoadingDay(true);
-    setErrorDay("");
 
+  const cargarDia = useCallback(async (f) => {
+    setLoadingDay(true); setErrorDay("");
     try {
       const res = await fetch(`${API_URL}/api/recibos?fecha=${f}`, { signal });
 
@@ -313,32 +347,50 @@ export default function Recibos() {
 
     try {
       const mes = f.slice(0, 7);
-      const res = await fetch(`${API_URL}/api/recibos/resumen-mes?fecha=${mes}`, { signal });
-
+      const res = await fetch(`${API_URL}/api/recibos/resumen-mes?fecha=${mes}`);
       if (!res.ok) throw new Error(`Error ${res.status}`);
-
-      const data = await res.json();
-      setRecibosMes(data);
+      setRecibosMes(await res.json());
     } catch (e) {
-      if (e.name === "AbortError") return;
+      setErrorMes(e.message || "No se pudo cargar."); setRecibosMes([]);
+    } finally { setLoadingMes(false); }
+  }, []);
 
-      setErrorMes(e.message || "No se pudo cargar.");
-      setRecibosMes([]);
-    } finally {
-      if (!signal.aborted) {
-        setLoadingMes(false);
-      }
-    }
+  const cargarRango = useCallback(async (desde, hasta) => {
+    setLoadingRango(true); setErrorRango("");
+    try {
+      const res = await fetch(
+        `${API_URL}/api/recibos/rango-fechas?desde=${desde}&hasta=${hasta}`
+      );
+      if (!res.ok) throw new Error(`Error ${res.status}`);
+      setRecibosRango(await res.json());
+    } catch (e) {
+      setErrorRango(e.message || "No se pudo cargar."); setRecibosRango([]);
+    } finally { setLoadingRango(false); }
   }, []);
 
   useEffect(() => {
-    const controller = new AbortController();
+  cargarDia(fecha);
+  cargarMes(fecha);
+}, [fecha, cargarDia, cargarMes]);
 
-    cargarDia(fecha, controller.signal);
-    cargarMes(fecha, controller.signal);
+  useEffect(() => {
+    const folioParam = searchParams.get('folio')
+    if (!folioParam) return
+  
+    const todas = [...recibosDay, ...recibosMes]
+    const encontrado = todas.find(
+      (r) => String(r.id_servicio_otorgado) === String(folioParam)
+    )
+    if (encontrado) {
+      setSeleccion(encontrado)
 
-    return () => controller.abort();
-  }, [fecha, cargarDia, cargarMes]);
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev)
+        next.delete('folio')
+        return next
+      })
+    }
+  }, [searchParams, recibosDay, recibosMes, setSearchParams])
 
   const normalizar = (str) =>
     (str || "")
@@ -361,29 +413,29 @@ export default function Recibos() {
   const filtradosMes = filtrarRecibos(recibosMes, busquedaMes);
 
   const totalDia = filtradosDia.reduce((s, r) => s + Number(r.financiero?.cuota_total ?? 0), 0);
-  const pagadoDia = filtradosDia.reduce((s, r) => s + Number(r.financiero?.monto_pagado ?? 0), 0);
+  const pagadoDia = filtradosDia.reduce(
+    (s, r) =>
+      s + Number(r.financiero?.monto_pagado ?? 0) + Number(r.financiero?.monto_donacion ?? 0),
+    0
+  );
   const totalMes = filtradosMes.reduce((s, r) => s + Number(r.financiero?.cuota_total ?? 0), 0);
-  const pagadoMes = filtradosMes.reduce((s, r) => s + Number(r.financiero?.monto_pagado ?? 0), 0);
+  const pagadoMes = filtradosMes.reduce(
+    (s, r) =>
+      s + Number(r.financiero?.monto_pagado ?? 0) + Number(r.financiero?.monto_donacion ?? 0),
+    0
+  );
 
   const onTabsKeyDown = (event) => {
-    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    const tabs = ["dia", "mes", "rango"];
+    const currentIndex = tabs.indexOf(vistaActiva);
 
-    event.preventDefault();
-    if (event.key === "Home") {
-      setVistaActiva("dia");
-      tabDiaRef.current?.focus();
-      return;
-    }
-    if (event.key === "End") {
-      setVistaActiva("mes");
-      tabMesRef.current?.focus();
-      return;
-    }
+    if (event.key === "Home") { setVistaActiva("dia"); return; }
+    if (event.key === "End") { setVistaActiva("rango"); return; }
 
-    const nextView = vistaActiva === "dia" ? "mes" : "dia";
-    setVistaActiva(nextView);
-    if (nextView === "dia") tabDiaRef.current?.focus();
-    if (nextView === "mes") tabMesRef.current?.focus();
+    const nextIndex = event.key === "ArrowRight"
+      ? (currentIndex + 1) % tabs.length
+      : (currentIndex - 1 + tabs.length) % tabs.length;
+    setVistaActiva(tabs[nextIndex]);
   };
 
   return (
@@ -393,17 +445,19 @@ export default function Recibos() {
           <h1 id="recibos-page-title" className="page-header-title">Recibos</h1>
           <p className="page-header-subtitle">Registro de servicios y cobros</p>
         </div>
-        <div className="fecha-wrap">
-          <label htmlFor={fechaInputId} className="fecha-label">Fecha</label>
-          <input
-            id={fechaInputId}
-            className="fecha-input"
-            type="date"
-            value={fecha}
-            onChange={(e) => setFecha(e.target.value)}
-          />
-          <button className="btn-hoy" onClick={() => setFecha(hoy())}>Hoy</button>
-        </div>
+        {vistaActiva !== "rango" && (
+          <div className="fecha-wrap">
+            <label htmlFor={fechaInputId} className="fecha-label"> Fecha </label>
+            <input
+              id={fechaInputId}
+              className="fecha-input"
+              type="date"
+              value={fecha}
+              onChange={(e) => setFecha(e.target.value)}
+            />
+            <button className="btn-hoy" onClick={() => setFecha(hoy())}> Hoy </button>
+          </div>
+        )}
       </header>
 
       <div className="recibos-tabs-wrap recibos-fade-panel">
@@ -443,6 +497,17 @@ export default function Recibos() {
           >
             Recibos del mes
           </button>
+
+          <button
+            role="tab"
+            type="button"
+            aria-selected={vistaActiva === "rango"}
+            tabIndex={vistaActiva === "rango" ? 0 : -1}
+            className={`recibos-tab ${vistaActiva === "rango" ? "is-active" : ""}`}
+            onClick={() => setVistaActiva("rango")}
+          >
+            Rango de fechas
+          </button>
         </div>
       </div>
 
@@ -452,7 +517,7 @@ export default function Recibos() {
           className="recibos-section recibos-fade-panel"
           role="tabpanel"
           aria-labelledby={tabDiaId}
-          key={`dia-${fecha}-${busquedaDia}`}
+          key={`dia-${fecha}`}
         >
           <div className="section-title-row">
             <div>
@@ -466,7 +531,7 @@ export default function Recibos() {
                 id={busquedaDiaInputId}
                 className="search-input"
                 type="text"
-                placeholder="Buscar en el día…"
+                placeholder="Buscar folio, beneficiario o servicio…"
                 value={busquedaDia}
                 onChange={(e) => setBusquedaDia(e.target.value)}
               />
@@ -513,7 +578,7 @@ export default function Recibos() {
           className="recibos-section recibos-fade-panel"
           role="tabpanel"
           aria-labelledby={tabMesId}
-          key={`mes-${fecha}-${busquedaMes}`}
+          key={`mes-${fecha}`}
         >
           <div className="section-title-row">
             <div>
@@ -527,7 +592,7 @@ export default function Recibos() {
                 id={busquedaMesInputId}
                 className="search-input"
                 type="text"
-                placeholder="Buscar en el mes…"
+                placeholder="Buscar folio, beneficiario o servicio…"
                 value={busquedaMes}
                 onChange={(e) => setBusquedaMes(e.target.value)}
               />
@@ -567,6 +632,97 @@ export default function Recibos() {
           </div>
         </section>
       )}
+
+      {vistaActiva === "rango" && (
+        <section className="recibos-section recibos-fade-panel" role="tabpanel">
+          <div className="section-title-row">
+            <div>
+              <h2 className="section-title">Rango personalizado</h2>
+              <p className="section-sub">
+                {fmtFecha(fechaDesde)} — {fmtFecha(fechaHasta)}
+              </p>
+            </div>
+            <div className="search-wrap">
+              <span className="search-icon" aria-hidden="true">⌕</span>
+              <input
+                className="search-input"
+                type="text"
+                placeholder="Buscar folio, beneficiario o servicio…"
+                value={busquedaRango}
+                onChange={(e) => setBusquedaRango(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="fecha-wrap" style={{ marginBottom: 16 }}>
+            <label className="fecha-label">Desde</label>
+            <input
+              className="fecha-input"
+              type="date"
+              value={fechaDesde}
+              max={fechaHasta}
+              onChange={(e) => setFechaDesde(e.target.value)}
+            />
+            <label className="fecha-label">Hasta</label>
+            <input
+              className="fecha-input"
+              type="date"
+              value={fechaHasta}
+              min={fechaDesde}
+              onChange={(e) => setFechaHasta(e.target.value)}
+            />
+            <button
+              className="btn-hoy"
+              onClick={() => cargarRango(fechaDesde, fechaHasta)}
+            >
+              Buscar
+            </button>
+          </div>
+
+          {!loadingRango && recibosRango.length > 0 && (() => {
+            const filtrados = filtrarRecibos(recibosRango, busquedaRango);
+            const total = filtrados.reduce((s, r) => s + Number(r.financiero?.cuota_total ?? 0), 0);
+            const pagado = filtrados.reduce((s, r) => s + Number(r.financiero?.monto_pagado ?? 0), 0);
+            return (
+              <>
+                <div className="resumen-strip">
+                  <ResumenCard label="Recibos" value={filtrados.length} index={0} />
+                  <ResumenCard label="Total facturado" value={fmt(total)} index={1} />
+                  <ResumenCard label="Total cobrado" value={fmt(pagado)} index={2} />
+                  <ResumenCard
+                    label="Diferencia"
+                    value={fmt(total - pagado)}
+                    sub={total - pagado > 0 ? "pendiente" : "al corriente"}
+                    index={3}
+                  />
+                </div>
+                <div className="recibos-card">
+                  <TablaRecibos
+                    recibos={filtrados}
+                    loading={loadingRango}
+                    error={errorRango}
+                    onVerDetalle={setSeleccion}
+                    mostrarFecha={true}
+                    emptyMsg="Sin recibos para este rango."
+                    caption={`Recibos del ${fmtFecha(fechaDesde)} al ${fmtFecha(fechaHasta)}`}
+                    animationKey={`rango-${fechaDesde}-${fechaHasta}-${busquedaRango}`}
+                  />
+                  <p className="tabla-footer">
+                    Mostrando {filtrados.length} de {recibosRango.length} recibos
+                  </p>
+                </div>
+              </>
+            );
+          })()}
+
+          {loadingRango && <div className="recibos-card"><Skeleton rows={4} /></div>}
+          {errorRango && <div className="estado-msg estado-error">⚠ {errorRango}</div>}
+          {!loadingRango && !errorRango && recibosRango.length === 0 && (
+            <div className="estado-msg">Selecciona un rango y pulsa Buscar.</div>
+          )}
+        </section>
+      )}
+      
 
       <ReciboDetalle recibo={seleccion} onClose={() => setSeleccion(null)} />
     </main>

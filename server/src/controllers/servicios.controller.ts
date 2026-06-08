@@ -14,6 +14,9 @@ type RegistrarServicioInput = {
   descuento: number;
   cuota_total: number;
   monto_pagado: number;
+  monto_donacion: number;
+  id_fondo?: number | null;
+  id_donador?: number | null;
   metodo_pago: string;
   ya_aporto: boolean;
   id_usuario: number;
@@ -31,7 +34,23 @@ export class ServiciosController {
     return this.repository.getTiposServicio();
   }
 
+  async getFechasUltimosEstudios(id_beneficiario: number){
+    return this.repository.getFechasUltimosEstudios(id_beneficiario);
+  }
+
   async registrarServicio(input: RegistrarServicioInput) {
     return this.repository.registrarServicio(input);
+  }
+
+  async getHistorial(limit: number, page: number) {
+    return this.repository.getHistorial(limit, page);
+  }
+
+  async getCategorias() {
+    return this.repository.getCategorias();
+  }
+  
+  async crearServicioCatalogo(input: { nombre: string; categoria: string; precio: number }) {
+    return this.repository.crearServicioCatalogo(input);
   }
 }

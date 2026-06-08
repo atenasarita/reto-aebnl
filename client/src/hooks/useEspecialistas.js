@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { API_URL } from '../utils/config'
+import { humanizeError } from '../utils/humanizeError'
 
 
 export function useEspecialistas(idEspecialidad) {
@@ -44,7 +45,7 @@ export function useEspecialistas(idEspecialidad) {
       )
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error de conexión')
+      setError(humanizeError(err))
       setEspecialistas([])
     } finally {
       setLoading(false)

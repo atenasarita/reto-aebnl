@@ -4,6 +4,7 @@ import {citasQueries} from "./citas.queries";
 import { CitasRepository } from "../interfaces/citasRepository";
 import { CitaDetalle, CreateCitaInput, EstatusCita } from "../types/citas.types";
 import { especialistasQueries } from "./especialistas.queries";
+import { ConflictError } from '../errors/appError'; 
 
 export interface UpdateCitaInput {
     fecha: string;
@@ -18,11 +19,16 @@ export interface UpdateCitaInput {
 export class OracleCitasRepository implements CitasRepository {
     constructor(private readonly oracleConnection = new OracleConnection()){}
 
+    private limpiarFecha(fecha: string | Date): string {
+        return String(fecha).split("T")[0];
+    }
+
     async getCitas(): Promise<CitaDetalle[]>{
         let connection;
 
         try {
             connection = await this.oracleConnection.getConnection();
+
 
             const result = await connection.execute(
                 citasQueries.getCitas,
@@ -35,17 +41,47 @@ export class OracleCitasRepository implements CitasRepository {
         }
     }
 
+    private async verificarEmpalme(
+        connection: oracledb.Connection,
+        id_especialista: number,
+        fecha: string,
+        hora: string,
+        id_cita?: number | null
+        ): Promise<void> {
+        const result = await connection.execute(
+            citasQueries.checkEmpalme,
+            {
+            id_especialista,
+            fecha,
+            hora,
+            id_cita: id_cita ?? null,
+            },
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
+
+        const rows = result.rows as Array<{ total: number }>;
+        if (rows[0]?.total > 0) {
+            throw new ConflictError(
+                `El especialista ya tiene una cita programada el ${fecha} a las ${hora}.`
+            );
+        }
+    }
+
     async createCita(input: CreateCitaInput):Promise<{ message: string }> {
         let connection;
 
         try {
             connection = await this.oracleConnection.getConnection();
 
+            const fechaLimpia = this.limpiarFecha(input.fecha);
+            //Verificar empalme
+            await this.verificarEmpalme(connection, input.id_especialista, fechaLimpia, input.hora);
+
             await connection.execute(
                 citasQueries.insertCita,
                 {
                     id_beneficiario: input.id_beneficiario,
-                    fecha: new Date(input.fecha),
+                    fecha: fechaLimpia,
                     hora: input.hora,
                     id_especialista: input.id_especialista,
                     id_catalogo_servicio: input.id_catalogo_servicio,
@@ -66,11 +102,15 @@ export class OracleCitasRepository implements CitasRepository {
 
         try {
             connection = await this.oracleConnection.getConnection();
+            const fechaLimpia = this.limpiarFecha(input.fecha);
+            // Verificar empalme, excluyendo la cita actual
+            await this.verificarEmpalme(connection, input.id_especialista, fechaLimpia, input.hora);
+
             const result = await connection.execute(
                 especialistasQueries.updateCita,
                 {
                     id_cita,
-                    fecha: new Date(input.fecha),
+                    fecha: fechaLimpia,
                     hora: input.hora,
                     id_especialista: input.id_especialista,
                     id_catalogo_servicio: input.id_catalogo_servicio,
@@ -88,4 +128,6 @@ export class OracleCitasRepository implements CitasRepository {
             if (connection)await connection.close();
         }
     }
+
+    
 }

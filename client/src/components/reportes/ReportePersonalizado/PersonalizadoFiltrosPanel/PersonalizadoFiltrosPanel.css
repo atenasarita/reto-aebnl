@@ -1,0 +1,170 @@
+.reporte-personalizado-filtros-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  background: rgba(15, 23, 42, 0.24);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 960px) {
+  .reporte-personalizado-filtros-scrim {
+    display: none;
+  }
+}
+
+.reporte-personalizado-filtros-scrim.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.reporte-personalizado-filtros-panel {
+  position: fixed;
+  top: calc(5.5rem + env(safe-area-inset-top, 0px));
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  z-index: 96;
+  display: flex;
+  flex-direction: column;
+  width: min(20rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 6.75rem - env(safe-area-inset-bottom, 0px));
+  border: 1px solid var(--rp-outline-variant, #dbe3ee);
+  border-radius: var(--rp-radius-xl, 0.75rem);
+  background: var(--rp-surface-bright, #ffffff);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.14);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(calc(100% + 1.25rem));
+  transition:
+    transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.2s ease;
+}
+
+.reporte-personalizado-filtros-panel.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+@media (max-width: 959px) {
+  .reporte-personalizado-filtros-panel {
+    top: auto;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: auto;
+    max-height: min(90vh, 40rem);
+    border-radius: var(--rp-radius-xl, 0.75rem) var(--rp-radius-xl, 0.75rem) 0 0;
+    transform: translateY(100%);
+  }
+
+  .reporte-personalizado-filtros-panel.is-open {
+    transform: translateY(0);
+  }
+}
+
+.reporte-personalizado-filtros-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--rp-outline-variant, #dbe3ee);
+  flex-shrink: 0;
+}
+
+.reporte-personalizado-filtros-panel-title {
+  margin: 0;
+  font-family: var(--font-rp-head, var(--font-sans));
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--rp-on-surface, #0f172a);
+}
+
+.reporte-personalizado-filtros-panel-close {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--rp-outline-variant, #dbe3ee);
+  border-radius: 0.5rem;
+  background: var(--rp-surface-bright, #ffffff);
+  color: var(--rp-on-surface-variant, #64748b);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.reporte-personalizado-filtros-panel-close:hover {
+  background: var(--rp-container-low, #f8fafc);
+  color: var(--rp-on-surface, #0f172a);
+  border-color: rgba(30, 59, 138, 0.18);
+}
+
+.reporte-personalizado-filtros-panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.75rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reporte-personalizado-filtros-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.reporte-personalizado-filtros-section-title {
+  margin: 0;
+  font-family: var(--font-rp-head, var(--font-sans));
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rp-on-surface-variant, #64748b);
+}
+
+.reporte-personalizado-filtros-hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--rp-on-surface-variant, #64748b);
+}
+
+.reporte-personalizado-metrics-bar--panel {
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.reporte-personalizado-metrics-bar--panel .reporte-personalizado-metric-pill {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--rp-outline-variant, #dbe3ee);
+  background: var(--rp-surface-bright, #ffffff);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.reporte-personalizado-metrics-bar--panel .reporte-personalizado-metric-pill:hover {
+  background: var(--rp-container-low, #f8fafc);
+}
+
+.reporte-personalizado-metrics-bar--panel .reporte-personalizado-metric-pill.is-active {
+  background: rgba(30, 59, 138, 0.08);
+  border-color: rgba(30, 59, 138, 0.28);
+  color: var(--rp-primary, #1e3b8a);
+  box-shadow: none;
+}

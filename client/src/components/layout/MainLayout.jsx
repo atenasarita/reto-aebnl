@@ -1,20 +1,22 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar/Navbar";
+import { getStoredUser } from "../../utils/auth";
 
 const RUTAS_NAV = [
   { prefix: "/registro_beneficiario", label: "Beneficiarios", exact: true },
   { prefix: "/beneficiarios", label: "Beneficiarios" },
-  { prefix: "/prerregistro", label: "Prerregistro" },
   { prefix: "/registro_servicios", label: "Servicios" },
+  { prefix: "/servicios", label: "Servicios" },
+  { prefix: "/donaciones", label: "Donaciones" },
   { prefix: "/inventario", label: "Inventario" },
   { prefix: "/citas", label: "Citas" },
   { prefix: "/reportes", label: "Reportes" },
   { prefix: "/recibos", label: "Recibos" },
-  { prefix: "/dashboard", label: "Tablero" },
+  { prefix: "/dashboard", label: "Inicio" },
 ];
 
 /** Rutas con layout propio full-bleed (sidebar / wizard): sin page-shell externo */
-const FULL_BLEED_PREFIXES = ["/prerregistro", "/registro_beneficiario"];
+const FULL_BLEED_PREFIXES = ["/registro_beneficiario"];
 
 function isFullBleedPath(pathname) {
   return FULL_BLEED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
@@ -28,20 +30,14 @@ function resolveActiveNavLabel(pathname) {
     }
     if (pathname === prefix || pathname.startsWith(`${prefix}/`)) return label;
   }
-  return "Tablero";
+  return "Inicio";
 }
 
 function MainLayout() {
   const { pathname } = useLocation();
   const activeLink = resolveActiveNavLabel(pathname);
 
-  let storedUser = null;
-
-  try {
-    storedUser = JSON.parse(localStorage.getItem("user") || "null");
-  } catch (error) {
-    storedUser = null;
-  }
+  const storedUser = getStoredUser();
 
   const navbarUser = storedUser
     ? {

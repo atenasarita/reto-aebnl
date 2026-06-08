@@ -38,6 +38,19 @@ import {
 } from '../types/beneficiarios.types';
 import { CreateMembresiaInput } from '../types/membresias.types';
 
+function formatDateOnly(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+function parseDateOnly(fecha: string): Date {
+  const [year, month, day] = fecha.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
 type BeneficiarioDetalleRow = {
     ID_BENEFICIARIO: number;
     FOLIO: string;
@@ -558,7 +571,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                     estado_nacimiento: input.estado_nacimiento,
                     telefono: input.telefono,
                     email: input.email,
-                    id_beneficiario
+                    id_beneficiario,
                 },
                 { autoCommit: false }
             );
@@ -571,7 +584,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                 `,
                 {
                     genero: input.genero,
-                    id_beneficiario
+                    id_beneficiario,
                 },
                 { autoCommit: false }
             );
@@ -584,6 +597,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                     CONTACTO_TELEFONO = :contacto_telefono,
                     CONTACTO_PARENTESCO = :contacto_parentesco,
                     TIPO_SANGUINEO = :tipo_sanguineo,
+                    VALVULA = :valvula,
                     HOSPITAL = :hospital
                 WHERE ID_BENEFICIARIO = :id_beneficiario
                 `,
@@ -592,8 +606,9 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                     contacto_telefono: input.contacto_telefono,
                     contacto_parentesco: input.contacto_parentesco,
                     tipo_sanguineo: input.tipo_sanguineo,
+                    valvula: input.valvula ? 1 : 0,
                     hospital: input.hospital,
-                    id_beneficiario
+                    id_beneficiario,
                 },
                 { autoCommit: false }
             );
@@ -613,7 +628,201 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                     domicilio_ciudad: input.domicilio_ciudad,
                     domicilio_estado: input.domicilio_estado,
                     domicilio_cp: input.domicilio_cp,
-                    id_beneficiario
+                    id_beneficiario,
+                },
+                { autoCommit: false }
+            );
+
+            if (input.fecha_inicio && input.fecha_fin) {
+                await connection.execute(
+                    `
+                    UPDATE MEMBRESIAS
+                    SET
+                        FECHA_INICIO = TO_DATE(:fecha_inicio, 'YYYY-MM-DD'),
+                        FECHA_FIN = TO_DATE(:fecha_fin, 'YYYY-MM-DD')
+                    WHERE ID_BENEFICIARIO = :id_beneficiario
+                      AND ESTADO = 'activa'
+                    `,
+                    {
+                        fecha_inicio: input.fecha_inicio,
+                        fecha_fin: input.fecha_fin,
+                        id_beneficiario,
+                    },
+                    { autoCommit: false }
+                );
+            }
+
+            await connection.commit();
+        } catch (error) {
+            if (connection) {
+                await connection.rollback();
+            }
+            throw error;
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
+        }
+    }
+
+    async updatePadres(id_beneficiario: number, input: any): Promise<void> {
+        let connection: oracledb.Connection | undefined;
+
+        try {
+            connection = await this.oracleConnection.getConnection();
+
+            const resultDatosMedicos = await connection.execute<{
+                ID_DATOS_MEDICOS: number;
+            }>(
+                `
+                SELECT ID_DATOS_MEDICOS
+                FROM DATOS_MEDICOS
+                WHERE ID_BENEFICIARIO = :id_beneficiario
+                `,
+                { id_beneficiario },
+                { outFormat: oracledb.OUT_FORMAT_OBJECT }
+            );
+
+            const rowDatosMedicos = resultDatosMedicos.rows?.[0];
+
+            if (!rowDatosMedicos) {
+                throw new NotFoundError('No se encontraron datos médicos para este beneficiario.');
+            }
+
+            const id_datos_medicos = rowDatosMedicos.ID_DATOS_MEDICOS;
+
+            await connection.execute(
+                `
+                MERGE INTO PADRES p
+                USING (
+                    SELECT
+                        :id_datos_medicos AS ID_DATOS_MEDICOS,
+                        :tipo_padre AS TIPO_PADRE,
+                        :nombre_completo AS NOMBRE_COMPLETO,
+                        :fecha_nacimiento AS FECHA_NACIMIENTO,
+                        :email AS EMAIL,
+                        :telefono AS TELEFONO,
+                        :telefono_casa AS TELEFONO_CASA,
+                        :telefono_trabajo AS TELEFONO_TRABAJO
+                    FROM dual
+                ) src
+                ON (
+                    p.ID_DATOS_MEDICOS = src.ID_DATOS_MEDICOS
+                    AND UPPER(p.TIPO_PADRE) = UPPER(src.TIPO_PADRE)
+                )
+                WHEN MATCHED THEN
+                    UPDATE SET
+                        p.NOMBRE_COMPLETO = src.NOMBRE_COMPLETO,
+                        p.FECHA_NACIMIENTO = CASE
+                            WHEN src.FECHA_NACIMIENTO IS NULL OR src.FECHA_NACIMIENTO = '' THEN NULL
+                            ELSE TO_DATE(src.FECHA_NACIMIENTO, 'YYYY-MM-DD')
+                        END,
+                        p.EMAIL = src.EMAIL,
+                        p.TELEFONO = src.TELEFONO,
+                        p.TELEFONO_CASA = src.TELEFONO_CASA,
+                        p.TELEFONO_TRABAJO = src.TELEFONO_TRABAJO
+                WHEN NOT MATCHED THEN
+                    INSERT (
+                        ID_DATOS_MEDICOS,
+                        TIPO_PADRE,
+                        NOMBRE_COMPLETO,
+                        FECHA_NACIMIENTO,
+                        EMAIL,
+                        TELEFONO,
+                        TELEFONO_CASA,
+                        TELEFONO_TRABAJO
+                    )
+                    VALUES (
+                        src.ID_DATOS_MEDICOS,
+                        src.TIPO_PADRE,
+                        src.NOMBRE_COMPLETO,
+                        CASE
+                            WHEN src.FECHA_NACIMIENTO IS NULL OR src.FECHA_NACIMIENTO = '' THEN NULL
+                            ELSE TO_DATE(src.FECHA_NACIMIENTO, 'YYYY-MM-DD')
+                        END,
+                        src.EMAIL,
+                        src.TELEFONO,
+                        src.TELEFONO_CASA,
+                        src.TELEFONO_TRABAJO
+                    )
+                `,
+                {
+                    id_datos_medicos,
+                    tipo_padre: 'padre',
+                    nombre_completo: input.padre_nombre_completo ?? null,
+                    fecha_nacimiento: input.padre_fecha_nacimiento ?? null,
+                    email: input.padre_email ?? null,
+                    telefono: input.padre_telefono ?? null,
+                    telefono_casa: input.padre_tel_casa ?? null,
+                    telefono_trabajo: input.padre_tel_trabajo ?? null,
+                },
+                { autoCommit: false }
+            );
+
+            await connection.execute(
+                `
+                MERGE INTO PADRES p
+                USING (
+                    SELECT
+                        :id_datos_medicos AS ID_DATOS_MEDICOS,
+                        :tipo_padre AS TIPO_PADRE,
+                        :nombre_completo AS NOMBRE_COMPLETO,
+                        :fecha_nacimiento AS FECHA_NACIMIENTO,
+                        :email AS EMAIL,
+                        :telefono AS TELEFONO,
+                        :telefono_casa AS TELEFONO_CASA,
+                        :telefono_trabajo AS TELEFONO_TRABAJO
+                    FROM dual
+                ) src
+                ON (
+                    p.ID_DATOS_MEDICOS = src.ID_DATOS_MEDICOS
+                    AND UPPER(p.TIPO_PADRE) = UPPER(src.TIPO_PADRE)
+                )
+                WHEN MATCHED THEN
+                    UPDATE SET
+                        p.NOMBRE_COMPLETO = src.NOMBRE_COMPLETO,
+                        p.FECHA_NACIMIENTO = CASE
+                            WHEN src.FECHA_NACIMIENTO IS NULL OR src.FECHA_NACIMIENTO = '' THEN NULL
+                            ELSE TO_DATE(src.FECHA_NACIMIENTO, 'YYYY-MM-DD')
+                        END,
+                        p.EMAIL = src.EMAIL,
+                        p.TELEFONO = src.TELEFONO,
+                        p.TELEFONO_CASA = src.TELEFONO_CASA,
+                        p.TELEFONO_TRABAJO = src.TELEFONO_TRABAJO
+                WHEN NOT MATCHED THEN
+                    INSERT (
+                        ID_DATOS_MEDICOS,
+                        TIPO_PADRE,
+                        NOMBRE_COMPLETO,
+                        FECHA_NACIMIENTO,
+                        EMAIL,
+                        TELEFONO,
+                        TELEFONO_CASA,
+                        TELEFONO_TRABAJO
+                    )
+                    VALUES (
+                        src.ID_DATOS_MEDICOS,
+                        src.TIPO_PADRE,
+                        src.NOMBRE_COMPLETO,
+                        CASE
+                            WHEN src.FECHA_NACIMIENTO IS NULL OR src.FECHA_NACIMIENTO = '' THEN NULL
+                            ELSE TO_DATE(src.FECHA_NACIMIENTO, 'YYYY-MM-DD')
+                        END,
+                        src.EMAIL,
+                        src.TELEFONO,
+                        src.TELEFONO_CASA,
+                        src.TELEFONO_TRABAJO
+                    )
+                `,
+                {
+                    id_datos_medicos,
+                    tipo_padre: 'madre',
+                    nombre_completo: input.madre_nombre_completo ?? null,
+                    fecha_nacimiento: input.madre_fecha_nacimiento ?? null,
+                    email: input.madre_email ?? null,
+                    telefono: input.madre_telefono ?? null,
+                    telefono_casa: input.madre_tel_casa ?? null,
+                    telefono_trabajo: input.madre_tel_trabajo ?? null,
                 },
                 { autoCommit: false }
             );
@@ -623,6 +832,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
             if (connection) {
                 await connection.rollback();
             }
+            console.error('Error en updatePadres:', error);
             throw error;
         } finally {
             if (connection) {
@@ -765,18 +975,25 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         input: CreateMembresiaInput,
     ): Promise<Beneficiario['estado']> {
         const meses = input.meses;
-        const fechaInicio = startOfDay(input.fecha_inicio ?? new Date());
-        const fechaFin = addDays(addMonthsKeepingCalendar(fechaInicio, meses), -1);
+        const fechaInicioString = input.fecha_inicio ?? formatDateOnly(new Date());
+
+        const fechaInicioDate = parseDateOnly(fechaInicioString);
+        const fechaFinDate = addMonthsKeepingCalendar(fechaInicioDate, meses);
+        fechaFinDate.setDate(fechaFinDate.getDate() - 1);
+
+        const fechaFinString = formatDateOnly(fechaFinDate);
+        const hoy = parseDateOnly(formatDateOnly(new Date()));
+
         const precioTotal = Number((input.precio_mensual * input.meses).toFixed(2));
-        const estadoMembresia = fechaFin >= startOfDay(new Date()) ? 'activa' : 'vencida';
+        const estadoMembresia = fechaFinDate >= hoy ? 'activa' : 'vencida';
 
         await connection.execute(
             INSERT_MEMBRESIA,
             {
                 id_beneficiario,
                 precio: precioTotal,
-                fecha_inicio: fechaInicio,
-                fecha_fin: fechaFin,
+                fecha_inicio: fechaInicioString,
+                fecha_fin: fechaFinString,
                 estado: estadoMembresia,
                 metodo_pago: input.metodo_pago,
             },
@@ -883,7 +1100,6 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                 telefono_casa: row.TELEFONO_CASA,
                 telefono_trabajo: row.TELEFONO_TRABAJO
             }));
-
         } catch (error) {
             console.error('Error in getPadresByBeneficiarioId:', error);
             throw error;
@@ -900,6 +1116,105 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         try {
             connection = await this.oracleConnection.getConnection();
             return await generateNextBeneficiarioFolio(connection);
+        } finally {
+            if (connection) {
+                await connection.close();
+            }
+        }
+    }
+
+    async updateMembresia(id_beneficiario: number, input: any): Promise<void> {
+        let connection: oracledb.Connection | undefined;
+
+        try {
+            connection = await this.oracleConnection.getConnection();
+
+            const existeResult = await connection.execute(
+                `
+                SELECT ID_MEMBRESIA
+                FROM MEMBRESIAS
+                WHERE ID_BENEFICIARIO = :id_beneficiario
+                `,
+                { id_beneficiario },
+                { outFormat: oracledb.OUT_FORMAT_OBJECT }
+            );
+
+            const rows = existeResult.rows as Array<{ ID_MEMBRESIA: number }> | undefined;
+            const existeMembresia = Boolean(rows && rows.length > 0);
+
+            if (existeMembresia) {
+                await connection.execute(
+                    `
+                    UPDATE MEMBRESIAS
+                    SET
+                        ESTADO = :estado,
+                        METODO_PAGO = :metodo_pago,
+                        FECHA_INICIO = TO_DATE(:fecha_inicio, 'YYYY-MM-DD'),
+                        FECHA_FIN = TO_DATE(:fecha_fin, 'YYYY-MM-DD'),
+                        PRECIO = :precio
+                    WHERE ID_BENEFICIARIO = :id_beneficiario
+                    `,
+                    {
+                        estado: input.estado,
+                        metodo_pago: input.metodo_pago,
+                        fecha_inicio: input.fecha_inicio,
+                        fecha_fin: input.fecha_fin,
+                        precio: input.precio,
+                        id_beneficiario
+                    },
+                    { autoCommit: false }
+                );
+            } else {
+                await connection.execute(
+                    `
+                    INSERT INTO MEMBRESIAS (
+                        ID_BENEFICIARIO,
+                        PRECIO,
+                        FECHA_INICIO,
+                        FECHA_FIN,
+                        ESTADO,
+                        METODO_PAGO
+                    ) VALUES (
+                        :id_beneficiario,
+                        :precio,
+                        TO_DATE(:fecha_inicio, 'YYYY-MM-DD'),
+                        TO_DATE(:fecha_fin, 'YYYY-MM-DD'),
+                        :estado,
+                        :metodo_pago
+                    )
+                    `,
+                    {
+                        id_beneficiario,
+                        precio: input.precio,
+                        fecha_inicio: input.fecha_inicio,
+                        fecha_fin: input.fecha_fin,
+                        estado: input.estado,
+                        metodo_pago: input.metodo_pago
+                    },
+                    { autoCommit: false }
+                );
+            }
+
+            await connection.execute(
+                `
+                UPDATE BENEFICIARIO
+                SET ESTADO = :estado_beneficiario
+                WHERE ID_BENEFICIARIO = :id_beneficiario
+                `,
+                {
+                    estado_beneficiario: input.estado === 'activa' ? 'activo' : 'inactivo',
+                    id_beneficiario
+                },
+                { autoCommit: false }
+            );
+
+            await connection.commit();
+        } catch (error) {
+            if (connection) {
+                await connection.rollback();
+            }
+            console.error('Error en updateMembresia:', error);
+            throw error;
         } finally {
             if (connection) {
                 await connection.close();

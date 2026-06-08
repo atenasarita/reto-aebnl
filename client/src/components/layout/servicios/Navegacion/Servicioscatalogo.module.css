@@ -1,0 +1,31 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.barra {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+/* Chips de categoría en tabla */
+.chip {
+  font-size: 12px;
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-control);
+  font-weight: 500;
+  background: var(--color-surface-muted);
+  color: var(--color-text-secondary);
+}
+
+.chipconsultas     { background: #E0E7FF; color: #3730A3; }
+.chipestudios      { background: #E0F2FE; color: #0369A1; }
+.chiplacoratorio   { background: #DCFCE7; color: #166534; }
+.chipprocedimiento { background: #FEF3C7; color: #92400E; }
+.chipreehabilitacion { background: #FFF7ED; color: #9A3412; }
+.chipterapia       { background: #FDF2F8; color: #9D174D; }
+.chipmaterial      { background: #F3F4F6; color: #374151; }

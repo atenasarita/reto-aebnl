@@ -62,10 +62,24 @@ router.get(
 );
 
 router.put(
+  '/beneficiarios/:id_beneficiario/padres',
+  authenticateJWT,
+  authorizeRoles('administrador', 'operador'),
+  beneficiariosHandler.updatePadres
+);
+
+router.put(
   '/beneficiarios/:id_beneficiario',
   authenticateJWT,
   authorizeRoles('administrador', 'operador'),
   beneficiariosHandler.updateBeneficiario
+);
+
+router.put(
+  '/beneficiarios/:id_beneficiario/membresia',
+  authenticateJWT,
+  authorizeRoles('administrador', 'operador'),
+  beneficiariosHandler.updateMembresia
 );
 
 router.post(

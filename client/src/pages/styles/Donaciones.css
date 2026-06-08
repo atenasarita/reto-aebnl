@@ -1,0 +1,319 @@
+/* Complementos sobre Recibos.css + BusquedaBeneficiarioVista.css */
+
+.donaciones-page {
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+.donaciones-header {
+  align-items: flex-end;
+}
+
+.donaciones-saldo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.donaciones-saldo-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+
+.donaciones-saldo-value {
+  font-size: 28px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-brand);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 640px) {
+  .donaciones-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .donaciones-saldo {
+    align-items: flex-start;
+  }
+
+  .donaciones-saldo-value {
+    font-size: 24px;
+  }
+}
+
+.donaciones-page .recibos-tabs-wrap {
+  margin-bottom: 0;
+}
+
+.donaciones-form-panel .recibos-tabs {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.donaciones-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.donaciones-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  font-family: var(--font);
+}
+
+.donaciones-form-panel {
+  margin-bottom: var(--space-6);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-muted);
+}
+
+.donaciones-input {
+  min-height: 44px;
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
+
+.donaciones-input-prefix {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.donaciones-input-prefix-symbol {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  width: 1.25rem;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  text-align: center;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.donaciones-input-prefix .input.donaciones-input.donaciones-input--monto {
+  width: 100%;
+  padding: 0 16px 0 42px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.donaciones-input.is-invalid,
+.donaciones-textarea.is-invalid,
+.recibos-tab.is-invalid {
+  border-color: #dc2626;
+}
+
+.donaciones-input.is-invalid:focus,
+.donaciones-textarea.is-invalid:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+.donaciones-field-error {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #dc2626;
+  line-height: 1.4;
+}
+
+.donaciones-textarea {
+  width: 100%;
+  min-height: 96px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  background: var(--color-surface-card);
+  resize: vertical;
+  transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+
+.donaciones-textarea::placeholder {
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--color-text-muted);
+}
+
+.donaciones-textarea:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.14);
+}
+
+.donaciones-char-count {
+  margin: var(--space-2) 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: right;
+  letter-spacing: 0.02em;
+}
+
+.donaciones-exito {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--green-soft);
+  border: 1px solid var(--green);
+  color: var(--green);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.donaciones-col-concepto {
+  max-width: 280px;
+}
+
+.donaciones-concepto-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+/* Columnas numéricas: mono tabular, alineación y respiro */
+.donaciones-page .recibos-table th.text-right {
+  padding-right: 20px;
+  min-width: 7.5rem;
+  text-align: right;
+}
+
+.donaciones-col-numeric {
+  padding: 13px 20px 13px 14px;
+  min-width: 7.5rem;
+  text-align: right;
+  vertical-align: middle;
+}
+
+.donaciones-money,
+.donaciones-balance .donaciones-money__value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.donaciones-money {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 4px;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.donaciones-money__sign {
+  flex-shrink: 0;
+  min-width: 0.75em;
+  font-weight: 600;
+  text-align: center;
+}
+
+.donaciones-money__value {
+  font-weight: 600;
+}
+
+.donaciones-money--abono,
+.donaciones-money--abono .donaciones-money__sign {
+  color: var(--color-brand);
+}
+
+.donaciones-money--egreso,
+.donaciones-money--egreso .donaciones-money__sign {
+  color: var(--color-brand-secondary);
+}
+
+.donaciones-balance .donaciones-money__value {
+  display: inline-block;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.donaciones-balance--fondo .donaciones-money__value {
+  color: var(--color-brand);
+}
+
+/* Badges tipo movimiento (azules, coherente con marca) */
+.donaciones-page .badge-donacion--abono {
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+}
+
+.donaciones-page .badge-egreso--egreso {
+  background: #e8eef8;
+  color: var(--color-brand-secondary);
+}
+
+.donaciones-skeleton-value {
+  height: 28px;
+  width: 140px;
+  border-radius: var(--radius-card);
+  background: linear-gradient(90deg, #e9edf5 25%, #f4f6fb 50%, #e9edf5 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.donaciones-page .estado-msg {
+  padding: var(--space-8) var(--space-6);
+  font-family: var(--font);
+  font-size: 14px;
+}
+
+.donaciones-page .estado-error {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.donaciones-spin {
+  animation: donaciones-spin 0.8s linear infinite;
+}
+
+@keyframes donaciones-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .donaciones-spin {
+    animation: none;
+  }
+
+  .donaciones-skeleton-value {
+    animation: none;
+    background: #e9edf5;
+  }
+}

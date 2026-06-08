@@ -12,6 +12,7 @@ import recibosRoutes from './src/routes/recibos.routes';
 import beneficiariosRoutes from "./src/routes/beneficiarios.routes";
 import inventarioRoutes from "./src/routes/inventario.routes";
 import serviciosRoutes from "./src/routes/servicios.routes";
+import fondoDonacionesRoutes from "./src/routes/fondoDonaciones.routes";
 import { errorMiddleware } from './src/middlewares/error.middleware';
 import dashboardRoutes from "./src/routes/dashboard.routes";
 import reportesRoutes from "./src/routes/reportes.routes";
@@ -23,7 +24,6 @@ import { startMembresiaExpirationJob } from './src/jobs/membresiaExpiration.job'
 import catalogosRouter from './src/routes/catalogos.routes.js';
 
 
-// ── Wallet setup ──────────────────────────────────────────────
 const walletDir = process.env.TNS_ADMIN || '/tmp/wallet';
 
 if (!fs.existsSync(walletDir)) {
@@ -40,8 +40,11 @@ if (!fs.existsSync(walletDir)) {
 }
 
 process.env.TNS_ADMIN = walletDir;
-// ─────────────────────────────────────────────────────────────
 
+
+console.log("ORACLE_USER:", process.env.ORACLE_USER);
+console.log("ORACLE_CONNECT_STRING:", process.env.ORACLE_CONNECT_STRING);
+console.log("ORACLE_PASSWORD existe:", !!process.env.ORACLE_PASSWORD);
 
 const app = express();
 const PORT = Number(process.env.PORT) || 10000;
@@ -49,6 +52,7 @@ const PORT = Number(process.env.PORT) || 10000;
 app.use(cors({
   origin: [
     'http://localhost:5173',
+    'http://localhost:5174',
     'https://aebnl.netlify.app'
   ],
   credentials: true
@@ -68,16 +72,13 @@ app.use('/api/citas', citasRoutes);
 app.use("/api", catalogosRouter);
 app.use('/api', dashboardRoutes);
 app.use('/api/reportes', reportesRoutes);
-app.use('/api', serviciosRoutes)
+app.use('/api', serviciosRoutes);
+app.use('/api/fondo_donaciones', fondoDonacionesRoutes);
 app.use('/api', especialistasRoutes);
 
 app.use(errorMiddleware);
 
-// app.get('/api/citas-test', (req, res) => {
-//   res.json({ ok: true });
-// });
-
-startMembresiaExpirationJob();
+// startMembresiaExpirationJob();
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);

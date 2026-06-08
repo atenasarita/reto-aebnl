@@ -6,6 +6,7 @@ import DetalleCita from "./DetalleCita";
 import CitasPop from "../../ui/CitasPop";
 import { API_URL } from "../../../utils/config";
 import { getAgendaTagClass } from "../../../utils/agendaUtils";
+import { todayDate } from "../../../utils/dateTime";
 
 export default function CalendarioCitas() {
   const [eventos, setEventos] = useState([]);
@@ -22,10 +23,12 @@ export default function CalendarioCitas() {
       const response = await fetch(`${API_URL}/api/citas`);
       const data = await response.json();
 
-      const eventosporID = data.map((item) => ({
-      ...item,
-      classNames: [getAgendaTagClass(item)]
-      }));
+      const eventosporID = data.map((item) => {
+        return {
+          ...item,
+          classNames: [getAgendaTagClass(item)],
+        };
+      });
       setEventos(eventosporID);
     } catch(error){
       console.error("Error: ", error);
@@ -37,6 +40,8 @@ export default function CalendarioCitas() {
   return (
     <>
     <FullCalendar
+      timeZone="local"
+      initialDate={todayDate()}
       plugins={[dayGridPlugin, timeGridPlugin]}
       initialView="dayGridMonth"
       locale='es'
@@ -45,6 +50,8 @@ export default function CalendarioCitas() {
       events={eventos}
       dayMaxEvents={3}
       moreLinkText={(num) => `+ ${num} más`}
+      moreLinkClick="popover"
+
       eventContent={(eventInfo) => {
         const clase = eventInfo.event.classNames?.[0] || "blue";
         return (
@@ -59,8 +66,6 @@ export default function CalendarioCitas() {
         )
       }}
       eventClick={(info) => {
-        console.log("EVENTO COMPLETO:", info.event);
-        console.log("EXTENDED PROPS:", info.event.extendedProps);
         setCitaSeleccionada(info.event);
       }}
 

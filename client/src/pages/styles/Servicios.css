@@ -1,0 +1,116 @@
+/* Complementos sobre Recibos.css + OperationalPage.css */
+
+.servicios-page {
+  --green: #05722d;
+  --green-soft: #dcfce7;
+}
+
+.servicios-page .btnPrimary,
+.servicios-page .btnSecondary {
+  transition:
+    background var(--duration-ui) var(--ease-out),
+    color var(--duration-ui) var(--ease-out),
+    box-shadow var(--duration-ui) var(--ease-out),
+    transform var(--duration-press) var(--ease-out);
+}
+
+.servicios-page .btnPrimary:active:not(:disabled),
+.servicios-page .btnSecondary:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .servicios-page .btnPrimary:hover:not(:disabled) {
+    background: var(--color-brand-hover);
+    box-shadow: 0 4px 14px rgba(30, 59, 138, 0.28);
+  }
+
+  .servicios-page .btnSecondary:hover:not(:disabled) {
+    background: #e8eaf0;
+    color: #1e293b;
+  }
+}
+
+.servicios-page .recibos-table .td-acciones {
+  vertical-align: middle;
+  text-align: right;
+  padding: 10px 14px;
+  background-color: #fff;
+  line-height: 1;
+}
+
+.servicios-page .recibos-table tbody tr:hover .td-acciones {
+  background-color: #f8fafc;
+}
+
+.servicios-acciones-celda {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 1px 0;
+}
+
+.servicios-page .recibos-table .th-acciones {
+  text-align: right;
+}
+
+.servicios-page .td-monto {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Pills en un solo renglón (como diseño original) */
+.servicios-page .btn-ver,
+.servicios-page .btn-ver--seg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background var(--duration-ui) var(--ease-out),
+    color var(--duration-ui) var(--ease-out),
+    border-color var(--duration-ui) var(--ease-out),
+    transform var(--duration-press) var(--ease-out);
+}
+
+.servicios-page .btn-ver {
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+  border: 1.5px solid var(--color-brand);
+}
+
+.servicios-page .btn-ver--seg {
+  background: var(--green-soft);
+  color: var(--green);
+  border: 1.5px solid var(--green);
+}
+
+.servicios-page .btn-ver:active,
+.servicios-page .btn-ver--seg:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .servicios-page .btn-ver:hover {
+    background: var(--color-brand);
+    color: #ffffff;
+  }
+
+  .servicios-page .btn-ver--seg:hover {
+    background: #bbf7d0;
+    color: #166534;
+  }
+}

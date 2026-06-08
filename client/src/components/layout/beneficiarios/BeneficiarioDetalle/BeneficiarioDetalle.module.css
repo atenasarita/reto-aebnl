@@ -277,3 +277,146 @@
   padding: 6px 8px;
   min-height: 32px;
 }
+
+.radioGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 34px;
+}
+
+.radioGroup label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #111827;
+
+}
+
+.tabsNav {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.tabBtn {
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 500;
+  color: #334155;
+  padding: 12px 18px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.tabBtnActive {
+  background: #dfe7ff;
+  color: #1e3a8a;
+  font-weight: 700;
+}
+
+.membershipCard {
+  background: #f8fbff;
+  border: 1px solid #dbe7f5;
+  border-radius: 18px;
+  padding: 18px;
+  margin-top: 8px;
+}
+
+.membershipHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.membershipTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin: 0;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.statusActive {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.statusExpired {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.membershipSection {
+  margin-bottom: 18px;
+}
+
+.membershipSectionTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+
+.membershipGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.membershipInfoBox {
+  background: #ffffff;
+  border: 1px solid #dbe7f5;
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.membershipInfoLabel {
+  display: block;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.membershipInfoValue {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.membershipActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+@media (max-width: 768px) {
+  .membershipGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .membershipHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .membershipActions {
+    flex-direction: column;
+  }
+}

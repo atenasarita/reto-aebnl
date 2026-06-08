@@ -4,12 +4,23 @@ import DashboardController from "../controllers/dashboard.controller";
 export class DashboardHandler {
   constructor(private controller: DashboardController) {}
 
-  getAgendaHoy = async (_req: Request, res: Response) => {
+  getAgendaHoy = async (req: Request, res: Response) => {
     try {
-      const data = await this.controller.getAgendaHoy();
+      const fecha = req.query.fecha as string;
+
+
+      if(!fecha){
+        return res.status(400).json({
+          message: "La fecha es requerida",
+        });
+      }
+
+      const data = await this.controller.getAgendaHoy(fecha);
       return res.json(data);
     } catch (err: any) {
-      return res.status(500).json({ message: err?.message ?? "Error en servidor" });
+      return res.status(500).json({ 
+        message: err?.message ?? "Error en servidor" 
+      });
     }
   };
 

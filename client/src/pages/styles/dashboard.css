@@ -577,6 +577,16 @@
   color: #dc2626;
 }
 
+.agenda-tag.teal {
+  background: #ccfbf1;
+  color: #115e59;
+}
+
+.agenda-tag.pink {
+  background: #fce7f3;
+  color: #831843;
+}
+
 .preregistro-card-wrapper {
   border-bottom: 1px solid #edf2f8;
 }
@@ -631,7 +641,7 @@
 
 .preregistro-card-wrapper {
   border-bottom: 1px solid #edf2f8;
-  transition: all 0.25s ease;
+  transition: background-color 0.25s ease;
 }
 
 .preregistro-card-wrapper.open {
@@ -1110,4 +1120,26 @@
 
 .btn-secondary-modal:hover {
   background: #cbd5e1;
+}
+
+.action-card-reports {
+  background: linear-gradient(135deg, #166534 0%, #14532d 100%);
+  color: white;
+  border: none;
+}
+
+.action-card-icon-reports {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.action-card-reports .action-card-text h3 {
+  color: white;
+}
+
+.action-card-reports .action-card-text p {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.action-card-reports .action-card-arrow {
+  color: white;
 }

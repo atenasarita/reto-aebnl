@@ -1,23 +1,141 @@
 import { useEffect, useState } from 'react'
 import styles from './BeneficiarioDetalle.module.css'
 import { API_URL } from '../../../../utils/config'
+import PropTypes from 'prop-types'
+
+function parseDateOnly(dateStr) {
+  if (!dateStr) return null
+  const dateOnly = String(dateStr).split('T')[0]
+  const [year, month, day] = dateOnly.split('-')
+  if (!year || !month || !day) return null
+  return new Date(Number(year), Number(month) - 1, Number(day))
+}
 
 function calcAge(fechaNacimiento) {
-  if (!fechaNacimiento) return '—'
-  const diff = Date.now() - new Date(fechaNacimiento).getTime()
+  const birthDate = parseDateOnly(fechaNacimiento)
+
+  if (!birthDate) return null
+
+  const diff = Date.now() - birthDate.getTime()
   return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25))
 }
 
+function formatValvula(valvula) {
+  if (valvula === 1 || valvula === '1' || valvula === true) return 'Sí'
+  if (valvula === 0 || valvula === '0' || valvula === false) return 'No'
+  return '—'
+}
+
+function formatDiagnostico(tipoEspina) {
+  if (!Array.isArray(tipoEspina) || tipoEspina.length === 0) return '—'
+  return tipoEspina.map((e) => e.nombre).join(' · ')
+}
+
 function formatDate(dateStr) {
-  if (!dateStr) return '—'
-  const dateOnly = String(dateStr).split('T')[0]
-  const [year, month, day] = dateOnly.split('-')
-  return `${Number(day)}/${Number(month)}/${year}`
+  const date = parseDateOnly(dateStr)
+  if (!date) return '—'
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = String(date.getFullYear())
+  return `${day}/${month}/${year}`
 }
 
 function formatInputDate(dateStr) {
   if (!dateStr) return ''
   return String(dateStr).split('T')[0]
+}
+
+function buildInitialFormData(beneficiario) {
+  const identificadores = beneficiario.identificadores || {}
+  const datosMedicos = beneficiario.datos_medicos || {}
+  const direccion = beneficiario.direccion || {}
+  const membresia = beneficiario.membresia || {}
+
+  return {
+    nombres: identificadores.nombres || '',
+    apellido_paterno: identificadores.apellido_paterno || '',
+    apellido_materno: identificadores.apellido_materno || '',
+    CURP: identificadores.CURP || '',
+    fecha_nacimiento: formatInputDate(identificadores.fecha_nacimiento),
+    genero: beneficiario.genero || '',
+    telefono: identificadores.telefono || '',
+    email: identificadores.email || '',
+    estado_nacimiento: identificadores.estado_nacimiento || '',
+    contacto_nombre: datosMedicos.contacto_nombre || '',
+    contacto_telefono: datosMedicos.contacto_telefono || '',
+    contacto_parentesco: datosMedicos.contacto_parentesco || '',
+    tipo_sanguineo: datosMedicos.tipo_sanguineo || '',
+    hospital: datosMedicos.hospital || '',
+    domicilio_calle: direccion.domicilio_calle || '',
+    domicilio_ciudad: direccion.domicilio_ciudad || '',
+    domicilio_estado: direccion.domicilio_estado || '',
+    domicilio_cp: direccion.domicilio_cp || '',
+    valvula:
+      datosMedicos.valvula === 1 ||
+      datosMedicos.valvula === '1' ||
+      datosMedicos.valvula === true
+        ? 'Sí'
+        : 'No',
+    diagnostico: formatDiagnostico(beneficiario.tipo_espina),
+    fecha_inicio: formatInputDate(membresia.fecha_inicio),
+    fecha_fin: formatInputDate(membresia.fecha_fin)
+  }
+}
+
+async function updateBeneficiario(idBeneficiario, formData) {
+  const token = localStorage.getItem('token')
+
+  const response = await fetch(`${API_URL}/api/beneficiarios/${idBeneficiario}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(formData)
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Error al actualizar beneficiario')
+  }
+
+  return data
+}
+
+function EditableField({
+  label,
+  name,
+  value,
+  isEditing,
+  onChange,
+  type = 'text',
+  className = styles.field,
+  valueClassName = styles.fieldValue,
+  inputClassName = styles.input,
+  children
+}) {
+  const displayValue = value || '—'
+
+  return (
+    <div className={className}>
+      <span className={styles.fieldLabel}>{label}</span>
+
+      {isEditing ? (
+        children || (
+          <input
+            className={inputClassName}
+            type={type}
+            name={name}
+            value={value || ''}
+            onChange={onChange}
+          />
+        )
+      ) : (
+        <span className={valueClassName}>{displayValue}</span>
+      )}
+    </div>
+  )
 }
 
 function BeneficiarioDetalle({
@@ -31,7 +149,6 @@ function BeneficiarioDetalle({
     folio,
     fecha_ingreso,
     genero,
-    tipo_espina,
     identificadores,
     datos_medicos,
     direccion
@@ -68,79 +185,15 @@ function BeneficiarioDetalle({
   const fecha_inicio = beneficiario.membresia?.fecha_inicio ?? null
   const fecha_fin = beneficiario.membresia?.fecha_fin ?? null
 
-  const diagnostico = tipo_espina?.map(e => e.nombre).join(' · ') || '—'
-  const valvulaTexto =
-    valvula === 1 || valvula === '1' || valvula === true ? 'Sí'
-      : valvula === 0 || valvula === '0' || valvula === false ? 'No'
-        : '—'
-
   const fotoURL = fotografia || null
 
   const [isEditing, setIsEditing] = useState(startInEditMode)
   const [saving, setSaving] = useState(false)
-
-  const [formData, setFormData] = useState({
-    nombres: '',
-    apellido_paterno: '',
-    apellido_materno: '',
-    CURP: '',
-    fecha_nacimiento: '',
-    genero: '',
-    telefono: '',
-    email: '',
-    estado_nacimiento: '',
-    contacto_nombre: '',
-    contacto_telefono: '',
-    contacto_parentesco: '',
-    tipo_sanguineo: '',
-    hospital: '',
-    domicilio_calle: '',
-    domicilio_ciudad: '',
-    domicilio_estado: '',
-    domicilio_cp: ''
-  })
+  const [formData, setFormData] = useState(() => buildInitialFormData(beneficiario))
 
   useEffect(() => {
-    setFormData({
-      nombres: nombres || '',
-      apellido_paterno: apellido_paterno || '',
-      apellido_materno: apellido_materno || '',
-      CURP: CURP || '',
-      fecha_nacimiento: formatInputDate(fecha_nacimiento),
-      genero: genero || '',
-      telefono: telefono || '',
-      email: email || '',
-      estado_nacimiento: estado_nacimiento || '',
-      contacto_nombre: contacto_nombre || '',
-      contacto_telefono: contacto_telefono || '',
-      contacto_parentesco: contacto_parentesco || '',
-      tipo_sanguineo: tipo_sanguineo || '',
-      hospital: hospital || '',
-      domicilio_calle: domicilio_calle || '',
-      domicilio_ciudad: domicilio_ciudad || '',
-      domicilio_estado: domicilio_estado || '',
-      domicilio_cp: domicilio_cp || ''
-    })
-  }, [
-    nombres,
-    apellido_paterno,
-    apellido_materno,
-    CURP,
-    fecha_nacimiento,
-    genero,
-    telefono,
-    email,
-    estado_nacimiento,
-    contacto_nombre,
-    contacto_telefono,
-    contacto_parentesco,
-    tipo_sanguineo,
-    hospital,
-    domicilio_calle,
-    domicilio_ciudad,
-    domicilio_estado,
-    domicilio_cp
-  ])
+    setFormData(buildInitialFormData(beneficiario))
+  }, [beneficiario])
 
   useEffect(() => {
     setIsEditing(startInEditMode)
@@ -157,26 +210,7 @@ function BeneficiarioDetalle({
   }
 
   const resetForm = () => {
-    setFormData({
-      nombres: nombres || '',
-      apellido_paterno: apellido_paterno || '',
-      apellido_materno: apellido_materno || '',
-      CURP: CURP || '',
-      fecha_nacimiento: formatInputDate(fecha_nacimiento),
-      genero: genero || '',
-      telefono: telefono || '',
-      email: email || '',
-      estado_nacimiento: estado_nacimiento || '',
-      contacto_nombre: contacto_nombre || '',
-      contacto_telefono: contacto_telefono || '',
-      contacto_parentesco: contacto_parentesco || '',
-      tipo_sanguineo: tipo_sanguineo || '',
-      hospital: hospital || '',
-      domicilio_calle: domicilio_calle || '',
-      domicilio_ciudad: domicilio_ciudad || '',
-      domicilio_estado: domicilio_estado || '',
-      domicilio_cp: domicilio_cp || ''
-    })
+    setFormData(buildInitialFormData(beneficiario))
   }
 
   const handleCancel = () => {
@@ -188,32 +222,18 @@ function BeneficiarioDetalle({
     try {
       setSaving(true)
 
-      const token = localStorage.getItem('token')
-
-      const response = await fetch(`${API_URL}/api/beneficiarios/${id_beneficiario}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Error al actualizar beneficiario')
+      const payload = {
+        ...formData,
+        valvula: formData.valvula === 'Sí'
       }
 
-      if (onUpdated) {
-        await onUpdated()
-      }
+      await updateBeneficiario(id_beneficiario, payload)
+
+      if (onUpdated) await onUpdated()
 
       setIsEditing(false)
 
-      if (onClose) {
-        onClose()
-      }
+      if (onClose) onClose()
     } catch (error) {
       alert(error.message)
     } finally {
@@ -240,75 +260,59 @@ function BeneficiarioDetalle({
           </div>
 
           <div className={styles.topInfo}>
-            <div className={`${styles.field} ${styles.full}`}>
-              <span className={styles.fieldLabel}>Nombre(s)</span>
-              {isEditing ? (
-                <input
-                  className={styles.input}
-                  name="nombres"
-                  value={formData.nombres}
-                  onChange={handleChange}
-                />
-              ) : (
-                <span className={styles.fieldValue}>{nombreCompleto}</span>
-              )}
-            </div>
+            <EditableField
+              label="Nombre(s)"
+              name="nombres"
+              value={isEditing ? formData.nombres : nombreCompleto}
+              isEditing={isEditing}
+              onChange={handleChange}
+              className={`${styles.field} ${styles.full}`}
+            />
 
             {isEditing && (
               <>
-                <div className={`${styles.field} ${styles.full}`}>
-                  <span className={styles.fieldLabel}>Apellido paterno</span>
-                  <input
-                    className={styles.input}
-                    name="apellido_paterno"
-                    value={formData.apellido_paterno}
-                    onChange={handleChange}
-                  />
-                </div>
+                <EditableField
+                  label="Apellido paterno"
+                  name="apellido_paterno"
+                  value={formData.apellido_paterno}
+                  isEditing={isEditing}
+                  onChange={handleChange}
+                  className={`${styles.field} ${styles.full}`}
+                />
 
-                <div className={`${styles.field} ${styles.full}`}>
-                  <span className={styles.fieldLabel}>Apellido materno</span>
-                  <input
-                    className={styles.input}
-                    name="apellido_materno"
-                    value={formData.apellido_materno}
-                    onChange={handleChange}
-                  />
-                </div>
+                <EditableField
+                  label="Apellido materno"
+                  name="apellido_materno"
+                  value={formData.apellido_materno}
+                  isEditing={isEditing}
+                  onChange={handleChange}
+                  className={`${styles.field} ${styles.full}`}
+                />
               </>
             )}
 
-            <div className={`${styles.field} ${styles.full}`}>
-              <span className={styles.fieldLabel}>CURP</span>
-              {isEditing ? (
-                <input
-                  className={styles.input}
-                  name="CURP"
-                  value={formData.CURP}
-                  onChange={handleChange}
-                />
-              ) : (
-                <span className={styles.fieldValue} style={{ fontSize: '11px' }}>{formData.CURP || '—'}</span>
-              )}
-            </div>
+            <EditableField
+              label="CURP"
+              name="CURP"
+              value={formData.CURP}
+              isEditing={isEditing}
+              onChange={handleChange}
+              className={`${styles.field} ${styles.full}`}
+              valueClassName={styles.fieldValue}
+            />
           </div>
         </div>
 
         <div className={styles.row}>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Fecha de nacimiento</span>
-            {isEditing ? (
-              <input
-                className={styles.input}
-                type="date"
-                name="fecha_nacimiento"
-                value={formData.fecha_nacimiento}
-                onChange={handleChange}
-              />
-            ) : (
-              <span className={styles.fieldValue}>{formatDate(fecha_nacimiento)}</span>
-            )}
-          </div>
+          <EditableField
+            label="Fecha de nacimiento"
+            name="fecha_nacimiento"
+            value={isEditing ? formData.fecha_nacimiento : formatDate(fecha_nacimiento)}
+            isEditing={isEditing}
+            onChange={handleChange}
+            type="date"
+            className={styles.field}
+          />
 
           <div className={styles.field}>
             <span className={styles.fieldLabel}>Edad</span>
@@ -317,24 +321,26 @@ function BeneficiarioDetalle({
             </span>
           </div>
 
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Sexo</span>
-            {isEditing ? (
-              <select
-                className={styles.input}
-                name="genero"
-                value={formData.genero}
-                onChange={handleChange}
-              >
-                <option value="">Selecciona</option>
-                <option value="masculino">masculino</option>
-                <option value="femenino">femenino</option>
-                <option value="otro">otro</option>
-              </select>
-            ) : (
-              <span className={styles.fieldValue}>{formData.genero || '—'}</span>
-            )}
-          </div>
+          <EditableField
+            label="Sexo"
+            name="genero"
+            value={formData.genero}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={styles.field}
+          >
+            <select
+              className={styles.input}
+              name="genero"
+              value={formData.genero}
+              onChange={handleChange}
+            >
+              <option value="">Selecciona</option>
+              <option value="masculino">masculino</option>
+              <option value="femenino">femenino</option>
+              <option value="otro">otro</option>
+            </select>
+          </EditableField>
         </div>
 
         <div className={styles.row}>
@@ -358,63 +364,43 @@ function BeneficiarioDetalle({
         <p className={styles.sectionLabel}>Dirección</p>
 
         <div className={styles.row}>
-          <div className={`${styles.field} ${styles.wide}`}>
-            <span className={styles.fieldLabel}>Calle</span>
-            {isEditing ? (
-              <input
-                className={styles.input}
-                name="domicilio_calle"
-                value={formData.domicilio_calle}
-                onChange={handleChange}
-              />
-            ) : (
-              <span className={styles.fieldValue}>{formData.domicilio_calle || '—'}</span>
-            )}
-          </div>
+          <EditableField
+            label="Calle"
+            name="domicilio_calle"
+            value={formData.domicilio_calle}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={`${styles.field} ${styles.wide}`}
+          />
 
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Ciudad</span>
-            {isEditing ? (
-              <input
-                className={styles.input}
-                name="domicilio_ciudad"
-                value={formData.domicilio_ciudad}
-                onChange={handleChange}
-              />
-            ) : (
-              <span className={styles.fieldValue}>{formData.domicilio_ciudad || '—'}</span>
-            )}
-          </div>
+          <EditableField
+            label="Ciudad"
+            name="domicilio_ciudad"
+            value={formData.domicilio_ciudad}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={styles.field}
+          />
         </div>
 
         <div className={styles.row}>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Estado</span>
-            {isEditing ? (
-              <input
-                className={styles.input}
-                name="domicilio_estado"
-                value={formData.domicilio_estado}
-                onChange={handleChange}
-              />
-            ) : (
-              <span className={styles.fieldValue}>{formData.domicilio_estado || '—'}</span>
-            )}
-          </div>
+          <EditableField
+            label="Estado"
+            name="domicilio_estado"
+            value={formData.domicilio_estado}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={styles.field}
+          />
 
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>C.P.</span>
-            {isEditing ? (
-              <input
-                className={styles.input}
-                name="domicilio_cp"
-                value={formData.domicilio_cp}
-                onChange={handleChange}
-              />
-            ) : (
-              <span className={styles.fieldValue}>{formData.domicilio_cp || '—'}</span>
-            )}
-          </div>
+          <EditableField
+            label="C.P."
+            name="domicilio_cp"
+            value={formData.domicilio_cp}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={styles.field}
+          />
         </div>
       </div>
 
@@ -424,161 +410,181 @@ function BeneficiarioDetalle({
         <p className={styles.sectionLabel}>Contacto</p>
 
         <div className={styles.row}>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Email</span>
-            {isEditing ? (
-              <input
-                className={styles.input}
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            ) : (
-              <span className={styles.fieldValue}>{formData.email || '—'}</span>
-            )}
-          </div>
+          <EditableField
+            label="Email"
+            name="email"
+            value={formData.email}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={styles.field}
+          />
 
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Teléfono</span>
-            {isEditing ? (
-              <input
-                className={styles.input}
-                name="telefono"
-                value={formData.telefono}
-                onChange={handleChange}
-              />
-            ) : (
-              <span className={styles.fieldValue}>{formData.telefono || '—'}</span>
-            )}
-          </div>
+          <EditableField
+            label="Teléfono"
+            name="telefono"
+            value={formData.telefono}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={styles.field}
+          />
         </div>
 
         <div className={styles.row}>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Contacto de emergencia</span>
-            {isEditing ? (
-              <input
-                className={styles.input}
-                name="contacto_nombre"
-                value={formData.contacto_nombre}
-                onChange={handleChange}
-              />
-            ) : (
-              <span className={styles.fieldValue}>{formData.contacto_nombre || '—'}</span>
-            )}
-          </div>
+          <EditableField
+            label="Contacto de emergencia"
+            name="contacto_nombre"
+            value={formData.contacto_nombre}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={styles.field}
+          />
 
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Tel. emergencia</span>
-            {isEditing ? (
-              <input
-                className={styles.input}
-                name="contacto_telefono"
-                value={formData.contacto_telefono}
-                onChange={handleChange}
-              />
-            ) : (
-              <span className={styles.fieldValue}>{formData.contacto_telefono || '—'}</span>
-            )}
-          </div>
+          <EditableField
+            label="Tel. emergencia"
+            name="contacto_telefono"
+            value={formData.contacto_telefono}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={styles.field}
+          />
         </div>
 
         <div className={styles.row}>
-          <div className={`${styles.field} ${styles.full}`}>
-            <span className={styles.fieldLabel}>Parentesco</span>
-            {isEditing ? (
-              <input
-                className={styles.input}
-                name="contacto_parentesco"
-                value={formData.contacto_parentesco}
-                onChange={handleChange}
-              />
-            ) : (
-              <span className={styles.fieldValue}>{formData.contacto_parentesco || '—'}</span>
-            )}
-          </div>
+          <EditableField
+            label="Parentesco"
+            name="contacto_parentesco"
+            value={formData.contacto_parentesco}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={`${styles.field} ${styles.full}`}
+          />
         </div>
 
         <p className={styles.sectionLabel}>Historial</p>
 
         <div className={styles.row}>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Estado de nacimiento</span>
-            {isEditing ? (
-              <input
-                className={styles.input}
-                name="estado_nacimiento"
-                value={formData.estado_nacimiento}
-                onChange={handleChange}
-              />
-            ) : (
-              <span className={styles.fieldValue}>{formData.estado_nacimiento || '—'}</span>
-            )}
-          </div>
+          <EditableField
+            label="Estado de nacimiento"
+            name="estado_nacimiento"
+            value={formData.estado_nacimiento}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={styles.field}
+          />
 
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Hospital</span>
-            {isEditing ? (
-              <input
-                className={styles.input}
-                name="hospital"
-                value={formData.hospital}
-                onChange={handleChange}
-              />
-            ) : (
-              <span className={styles.fieldValue}>{formData.hospital || '—'}</span>
-            )}
-          </div>
+          <EditableField
+            label="Hospital"
+            name="hospital"
+            value={formData.hospital}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={styles.field}
+          />
         </div>
 
         <div className={styles.row}>
-          <div className={`${styles.field} ${styles.full}`}>
-            <span className={styles.fieldLabel}>Diagnóstico</span>
-            <span className={styles.fieldValue}>{diagnostico}</span>
-          </div>
+          <EditableField
+            label="Diagnóstico"
+            name="diagnostico"
+            value={formData.diagnostico}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={`${styles.field} ${styles.full}`}
+          />
         </div>
 
         <div className={styles.row}>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Tipo de sangre</span>
-            {isEditing ? (
-              <select
-                className={styles.input}
-                name="tipo_sanguineo"
-                value={formData.tipo_sanguineo}
-                onChange={handleChange}
-              >
-                <option value="">Selecciona</option>
-                <option value="A+">A+</option>
-                <option value="A-">A-</option>
-                <option value="B+">B+</option>
-                <option value="B-">B-</option>
-                <option value="AB+">AB+</option>
-                <option value="AB-">AB-</option>
-                <option value="O+">O+</option>
-                <option value="O-">O-</option>
-              </select>
-            ) : (
-              <span className={styles.fieldValue}>{formData.tipo_sanguineo || '—'}</span>
-            )}
-          </div>
+          <EditableField
+            label="Tipo de sangre"
+            name="tipo_sanguineo"
+            value={formData.tipo_sanguineo}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={styles.field}
+          >
+            <select
+              className={styles.input}
+              name="tipo_sanguineo"
+              value={formData.tipo_sanguineo}
+              onChange={handleChange}
+            >
+              <option value="">Selecciona</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </EditableField>
 
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Válvula</span>
-            <span className={styles.fieldValue}>{valvulaTexto}</span>
-          </div>
+          <EditableField
+            label="Válvula"
+            name="valvula"
+            value={isEditing ? formData.valvula : formatValvula(valvula)}
+            isEditing={isEditing}
+            onChange={handleChange}
+            className={styles.field}
+          >
+            <select
+              className={styles.input}
+              name="valvula"
+              value={formData.valvula}
+              onChange={handleChange}
+            >
+              <option value="Sí">Sí</option>
+              <option value="No">No</option>
+            </select>
+          </EditableField>
         </div>
 
-        <div className={styles.row}>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Desde</span>
-            <span className={styles.fieldValue}>{fecha_inicio ? formatDate(fecha_inicio) : '—'}</span>
+        <p className={styles.sectionLabel}>Membresía</p>
+
+        {isEditing ? (
+          <div className={styles.row}>
+            <EditableField
+              label="Desde"
+              name="fecha_inicio"
+              value={formData.fecha_inicio}
+              isEditing={isEditing}
+              onChange={handleChange}
+              type="date"
+              className={styles.field}
+            />
+
+            <EditableField
+              label="Hasta"
+              name="fecha_fin"
+              value={formData.fecha_fin}
+              isEditing={isEditing}
+              onChange={handleChange}
+              type="date"
+              className={styles.field}
+            />
           </div>
-          <div className={styles.field}>
-            <span className={styles.fieldLabel}>Hasta</span>
-            <span className={styles.fieldValue}>{fecha_fin ? formatDate(fecha_fin) : '—'}</span>
-          </div>
-        </div>
+        ) : (
+          <>
+            <div className={styles.row}>
+              <div className={`${styles.field} ${styles.full}`}>
+                <span className={styles.fieldLabel}>Vigencia de membresía</span>
+                <span className={styles.fieldValue}>
+                  {fecha_inicio && fecha_fin
+                    ? `${formatDate(fecha_inicio)} al ${formatDate(fecha_fin)}`
+                    : 'Sin membresía activa'}
+                </span>
+              </div>
+            </div>
+
+            <div className={styles.row}>
+              <div className={styles.field}>
+                <span className={styles.fieldLabel}>Renovación</span>
+                <span className={styles.fieldValue}>$150 MXN por renovación</span>
+              </div>
+            </div>
+          </>
+        )}
 
         {isEditing && (
           <div className={styles.editButtonWrapper}>
@@ -593,6 +599,78 @@ function BeneficiarioDetalle({
       </div>
     </div>
   )
+}
+
+EditableField.propTypes = {
+  label: PropTypes.string.isRequired,
+  name: PropTypes.string,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number
+  ]),
+  isEditing: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired,
+  type: PropTypes.string,
+  className: PropTypes.string,
+  valueClassName: PropTypes.string,
+  inputClassName: PropTypes.string,
+  children: PropTypes.node
+}
+
+BeneficiarioDetalle.propTypes = {
+  beneficiario: PropTypes.shape({
+    id_beneficiario: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number
+    ]).isRequired,
+    folio: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number
+    ]),
+    fecha_ingreso: PropTypes.string,
+    genero: PropTypes.string,
+    tipo_espina: PropTypes.arrayOf(
+      PropTypes.shape({
+        nombre: PropTypes.string
+      })
+    ),
+    membresia: PropTypes.shape({
+      fecha_inicio: PropTypes.string,
+      fecha_fin: PropTypes.string
+    }),
+    identificadores: PropTypes.shape({
+      nombres: PropTypes.string,
+      apellido_paterno: PropTypes.string,
+      apellido_materno: PropTypes.string,
+      CURP: PropTypes.string,
+      fecha_nacimiento: PropTypes.string,
+      estado_nacimiento: PropTypes.string,
+      fotografia: PropTypes.string,
+      telefono: PropTypes.string,
+      email: PropTypes.string
+    }).isRequired,
+    datos_medicos: PropTypes.shape({
+      tipo_sanguineo: PropTypes.string,
+      contacto_nombre: PropTypes.string,
+      contacto_telefono: PropTypes.string,
+      contacto_parentesco: PropTypes.string,
+      valvula: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+        PropTypes.bool
+      ]),
+      hospital: PropTypes.string
+    }).isRequired,
+    direccion: PropTypes.shape({
+      domicilio_calle: PropTypes.string,
+      domicilio_cp: PropTypes.string,
+      domicilio_ciudad: PropTypes.string,
+      domicilio_estado: PropTypes.string
+    }).isRequired
+  }).isRequired,
+  startInEditMode: PropTypes.bool,
+  onUpdated: PropTypes.func,
+  onClose: PropTypes.func
 }
 
 export default BeneficiarioDetalle
