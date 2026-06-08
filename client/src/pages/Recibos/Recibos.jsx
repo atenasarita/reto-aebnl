@@ -6,6 +6,7 @@ import { useSearchParams } from 'react-router-dom'
 import "../styles/Recibos.css";
 
 import { API_URL } from '../../utils/config'
+import { authFetch } from '../../utils/auth'
 import { todayDate } from '../../utils/dateTime';
 
 const fmt = (n) =>
@@ -321,7 +322,7 @@ export default function Recibos() {
   const cargarDia = useCallback(async (f) => {
     setLoadingDay(true); setErrorDay("");
     try {
-      const res = await fetch(`${API_URL}/api/recibos?fecha=${f}`);
+      const res = await authFetch(`${API_URL}/api/recibos?fecha=${f}`);
       if (!res.ok) throw new Error(`Error ${res.status}`);
       setRecibosDay(await res.json());
     } catch (e) {
@@ -334,7 +335,7 @@ export default function Recibos() {
     setErrorMes("");
     try {
       const mes = f.slice(0, 7);
-      const res = await fetch(`${API_URL}/api/recibos/resumen-mes?fecha=${mes}`);
+      const res = await authFetch(`${API_URL}/api/recibos/resumen-mes?fecha=${mes}`);
       if (!res.ok) throw new Error(`Error ${res.status}`);
       setRecibosMes(await res.json());
     } catch (e) {
@@ -345,7 +346,7 @@ export default function Recibos() {
   const cargarRango = useCallback(async (desde, hasta) => {
     setLoadingRango(true); setErrorRango("");
     try {
-      const res = await fetch(
+      const res = await authFetch(
         `${API_URL}/api/recibos/rango-fechas?desde=${desde}&hasta=${hasta}`
       );
       if (!res.ok) throw new Error(`Error ${res.status}`);

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import DetalleCita from "./DetalleCita";
 import CitasPop from "../../ui/CitasPop";
 import { API_URL } from "../../../utils/config";
+import { authFetch } from "../../../utils/auth";
 import { getAgendaTagClass } from "../../../utils/agendaUtils";
 import { todayDate } from "../../../utils/dateTime";
 
@@ -20,7 +21,7 @@ export default function CalendarioCitas() {
 
   const obtenerCitas = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/citas`);
+      const response = await authFetch(`${API_URL}/api/citas`);
       const data = await response.json();
 
       const eventosporID = data.map((item) => {
