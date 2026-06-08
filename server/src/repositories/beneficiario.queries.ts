@@ -20,6 +20,7 @@ export const SELECT_BENEFICIARIO_DETALLE_BASE = `
          dm.tipo_sanguineo,
          dm.valvula,
          dm.hospital,
+         dm.diagnostico_otro AS diagnostico_otro,
          d.domicilio_calle,
          d.domicilio_cp,
          d.domicilio_ciudad,
@@ -80,7 +81,7 @@ export function selectTipoEspinasByBeneficiarioIds(placeholders: string): string
 
 export const INSERT_BENEFICIARIO = `
   INSERT INTO Beneficiario (folio, fecha_ingreso, genero, estado)
-  VALUES (:folio,  TO_DATE(:fecha_ingreso, 'YYYY-MM-DD'), :genero, :estado)
+  VALUES (:folio, TO_DATE(:fecha_ingreso, 'YYYY-MM-DD'), :genero, :estado)
   RETURNING id_beneficiario INTO :id_beneficiario
 `.trim();
 
@@ -108,7 +109,7 @@ export const INSERT_IDENTIFICADORES_RETURNING = `
       :nombres,
       :apellido_paterno,
       :apellido_materno,
-       TO_DATE(:fecha_nacimiento, 'YYYY-MM-DD'),
+      TO_DATE(:fecha_nacimiento, 'YYYY-MM-DD'),
       :estado_nacimiento,
       :fotografia,
       :telefono,
@@ -126,8 +127,8 @@ export const INSERT_DATOS_MEDICOS_RETURNING = `
       alergias,
       tipo_sanguineo,
       valvula,
-      hospital
-
+      hospital,
+      diagnostico_otro
   )
   VALUES (
       :id_beneficiario,
@@ -137,8 +138,8 @@ export const INSERT_DATOS_MEDICOS_RETURNING = `
       :alergias,
       :tipo_sanguineo,
       :valvula,
-      :hospital
-
+      :hospital,
+      :diagnostico_otro
   )
   RETURNING id_datos_medicos INTO :id_datos_medicos
 `.trim();
@@ -184,8 +185,22 @@ export const INSERT_DIRECCION_RETURNING = `
 `.trim();
 
 export const INSERT_MEMBRESIA = `
-  INSERT INTO Membresias (id_beneficiario, precio, fecha_inicio, fecha_fin, estado, metodo_pago)
-  VALUES (:id_beneficiario, :precio, TO_DATE(:fecha_inicio, 'YYYY-MM-DD'),TO_DATE(:fecha_fin, 'YYYY-MM-DD'), :estado, :metodo_pago)
+  INSERT INTO Membresias (
+      id_beneficiario,
+      precio,
+      fecha_inicio,
+      fecha_fin,
+      estado,
+      metodo_pago
+  )
+  VALUES (
+      :id_beneficiario,
+      :precio,
+      TO_DATE(:fecha_inicio, 'YYYY-MM-DD'),
+      TO_DATE(:fecha_fin, 'YYYY-MM-DD'),
+      :estado,
+      :metodo_pago
+  )
 `.trim();
 
 export const UPDATE_MEMBRESIA_ESTADO = `
@@ -200,7 +215,8 @@ export const UPDATE_BENEFICIARIO_ESTADO_EXPIRED_MEMBRESIAS = `
   SET estado = 'inactivo'
   WHERE b.estado = 'activo'
     AND EXISTS (
-      SELECT 1 FROM Membresias m
+      SELECT 1
+      FROM Membresias m
       WHERE m.id_beneficiario = b.id_beneficiario
         AND m.estado = 'vencida'
     )
