@@ -104,7 +104,7 @@ export default function ServiciosBeneficiario({ historial = [], onVerDetalle }) 
         {mostrarDropdown && (
           <ul className={styles.dropdown} role="listbox">
             {sugerencias.map((s) => (
-              <li key={s.beneficiario} role="option">
+              <li key={s.beneficiario} role="option" aria-selected={s.beneficiario === seleccionado}>
                 <button
                   className={styles.dropdownItem}
                   onClick={() => handleSeleccionar(s.beneficiario)}
@@ -124,7 +124,7 @@ export default function ServiciosBeneficiario({ historial = [], onVerDetalle }) 
             <div>
               <p className={styles.tarjetaNombre}>{seleccionado}</p>
               <p className={styles.tarjetaSub}>
-                {serviciosBeneficiario.length} servicio{serviciosBeneficiario.length !== 1 ? 's' : ''} registrado{serviciosBeneficiario.length !== 1 ? 's' : ''}
+                {serviciosBeneficiario.length} servicio{serviciosBeneficiario.length === 1 ? '' : 's'} registrado{serviciosBeneficiario.length === 1 ? '' : 's'}
               </p>
             </div>
             <div className={styles.tarjetaActions}>
