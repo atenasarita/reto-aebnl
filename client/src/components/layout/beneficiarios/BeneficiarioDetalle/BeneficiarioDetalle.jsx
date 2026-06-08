@@ -3,6 +3,18 @@ import styles from './BeneficiarioDetalle.module.css'
 import { API_URL } from '../../../../utils/config'
 import PropTypes from 'prop-types'
 
+const DIAGNOSTICO_OPTIONS = [
+  { value: '1', label: 'Encefalocele' },
+  { value: '2', label: 'Espina Bífida Oculta' },
+  { value: '3', label: 'Hidrocefalia Congénita' },
+  { value: '4', label: 'Lipo-Mielomeningocele' },
+  { value: '5', label: 'Lipocele' },
+  { value: '6', label: 'Médula Anclada' },
+  { value: '7', label: 'Meningocele' },
+  { value: '8', label: 'Mielomeningocele' },
+  { value: '9', label: 'Otros' }
+]
+
 function parseDateOnly(dateStr) {
   if (!dateStr) return null
   const dateOnly = String(dateStr).split('T')[0]
@@ -50,6 +62,7 @@ function buildInitialFormData(beneficiario) {
   const datosMedicos = beneficiario.datos_medicos || {}
   const direccion = beneficiario.direccion || {}
   const membresia = beneficiario.membresia || {}
+  const primerDiagnostico = beneficiario.tipo_espina?.[0] || null
 
   return {
     nombres: identificadores.nombres || '',
@@ -77,6 +90,8 @@ function buildInitialFormData(beneficiario) {
         ? 'Sí'
         : 'No',
     diagnostico: formatDiagnostico(beneficiario.tipo_espina),
+    diagnostico_id: primerDiagnostico?.id_espina ? String(primerDiagnostico.id_espina) : '',
+    diagnostico_otro: datosMedicos.diagnostico_otro || '',
     fecha_inicio: formatInputDate(membresia.fecha_inicio),
     fecha_fin: formatInputDate(membresia.fecha_fin)
   }
@@ -148,42 +163,31 @@ function BeneficiarioDetalle({
     id_beneficiario,
     folio,
     fecha_ingreso,
-    genero,
     identificadores,
     datos_medicos,
-    direccion
+    direccion,
+    tipo_espina
   } = beneficiario
 
   const {
-    nombres,
     apellido_paterno,
     apellido_materno,
     CURP,
     fecha_nacimiento,
-    estado_nacimiento,
-    fotografia,
-    telefono,
-    email
+    fotografia
   } = identificadores
 
   const {
-    tipo_sanguineo,
-    contacto_nombre,
-    contacto_telefono,
-    contacto_parentesco,
-    valvula,
-    hospital
+    valvula
   } = datos_medicos
-
-  const {
-    domicilio_calle,
-    domicilio_cp,
-    domicilio_ciudad,
-    domicilio_estado
-  } = direccion
 
   const fecha_inicio = beneficiario.membresia?.fecha_inicio ?? null
   const fecha_fin = beneficiario.membresia?.fecha_fin ?? null
+
+  const diagnostico =
+    beneficiario?.tipo_espina?.[0]?.id_espina === 9 && beneficiario?.datos_medicos?.diagnostico_otro
+      ? beneficiario.datos_medicos.diagnostico_otro
+      : formatDiagnostico(tipo_espina)
 
   const fotoURL = fotografia || null
 
@@ -223,9 +227,11 @@ function BeneficiarioDetalle({
       setSaving(true)
 
       const payload = {
-        ...formData,
-        valvula: formData.valvula === 'Sí'
-      }
+  ...formData,
+  valvula: formData.valvula === 'Sí',
+  diagnostico_id: Number(formData.diagnostico_id || 0),
+  diagnostico_otro: formData.diagnostico_id === '9' ? formData.diagnostico_otro : null
+}
 
       await updateBeneficiario(id_beneficiario, payload)
 
@@ -485,13 +491,40 @@ function BeneficiarioDetalle({
         <div className={styles.row}>
           <EditableField
             label="Diagnóstico"
-            name="diagnostico"
-            value={formData.diagnostico}
+            name="diagnostico_id"
+            value={isEditing ? formData.diagnostico_id : diagnostico}
             isEditing={isEditing}
             onChange={handleChange}
             className={`${styles.field} ${styles.full}`}
-          />
+          >
+            <select
+              className={styles.input}
+              name="diagnostico_id"
+              value={formData.diagnostico_id}
+              onChange={handleChange}
+            >
+              <option value="">Selecciona</option>
+              {DIAGNOSTICO_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </EditableField>
         </div>
+
+        {isEditing && formData.diagnostico_id === '9' && (
+          <div className={styles.row}>
+            <EditableField
+              label="Especifica el diagnóstico"
+              name="diagnostico_otro"
+              value={formData.diagnostico_otro}
+              isEditing={isEditing}
+              onChange={handleChange}
+              className={`${styles.field} ${styles.full}`}
+            />
+          </div>
+        )}
 
         <div className={styles.row}>
           <EditableField
@@ -631,6 +664,7 @@ BeneficiarioDetalle.propTypes = {
     genero: PropTypes.string,
     tipo_espina: PropTypes.arrayOf(
       PropTypes.shape({
+        id_espina: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         nombre: PropTypes.string
       })
     ),

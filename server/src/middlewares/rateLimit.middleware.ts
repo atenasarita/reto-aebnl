@@ -8,11 +8,12 @@ const tooManyRequests = (message: string) => ({
 export const loginRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
+  skipSuccessfulRequests: true,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (_req, res) => {
     res.status(429).json(
-      tooManyRequests('Demasiados intentos de inicio de sesion. Intenta de nuevo en 15 minutos.')
+      tooManyRequests('Demasiados intentos fallidos de inicio de sesion. Intenta de nuevo en 15 minutos.')
     );
   },
 });
