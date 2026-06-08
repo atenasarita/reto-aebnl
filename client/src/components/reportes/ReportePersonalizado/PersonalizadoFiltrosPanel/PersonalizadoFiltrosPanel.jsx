@@ -60,6 +60,8 @@ export default function PersonalizadoFiltrosPanel({
         className={`reporte-personalizado-filtros-scrim${open ? " is-visible" : ""}`}
         aria-hidden={!open}
         onClick={() => onOpenChange(false)}
+        onKeyDown={(e) => e.key === "Escape" && onOpenChange(false)}
+        role="presentation"
       />
 
       <aside
