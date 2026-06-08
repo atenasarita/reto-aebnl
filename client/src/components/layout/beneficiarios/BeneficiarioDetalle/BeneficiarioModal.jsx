@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
-import styles from './BeneficiarioDetalle.module.css';
-import TabsNavegacion from './TabsNavegacion';
-import BeneficiarioDetalle from './BeneficiarioDetalle';
-import HistorialAsociado from './HistorialAsociado';
-import HistorialPadres from './HistorialPadres';
+import { useEffect, useState } from 'react'
+import styles from './BeneficiarioDetalle.module.css'
+import TabsNavegacion from './TabsNavegacion'
+import BeneficiarioDetalle from './BeneficiarioDetalle'
+import HistorialAsociado from './HistorialAsociado'
+import HistorialPadres from './HistorialPadres'
+import MembresiaTab from './MembresiaTab'
 
 function BeneficiarioModal({
   beneficiario,
@@ -11,11 +12,11 @@ function BeneficiarioModal({
   startInEditMode = false,
   onUpdated
 }) {
-  const [activeTab, setActiveTab] = useState('datos_generales');
+  const [activeTab, setActiveTab] = useState('datos_generales')
 
   useEffect(() => {
-    setActiveTab('datos_generales');
-  }, [beneficiario]);
+    setActiveTab('datos_generales')
+  }, [beneficiario])
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -25,13 +26,7 @@ function BeneficiarioModal({
             activeTab={activeTab}
             setActiveTab={setActiveTab}
           />
-          <button
-            type="button"
-            className={styles.closeBtn}
-            onClick={onClose}
-          >
-            ✕
-          </button>
+          <button className={styles.closeBtn} onClick={onClose}>✕</button>
         </div>
 
         {activeTab === 'datos_generales' && (
@@ -53,9 +48,16 @@ function BeneficiarioModal({
             onUpdated={onUpdated}
           />
         )}
+
+        {activeTab === 'membresia' && (
+          <MembresiaTab
+            beneficiario={beneficiario}
+            onUpdated={onUpdated}
+          />
+        )}
       </div>
     </div>
-  );
+  )
 }
 
-export default BeneficiarioModal;
+export default BeneficiarioModal

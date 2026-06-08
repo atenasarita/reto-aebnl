@@ -61,4 +61,7 @@ export class BeneficiariosController {
   async updateBeneficiario(id_beneficiario: number, input: any): Promise<void> {
     return this.beneficiarioRepository.updateBeneficiario(id_beneficiario, input);
   }
+  async updateMembresia(id_beneficiario: number, input: any): Promise<void> {
+    return this.beneficiarioRepository.updateMembresia(id_beneficiario, input);
+  }
 }

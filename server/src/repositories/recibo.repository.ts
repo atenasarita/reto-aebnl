@@ -53,7 +53,7 @@ const SQL_SERVICIOS_POR_RANGO = `
   SELECT ${SELECT_COLS}
   ${FROM_JOINS}
   WHERE TRUNC(so.FECHA) BETWEEN TO_DATE(:desde, 'YYYY-MM-DD') AND TO_DATE(:hasta, 'YYYY-MM-DD')
-  ORDER BY so.HORA ASC
+  ORDER BY so.FECHA ASC, so.HORA ASC
 `;
 
 // Buscar servicio por ID

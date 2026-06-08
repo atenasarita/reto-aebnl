@@ -34,4 +34,5 @@ export interface BeneficiarioRepository {
   getPadresByBeneficiarioId(id_beneficiario: number): Promise<Padre[]>;
   updatePadres(id_beneficiario: number, input: any): Promise<void>;
   updateBeneficiario(id_beneficiario: number, input: any): Promise<void>;
+  updateMembresia(id_beneficiario: number, input: any): Promise<void>;
 }

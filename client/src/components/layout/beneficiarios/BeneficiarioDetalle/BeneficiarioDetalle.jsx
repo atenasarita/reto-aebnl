@@ -149,7 +149,6 @@ function BeneficiarioDetalle({
     folio,
     fecha_ingreso,
     genero,
-    tipo_espina,
     identificadores,
     datos_medicos,
     direccion
@@ -540,6 +539,8 @@ function BeneficiarioDetalle({
             </select>
           </EditableField>
         </div>
+
+        <p className={styles.sectionLabel}>Membresía</p>
 
         {isEditing ? (
           <div className={styles.row}>
