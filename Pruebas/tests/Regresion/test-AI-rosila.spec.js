@@ -27,12 +27,14 @@ test.describe('Registro de Beneficiario IA', () => {
     await page.goto('http://localhost:5173/login');
     await page.getByRole('textbox', { name: 'Usuario' }).click();
     await page.getByRole('textbox', { name: 'Usuario' }).fill('prueba1');
-    await page.getByRole('textbox', { name: '********' }).click();
-    await page.getByRole('textbox', { name: '********' }).fill('admin1');
-    await page.getByRole('button', { name: 'Iniciar Sesión' }).click(); 
+    await page.getByRole('textbox', { name: 'Contraseña' }).click();
+    await page.getByRole('textbox', { name: 'Contraseña' }).fill('admin1');
+    await page.getByRole('button', { name: 'Entrar al sistema' }).click(); 
+    await page.getByRole('button', { name: 'Beneficiarios' }).click();
   });
 
   const fillBeneficiario = async (page, datos) => {
+
     await page.getByRole('button', { name: 'Nuevo Beneficiario' }).click();
 
     // SECCIÓN 1: Datos Personales
@@ -80,33 +82,6 @@ test.describe('Registro de Beneficiario IA', () => {
     // Hacer clic en Aceptar para cerrar el modal
     await page.getByRole('button', { name: 'Aceptar' }).click();
   };
-
-  // test(qase(113, 'debería registrar un nuevo beneficiario exitosamente en Firefox'), async ({ page }) => {
-  //   test.skip(test.info().project.name !== 'firefox', 'Solo en Firefox');
-
-  //   await fillBeneficiario(page, {
-  //     email: 'juan.perez@example.com',
-  //     telefono: '5551234567',
-  //     nombres: 'Juanx',
-  //     apellidoPaterno: 'Pérez',
-  //     apellidoMaterno: 'López',
-  //     fechaNacimiento: '1990-01-01',
-  //     curp: generarCURP(),
-  //     genero: 'masculino',
-  //     estadoNacimiento: 'Jalisco',
-  //     contactoNombre: 'María Pérez',
-  //     contactoTelefono: '5559876543',
-  //     contactoParentesco: 'Madre',
-  //     tipoSanguineo: 'O+',
-  //     tipoEspina: 'Meningocele',
-  //     valvula: 'false',
-  //     hospital: 'Hospital General',
-  //     calle: 'Calle Falsa 123',
-  //     estado: 'Jalisco',
-  //     ciudad: 'Guadalajara',
-  //     cp: '44100',
-  //   });
-  // });
 
   test(qase(113, 'debería registrar un nuevo beneficiario exitosamente en Chromium'), async ({ page }) => {
     test.skip(test.info().project.name !== 'chromium', 'Solo en Chromium');

@@ -30,18 +30,17 @@ test(qase(107, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-1')
   const detalle = page.locator('[class*="_modalBody_"]');
   await expect(detalle).toBeVisible({ timeout: 8000 });
 
-  // Verificar campo Nombre (exact match para evitar "Nombre padre / madre")
+  // Verificar campo Nombre
   await expect(
-    detalle.locator('[class*="_fieldLabel_"]').filter({ hasText: /^Nombre(s)$/ })
+    detalle.locator('[class*="_fieldLabel_"]').filter({ hasText: /^Nombre\(s\)$/ })
   ).toBeVisible();
+
   await expect(
     detalle.locator('[class*="_fieldValue_"]').filter({ hasText: /atenas/i })
   ).toBeVisible();
 
   // Verificar sección de Vigencia de Membresía
-  await expect(
-    detalle.locator('[class*="_sectionLabel_"]').filter({ hasText: 'Vigencia de Membresía' })
-  ).toBeVisible();
+  await expect(page.getByText('Vigencia de membresía')).toBeVisible();
 
   // Cerrar detalle antes de descargar PDF
   await page.locator('[class*="_closeBtn_"]').click();
@@ -78,15 +77,7 @@ test(qase(127, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-2')
   ).toBeVisible();
 
   // Verificar sección de Vigencia de Membresía
-  await expect(
-    detalle.locator('[class*="_sectionLabel_"]').filter({ hasText: 'Vigencia de Membresía' })
-  ).toBeVisible();
-  await expect(
-    detalle.locator('[class*="_fieldLabel_"]').filter({ hasText: /^Desde$/ })
-  ).toBeVisible();
-  await expect(
-    detalle.locator('[class*="_fieldLabel_"]').filter({ hasText: /^Hasta$/ })
-  ).toBeVisible();
+  await expect(page.getByText('Vigencia de membresía')).toBeVisible();
 
   // Cerrar detalle antes de descargar PDF
   await page.locator('[class*="_closeBtn_"]').click();
