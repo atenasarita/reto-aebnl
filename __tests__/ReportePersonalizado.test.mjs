@@ -82,6 +82,9 @@ jest.mock(
   })
 );
 
+// PersonalizadoFiltrosPanel replaces PersonalizadoLedgerDimensiones +
+// PersonalizadoFiltrosDemograficos. Only mounted when hayDatos=true,
+// only renders its body when open=true.
 jest.mock(
   '../client/src/components/reportes/ReportePersonalizado/PersonalizadoFiltrosPanel/PersonalizadoFiltrosPanel',
   () => ({
@@ -258,10 +261,7 @@ jest.mock(
   '../client/src/components/reportes/ReportePersonalizado/reportePersonalizado.utils',
   () => ({
     __esModule: true,
-    defaultRangoMesActual: () => ({
-      desde: '2026-06-01',
-      hasta: '2026-06-30',
-    }),
+    defaultRangoMesActual: () => ({ desde: '2026-06-01', hasta: '2026-06-30' }),
     esRangoFechaValido: (desde, hasta) => Boolean(desde && hasta && desde <= hasta),
     formatRangoLegible: (desde, hasta) => `${desde} al ${hasta}`,
     resolverSeleccion: (items, seleccion) => {
@@ -337,7 +337,6 @@ function setNativeValue(element, value) {
   const valueSetter = Object.getOwnPropertyDescriptor(element, 'value')?.set;
   const prototype = Object.getPrototypeOf(element);
   const prototypeValueSetter = Object.getOwnPropertyDescriptor(prototype, 'value')?.set;
-
   if (prototypeValueSetter && valueSetter !== prototypeValueSetter) {
     prototypeValueSetter.call(element, value);
   } else if (valueSetter) {
@@ -357,20 +356,16 @@ async function mount() {
   await act(async () => {
     root.render(React.createElement(ReportePersonalizado));
   });
-
   await act(async () => {
     await Promise.resolve();
     await Promise.resolve();
   });
 }
 
-// Clicks "Generar reporte" (now inside PersonalizadoRangoFechasCard) and
-// waits for the hayDatos→filtrosPanelAbierto effect to flush.
 async function generarReporte() {
   await act(async () => {
     container.querySelector('[data-testid="generar-reporte"]').click();
   });
-
   await act(async () => {
     await Promise.resolve();
     await Promise.resolve();
@@ -378,11 +373,10 @@ async function generarReporte() {
 }
 
 function getLastCsvHandler() {
-  const handlers = mockRegisterCsvExportHandler.mock.calls
+  return mockRegisterCsvExportHandler.mock.calls
     .map((call) => call[0])
-    .filter((handler) => typeof handler === 'function');
-
-  return handlers.at(-1);
+    .filter((h) => typeof h === 'function')
+    .at(-1);
 }
 
 // ---------------------------------------------------------------------------
@@ -396,7 +390,6 @@ describe('ReportePersonalizado', () => {
     root = createRoot(container);
 
     jest.clearAllMocks();
-
     global.alert = jest.fn();
 
     mockRefetch.mockResolvedValue();
@@ -416,25 +409,19 @@ describe('ReportePersonalizado', () => {
 
   afterEach(async () => {
     if (root) {
-      await act(async () => {
-        root.unmount();
-      });
+      await act(async () => { root.unmount(); });
     }
-
     container.remove();
   });
 
   test('muestra estado inicial sin datos antes de generar reporte', async () => {
     await mount();
 
-    // Results block is entirely absent when hayDatos=false
     expect(container.querySelector('[data-testid="kpi-section"]')).toBeFalsy();
     expect(container.querySelector('[data-testid="divider"]')).toBeFalsy();
     expect(container.querySelector('[data-testid="servicios-chart"]')).toBeFalsy();
     expect(container.querySelector('[data-testid="demo-grid"]')).toBeFalsy();
     expect(container.querySelector('[data-testid="filtros-panel"]')).toBeFalsy();
-
-    // Hook called with empty strings until a period is applied
     expect(mockHookState).toHaveBeenCalledWith('', '');
   });
 
@@ -450,8 +437,6 @@ describe('ReportePersonalizado', () => {
     expect(container.textContent).toContain(
       'Rango inválido: comprueba que «desde» no sea posterior a «hasta».'
     );
-
-    // hayDatos stays false — results block not shown
     expect(container.querySelector('[data-testid="kpi-section"]')).toBeFalsy();
   });
 
@@ -461,8 +446,6 @@ describe('ReportePersonalizado', () => {
     await generarReporte();
 
     expect(mockHookState).toHaveBeenLastCalledWith('2026-06-01', '2026-06-30');
-
-    // Filter panel auto-opens when hayDatos first becomes true
     expect(container.querySelector('[data-testid="filtros-panel"]')).toBeTruthy();
     expect(container.querySelector('[data-testid="divider"]')).toBeTruthy();
     expect(container.textContent).toContain('KPIs: servicios,nuevos,demograficos');
@@ -479,7 +462,6 @@ describe('ReportePersonalizado', () => {
     }));
 
     await mount();
-
     await generarReporte();
 
     expect(container.textContent).toContain('Cargando datos del periodo seleccionado…');
@@ -496,14 +478,12 @@ describe('ReportePersonalizado', () => {
 
     await mount();
 
-    // Error is rendered outside the hayDatos block, so it appears immediately
     expect(container.textContent).toContain('Error al cargar reporte');
 
     await act(async () => {
-      const retryButton = Array.from(container.querySelectorAll('button')).find((button) =>
-        button.textContent.includes('Reintentar')
-      );
-      retryButton.click();
+      Array.from(container.querySelectorAll('button'))
+        .find((b) => b.textContent.includes('Reintentar'))
+        .click();
     });
 
     expect(mockRefetch).toHaveBeenCalled();
@@ -511,10 +491,8 @@ describe('ReportePersonalizado', () => {
 
   test('permite quitar métrica de servicios y muestra solo estados cuando quedan demográficos sin servicios', async () => {
     await mount();
-
     await generarReporte();
 
-    // Toggle buttons live inside PersonalizadoFiltrosPanel, open after generarReporte
     await act(async () => {
       container.querySelector('[data-testid="toggle-servicios"]').click();
     });
@@ -526,14 +504,12 @@ describe('ReportePersonalizado', () => {
 
   test('permite ocultar demográficos y deja de mostrar filtros y grid demográfico', async () => {
     await mount();
-
     await generarReporte();
 
     await act(async () => {
       container.querySelector('[data-testid="toggle-demograficos"]').click();
     });
 
-    // filtros-demo is gated on muestraDemografia inside the panel mock
     expect(container.querySelector('[data-testid="filtros-demo"]')).toBeFalsy();
     expect(container.querySelector('[data-testid="demo-grid"]')).toBeFalsy();
     expect(container.querySelector('[data-testid="servicios-chart"]')).toBeTruthy();
@@ -541,7 +517,6 @@ describe('ReportePersonalizado', () => {
 
   test('no permite apagar la última métrica activa', async () => {
     await mount();
-
     await generarReporte();
 
     await act(async () => {
@@ -560,7 +535,6 @@ describe('ReportePersonalizado', () => {
 
   test('aplica filtros demográficos y actualiza totales filtrados', async () => {
     await mount();
-
     await generarReporte();
 
     expect(container.textContent).toContain('Demo 2 2 total 10');
@@ -577,10 +551,7 @@ describe('ReportePersonalizado', () => {
 
     expect(mockRegisterCsvExportHandler).toHaveBeenCalledWith(expect.any(Function));
 
-    await act(async () => {
-      root.unmount();
-    });
-
+    await act(async () => { root.unmount(); });
     root = null;
 
     expect(mockRegisterCsvExportHandler).toHaveBeenCalledWith(null);
@@ -589,29 +560,19 @@ describe('ReportePersonalizado', () => {
   test('muestra alerta si intenta exportar CSV sin generar reporte', async () => {
     await mount();
 
-    const handler = getLastCsvHandler();
-
-    await act(async () => {
-      handler();
-    });
+    await act(async () => { getLastCsvHandler()(); });
 
     expect(global.alert).toHaveBeenCalledWith(
       'Aplica primero el periodo en las fechas y pulsa «Generar reporte».'
     );
-
     expect(mockTriggerCsvDownload).not.toHaveBeenCalled();
   });
 
   test('exporta CSV cuando ya se generó el reporte', async () => {
     await mount();
-
     await generarReporte();
 
-    const handler = getLastCsvHandler();
-
-    await act(async () => {
-      handler();
-    });
+    await act(async () => { getLastCsvHandler()(); });
 
     expect(mockBuildCsvReportePersonalizado).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -625,7 +586,6 @@ describe('ReportePersonalizado', () => {
         granularidadLabel: 'Servicios por día',
       })
     );
-
     expect(mockTriggerCsvDownload).toHaveBeenCalledWith(
       'reporte_personalizado_2026-06-01_2026-06-30_20260604_001500.csv',
       'csv-content'
@@ -657,10 +617,8 @@ describe('ReportePersonalizado', () => {
 
   test('el botón Abrir filtros alterna la visibilidad del panel', async () => {
     await mount();
-
     await generarReporte();
 
-    // Panel opens automatically after generating
     expect(container.querySelector('[data-testid="filtros-panel"]')).toBeTruthy();
 
     await act(async () => {
