@@ -18,10 +18,6 @@ const mockSanitizeFilenamePart = jest.fn();
 
 let mockHookState;
 
-const METRICA_SERVICIOS = 'servicios';
-const METRICA_NUEVOS = 'nuevos';
-const METRICA_DEMOGRAFICOS = 'demograficos';
-
 jest.mock('react-router-dom', () => ({
   __esModule: true,
   useOutletContext: () => ({
@@ -38,43 +34,78 @@ jest.mock(
   })
 );
 
+// PersonalizadoRangoFechasCard now owns the "Generar reporte" button and
+// exposes onAbrirFiltros / filtrosAbiertos for the filter-panel toggle.
 jest.mock(
   '../client/src/components/reportes/ReportePersonalizado/PersonalizadoRangoFechasCard/PersonalizadoRangoFechasCard',
   () => ({
     __esModule: true,
-    default: ({ desdeDraft, hastaDraft, onDesdeChange, onHastaChange, errorRango }) =>
+    default: ({
+      desdeDraft,
+      hastaDraft,
+      onDesdeChange,
+      onHastaChange,
+      errorRango,
+      onGenerarReporte,
+      onAbrirFiltros,
+      filtrosAbiertos,
+    }) =>
       React.createElement(
         'section',
         { 'data-testid': 'rango-card' },
-        React.createElement('label', null, 'Desde'),
         React.createElement('input', {
           'data-testid': 'desde-input',
           type: 'date',
           value: desdeDraft,
           onChange: (event) => onDesdeChange(event.target.value),
         }),
-        React.createElement('label', null, 'Hasta'),
         React.createElement('input', {
           'data-testid': 'hasta-input',
           type: 'date',
           value: hastaDraft,
           onChange: (event) => onHastaChange(event.target.value),
         }),
-        errorRango
-          ? React.createElement('p', { role: 'alert' }, errorRango)
-          : null
+        React.createElement(
+          'button',
+          { type: 'button', 'data-testid': 'generar-reporte', onClick: onGenerarReporte },
+          'Generar reporte'
+        ),
+        onAbrirFiltros
+          ? React.createElement(
+              'button',
+              { type: 'button', 'data-testid': 'abrir-filtros', onClick: onAbrirFiltros },
+              filtrosAbiertos ? 'Cerrar filtros' : 'Abrir filtros'
+            )
+          : null,
+        errorRango ? React.createElement('p', { role: 'alert' }, errorRango) : null
       ),
   })
 );
 
+// PersonalizadoFiltrosPanel replaces PersonalizadoLedgerDimensiones +
+// PersonalizadoFiltrosDemograficos. Only mounted when hayDatos=true,
+// only renders its body when open=true.
 jest.mock(
-  '../client/src/components/reportes/ReportePersonalizado/PersonalizadoLedgerDimensiones/PersonalizadoLedgerDimensiones',
+  '../client/src/components/reportes/ReportePersonalizado/PersonalizadoFiltrosPanel/PersonalizadoFiltrosPanel',
   () => ({
     __esModule: true,
-    default: ({ metricas, onToggleMetrica, children }) =>
-      React.createElement(
+    default: ({
+      open,
+      metricas,
+      onToggleMetrica,
+      muestraDemografia,
+      distribucionEstado,
+      generosEfectivos,
+      etapasEfectivas,
+      estadosEfectivos,
+      onToggleGenero,
+      onToggleEtapa,
+      onToggleEstado,
+    }) => {
+      if (!open) return null;
+      return React.createElement(
         'section',
-        { 'data-testid': 'ledger' },
+        { 'data-testid': 'filtros-panel' },
         React.createElement(
           'button',
           {
@@ -102,82 +133,58 @@ jest.mock(
           },
           metricas.has('demograficos') ? 'Demográficos activo' : 'Demográficos inactivo'
         ),
-        children
-      ),
-  })
-);
-
-jest.mock(
-  '../client/src/components/reportes/ReportePersonalizado/PersonalizadoFiltrosDemograficos/PersonalizadoFiltrosDemograficos',
-  () => ({
-    __esModule: true,
-    default: ({
-      hayDatos,
-      distribucionEstado,
-      generosEfectivos,
-      etapasEfectivas,
-      estadosEfectivos,
-      onToggleGenero,
-      onToggleEtapa,
-      onToggleEstado,
-    }) =>
-      React.createElement(
-        'section',
-        { 'data-testid': 'filtros-demo' },
-        React.createElement('p', null, hayDatos ? 'Hay datos' : 'Sin periodo aplicado'),
-        React.createElement('p', { 'data-testid': 'generos-count' }, `Géneros: ${generosEfectivos.size}`),
-        React.createElement('p', { 'data-testid': 'etapas-count' }, `Etapas: ${etapasEfectivas.size}`),
-        React.createElement('p', { 'data-testid': 'estados-count' }, `Estados: ${estadosEfectivos.size}`),
-        React.createElement(
-          'button',
-          { type: 'button', 'data-testid': 'toggle-genero-f', onClick: () => onToggleGenero('F') },
-          'Toggle género F'
-        ),
-        React.createElement(
-          'button',
-          { type: 'button', 'data-testid': 'toggle-etapa-ninez', onClick: () => onToggleEtapa('ninez') },
-          'Toggle etapa niñez'
-        ),
-        distribucionEstado[0]
+        muestraDemografia
           ? React.createElement(
-              'button',
-              {
-                type: 'button',
-                'data-testid': 'toggle-estado-nl',
-                onClick: () => onToggleEstado(distribucionEstado[0].key),
-              },
-              'Toggle estado'
+              'div',
+              { 'data-testid': 'filtros-demo' },
+              React.createElement(
+                'p',
+                { 'data-testid': 'generos-count' },
+                `Géneros: ${generosEfectivos.size}`
+              ),
+              React.createElement(
+                'p',
+                { 'data-testid': 'etapas-count' },
+                `Etapas: ${etapasEfectivas.size}`
+              ),
+              React.createElement(
+                'p',
+                { 'data-testid': 'estados-count' },
+                `Estados: ${estadosEfectivos.size}`
+              ),
+              React.createElement(
+                'button',
+                {
+                  type: 'button',
+                  'data-testid': 'toggle-genero-f',
+                  onClick: () => onToggleGenero('F'),
+                },
+                'Toggle género F'
+              ),
+              React.createElement(
+                'button',
+                {
+                  type: 'button',
+                  'data-testid': 'toggle-etapa-ninez',
+                  onClick: () => onToggleEtapa('ninez'),
+                },
+                'Toggle etapa niñez'
+              ),
+              distribucionEstado[0]
+                ? React.createElement(
+                    'button',
+                    {
+                      type: 'button',
+                      'data-testid': 'toggle-estado-nl',
+                      onClick: () => onToggleEstado(distribucionEstado[0].key),
+                    },
+                    'Toggle estado'
+                  )
+                : null
             )
           : null
-      ),
-  })
-);
-
-jest.mock(
-  '../client/src/components/reportes/ReportePersonalizado/PersonalizadoResumenSeleccion/PersonalizadoResumenSeleccion',
-  () => ({
-    __esModule: true,
-    default: ({ rangoTemporal, filtrosActivos, regionAnalisis, onGenerarReporte }) =>
-      React.createElement(
-        'section',
-        { 'data-testid': 'resumen' },
-        React.createElement('p', null, `Rango: ${rangoTemporal}`),
-        React.createElement('p', null, `Filtros: ${filtrosActivos}`),
-        React.createElement('p', null, `Región: ${regionAnalisis}`),
-        React.createElement(
-          'button',
-          { type: 'button', 'data-testid': 'generar-reporte', onClick: onGenerarReporte },
-          'Generar reporte'
-        )
-      ),
-  })
-);
-
-jest.mock(
-  '../client/src/components/reportes/ReportePersonalizado/PersonalizadoSinDatosState/PersonalizadoSinDatosState',
-  () => ({
-    __esModule: true,
-    default: () => React.createElement('div', { 'data-testid': 'sin-datos' }, 'Sin datos todavía'),
+      );
+    },
   })
 );
 
@@ -254,10 +261,7 @@ jest.mock(
   '../client/src/components/reportes/ReportePersonalizado/reportePersonalizado.utils',
   () => ({
     __esModule: true,
-    defaultRangoMesActual: () => ({
-      desde: '2026-06-01',
-      hasta: '2026-06-30',
-    }),
+    defaultRangoMesActual: () => ({ desde: '2026-06-01', hasta: '2026-06-30' }),
     esRangoFechaValido: (desde, hasta) => Boolean(desde && hasta && desde <= hasta),
     formatRangoLegible: (desde, hasta) => `${desde} al ${hasta}`,
     resolverSeleccion: (items, seleccion) => {
@@ -297,8 +301,9 @@ const ReportePersonalizado =
   ReportePersonalizadoModule.default ||
   ReportePersonalizadoModule;
 
-let container;
-let root;
+// ---------------------------------------------------------------------------
+// Fixtures
+// ---------------------------------------------------------------------------
 
 const baseData = {
   nuevosBeneficiarios: 8,
@@ -321,11 +326,17 @@ const baseData = {
   ],
 };
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+let container;
+let root;
+
 function setNativeValue(element, value) {
   const valueSetter = Object.getOwnPropertyDescriptor(element, 'value')?.set;
   const prototype = Object.getPrototypeOf(element);
   const prototypeValueSetter = Object.getOwnPropertyDescriptor(prototype, 'value')?.set;
-
   if (prototypeValueSetter && valueSetter !== prototypeValueSetter) {
     prototypeValueSetter.call(element, value);
   } else if (valueSetter) {
@@ -345,7 +356,6 @@ async function mount() {
   await act(async () => {
     root.render(React.createElement(ReportePersonalizado));
   });
-
   await act(async () => {
     await Promise.resolve();
     await Promise.resolve();
@@ -356,7 +366,6 @@ async function generarReporte() {
   await act(async () => {
     container.querySelector('[data-testid="generar-reporte"]').click();
   });
-
   await act(async () => {
     await Promise.resolve();
     await Promise.resolve();
@@ -364,12 +373,15 @@ async function generarReporte() {
 }
 
 function getLastCsvHandler() {
-  const handlers = mockRegisterCsvExportHandler.mock.calls
+  return mockRegisterCsvExportHandler.mock.calls
     .map((call) => call[0])
-    .filter((handler) => typeof handler === 'function');
-
-  return handlers.at(-1);
+    .filter((h) => typeof h === 'function')
+    .at(-1);
 }
+
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
 
 describe('ReportePersonalizado', () => {
   beforeEach(() => {
@@ -378,7 +390,6 @@ describe('ReportePersonalizado', () => {
     root = createRoot(container);
 
     jest.clearAllMocks();
-
     global.alert = jest.fn();
 
     mockRefetch.mockResolvedValue();
@@ -398,22 +409,19 @@ describe('ReportePersonalizado', () => {
 
   afterEach(async () => {
     if (root) {
-      await act(async () => {
-        root.unmount();
-      });
+      await act(async () => { root.unmount(); });
     }
-
     container.remove();
   });
 
   test('muestra estado inicial sin datos antes de generar reporte', async () => {
     await mount();
 
-    expect(container.textContent).toContain('Sin datos todavía');
-    expect(container.textContent).toContain('Rango: 2026-06-01 al 2026-06-30');
-    expect(container.textContent).toContain('Región: Cobertura global (tras generar)');
     expect(container.querySelector('[data-testid="kpi-section"]')).toBeFalsy();
-
+    expect(container.querySelector('[data-testid="divider"]')).toBeFalsy();
+    expect(container.querySelector('[data-testid="servicios-chart"]')).toBeFalsy();
+    expect(container.querySelector('[data-testid="demo-grid"]')).toBeFalsy();
+    expect(container.querySelector('[data-testid="filtros-panel"]')).toBeFalsy();
     expect(mockHookState).toHaveBeenCalledWith('', '');
   });
 
@@ -429,8 +437,7 @@ describe('ReportePersonalizado', () => {
     expect(container.textContent).toContain(
       'Rango inválido: comprueba que «desde» no sea posterior a «hasta».'
     );
-
-    expect(container.textContent).toContain('Sin datos todavía');
+    expect(container.querySelector('[data-testid="kpi-section"]')).toBeFalsy();
   });
 
   test('genera reporte con rango válido y muestra resultados', async () => {
@@ -439,12 +446,11 @@ describe('ReportePersonalizado', () => {
     await generarReporte();
 
     expect(mockHookState).toHaveBeenLastCalledWith('2026-06-01', '2026-06-30');
-
+    expect(container.querySelector('[data-testid="filtros-panel"]')).toBeTruthy();
     expect(container.querySelector('[data-testid="divider"]')).toBeTruthy();
     expect(container.textContent).toContain('KPIs: servicios,nuevos,demograficos');
     expect(container.textContent).toContain('Servicios dia con serie');
     expect(container.textContent).toContain('Demo 2 2 total 10');
-    expect(container.textContent).toContain('Región: Cobertura global');
   });
 
   test('muestra loading cuando hay periodo aplicado y el hook está cargando', async () => {
@@ -456,7 +462,6 @@ describe('ReportePersonalizado', () => {
     }));
 
     await mount();
-
     await generarReporte();
 
     expect(container.textContent).toContain('Cargando datos del periodo seleccionado…');
@@ -476,10 +481,9 @@ describe('ReportePersonalizado', () => {
     expect(container.textContent).toContain('Error al cargar reporte');
 
     await act(async () => {
-      const retryButton = Array.from(container.querySelectorAll('button')).find((button) =>
-        button.textContent.includes('Reintentar')
-      );
-      retryButton.click();
+      Array.from(container.querySelectorAll('button'))
+        .find((b) => b.textContent.includes('Reintentar'))
+        .click();
     });
 
     expect(mockRefetch).toHaveBeenCalled();
@@ -487,7 +491,6 @@ describe('ReportePersonalizado', () => {
 
   test('permite quitar métrica de servicios y muestra solo estados cuando quedan demográficos sin servicios', async () => {
     await mount();
-
     await generarReporte();
 
     await act(async () => {
@@ -501,7 +504,6 @@ describe('ReportePersonalizado', () => {
 
   test('permite ocultar demográficos y deja de mostrar filtros y grid demográfico', async () => {
     await mount();
-
     await generarReporte();
 
     await act(async () => {
@@ -515,7 +517,6 @@ describe('ReportePersonalizado', () => {
 
   test('no permite apagar la última métrica activa', async () => {
     await mount();
-
     await generarReporte();
 
     await act(async () => {
@@ -534,7 +535,6 @@ describe('ReportePersonalizado', () => {
 
   test('aplica filtros demográficos y actualiza totales filtrados', async () => {
     await mount();
-
     await generarReporte();
 
     expect(container.textContent).toContain('Demo 2 2 total 10');
@@ -551,10 +551,7 @@ describe('ReportePersonalizado', () => {
 
     expect(mockRegisterCsvExportHandler).toHaveBeenCalledWith(expect.any(Function));
 
-    await act(async () => {
-      root.unmount();
-    });
-
+    await act(async () => { root.unmount(); });
     root = null;
 
     expect(mockRegisterCsvExportHandler).toHaveBeenCalledWith(null);
@@ -563,29 +560,19 @@ describe('ReportePersonalizado', () => {
   test('muestra alerta si intenta exportar CSV sin generar reporte', async () => {
     await mount();
 
-    const handler = getLastCsvHandler();
-
-    await act(async () => {
-      handler();
-    });
+    await act(async () => { getLastCsvHandler()(); });
 
     expect(global.alert).toHaveBeenCalledWith(
       'Aplica primero el periodo en las fechas y pulsa «Generar reporte».'
     );
-
     expect(mockTriggerCsvDownload).not.toHaveBeenCalled();
   });
 
   test('exporta CSV cuando ya se generó el reporte', async () => {
     await mount();
-
     await generarReporte();
 
-    const handler = getLastCsvHandler();
-
-    await act(async () => {
-      handler();
-    });
+    await act(async () => { getLastCsvHandler()(); });
 
     expect(mockBuildCsvReportePersonalizado).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -599,7 +586,6 @@ describe('ReportePersonalizado', () => {
         granularidadLabel: 'Servicios por día',
       })
     );
-
     expect(mockTriggerCsvDownload).toHaveBeenCalledWith(
       'reporte_personalizado_2026-06-01_2026-06-30_20260604_001500.csv',
       'csv-content'
@@ -617,6 +603,34 @@ describe('ReportePersonalizado', () => {
     await generarReporte();
 
     expect(mockHookState).toHaveBeenLastCalledWith('2026-05-01', '2026-05-15');
-    expect(container.textContent).toContain('Rango: 2026-05-01 al 2026-05-15');
+  });
+
+  test('el botón Abrir filtros aparece solo después de generar el reporte', async () => {
+    await mount();
+
+    expect(container.querySelector('[data-testid="abrir-filtros"]')).toBeFalsy();
+
+    await generarReporte();
+
+    expect(container.querySelector('[data-testid="abrir-filtros"]')).toBeTruthy();
+  });
+
+  test('el botón Abrir filtros alterna la visibilidad del panel', async () => {
+    await mount();
+    await generarReporte();
+
+    expect(container.querySelector('[data-testid="filtros-panel"]')).toBeTruthy();
+
+    await act(async () => {
+      container.querySelector('[data-testid="abrir-filtros"]').click();
+    });
+
+    expect(container.querySelector('[data-testid="filtros-panel"]')).toBeFalsy();
+
+    await act(async () => {
+      container.querySelector('[data-testid="abrir-filtros"]').click();
+    });
+
+    expect(container.querySelector('[data-testid="filtros-panel"]')).toBeTruthy();
   });
 });

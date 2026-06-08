@@ -42,6 +42,10 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 2rem;
   }
+
+  .reporte-personalizado-resumen-bar--solo-periodo .reporte-personalizado-resumen-cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .reporte-personalizado-resumen-cell {

@@ -1,16 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import PersonalizadoDemograficosGrid from "../../../components/reportes/ReportePersonalizado/PersonalizadoDemograficosGrid/PersonalizadoDemograficosGrid";
-import PersonalizadoFiltrosDemograficos from "../../../components/reportes/ReportePersonalizado/PersonalizadoFiltrosDemograficos/PersonalizadoFiltrosDemograficos";
-import PersonalizadoLedgerDimensiones from "../../../components/reportes/ReportePersonalizado/PersonalizadoLedgerDimensiones/PersonalizadoLedgerDimensiones";
+import PersonalizadoFiltrosPanel from "../../../components/reportes/ReportePersonalizado/PersonalizadoFiltrosPanel/PersonalizadoFiltrosPanel";
 import PersonalizadoKpiSection from "../../../components/reportes/ReportePersonalizado/PersonalizadoKpiSection/PersonalizadoKpiSection";
 import PersonalizadoRangoFechasCard from "../../../components/reportes/ReportePersonalizado/PersonalizadoRangoFechasCard/PersonalizadoRangoFechasCard";
-import PersonalizadoResumenSeleccion from "../../../components/reportes/ReportePersonalizado/PersonalizadoResumenSeleccion/PersonalizadoResumenSeleccion";
 import PersonalizadoResultadosDivider from "../../../components/reportes/ReportePersonalizado/PersonalizadoResultadosDivider/PersonalizadoResultadosDivider";
 import PersonalizadoServiciosChartRow, {
   PersonalizadoSoloEstadosCard,
 } from "../../../components/reportes/ReportePersonalizado/PersonalizadoServiciosChartRow/PersonalizadoServiciosChartRow";
-import PersonalizadoSinDatosState from "../../../components/reportes/ReportePersonalizado/PersonalizadoSinDatosState/PersonalizadoSinDatosState";
 import ReportePersonalizadoShell from "../../../components/reportes/ReportePersonalizado/ReportePersonalizadoShell/ReportePersonalizadoShell";
 import ReportesLoading from "../../../components/reportes/ReportesLoading/ReportesLoading";
 import {
@@ -57,36 +54,6 @@ function toggleSelectionValue(prev, items, key, resetWhenAllSelected = true) {
   return current;
 }
 
-function getRegionAnalisisResumen({
-  metricas,
-  periodoAplicado,
-  distribucionEstado,
-  estadosSel,
-  estadosEfectivos,
-}) {
-  if (!metricas.has(METRICA_DEMOGRAFICOS)) return "No aplica";
-  if (!periodoAplicado) return "Cobertura global (tras generar)";
-  if (distribucionEstado.length === 0) return "Sin datos en el periodo";
-
-  const all = new Set(distribucionEstado.map((row) => row.key));
-
-  if (estadosSel === null || estadosEfectivos.size === all.size) {
-    return "Cobertura global";
-  }
-
-  if (estadosEfectivos.size === 0) return "Sin estados seleccionados";
-
-  return `${estadosEfectivos.size} estado${estadosEfectivos.size === 1 ? "" : "s"}`;
-}
-
-function getRangoResumenPie(desdeDraft, hastaDraft) {
-  if (esRangoFechaValido(desdeDraft, hastaDraft)) {
-    return formatRangoLegible(desdeDraft, hastaDraft);
-  }
-
-  return "Periodo no definido";
-}
-
 export default function ReportePersonalizado() {
   const { registerCsvExportHandler } = useOutletContext() || {};
   const def = useMemo(() => defaultRangoMesActual(), []);
@@ -102,6 +69,8 @@ export default function ReportePersonalizado() {
   const [generosSel, setGenerosSel] = useState(null);
   const [etapasSel, setEtapasSel] = useState(null);
   const [estadosSel, setEstadosSel] = useState(null);
+  const [filtrosPanelAbierto, setFiltrosPanelAbierto] = useState(false);
+  const prevHayDatosRef = useRef(false);
 
   const { data, loading, error, refetch } = useReportePersonalizado(aplicadoDesde, aplicadoHasta);
 
@@ -152,8 +121,6 @@ export default function ReportePersonalizado() {
 
   const hayDatos = periodoAplicado;
 
-  const muestraSinDatos = !hayDatos;
-
   const toggleMetrica = useCallback((id) => {
     setMetricas((prev) => {
       const next = new Set(prev);
@@ -190,31 +157,6 @@ export default function ReportePersonalizado() {
     setAplicadoDesde(desdeDraft);
     setAplicadoHasta(hastaDraft);
   }, [desdeDraft, hastaDraft]);
-
-  const rangoResumenPie = useMemo(
-    () => getRangoResumenPie(desdeDraft, hastaDraft),
-    [desdeDraft, hastaDraft]
-  );
-
-  const filtrosActivosResumen = useMemo(() => textoMetricas(metricas), [metricas]);
-
-  const regionAnalisisResumen = useMemo(
-  () =>
-    getRegionAnalisisResumen({
-      metricas,
-      periodoAplicado,
-      distribucionEstado: data.distribucionEstado,
-      estadosSel,
-      estadosEfectivos,
-    }),
-  [
-    metricas,
-    periodoAplicado,
-    data.distribucionEstado,
-    estadosSel,
-    estadosEfectivos,
-  ]
-);
 
   const metricasTieneServicios = metricas.has(METRICA_SERVICIOS);
   const metricasTieneNuevos = metricas.has(METRICA_NUEVOS);
@@ -272,44 +214,26 @@ export default function ReportePersonalizado() {
   const muestraServicios = metricas.has(METRICA_SERVICIOS);
   const muestraSoloEstados = !muestraServicios && metricas.has(METRICA_DEMOGRAFICOS);
 
+  useEffect(() => {
+    if (hayDatos && !prevHayDatosRef.current) {
+      setFiltrosPanelAbierto(true);
+    }
+    prevHayDatosRef.current = hayDatos;
+  }, [hayDatos]);
+
   return (
     <ReportePersonalizadoShell>
-
-      <div className="reporte-personalizado-filters-stack">
-        <PersonalizadoRangoFechasCard
-          desdeDraft={desdeDraft}
-          hastaDraft={hastaDraft}
-          onDesdeChange={setDesdeDraft}
-          onHastaChange={setHastaDraft}
-          errorRango={errorRango}
-        />
-        <PersonalizadoLedgerDimensiones
-          muestraDemografia={muestraDemo}
-          metricas={metricas}
-          onToggleMetrica={toggleMetrica}
-        >
-          {muestraDemo ? (
-            <PersonalizadoFiltrosDemograficos
-              hayDatos={hayDatos}
-              distribucionEstado={data.distribucionEstado}
-              generosEfectivos={generosEfectivos}
-              etapasEfectivas={etapasEfectivas}
-              estadosEfectivos={estadosEfectivos}
-              onToggleGenero={toggleGenero}
-              onToggleEtapa={toggleEtapa}
-              onToggleEstado={toggleEstado}
-            />
-          ) : null}
-        </PersonalizadoLedgerDimensiones>
-      </div>
-      <PersonalizadoResumenSeleccion
-        rangoTemporal={rangoResumenPie}
-        filtrosActivos={filtrosActivosResumen}
-        regionAnalisis={regionAnalisisResumen}
+      <PersonalizadoRangoFechasCard
+        desdeDraft={desdeDraft}
+        hastaDraft={hastaDraft}
+        onDesdeChange={setDesdeDraft}
+        onHastaChange={setHastaDraft}
+        errorRango={errorRango}
         onGenerarReporte={aplicarFiltros}
+        onAbrirFiltros={hayDatos ? () => setFiltrosPanelAbierto((prev) => !prev) : undefined}
+        filtrosAbiertos={filtrosPanelAbierto}
+        hayReporte={hayDatos}
       />
-
-      {muestraSinDatos ? <PersonalizadoSinDatosState /> : null}
 
       {error ? (
         <div className="reporte-general-alert" role="alert">
@@ -322,7 +246,24 @@ export default function ReportePersonalizado() {
 
       {hayDatos ? (
         <>
+          <PersonalizadoFiltrosPanel
+            open={filtrosPanelAbierto}
+            onOpenChange={setFiltrosPanelAbierto}
+            muestraDemografia={muestraDemo}
+            metricas={metricas}
+            onToggleMetrica={toggleMetrica}
+            hayDatos={hayDatos}
+            distribucionEstado={data.distribucionEstado}
+            generosEfectivos={generosEfectivos}
+            etapasEfectivas={etapasEfectivas}
+            estadosEfectivos={estadosEfectivos}
+            onToggleGenero={toggleGenero}
+            onToggleEtapa={toggleEtapa}
+            onToggleEstado={toggleEstado}
+          />
+
           <PersonalizadoResultadosDivider />
+
           {loading ? (
             <ReportesLoading
               message="Cargando datos del periodo seleccionado…"
@@ -330,7 +271,6 @@ export default function ReportePersonalizado() {
             />
           ) : (
             <>
-            
               <PersonalizadoKpiSection metricas={metricas} data={data} />
               {muestraServicios && (
                 <PersonalizadoServiciosChartRow
@@ -341,8 +281,8 @@ export default function ReportePersonalizado() {
                   distribEstadoVista={distribEstadoVista}
                   rangoLegible={formatRangoLegible(aplicadoDesde, aplicadoHasta)}
                 />
-              )} 
-              {muestraSoloEstados &&   (
+              )}
+              {muestraSoloEstados && (
                 <PersonalizadoSoloEstadosCard distribEstadoVista={distribEstadoVista} limit={12} />
               )}
 

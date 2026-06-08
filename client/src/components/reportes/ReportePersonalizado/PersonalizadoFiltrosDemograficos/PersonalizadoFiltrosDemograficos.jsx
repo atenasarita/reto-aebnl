@@ -3,6 +3,8 @@ import { ETAPA_FILTROS, GENERO_FILTROS } from "../reportePersonalizadoConstants"
 import "./PersonalizadoFiltrosDemograficos.css";
 
 export default function PersonalizadoFiltrosDemograficos({
+  layout = "grid",
+  variant = "default",
   hayDatos,
   distribucionEstado,
   generosEfectivos,
@@ -12,8 +14,11 @@ export default function PersonalizadoFiltrosDemograficos({
   onToggleEtapa,
   onToggleEstado,
 }) {
+  const layoutClass = layout === "stacked" ? " reporte-personalizado-dem-columns--stacked" : "";
+  const variantClass = variant === "panel" ? " reporte-personalizado-dem-columns--panel" : "";
+
   return (
-    <div className="reporte-personalizado-dem-columns">
+    <div className={`reporte-personalizado-dem-columns${layoutClass}${variantClass}`}>
       <div className="reporte-personalizado-dem-col">
         <div className="reporte-personalizado-dem-col-head">
           <ScanSearch className="reporte-personalizado-dem-col-head-icon" size={18} strokeWidth={2} aria-hidden />
