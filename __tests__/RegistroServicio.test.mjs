@@ -1,0 +1,773 @@
+/**
+ * @jest-environment jsdom
+ */
+
+import { jest, describe, test, expect, beforeEach, afterEach } from '@jest/globals';
+import React from 'react';
+import { act } from 'react';
+import { createRoot } from 'react-dom/client';
+
+
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+
+const mockNavigate = jest.fn();
+const mockRegistrar = jest.fn();
+const mockFetchSaldo = jest.fn();
+const mockFetchDonadores = jest.fn();
+
+let mockBeneficiarios;
+let mockAgendaItems;
+let mockTipos;
+let mockProductos;
+let mockDonadores;
+let mockSaldoFondo;
+let mockGuardando;
+
+jest.mock('react-router-dom', () => ({
+  __esModule: true,
+  useNavigate: () => mockNavigate,
+}));
+
+jest.mock('lucide-react', () => ({
+  __esModule: true,
+  Search: () => React.createElement('span', { 'data-testid': 'icon-search' }),
+  ClipboardList: () => React.createElement('span', { 'data-testid': 'icon-clipboard' }),
+  Package: () => React.createElement('span', { 'data-testid': 'icon-package' }),
+  Wallet: () => React.createElement('span', { 'data-testid': 'icon-wallet' }),
+  ChevronRight: () => React.createElement('span', { 'data-testid': 'icon-right' }),
+  ChevronLeft: () => React.createElement('span', { 'data-testid': 'icon-left' }),
+  CheckCircle2: () => React.createElement('span', { 'data-testid': 'icon-check' }),
+}));
+
+jest.mock('../client/src/pages/styles/RegistroServicio.css', () => ({}));
+
+jest.mock('../client/src/hooks/useBeneficiarios', () => ({
+  __esModule: true,
+  default: () => ({
+    data: mockBeneficiarios,
+    loading: false,
+  }),
+}));
+
+jest.mock('../client/src/hooks/useCitasHoy', () => ({
+  __esModule: true,
+  default: () => ({
+    agendaItems: mockAgendaItems,
+    loading: false,
+  }),
+}));
+
+jest.mock('../client/src/hooks/useServicios', () => ({
+  __esModule: true,
+  default: () => ({
+    tipos: mockTipos,
+    loading: false,
+  }),
+}));
+
+jest.mock('../client/src/hooks/useProductos', () => ({
+  __esModule: true,
+  useProductos: () => ({
+    productos: mockProductos,
+    loading: false,
+    error: null,
+  }),
+}));
+
+jest.mock('../client/src/hooks/useRegistrarServicios', () => ({
+  __esModule: true,
+  default: () => ({
+    registrar: mockRegistrar,
+    loading: mockGuardando,
+  }),
+}));
+
+jest.mock('../client/src/hooks/useFondoDonaciones', () => ({
+  __esModule: true,
+  default: () => ({
+    saldo: mockSaldoFondo,
+    donadores: mockDonadores,
+    fetchSaldo: mockFetchSaldo,
+    fetchDonadores: mockFetchDonadores,
+  }),
+}));
+
+jest.mock('../client/src/components/layout/servicios/Registro/StepBusqueda.jsx', () => ({
+  __esModule: true,
+  default: ({
+    query,
+    setQuery,
+    resultados,
+    beneficiarioSeleccionado,
+    setBeneficiarioSeleccionado,
+    CITAS_HOY,
+    citaSeleccionada,
+    setCitaSeleccionada,
+  }) =>
+    React.createElement(
+      'section',
+      { 'data-testid': 'step-busqueda' },
+      React.createElement('h2', null, 'Paso búsqueda'),
+      React.createElement('input', {
+        'data-testid': 'busqueda-input',
+        value: query,
+        onChange: (event) => setQuery(event.target.value),
+      }),
+      React.createElement(
+        'div',
+        { 'data-testid': 'resultados' },
+        resultados.map((b) =>
+          React.createElement(
+            'button',
+            {
+              key: b.folio,
+              type: 'button',
+              'data-testid': `beneficiario-${b.folio}`,
+              onClick: () => {
+                setBeneficiarioSeleccionado(b.folio);
+                setCitaSeleccionada(null);
+              },
+            },
+            `${b.nombre} ${beneficiarioSeleccionado === b.folio ? 'seleccionado' : ''}`
+          )
+        )
+      ),
+      React.createElement(
+        'div',
+        { 'data-testid': 'citas-hoy' },
+        CITAS_HOY.map((c) =>
+          React.createElement(
+            'button',
+            {
+              key: c.id,
+              type: 'button',
+              'data-testid': `cita-${c.id}`,
+              onClick: () => {
+                setCitaSeleccionada(c.id);
+                setBeneficiarioSeleccionado(null);
+              },
+            },
+            `${c.nombre} ${citaSeleccionada === c.id ? 'seleccionada' : ''}`
+          )
+        )
+      )
+    ),
+}));
+
+jest.mock('../client/src/components/layout/servicios/Registro/StepDetalles.jsx', () => ({
+  __esModule: true,
+  default: ({
+    fecha,
+    setFecha,
+    hora,
+    setHora,
+    categoriaServicio,
+    setCategoriaServicio,
+    tipoServicio,
+    setTipoServicio,
+    categoriasOptions,
+    tiposOptions,
+    notas,
+    setNotas,
+  }) =>
+    React.createElement(
+      'section',
+      { 'data-testid': 'step-detalles' },
+      React.createElement('h2', null, 'Paso detalles'),
+      React.createElement('input', {
+        'data-testid': 'fecha-input',
+        type: 'date',
+        value: fecha,
+        onChange: (event) => setFecha(event.target.value),
+      }),
+      React.createElement('input', {
+        'data-testid': 'hora-input',
+        type: 'time',
+        value: hora,
+        onChange: (event) => setHora(event.target.value),
+      }),
+      React.createElement(
+        'select',
+        {
+          'data-testid': 'categoria-select',
+          value: categoriaServicio,
+          onChange: (event) => setCategoriaServicio(event.target.value),
+        },
+        categoriasOptions.map((option) =>
+          React.createElement('option', { key: option.value, value: option.value }, option.label)
+        )
+      ),
+      React.createElement(
+        'select',
+        {
+          'data-testid': 'servicio-select',
+          value: tipoServicio,
+          onChange: (event) => setTipoServicio(event.target.value),
+        },
+        React.createElement('option', { value: '' }, 'Seleccionar servicio'),
+        tiposOptions.map((option) =>
+          React.createElement('option', { key: option.value, value: option.value }, option.label)
+        )
+      ),
+      React.createElement('textarea', {
+        'data-testid': 'notas-input',
+        value: notas,
+        onChange: (event) => setNotas(event.target.value),
+      })
+    ),
+}));
+
+jest.mock('../client/src/components/layout/servicios/Registro/StepInsumos.jsx', () => ({
+  __esModule: true,
+  default: ({ insumos, setInsumos, productos }) =>
+    React.createElement(
+      'section',
+      { 'data-testid': 'step-insumos' },
+      React.createElement('h2', null, 'Paso insumos'),
+      React.createElement('p', null, `Insumos seleccionados: ${insumos.length}`),
+      React.createElement(
+        'button',
+        {
+          type: 'button',
+          'data-testid': 'agregar-insumo',
+          onClick: () =>
+            setInsumos([
+              ...insumos,
+              {
+                id: productos[0]?.id ?? 1,
+                nombre: productos[0]?.nombre ?? 'Sonda',
+                precio: productos[0]?.precio ?? 100,
+                cantidad: 2,
+              },
+            ]),
+        },
+        'Agregar insumo'
+      )
+    ),
+}));
+
+jest.mock('../client/src/components/layout/servicios/Registro/StepFinanzas.jsx', () => ({
+  __esModule: true,
+  default: ({
+    total,
+    totalConDescuento,
+    saldo,
+    saldoGlobal,
+    donadores,
+    fondoSeleccionado,
+    setFondoSeleccionado,
+    metodoPago,
+    setMetodoPago,
+    montoPagado,
+    setMontoPagado,
+    montoDonacion,
+    setMontoDonacion,
+    descuento,
+    setDescuento,
+    yaAporto,
+    setYaAporto,
+  }) =>
+    React.createElement(
+      'section',
+      { 'data-testid': 'step-finanzas' },
+      React.createElement('h2', null, 'Paso finanzas'),
+      React.createElement('p', { 'data-testid': 'total' }, `Total: ${total}`),
+      React.createElement('p', { 'data-testid': 'total-descuento' }, `Total descuento: ${totalConDescuento}`),
+      React.createElement('p', { 'data-testid': 'saldo' }, `Saldo: ${saldo}`),
+      React.createElement('p', { 'data-testid': 'saldo-global' }, `Saldo global: ${saldoGlobal}`),
+      React.createElement('input', {
+        'data-testid': 'monto-pagado',
+        value: montoPagado,
+        onChange: (event) => setMontoPagado(event.target.value),
+      }),
+      React.createElement('input', {
+        'data-testid': 'monto-donacion',
+        value: montoDonacion,
+        onChange: (event) => setMontoDonacion(event.target.value),
+      }),
+      React.createElement('input', {
+        'data-testid': 'descuento',
+        value: descuento,
+        onChange: (event) => setDescuento(event.target.value),
+      }),
+      React.createElement(
+        'select',
+        {
+          'data-testid': 'metodo-pago',
+          value: metodoPago,
+          onChange: (event) => setMetodoPago(event.target.value),
+        },
+        React.createElement('option', { value: '' }, 'Seleccionar método'),
+        React.createElement('option', { value: 'efectivo' }, 'Efectivo'),
+        React.createElement('option', { value: 'tarjeta' }, 'Tarjeta')
+      ),
+      React.createElement(
+        'select',
+        {
+          'data-testid': 'fondo-select',
+          value: fondoSeleccionado,
+          onChange: (event) => setFondoSeleccionado(event.target.value),
+        },
+        React.createElement('option', { value: '' }, 'Seleccionar fondo'),
+        donadores.map((d) =>
+          React.createElement('option', { key: d.id_fondo, value: d.id_fondo }, d.nombre)
+        )
+      ),
+      React.createElement(
+        'button',
+        {
+          type: 'button',
+          'data-testid': 'ya-aporto',
+          onClick: () => setYaAporto(!yaAporto),
+        },
+        yaAporto ? 'Ya aportó: sí' : 'Ya aportó: no'
+      )
+    ),
+}));
+
+const RegistroServiciosModule = await import(
+  '../client/src/pages/Servicios/RegistroServicios.jsx'
+);
+
+const RegistroServicios =
+  RegistroServiciosModule.default?.default ||
+  RegistroServiciosModule.default ||
+  RegistroServiciosModule;
+
+let container;
+let root;
+
+function setNativeValue(element, value) {
+  const valueSetter = Object.getOwnPropertyDescriptor(element, 'value')?.set;
+  const prototype = Object.getPrototypeOf(element);
+  const prototypeValueSetter = Object.getOwnPropertyDescriptor(prototype, 'value')?.set;
+
+  if (prototypeValueSetter && valueSetter !== prototypeValueSetter) {
+    prototypeValueSetter.call(element, value);
+  } else if (valueSetter) {
+    valueSetter.call(element, value);
+  } else {
+    element.value = value;
+  }
+}
+
+function changeInput(input, value) {
+  setNativeValue(input, value);
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+  input.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+function getButton(text) {
+  return Array.from(container.querySelectorAll('button')).find((button) =>
+    button.textContent.includes(text)
+  );
+}
+
+async function clickButton(text) {
+  await act(async () => {
+    getButton(text).click();
+  });
+}
+
+async function seleccionarBeneficiario() {
+  const input = container.querySelector('[data-testid="busqueda-input"]');
+
+  await act(async () => {
+    changeInput(input, 'juan');
+  });
+
+  await act(async () => {
+    container.querySelector('[data-testid="beneficiario-BEN-001"]').click();
+  });
+}
+
+async function seleccionarCita() {
+  await act(async () => {
+    container.querySelector('[data-testid="cita-55"]').click();
+  });
+}
+
+async function llenarDetalles({ conServicio = true } = {}) {
+  await act(async () => {
+    changeInput(container.querySelector('[data-testid="fecha-input"]'), '2026-06-03');
+    changeInput(container.querySelector('[data-testid="hora-input"]'), '10:30');
+    changeInput(container.querySelector('[data-testid="notas-input"]'), 'Servicio de prueba');
+  });
+
+  if (conServicio) {
+    await act(async () => {
+      changeInput(container.querySelector('[data-testid="categoria-select"]'), 'Consulta');
+    });
+
+    await act(async () => {
+      changeInput(container.querySelector('[data-testid="servicio-select"]'), '10');
+    });
+  }
+}
+
+async function irHastaPasoFinanzasPorBeneficiario() {
+  await seleccionarBeneficiario();
+  await clickButton('Continuar');
+
+  await llenarDetalles();
+  await clickButton('Continuar');
+
+  await clickButton('Continuar');
+}
+
+describe('RegistroServicios', () => {
+  beforeEach(() => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+    root = createRoot(container);
+
+    jest.clearAllMocks();
+
+    mockGuardando = false;
+
+    mockBeneficiarios = [
+      {
+        id_beneficiario: 1,
+        folio: 'BEN-001',
+        estado: 'activo',
+        identificadores: {
+          nombres: 'Juan',
+          apellido_paterno: 'García',
+          CURP: 'GAGJ000101HNLXXX01',
+        },
+      },
+      {
+        id_beneficiario: 2,
+        folio: 'BEN-002',
+        estado: 'inactivo',
+        identificadores: {
+          nombres: 'Pedro',
+          apellido_paterno: 'López',
+          CURP: 'LOPE000101HNLXXX01',
+        },
+      },
+    ];
+
+    mockAgendaItems = [
+      {
+        id_cita: 55,
+        id_beneficiario: 3,
+        nombre_completo: 'María Cita',
+        hora: '09:00',
+        servicio_nombre: 'Terapia',
+        especialista_nombre: 'Dra. Ana',
+      },
+    ];
+
+    mockTipos = [
+      {
+        id: 10,
+        categoria: 'Consulta',
+        nombre: 'Consulta general',
+        precio: 500,
+      },
+      {
+        id: 20,
+        categoria: 'Terapia',
+        nombre: 'Terapia física',
+        precio: 700,
+      },
+    ];
+
+    mockProductos = [
+      {
+        id: 99,
+        nombre: 'Sonda',
+        precio: 100,
+      },
+    ];
+
+    mockSaldoFondo = { saldo: 1000 };
+
+    mockDonadores = [
+      {
+        id_fondo: 7,
+        id_donador: 70,
+        nombre: 'Fondo Empresa XYZ',
+        saldo: 800,
+      },
+    ];
+
+    mockRegistrar.mockResolvedValue({ success: true });
+    mockFetchSaldo.mockResolvedValue({ saldo: 1000 });
+    mockFetchDonadores.mockResolvedValue(mockDonadores);
+  });
+
+  afterEach(async () => {
+    if (root) {
+      await act(async () => {
+        root.unmount();
+      });
+    }
+
+    container.remove();
+  });
+
+  async function mount() {
+    await act(async () => {
+      root.render(React.createElement(RegistroServicios));
+    });
+  }
+
+  test('muestra el paso inicial y el resumen vacío', async () => {
+    await mount();
+
+    expect(container.textContent).toContain('Registrar Nuevo Servicio');
+    expect(container.textContent).toContain('Búsqueda');
+    expect(container.textContent).toContain('Paso 1 de 4');
+    expect(container.textContent).toContain('Beneficiario:');
+    expect(container.textContent).toContain('—');
+  });
+
+  test('no avanza al paso 2 si no se selecciona beneficiario ni cita', async () => {
+    await mount();
+
+    await clickButton('Continuar');
+
+    expect(container.textContent).toContain('Paso 1 de 4');
+    expect(container.querySelector('[data-testid="step-busqueda"]')).toBeTruthy();
+  });
+
+  test('busca y selecciona beneficiario activo para avanzar al paso detalles', async () => {
+    await mount();
+
+    await seleccionarBeneficiario();
+    await clickButton('Continuar');
+
+    expect(container.textContent).toContain('Paso 2 de 4');
+    expect(container.querySelector('[data-testid="step-detalles"]')).toBeTruthy();
+    expect(container.textContent).toContain('Juan García');
+  });
+
+  test('permite avanzar con una cita seleccionada', async () => {
+    await mount();
+
+    await seleccionarCita();
+    await clickButton('Continuar');
+
+    expect(container.textContent).toContain('Paso 2 de 4');
+    expect(container.textContent).toContain('María Cita');
+  });
+
+  test('no avanza del paso detalles si falta fecha u hora', async () => {
+    await mount();
+
+    await seleccionarBeneficiario();
+    await clickButton('Continuar');
+
+    await clickButton('Continuar');
+
+    expect(container.textContent).toContain('Paso 2 de 4');
+    expect(container.querySelector('[data-testid="step-detalles"]')).toBeTruthy();
+  });
+
+  test('calcula el precio del servicio y avanza al paso finanzas', async () => {
+    await mount();
+
+    await irHastaPasoFinanzasPorBeneficiario();
+
+    expect(container.textContent).toContain('Paso 4 de 4');
+    expect(container.querySelector('[data-testid="step-finanzas"]')).toBeTruthy();
+    expect(container.textContent).toContain('Servicio:');
+    expect(container.textContent).toContain('$500.00');
+
+    expect(mockFetchSaldo).toHaveBeenCalled();
+    expect(mockFetchDonadores).toHaveBeenCalled();
+  });
+
+  test('muestra hint en insumos cuando no hay servicio ni insumos seleccionados', async () => {
+    await mount();
+
+    await seleccionarBeneficiario();
+    await clickButton('Continuar');
+
+    await llenarDetalles({ conServicio: false });
+    await clickButton('Continuar');
+
+    expect(container.textContent).toContain('Paso 3 de 4');
+    expect(container.textContent).toContain(
+      'Debe seleccionar al menos un servicio o un insumo para continuar.'
+    );
+
+    await clickButton('Continuar');
+
+    expect(container.textContent).toContain('Paso 3 de 4');
+  });
+
+  test('permite avanzar con insumos aunque no haya servicio seleccionado', async () => {
+    await mount();
+
+    await seleccionarBeneficiario();
+    await clickButton('Continuar');
+
+    await llenarDetalles({ conServicio: false });
+    await clickButton('Continuar');
+
+    await act(async () => {
+      container.querySelector('[data-testid="agregar-insumo"]').click();
+    });
+
+    await clickButton('Continuar');
+
+    expect(container.textContent).toContain('Paso 4 de 4');
+    expect(container.textContent).toContain('Insumos:');
+    expect(container.textContent).toContain('$200.00');
+  });
+
+  test('no permite guardar si el pago supera el total', async () => {
+    await mount();
+
+    await irHastaPasoFinanzasPorBeneficiario();
+
+    await act(async () => {
+      changeInput(container.querySelector('[data-testid="monto-pagado"]'), '9999');
+      changeInput(container.querySelector('[data-testid="metodo-pago"]'), 'efectivo');
+    });
+
+    const guardarBtn = getButton('Guardar');
+
+    expect(guardarBtn.disabled).toBe(true);
+    expect(mockRegistrar).not.toHaveBeenCalled();
+  });
+
+  test('no permite guardar donación si no se selecciona fondo', async () => {
+    await mount();
+
+    await irHastaPasoFinanzasPorBeneficiario();
+
+    await act(async () => {
+      changeInput(container.querySelector('[data-testid="monto-donacion"]'), '100');
+    });
+
+    const guardarBtn = getButton('Guardar');
+
+    expect(guardarBtn.disabled).toBe(true);
+  });
+
+  test('guarda correctamente un servicio con pago familiar y fondo de donación', async () => {
+    await mount();
+
+    await irHastaPasoFinanzasPorBeneficiario();
+
+    await act(async () => {
+      changeInput(container.querySelector('[data-testid="monto-pagado"]'), '300');
+      changeInput(container.querySelector('[data-testid="metodo-pago"]'), 'efectivo');
+      changeInput(container.querySelector('[data-testid="monto-donacion"]'), '200');
+      changeInput(container.querySelector('[data-testid="fondo-select"]'), '7');
+      container.querySelector('[data-testid="ya-aporto"]').click();
+    });
+
+    await clickButton('Guardar');
+
+    expect(mockRegistrar).toHaveBeenCalledWith({
+      id_beneficiario: 1,
+      id_catalogo_servicio: '10',
+      fecha: '2026-06-03',
+      hora: '10:30',
+      id_cita: null,
+      notas: 'Servicio de prueba',
+      cantidad: 1,
+      id_usuario: 1,
+      insumos: [],
+      monto_servicio: 500,
+      monto_inventario: 0,
+      descuento: 0,
+      cuota_total: 500,
+      monto_pagado: 300,
+      monto_donacion: 200,
+      id_fondo: 7,
+      id_donador: 70,
+      metodo_pago: 'efectivo',
+      ya_aporto: true,
+    });
+
+    expect(container.textContent).toContain('Servicio registrado');
+    expect(container.textContent).toContain('El servicio fue guardado correctamente');
+  });
+
+  test('guarda correctamente un servicio proveniente de cita', async () => {
+    await mount();
+
+    await seleccionarCita();
+    await clickButton('Continuar');
+
+    await llenarDetalles();
+    await clickButton('Continuar');
+    await clickButton('Continuar');
+
+    await act(async () => {
+      changeInput(container.querySelector('[data-testid="monto-pagado"]'), '500');
+      changeInput(container.querySelector('[data-testid="metodo-pago"]'), 'tarjeta');
+    });
+
+    await clickButton('Guardar');
+
+    expect(mockRegistrar).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id_beneficiario: 3,
+        id_cita: 55,
+        monto_pagado: 500,
+        metodo_pago: 'tarjeta',
+      })
+    );
+  });
+
+  test('muestra error si registrar falla', async () => {
+    mockRegistrar.mockRejectedValueOnce(new Error('Error al guardar servicio'));
+
+    await mount();
+
+    await irHastaPasoFinanzasPorBeneficiario();
+
+    await act(async () => {
+      changeInput(container.querySelector('[data-testid="monto-pagado"]'), '500');
+      changeInput(container.querySelector('[data-testid="metodo-pago"]'), 'efectivo');
+    });
+
+    await clickButton('Guardar');
+
+    expect(container.textContent).toContain('Error al guardar servicio');
+  });
+
+  test('resetea el formulario al registrar otro servicio', async () => {
+    await mount();
+
+    await irHastaPasoFinanzasPorBeneficiario();
+
+    await act(async () => {
+      changeInput(container.querySelector('[data-testid="monto-pagado"]'), '500');
+      changeInput(container.querySelector('[data-testid="metodo-pago"]'), 'efectivo');
+    });
+
+    await clickButton('Guardar');
+
+    expect(container.textContent).toContain('Servicio registrado');
+
+    await clickButton('Registrar otro servicio');
+
+    expect(container.textContent).toContain('Paso 1 de 4');
+    expect(container.textContent).toContain('Registrar Nuevo Servicio');
+  });
+
+  test('navega al historial al hacer click en Ver historial', async () => {
+    await mount();
+
+    await irHastaPasoFinanzasPorBeneficiario();
+
+    await act(async () => {
+      changeInput(container.querySelector('[data-testid="monto-pagado"]'), '500');
+      changeInput(container.querySelector('[data-testid="metodo-pago"]'), 'efectivo');
+    });
+
+    await clickButton('Guardar');
+
+    await clickButton('Ver historial');
+
+    expect(mockNavigate).toHaveBeenCalledWith('/servicios');
+  });
+});
