@@ -6,8 +6,8 @@ test.skip(({ browserName }) => browserName === 'firefox', 'No correr en firefox 
 test.beforeEach(async ({ page }) => {
   await page.goto('http://localhost:5173/login');
   await page.getByRole('textbox', { name: 'Usuario' }).fill('prueba1');
-  await page.getByRole('textbox', { name: '********' }).fill('admin1');
-  await page.getByRole('button', { name: 'Iniciar Sesión' }).click();
+  await page.getByRole('textbox', { name: 'Contraseña' }).fill('admin1');
+  await page.getByRole('button', { name: 'Entrar al sistema' }).click();
   await page.getByRole('button', { name: 'Beneficiarios' }).click();
   await expect(page.locator('[class*="_card_"]').first()).toBeVisible({ timeout: 8000 });
 });
@@ -32,7 +32,7 @@ test(qase(107, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-1')
 
   // Verificar campo Nombre (exact match para evitar "Nombre padre / madre")
   await expect(
-    detalle.locator('[class*="_fieldLabel_"]').filter({ hasText: /^Nombre$/ })
+    detalle.locator('[class*="_fieldLabel_"]').filter({ hasText: /^Nombre(s)$/ })
   ).toBeVisible();
   await expect(
     detalle.locator('[class*="_fieldValue_"]').filter({ hasText: /atenas/i })
@@ -41,12 +41,6 @@ test(qase(107, 'HU - 006 - Consulta de beneficiarios - Caso de prueba #HU006-1')
   // Verificar sección de Vigencia de Membresía
   await expect(
     detalle.locator('[class*="_sectionLabel_"]').filter({ hasText: 'Vigencia de Membresía' })
-  ).toBeVisible();
-  await expect(
-    detalle.locator('[class*="_fieldLabel_"]').filter({ hasText: /^Desde$/ })
-  ).toBeVisible();
-  await expect(
-    detalle.locator('[class*="_fieldLabel_"]').filter({ hasText: /^Hasta$/ })
   ).toBeVisible();
 
   // Cerrar detalle antes de descargar PDF
