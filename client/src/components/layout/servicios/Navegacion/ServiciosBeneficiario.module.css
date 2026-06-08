@@ -131,9 +131,38 @@
   margin-top: 2px;
 }
 
+.tarjetaActions {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
 .tarjetaStats {
   display: flex;
   gap: var(--space-6);
+}
+
+.exportBtn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 6px var(--space-3);
+  font-size: 13px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  color: var(--color-brand);
+  background: var(--color-brand-soft);
+  border: 1px solid var(--color-brand-secondary);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.exportBtn:hover {
+  background: var(--color-brand-secondary);
+  color: #fff;
 }
 
 .stat {
