@@ -29,6 +29,12 @@ function fmt(num) {
   return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(num)
 }
 
+function fmtFecha(fecha) {
+  if (!fecha) return null
+  const [y, m, d] = fecha.split('-')
+  return `${d}/${m}/${y}`
+}
+
 function mapFila(s) {
   return {
     ...s,
@@ -37,6 +43,7 @@ function mapFila(s) {
     descuentoFormateado:       fmt(s.descuento),
     cuotaTotalFormateado:      fmt(s.cuotaTotal),
     montoPagadoFormateado:     fmt(s.montoPagado),
+    fechaFormateada:           fmtFecha(s.fecha),
   }
 }
 
