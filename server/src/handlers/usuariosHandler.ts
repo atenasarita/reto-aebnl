@@ -1,7 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { UsuariosController } from "../controllers/usuarios.controller";
+import { UnauthorizedError } from "../errors/appError";
 import { CreateUsuarioInput, LoginUsuarioInput } from "../types/usuarios.types";
+import { clearLoginFailures, recordLoginFailure } from "../utils/loginAttempts";
 import { createAccessToken } from "../utils/jwt";
+import { revokeToken } from "../utils/tokenBlacklist";
+import { TokenPayload } from "../types/auth.types";
 
 export class UsuariosHandler {
   usuariosController: UsuariosController;
@@ -25,6 +29,7 @@ export class UsuariosHandler {
     const payload = req.body as LoginUsuarioInput;
     try {
       const user = await this.usuariosController.loginUsuario(payload);
+      clearLoginFailures(payload.usuario);
 
       const token = createAccessToken({
         id_usuario: user.id_usuario,
@@ -33,6 +38,24 @@ export class UsuariosHandler {
       });
 
       return res.status(200).json({ user, token });
+    } catch (error) {
+      if (error instanceof UnauthorizedError) {
+        recordLoginFailure(payload.usuario);
+      }
+      return next(error);
+    }
+  };
+
+  logoutUsuario = async (req: Request, res: Response, next: NextFunction) => {
+    const user = (req as Request & { user?: TokenPayload }).user;
+
+    if (!user?.jti || !user.exp) {
+      return res.status(200).json({ message: 'Sesion cerrada.' });
+    }
+
+    try {
+      revokeToken(user.jti, user.exp);
+      return res.status(200).json({ message: 'Sesion cerrada.' });
     } catch (error) {
       return next(error);
     }

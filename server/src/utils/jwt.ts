@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { TokenPayload } from '../types/auth.types';
 
@@ -15,7 +16,11 @@ export const createAccessToken = (payload: TokenPayload): string => {
 	const secret: jwt.Secret = getJwtSecret();
 	const expiresIn = (process.env.JWT_EXPIRES_IN) as jwt.SignOptions['expiresIn'];
 
-	return jwt.sign(payload, secret, { expiresIn });
+	return jwt.sign(
+		{ ...payload, jti: crypto.randomUUID() },
+		secret,
+		{ expiresIn },
+	);
 };
 
 export const verifyAccessToken = (token: string): TokenPayload => {
