@@ -3,6 +3,7 @@ import 'dotenv/config';
 
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import fs from 'fs';
 import net from 'net';
 import { execSync } from 'child_process';
@@ -42,14 +43,18 @@ if (!fs.existsSync(walletDir)) {
 process.env.TNS_ADMIN = walletDir;
 
 
-console.log("ORACLE_USER:", process.env.ORACLE_USER);
-console.log("ORACLE_CONNECT_STRING:", process.env.ORACLE_CONNECT_STRING);
-console.log("ORACLE_PASSWORD existe:", !!process.env.ORACLE_PASSWORD);
+if (process.env.NODE_ENV !== 'production') {
+  console.log('ORACLE_USER:', process.env.ORACLE_USER);
+  console.log('ORACLE_CONNECT_STRING:', process.env.ORACLE_CONNECT_STRING);
+  console.log('ORACLE_PASSWORD existe:', !!process.env.ORACLE_PASSWORD);
+}
 
 const app = express();
 const PORT = Number(process.env.PORT) || 10000;
 
 app.set('trust proxy', 1);
+
+app.use(helmet());
 
 app.use(cors({
   origin: [
