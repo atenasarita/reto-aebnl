@@ -4,6 +4,7 @@ import { OracleUsuarioRepository } from '../repositories/usuario.repository';
 import { UsuariosHandler } from '../handlers/usuariosHandler';
 import { authenticateJWT, authorizeRoles } from '../middlewares/auth.middleware';
 import { validateBody } from '../middlewares/validate.middleware';
+import { loginRateLimiter } from '../middlewares/rateLimit.middleware';
 import { createUsuarioSchema, loginUsuarioSchema } from '../schemas/usuarios.schemas';
 
 
@@ -15,7 +16,7 @@ const usuariosHandler = new UsuariosHandler(usuariosController);
 
 
 router.post('/usuarios', authenticateJWT, authorizeRoles('administrador'), validateBody(createUsuarioSchema), usuariosHandler.createUsuario);
-router.post('/usuarios/login', validateBody(loginUsuarioSchema), usuariosHandler.loginUsuario);
+router.post('/usuarios/login', loginRateLimiter, validateBody(loginUsuarioSchema), usuariosHandler.loginUsuario);
 
 
 export default router;

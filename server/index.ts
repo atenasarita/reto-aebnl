@@ -49,6 +49,8 @@ console.log("ORACLE_PASSWORD existe:", !!process.env.ORACLE_PASSWORD);
 const app = express();
 const PORT = Number(process.env.PORT) || 10000;
 
+app.set('trust proxy', 1);
+
 app.use(cors({
   origin: [
     'http://localhost:5173',
