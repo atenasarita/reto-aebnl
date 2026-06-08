@@ -1,5 +1,6 @@
 import InventarioModalShell from '../../inventario/InventarioModalShell/InventarioModalShell.jsx'
 import styles from './ServiciosDetalleModal.module.css'
+import PropTypes from 'prop-types'
 
 function Campo({ label, value, muted = false }) {
   const empty = value == null || value === ''
@@ -13,12 +14,21 @@ function Campo({ label, value, muted = false }) {
   )
 }
 
+Campo.propTypes = {
+  label: PropTypes.node.isRequired,
+  value: PropTypes.node,
+  muted: PropTypes.bool,
+}
+
 export default function ServiciosDetalleModal({ open, onClose, servicio }) {
   if (!servicio) return null
 
-  const yaAporto =
-    servicio.yaAporto === 1 ? 'Sí' :
-    servicio.yaAporto === 0 ? 'No' : null
+  let yaAporto = null
+  if (servicio.yaAporto === 1) {
+    yaAporto = 'Sí'
+  } else if (servicio.yaAporto === 0) {
+    yaAporto = 'No'
+  }
 
   return (
     <InventarioModalShell
@@ -49,12 +59,12 @@ export default function ServiciosDetalleModal({ open, onClose, servicio }) {
             <Campo label="Monto pagado"     value={servicio.montoPagadoFormateado} />
             <div className={styles.field}>
               <span className={styles.label}>Ya aportó</span>
-              {yaAporto != null ? (
+              {yaAporto == null ? (
+                <span className={styles.valueMuted}>—</span>
+              ) : (
                 <span className={`${styles.badge} ${yaAporto === 'Sí' ? styles.badgeYes : styles.badgeNo}`}>
                   {yaAporto}
                 </span>
-              ) : (
-                <span className={styles.valueMuted}>—</span>
               )}
             </div>
           </div>
@@ -68,4 +78,23 @@ export default function ServiciosDetalleModal({ open, onClose, servicio }) {
       </div>
     </InventarioModalShell>
   )
+}
+
+ServiciosDetalleModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  servicio: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    nombre: PropTypes.string,
+    fechaFormateada: PropTypes.string,
+    beneficiario: PropTypes.string,
+    categoria: PropTypes.string,
+    metodoPago: PropTypes.string,
+    montoServicioFormateado: PropTypes.node,
+    montoInventarioFormateado: PropTypes.node,
+    descuentoFormateado: PropTypes.node,
+    cuotaTotalFormateado: PropTypes.node,
+    montoPagadoFormateado: PropTypes.node,
+    yaAporto: PropTypes.number,
+  }),
 }
