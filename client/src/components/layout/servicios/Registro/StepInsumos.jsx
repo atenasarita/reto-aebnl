@@ -20,14 +20,14 @@ export default function StepInsumos({ insumos, setInsumos }) {
 
     if (!productoSelec) return;
 
-    const cantidadNum = parseInt(cantidad, 10);
+    const cantidadNum = Number.parseInt(cantidad, 10);
 
     if (!cantidadNum || cantidadNum < 1) {
       return;
     }
 
     const prod = productos.find(
-      (p) => p.id === parseInt(productoSelec)
+      (p) => p.id === Number.parseInt(productoSelec)
     );
 
     if (!prod) return;
@@ -74,7 +74,7 @@ export default function StepInsumos({ insumos, setInsumos }) {
   const actualizarCantidad = (id, nuevaCantidad) => {
     setErrorStock("");
 
-    const cantidadNum = parseInt(nuevaCantidad, 10);
+    const cantidadNum = Number.parseInt(nuevaCantidad, 10);
 
     if (!cantidadNum || cantidadNum < 1) {
       return;
@@ -140,7 +140,7 @@ export default function StepInsumos({ insumos, setInsumos }) {
             max={
               productoSelec
                 ? productos.find(
-                    (p) => p.id === parseInt(productoSelec)
+                    (p) => p.id === Number.parseInt(productoSelec)
                   )?.stock
                 : undefined
             }

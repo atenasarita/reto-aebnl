@@ -110,8 +110,8 @@ export default function RegistroServicios() {
   const { registrar, loading: guardando } = useRegistrarServicio();
   const { saldo: saldoFondo, donadores, fetchSaldo, fetchDonadores } = useFondoDonaciones();
 
-  const donacionNum = Math.max(0, parseFloat(montoDonacion) || 0);
-  const pagadoNum = Math.max(0, parseFloat(montoPagado) || 0);
+  const donacionNum = Math.max(0, Number.parseFloat(montoDonacion) || 0);
+  const pagadoNum = Math.max(0, Number.parseFloat(montoPagado) || 0);
   const fondoActivo = donadores.find((d) => String(d.id_fondo) === String(fondoSeleccionado));
   const saldoFondoSel = fondoActivo ? Number(fondoActivo.saldo) : 0;
 
@@ -153,7 +153,7 @@ export default function RegistroServicios() {
   const totalServicio = precioServicio;
 
   const subtotal = totalServicio + subtotalInsumos;
-  const descuentoNum = Math.max(0, parseFloat(descuento) || 0);
+  const descuentoNum = Math.max(0, Number.parseFloat(descuento) || 0);
   const totalConDescuento = Math.max(0, subtotal - descuentoNum);
   const saldoRestante = totalConDescuento - pagadoNum - donacionNum;
 
@@ -234,7 +234,7 @@ export default function RegistroServicios() {
 
       monto_servicio: totalServicio,
       monto_inventario: subtotalInsumos,
-      descuento: parseFloat(descuento) || 0,
+      descuento: Number.parseFloat(descuento) || 0,
       cuota_total: totalConDescuento,
       monto_pagado: pagadoNum,
       monto_donacion: donacionNum,
@@ -259,8 +259,8 @@ export default function RegistroServicios() {
   };
 
   const validarPasoFinanzas = () => {
-    const pagado = parseFloat(montoPagado) || 0;
-    const donacion = parseFloat(montoDonacion) || 0;
+    const pagado = Number.parseFloat(montoPagado) || 0;
+    const donacion = Number.parseFloat(montoDonacion) || 0;
     if (pagado + donacion > totalConDescuento + 0.001) return false;
     if (donacion > 0 && !fondoSeleccionado) return false;
     if (donacion > saldoFondoSel + 0.001) return false;
