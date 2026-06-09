@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 import styles from './BeneficiarioDetalle.module.css'
 import TabsNavegacion from './TabsNavegacion'
@@ -37,7 +38,6 @@ function BeneficiarioModal({
         role="dialog"
         aria-modal="true"
         aria-label="Detalle de beneficiario"
-        onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.modalHeader}>
           <TabsNavegacion
@@ -76,6 +76,13 @@ function BeneficiarioModal({
       </div>
     </div>
   )
+}
+
+BeneficiarioModal.propTypes = {
+  beneficiario: PropTypes.object.isRequired,
+  onClose: PropTypes.func.isRequired,
+  startInEditMode: PropTypes.bool,
+  onUpdated: PropTypes.func,
 }
 
 export default BeneficiarioModal
