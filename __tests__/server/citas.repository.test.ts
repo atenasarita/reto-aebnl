@@ -383,7 +383,7 @@ describe("OracleCitasRepository", () => {
           id_especialista: 5,
           fecha: "2026-06-10",
           hora: "13:00",
-          id_cita: null,
+          id_cita: 15,
         },
         {
           outFormat: 4002,

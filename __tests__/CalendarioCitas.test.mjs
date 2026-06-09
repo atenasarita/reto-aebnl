@@ -101,6 +101,30 @@ jest.mock('../client/src/utils/dateTime', () => ({
   todayDate: jest.fn(() => '2026-06-07'),
 }));
 
+jest.mock('../client/src/utils/auth', () => ({
+  __esModule: true,
+  authFetch: jest.fn((url, options) => {
+    if (options === undefined) return globalThis.fetch(url);
+    const headers = { ...(options.headers || {}) };
+    if (options.body && !headers['Content-Type'] && !headers['content-type']) {
+      headers['Content-Type'] = 'application/json';
+    }
+    return globalThis.fetch(url, { ...options, headers });
+  }),
+}));
+
+jest.mock('../client/src/utils/auth.js', () => ({
+  __esModule: true,
+  authFetch: jest.fn((url, options) => {
+    if (options === undefined) return globalThis.fetch(url);
+    const headers = { ...(options.headers || {}) };
+    if (options.body && !headers['Content-Type'] && !headers['content-type']) {
+      headers['Content-Type'] = 'application/json';
+    }
+    return globalThis.fetch(url, { ...options, headers });
+  }),
+}));
+
 const CalendarioCitasModule = await import(
   '../client/src/components/layout/citas/CalendarioCitas.jsx'
 );

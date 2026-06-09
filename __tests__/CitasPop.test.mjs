@@ -38,6 +38,30 @@ jest.mock('../client/src/components/CitasPop/styles/CitasPop.css', () => ({}));
 jest.mock('../client/src/components/citas/styles/CitasPop.css', () => ({}));
 jest.mock('../client/src/components/styles/CitasPop.css', () => ({}));
 
+jest.mock('../client/src/utils/auth', () => ({
+  __esModule: true,
+  authFetch: jest.fn((url, options) => {
+    if (options === undefined) return globalThis.fetch(url);
+    const headers = { ...(options.headers || {}) };
+    if (options.body && !headers['Content-Type'] && !headers['content-type']) {
+      headers['Content-Type'] = 'application/json';
+    }
+    return globalThis.fetch(url, { ...options, headers });
+  }),
+}));
+
+jest.mock('../client/src/utils/auth.js', () => ({
+  __esModule: true,
+  authFetch: jest.fn((url, options) => {
+    if (options === undefined) return globalThis.fetch(url);
+    const headers = { ...(options.headers || {}) };
+    if (options.body && !headers['Content-Type'] && !headers['content-type']) {
+      headers['Content-Type'] = 'application/json';
+    }
+    return globalThis.fetch(url, { ...options, headers });
+  }),
+}));
+
 const CitasPopModule = await import('../client/src/components/ui/CitasPop.jsx');
 const CitasPop =
   CitasPopModule.default?.default ||
