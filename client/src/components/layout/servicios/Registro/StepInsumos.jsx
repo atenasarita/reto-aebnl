@@ -116,8 +116,9 @@ export default function StepInsumos({ insumos, setInsumos }) {
     <div className="panel">
       <div className="insumoAddRow">
         <div className="field" style={{ flex: 2 }}>
-          <label className="fieldLabel">Producto</label>
+          <label htmlFor="ins-producto" className="fieldLabel">Producto</label>
           <Dropdown
+            id="ins-producto"
             className="dropdown-servicios"
             options={[
               { label: "Seleccionar...", value: "" },
@@ -132,9 +133,10 @@ export default function StepInsumos({ insumos, setInsumos }) {
         </div>
 
         <div className="field" style={{ flex: 1 }}>
-          <label className="fieldLabel">Cantidad</label>
+          <label htmlFor="ins-cantidad" className="fieldLabel">Cantidad</label>
 
           <input
+            id="ins-cantidad"
             type="number"
             className="input"
             min={1}
@@ -159,11 +161,12 @@ export default function StepInsumos({ insumos, setInsumos }) {
         </div>
 
         <div className="field" style={{ flex: 1 }}>
-          <label className="fieldLabel">
+          <label htmlFor="ins-precio" className="fieldLabel">
             Precio unitario
           </label>
 
           <input
+            id="ins-precio"
             type="text"
             className="input"
             readOnly
