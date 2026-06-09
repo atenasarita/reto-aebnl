@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import styles from './BeneficiarioDetalle.module.css';
 import { useEffect, useState } from 'react';
 import { API_URL } from '../../../../utils/config';
@@ -223,5 +224,20 @@ function HistorialAsociado({ beneficiario }) {
 
   );
 }
+
+HistorialAsociado.propTypes = {
+  beneficiario: PropTypes.shape({
+    id_beneficiario: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    idBeneficiario: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    ID_BENEFICIARIO: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    tipo_espina: PropTypes.arrayOf(PropTypes.shape({ nombre: PropTypes.string })),
+    identificadores: PropTypes.shape({ estado_nacimiento: PropTypes.string }),
+    datos_medicos: PropTypes.shape({
+      tipo_sanguineo: PropTypes.string,
+      valvula: PropTypes.oneOfType([PropTypes.bool, PropTypes.number, PropTypes.string]),
+      hospital: PropTypes.string,
+    }),
+  }),
+};
 
 export default HistorialAsociado;

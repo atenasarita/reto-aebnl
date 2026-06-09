@@ -165,14 +165,10 @@ function BeneficiarioDetalle({
     fecha_ingreso,
     identificadores,
     datos_medicos,
-    direccion,
     tipo_espina
   } = beneficiario
 
   const {
-    apellido_paterno,
-    apellido_materno,
-    CURP,
     fecha_nacimiento,
     fotografia
   } = identificadores

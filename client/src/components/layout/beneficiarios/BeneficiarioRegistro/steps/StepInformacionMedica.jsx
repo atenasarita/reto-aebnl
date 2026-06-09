@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { espinaBifidaOptions } from '../../../../../utils/espinaBifidaTypes';
 
 function StepInformacionMedica({
@@ -299,5 +300,41 @@ function StepInformacionMedica({
     </div>
   );
 }
+
+StepInformacionMedica.propTypes = {
+  formData: PropTypes.shape({
+    tipo_espinas: PropTypes.arrayOf(PropTypes.string).isRequired,
+    valvula: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+    tipo_sanguineo: PropTypes.string,
+    hospital: PropTypes.string,
+    alergias: PropTypes.string,
+    contacto_nombre: PropTypes.string,
+    contacto_telefono: PropTypes.string,
+    contacto_parentesco: PropTypes.string,
+    padre_nombre: PropTypes.string,
+    padre_fecha_nacimiento: PropTypes.string,
+    padre_email: PropTypes.string,
+    padre_telefono: PropTypes.string,
+    padre_telefono_casa: PropTypes.string,
+    padre_telefono_trabajo: PropTypes.string,
+    madre_nombre: PropTypes.string,
+    madre_fecha_nacimiento: PropTypes.string,
+    madre_email: PropTypes.string,
+    madre_telefono: PropTypes.string,
+    madre_telefono_casa: PropTypes.string,
+    madre_telefono_trabajo: PropTypes.string,
+  }).isRequired,
+  fieldErrors: PropTypes.shape({
+    tipo_espinas: PropTypes.string,
+    tipo_sanguineo: PropTypes.string,
+    hospital: PropTypes.string,
+    contacto_nombre: PropTypes.string,
+    contacto_telefono: PropTypes.string,
+    contacto_parentesco: PropTypes.string,
+  }).isRequired,
+  handleInputChange: PropTypes.func.isRequired,
+  handleBlur: PropTypes.func.isRequired,
+  handleTipoEspinasChange: PropTypes.func.isRequired,
+};
 
 export default StepInformacionMedica;

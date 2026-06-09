@@ -5,6 +5,7 @@ import logo from "../../../assets/logo.png";
 import { Bell, LogOut, Menu, X } from "lucide-react";
 import OfflineBanner from "../OfflineBanner";
 
+import PropTypes from 'prop-types';
 import { API_URL } from '../../../utils/config';
 import { getValidToken, handleUnauthorizedResponse, logout } from '../../../utils/auth';
 
@@ -315,5 +316,14 @@ function Navbar({
     </div>
   );
 }
+
+Navbar.propTypes = {
+  activeLink: PropTypes.string,
+  user: PropTypes.shape({
+    name: PropTypes.string,
+    role: PropTypes.string,
+    avatar: PropTypes.string,
+  }),
+};
 
 export default Navbar;

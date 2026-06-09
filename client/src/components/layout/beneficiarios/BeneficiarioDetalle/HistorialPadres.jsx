@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import styles from './BeneficiarioDetalle.module.css';
 import { API_URL } from '../../../../utils/config';
@@ -252,5 +253,12 @@ function HistorialPadres({ beneficiario, onUpdated }) {
     </div>
   );
 }
+
+HistorialPadres.propTypes = {
+  beneficiario: PropTypes.shape({
+    id_beneficiario: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  }).isRequired,
+  onUpdated: PropTypes.func,
+};
 
 export default HistorialPadres;
