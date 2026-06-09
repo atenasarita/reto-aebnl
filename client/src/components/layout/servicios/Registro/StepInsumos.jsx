@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
+import PropTypes from "prop-types";
 
 import { useProductos } from "../../../../hooks/useProductos";
 
@@ -312,3 +313,15 @@ export default function StepInsumos({ insumos, setInsumos }) {
     </div>
   );
 }
+
+StepInsumos.propTypes = {
+  insumos: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      nombre: PropTypes.string,
+      precio: PropTypes.number,
+      cantidad: PropTypes.number,
+    })
+  ).isRequired,
+  setInsumos: PropTypes.func.isRequired,
+};
