@@ -8,6 +8,19 @@ import { API_URL } from '../../../../utils/config'
 
 const ITEMS_PER_PAGE = 8
 
+async function fetchBeneficiarioById(id) {
+  const token = localStorage.getItem('token')
+  const res = await fetch(`${API_URL}/api/beneficiarios/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+
+  if (!res.ok) {
+    throw new Error('No se pudo obtener la información del beneficiario.')
+  }
+
+  return await res.json()
+}
+
 function BeneficiarioGrid({
   data,
   loading,
@@ -39,19 +52,6 @@ function BeneficiarioGrid({
     openedCreatedBeneficiario.current = true;
     handleView(beneficiarioCreadoId);
   }, [beneficiarioCreadoId, data, loading])
-
-  async function fetchBeneficiarioById(id) {
-    const token = localStorage.getItem('token')
-    const res = await fetch(`${API_URL}/api/beneficiarios/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-
-    if (!res.ok) {
-      throw new Error('No se pudo obtener la información del beneficiario.')
-    }
-
-    return await res.json()
-  }
 
   async function handleView(id) {
     try {
