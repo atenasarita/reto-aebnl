@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { useState, useEffect, useRef } from 'react'
 import BeneficiarioCard from '../BeneficiarioCard/BeneficiarioCard'
 import styles from './BeneficiarioGrid.module.css'
@@ -201,6 +202,15 @@ function BeneficiarioGrid({
       )}
     </>
   )
+}
+
+BeneficiarioGrid.propTypes = {
+  data: PropTypes.array.isRequired,
+  loading: PropTypes.bool.isRequired,
+  onRefresh: PropTypes.func.isRequired,
+  beneficiarioEditId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  clearEditQuery: PropTypes.func,
+  beneficiarioCreadoId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 export default BeneficiarioGrid
