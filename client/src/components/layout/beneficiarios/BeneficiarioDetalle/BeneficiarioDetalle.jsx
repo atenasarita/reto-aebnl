@@ -693,7 +693,8 @@ BeneficiarioDetalle.propTypes = {
         PropTypes.number,
         PropTypes.bool
       ]),
-      hospital: PropTypes.string
+      hospital: PropTypes.string,
+      diagnostico_otro: PropTypes.string
     }).isRequired,
     direccion: PropTypes.shape({
       domicilio_calle: PropTypes.string,
