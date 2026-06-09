@@ -170,7 +170,7 @@ export default function StepInsumos({ insumos, setInsumos }) {
               productoSelec
                 ? `$${
                     productos.find(
-                      (p) => p.id === parseInt(productoSelec)
+                      (p) => p.id === Number.parseInt(productoSelec)
                     )?.precio ?? ""
                   }`
                 : ""
