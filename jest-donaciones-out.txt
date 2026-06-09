@@ -1,0 +1,1108 @@
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:85:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+(node:93569) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:90:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:95:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:103:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:108:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:114:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:127:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:148:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:162:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:182:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:202:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:220:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:240:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:283:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:323:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:362:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:368:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      77 |   async function mount() {
+      78 |     await act(async () => {
+    > 79 |       root.render(React.createElement(Donaciones));
+         |            ^
+      80 |     });
+      81 |   }
+      82 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.render.ReactDOMRoot.render [as render] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27893:9)
+      at __tests__/Donaciones.test.mjs:79:12
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at mount (__tests__/Donaciones.test.mjs:78:11)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:395:11)
+
+  console.error
+    The current testing environment is not configured to support act(...)
+
+      71 |
+      72 |   afterEach(async () => {
+    > 73 |     await act(async () => { root.unmount(); });
+         |                                  ^
+      74 |     container.remove();
+      75 |   });
+      76 |
+
+      at isConcurrentActEnvironment (client/node_modules/react-dom/cjs/react-dom-client.development.js:16329:17)
+      at warnIfUpdatesNotWrappedWithActDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:18755:7)
+      at scheduleUpdateOnFiber (client/node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at updateContainerImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:23509:9)
+      at ReactDOMRoot.process.env.NODE_ENV.ReactDOMHydrationRoot.unmount.ReactDOMRoot.unmount [as unmount] (client/node_modules/react-dom/cjs/react-dom-client.development.js:27910:11)
+      at __tests__/Donaciones.test.mjs:73:34
+      at process.env.NODE_ENV.exports.act (client/node_modules/react/cjs/react.development.js:814:22)
+      at Object.<anonymous> (__tests__/Donaciones.test.mjs:73:11)
+
+FAIL __tests__/Donaciones.test.mjs
+  Donaciones
+    ✕ muestra el título Fondo de Donaciones (18 ms)
+    ✕ muestra el saldo disponible (6 ms)
+    ✕ muestra botón Registrar donación (30 ms)
+    ✕ no muestra el formulario inicialmente (2 ms)
+    ✕ muestra mensaje sin movimientos cuando la lista está vacía (10 ms)
+    ✕ muestra el formulario al hacer click en Registrar donación (2 ms)
+    ✕ oculta el formulario al hacer click en Ocultar formulario (2 ms)
+    ✕ muestra tabs de Marca y Familia (2 ms)
+    ✕ selecciona Marca al hacer click en el tab (5 ms)
+    ✕ selecciona Familia al hacer click en el tab (2 ms)
+    ✕ muestra errores de validación al enviar formulario vacío (4 ms)
+    ✕ sanitizeMonto limpia caracteres no numéricos en el input de monto (2 ms)
+    ✕ submit exitoso registra la donación y oculta el formulario (2 ms)
+    ✕ muestra error cuando registrarAbono falla (3 ms)
+    ✕ llama fetchMovimientos al hacer click en Actualizar (2 ms)
+    ✕ muestra tabla cuando hay movimientos (1 ms)
+    ✕ cambia tipo al presionar ArrowRight en tab (2 ms)
+    ✕ handleBlur muestra error en campo concepto vacío (1 ms)
+
+  ● Donaciones › muestra el título Fondo de Donaciones
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › muestra el saldo disponible
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › muestra botón Registrar donación
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › no muestra el formulario inicialmente
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › muestra mensaje sin movimientos cuando la lista está vacía
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › muestra el formulario al hacer click en Registrar donación
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › oculta el formulario al hacer click en Ocultar formulario
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › muestra tabs de Marca y Familia
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › selecciona Marca al hacer click en el tab
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › selecciona Familia al hacer click en el tab
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › muestra errores de validación al enviar formulario vacío
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › sanitizeMonto limpia caracteres no numéricos en el input de monto
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › submit exitoso registra la donación y oculta el formulario
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › muestra error cuando registrarAbono falla
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › llama fetchMovimientos al hacer click en Actualizar
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › muestra tabla cuando hay movimientos
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › cambia tipo al presionar ArrowRight en tab
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+  ● Donaciones › handleBlur muestra error en campo concepto vacío
+
+    Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object.
+
+      at createFiberFromTypeAndProps (client/node_modules/react-dom/cjs/react-dom-client.development.js:5021:28)
+      at createFiberFromElement (client/node_modules/react-dom/cjs/react-dom-client.development.js:5035:14)
+      at reconcileChildFibersImpl (client/node_modules/react-dom/cjs/react-dom-client.development.js:6920:31)
+      at client/node_modules/react-dom/cjs/react-dom-client.development.js:7098:33
+      at reconcileChildren (client/node_modules/react-dom/cjs/react-dom-client.development.js:9702:13)
+      at beginWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:11899:15)
+      at runWithFiberInDEV (client/node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (client/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (client/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (client/node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (client/node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (client/node_modules/react/cjs/react.development.js:590:34)
+      at client/node_modules/react/cjs/react.development.js:847:21
+
+Test Suites: 1 failed, 1 total
+Tests:       18 failed, 18 total
+Snapshots:   0 total
+Time:        0.785 s, estimated 1 s
+Ran all test suites matching __tests__/Donaciones.test.mjs.

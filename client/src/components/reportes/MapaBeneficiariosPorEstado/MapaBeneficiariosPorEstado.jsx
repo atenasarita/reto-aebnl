@@ -27,7 +27,10 @@ function normalizeMatch(value) {
     .trim();
 }
 
-const GEO_URL = `${import.meta.env.BASE_URL}geo/mexico-states.geojson`;
+// const GEO_URL = `${import.meta.env.BASE_URL}geo/mexico-states.geojson`;
+
+const GEO_URL = `${import.meta?.env?.BASE_URL ?? '/'}geo/mexico-states.geojson`;
+
 
 /** react-simple-maps solo descifra TopoJSON por URL; con GeoJSON hay que pasar features como array (ver getFeatures en la lib). */
 export default function MapaBeneficiariosPorEstado({ distribucionEstado = [] }) {

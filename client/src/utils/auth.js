@@ -77,7 +77,11 @@ export async function logout({ redirect = true } = {}) {
   clearSession();
 
   if (redirect && typeof window !== 'undefined') {
-    window.location.replace('/login');
+    try {
+      window.location.replace('/login');
+    } catch {
+      // En entornos de prueba como jsdom, la navegación no siempre está implementada.
+    }
   }
 }
 

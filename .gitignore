@@ -1,7 +1,7 @@
 ﻿**/.DS_Store
 /graphify-out
 /.cursor
-
+/node_modules
 server/INSERT INTO Citas (.sql
 .impeccable
 .clj-kondo/.cache/
