@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { FaCalendar } from 'react-icons/fa';
 import { estadosMexico } from '../../../../../utils/beneficiarioConstants';
 import { todayDate } from '../../../../../utils/dateTime';
@@ -166,5 +167,35 @@ function StepDatosPersonales({
     </>
   );
 }
+
+StepDatosPersonales.propTypes = {
+  formData: PropTypes.shape({
+    email: PropTypes.string,
+    telefono: PropTypes.string,
+    nombres: PropTypes.string,
+    apellido_paterno: PropTypes.string,
+    apellido_materno: PropTypes.string,
+    CURP: PropTypes.string,
+    genero: PropTypes.string,
+    estado_nacimiento: PropTypes.string,
+  }).isRequired,
+  fieldErrors: PropTypes.shape({
+    email: PropTypes.string,
+    telefono: PropTypes.string,
+    nombres: PropTypes.string,
+    apellido_paterno: PropTypes.string,
+    apellido_materno: PropTypes.string,
+    CURP: PropTypes.string,
+    genero: PropTypes.string,
+    estado_nacimiento: PropTypes.string,
+    fecha_nacimiento: PropTypes.string,
+  }).isRequired,
+  fechaNacimiento: PropTypes.string.isRequired,
+  fechaNacimientoRef: PropTypes.shape({ current: PropTypes.any }).isRequired,
+  setFechaNacimiento: PropTypes.func.isRequired,
+  handleInputChange: PropTypes.func.isRequired,
+  handleFechaNacimientoChange: PropTypes.func.isRequired,
+  handleBlur: PropTypes.func.isRequired,
+};
 
 export default StepDatosPersonales;
