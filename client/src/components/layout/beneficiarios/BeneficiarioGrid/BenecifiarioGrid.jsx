@@ -8,6 +8,48 @@ import { API_URL } from '../../../../utils/config'
 
 const ITEMS_PER_PAGE = 8
 
+async function handleDownloadPdf(id) {
+  try {
+    const token = localStorage.getItem('token')
+
+    const res = await fetch(`${API_URL}/api/beneficiarios/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+
+    if (!res.ok) {
+      throw new Error('No se pudo obtener la información del beneficiario.')
+    }
+
+    const beneficiario = await res.json()
+
+    const resPadres = await fetch(`${API_URL}/api/beneficiarios/${id}/padres`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+
+    if (resPadres.ok) {
+      beneficiario.padres = await resPadres.json()
+    }
+
+    downloadBeneficiarioPdf(beneficiario, id)
+  } catch (error) {
+    console.error('Error al descargar el PDF:', error)
+    alert('Error al descargar el archivo PDF.')
+  }
+}
+
+async function fetchBeneficiarioById(id) {
+  const token = localStorage.getItem('token')
+  const res = await fetch(`${API_URL}/api/beneficiarios/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+
+  if (!res.ok) {
+    throw new Error('No se pudo obtener la información del beneficiario.')
+  }
+
+  return await res.json()
+}
+
 function BeneficiarioGrid({
   data,
   loading,
@@ -38,19 +80,6 @@ function BeneficiarioGrid({
     openedCreatedBeneficiario.current = true
     handleView(beneficiarioCreadoId)
   }, [beneficiarioCreadoId, data, loading])
-
-  async function fetchBeneficiarioById(id) {
-    const token = localStorage.getItem('token')
-    const res = await fetch(`${API_URL}/api/beneficiarios/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-
-    if (!res.ok) {
-      throw new Error('No se pudo obtener la información del beneficiario.')
-    }
-
-    return await res.json()
-  }
 
   async function handleView(id) {
     try {
@@ -83,35 +112,6 @@ function BeneficiarioGrid({
       clearEditQuery()
     }
   }, [beneficiarioEditId, loading])
-
-  async function handleDownloadPdf(id) {
-    try {
-      const token = localStorage.getItem('token')
-
-      const res = await fetch(`${API_URL}/api/beneficiarios/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-
-      if (!res.ok) {
-        throw new Error('No se pudo obtener la información del beneficiario.')
-      }
-
-      const beneficiario = await res.json()
-
-      const resPadres = await fetch(`${API_URL}/api/beneficiarios/${id}/padres`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-
-      if (resPadres.ok) {
-        beneficiario.padres = await resPadres.json()
-      }
-
-      downloadBeneficiarioPdf(beneficiario, id)
-    } catch (error) {
-      console.error('Error al descargar el PDF:', error)
-      alert('Error al descargar el archivo PDF.')
-    }
-  }
 
   const normalized = data.map((b) => {
     const primerDiagnostico = b.tipo_espina && b.tipo_espina.length > 0

@@ -33,6 +33,15 @@
   padding: 1rem;
 }
 
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  border: none;
+  cursor: default;
+  z-index: -1;
+}
+
 .modal {
   background: var(--color-surface-card);
   border-radius: 20px;
