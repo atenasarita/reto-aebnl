@@ -104,7 +104,7 @@ export class OracleCitasRepository implements CitasRepository {
             connection = await this.oracleConnection.getConnection();
             const fechaLimpia = this.limpiarFecha(input.fecha);
             // Verificar empalme, excluyendo la cita actual
-            await this.verificarEmpalme(connection, input.id_especialista, fechaLimpia, input.hora);
+            await this.verificarEmpalme(connection, input.id_especialista, fechaLimpia, input.hora, id_cita);
 
             const result = await connection.execute(
                 especialistasQueries.updateCita,

@@ -11,14 +11,26 @@ function getInitials(name) {
     .toUpperCase()
 }
 
-function BeneficiarioCard({ beneficiario, onView, onEdit, onDownloadPdf }) {
-  const { nombre, folio, diagnostico, estatus, dias_para_vencer } = beneficiario
+function BeneficiarioCard({ beneficiario, onView, onEdit, onCard, onDownloadPdf }) {
+  const {
+    nombre,
+    folio,
+    diagnostico,
+    estatus,
+    dias_para_vencer,
+    diagnostico_otro
+  } = beneficiario
 
   const showVenceBadge =
     dias_para_vencer !== undefined &&
     dias_para_vencer !== null &&
     dias_para_vencer >= 0 &&
-    dias_para_vencer <= 7;
+    dias_para_vencer <= 7
+
+  const diagnosticoMostrado =
+    diagnostico === 'Otros' && diagnostico_otro
+      ? diagnostico_otro
+      : diagnostico || 'Sin diagnóstico'
 
   return (
     <div className={styles.card}>
@@ -35,7 +47,7 @@ function BeneficiarioCard({ beneficiario, onView, onEdit, onDownloadPdf }) {
 
       <div className={styles.diagnostico}>
         <span className={styles.diagnosticoLabel}>DIAGNÓSTICO</span>
-        <span className={styles.diagnosticoValue}>{diagnostico}</span>
+        <span className={styles.diagnosticoValue}>{diagnosticoMostrado}</span>
       </div>
 
       <div className={styles.actions}>

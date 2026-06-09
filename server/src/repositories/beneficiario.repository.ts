@@ -2,7 +2,7 @@ import oracledb from 'oracledb';
 import { OracleConnection } from '../db/oracle';
 import { ConflictError, NotFoundError } from '../errors/appError';
 import { BeneficiarioRepository } from '../interfaces/beneficiarioRepository';
-import { addDays, addMonthsKeepingCalendar, startOfDay } from '../utils/date.utils';
+import { addMonthsKeepingCalendar } from '../utils/date.utils';
 import { generateNextBeneficiarioFolio } from '../utils/beneficiarioFolio';
 import { getOutBindNumber } from '../utils/oracle.utils';
 import {
@@ -39,16 +39,16 @@ import {
 import { CreateMembresiaInput } from '../types/membresias.types';
 
 function formatDateOnly(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
 
-  return `${year}-${month}-${day}`;
+    return `${year}-${month}-${day}`;
 }
 
 function parseDateOnly(fecha: string): Date {
-  const [year, month, day] = fecha.split('-').map(Number);
-  return new Date(year, month - 1, day);
+    const [year, month, day] = fecha.split('-').map(Number);
+    return new Date(year, month - 1, day);
 }
 
 type BeneficiarioDetalleRow = {
@@ -84,6 +84,7 @@ type BeneficiarioDetalleRow = {
     FECHA_FIN: string | null;
     MEMBRESIA_ESTADO: string | null;
     METODO_PAGO: string | null;
+    DIAGNOSTICO_OTRO: string | null;
 };
 
 type BeneficiarioConMembresiaRow = BeneficiarioDetalleRow & {
@@ -121,7 +122,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
         this.oracleConnection = oracleConnection;
     }
 
-    private toRequiredString(value: string | null): string {
+    private toRequiredString(value: string | null | undefined): string {
         return value ?? '';
     }
 
@@ -186,8 +187,9 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                 contacto_parentesco: contactoParentesco,
                 alergias,
                 tipo_sanguineo: tipoSanguineo,
-                valvula: valvula,
-                hospital: hospital,
+                valvula,
+                hospital,
+                diagnostico_otro: this.toRequiredString(row.DIAGNOSTICO_OTRO),
             },
             direccion: {
                 id_direccion: 0,
@@ -392,6 +394,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                     FECHA_FIN: row.FECHA_FIN,
                     MEMBRESIA_ESTADO: row.MEMBRESIA_ESTADO,
                     METODO_PAGO: row.METODO_PAGO,
+                    DIAGNOSTICO_OTRO: row.DIAGNOSTICO_OTRO,
                 })),
             );
 
@@ -598,7 +601,8 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                     CONTACTO_PARENTESCO = :contacto_parentesco,
                     TIPO_SANGUINEO = :tipo_sanguineo,
                     VALVULA = :valvula,
-                    HOSPITAL = :hospital
+                    HOSPITAL = :hospital,
+                    DIAGNOSTICO_OTRO = :diagnostico_otro
                 WHERE ID_BENEFICIARIO = :id_beneficiario
                 `,
                 {
@@ -608,6 +612,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                     tipo_sanguineo: input.tipo_sanguineo,
                     valvula: input.valvula ? 1 : 0,
                     hospital: input.hospital,
+                    diagnostico_otro: Number(input.diagnostico_id) === 9 ? input.diagnostico_otro : null,
                     id_beneficiario,
                 },
                 { autoCommit: false }
@@ -633,6 +638,29 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                 { autoCommit: false }
             );
 
+            if (input.diagnostico_id && Number(input.diagnostico_id) > 0) {
+                await connection.execute(
+                    `
+                    DELETE FROM BENEFICIARIO_ESPINA
+                    WHERE ID_BENEFICIARIO = :id_beneficiario
+                    `,
+                    { id_beneficiario },
+                    { autoCommit: false }
+                );
+
+                await connection.execute(
+                    `
+                    INSERT INTO BENEFICIARIO_ESPINA (ID_BENEFICIARIO, ID_ESPINA)
+                    VALUES (:id_beneficiario, :id_espina)
+                    `,
+                    {
+                        id_beneficiario,
+                        id_espina: Number(input.diagnostico_id)
+                    },
+                    { autoCommit: false }
+                );
+            }
+
             if (input.fecha_inicio && input.fecha_fin) {
                 await connection.execute(
                     `
@@ -657,6 +685,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
             if (connection) {
                 await connection.rollback();
             }
+            console.error('Error en updateBeneficiario:', error);
             throw error;
         } finally {
             if (connection) {
@@ -898,6 +927,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
                 tipo_sanguineo: input.tipo_sanguineo,
                 valvula: input.valvula ? 1 : 0,
                 hospital: input.hospital ?? null,
+                diagnostico_otro: input.diagnostico_otro ?? null,
                 id_datos_medicos: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER },
             },
             { autoCommit: false },
@@ -935,6 +965,7 @@ export class OracleBeneficiarioRepository implements BeneficiarioRepository {
             tipo_sanguineo: input.tipo_sanguineo,
             valvula: input.valvula,
             hospital: input.hospital ?? '',
+            diagnostico_otro: input.diagnostico_otro ?? '',
         };
     }
 
