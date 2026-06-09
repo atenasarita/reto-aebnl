@@ -88,11 +88,13 @@ BeneficiarioCard.propTypes = {
     nombre: PropTypes.string.isRequired,
     folio: PropTypes.string,
     diagnostico: PropTypes.string,
+    diagnostico_otro: PropTypes.string,
     estatus: PropTypes.string,
     dias_para_vencer: PropTypes.number,
   }).isRequired,
   onView: PropTypes.func.isRequired,
   onEdit: PropTypes.func.isRequired,
+  onCard: PropTypes.func,
   onDownloadPdf: PropTypes.func.isRequired,
 }
 
