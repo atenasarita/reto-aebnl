@@ -41,6 +41,30 @@ jest.mock('../client/src/utils/dateTime.js', () => ({
 
 jest.mock('../client/src/pages/styles/Recibos.css', () => ({}));
 
+jest.mock('../client/src/utils/auth', () => ({
+  __esModule: true,
+  authFetch: jest.fn((url, options) => {
+    if (options === undefined) return globalThis.fetch(url);
+    const headers = { ...(options.headers || {}) };
+    if (options.body && !headers['Content-Type'] && !headers['content-type']) {
+      headers['Content-Type'] = 'application/json';
+    }
+    return globalThis.fetch(url, { ...options, headers });
+  }),
+}));
+
+jest.mock('../client/src/utils/auth.js', () => ({
+  __esModule: true,
+  authFetch: jest.fn((url, options) => {
+    if (options === undefined) return globalThis.fetch(url);
+    const headers = { ...(options.headers || {}) };
+    if (options.body && !headers['Content-Type'] && !headers['content-type']) {
+      headers['Content-Type'] = 'application/json';
+    }
+    return globalThis.fetch(url, { ...options, headers });
+  }),
+}));
+
 const RecibosModule = await import('../client/src/pages/Recibos/Recibos.jsx');
 const Recibos = RecibosModule.default?.default || RecibosModule.default || RecibosModule;
 
