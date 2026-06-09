@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 export const fmtMontoFondo = (n) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(n ?? 0);
 
@@ -15,6 +17,11 @@ export function MontoCell({ tipo, monto }) {
   );
 }
 
+MontoCell.propTypes = {
+  tipo: PropTypes.string.isRequired,
+  monto: PropTypes.number,
+};
+
 export function SaldoCell({ value, variant = "balance" }) {
   return (
     <td className={`donaciones-col-numeric donaciones-balance donaciones-balance--${variant}`}>
@@ -22,6 +29,11 @@ export function SaldoCell({ value, variant = "balance" }) {
     </td>
   );
 }
+
+SaldoCell.propTypes = {
+  value: PropTypes.number,
+  variant: PropTypes.string,
+};
 
 export function formatOrigenMovimiento(m) {
   if (m.tipo_movimiento?.toLowerCase() === "egreso") {
