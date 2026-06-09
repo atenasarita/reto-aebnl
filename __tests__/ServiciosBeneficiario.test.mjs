@@ -21,6 +21,21 @@ jest.unstable_mockModule('react-icons/fi', () => ({
   __esModule: true,
   FiSearch: () => React.createElement('span', { 'data-testid': 'icon-search' }),
   FiX: () => React.createElement('span', { 'data-testid': 'icon-x' }),
+  FiDownload: () => React.createElement('span', { 'data-testid': 'icon-download' }),
+}));
+
+jest.unstable_mockModule('jspdf', () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => ({
+    save: jest.fn(),
+    text: jest.fn(),
+    addPage: jest.fn(),
+  })),
+}));
+
+jest.unstable_mockModule('jspdf-autotable', () => ({
+  __esModule: true,
+  default: jest.fn(),
 }));
 
 const ServiciosBeneficiarioModule = await import(
