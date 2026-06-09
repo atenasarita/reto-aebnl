@@ -474,6 +474,7 @@ describe("OracleBeneficiarioRepository", () => {
       tipo_sanguineo: "O+",
       valvula: true,
       hospital: "Hospital Central",
+      diagnostico_otro: "",
     });
     expect(connection.execute).toHaveBeenCalledTimes(2);
     expect(connection.commit).toHaveBeenCalledTimes(1);
