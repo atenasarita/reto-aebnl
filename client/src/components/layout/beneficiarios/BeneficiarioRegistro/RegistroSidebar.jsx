@@ -13,21 +13,17 @@ function RegistroSidebar({
           const isComplete = validateStep(index);
           const isTouched = touchedSteps.includes(index);
 
-          const stepState =
-            index === currentStep ? 'active' :
-            index < currentStep ? 'completed' : '';
+          let stepState = '';
+          if (index === currentStep) stepState = 'active';
+          else if (index < currentStep) stepState = 'completed';
+
+          const touchedIcon = isComplete
+            ? <FaCheckCircle className="step-icon success" />
+            : <FaExclamationCircle className="step-icon warning" />;
 
           return (
-            <li key={index} className={`step ${stepState}`}>
-              {isTouched ? (
-                isComplete ? (
-                  <FaCheckCircle className="step-icon success" />
-                ) : (
-                  <FaExclamationCircle className="step-icon warning" />
-                )
-              ) : (
-                <span className="step-dot">{index + 1}</span>
-              )}
+            <li key={step.label} className={`step ${stepState}`}>
+              {isTouched ? touchedIcon : <span className="step-dot">{index + 1}</span>}
               {step.label}
             </li>
           );
