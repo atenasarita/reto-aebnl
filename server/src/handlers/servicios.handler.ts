@@ -136,7 +136,7 @@ export class ServiciosHandler {
       if (!categoria?.trim()) {
         return res.status(400).json({ ok: false, message: 'La categoría es requerida' });
       }
-      if (precio == null || isNaN(Number(precio)) || Number(precio) < 0) {
+      if (precio == null || Number.isNaN(Number(precio)) || Number(precio) < 0) {
         return res.status(400).json({ ok: false, message: 'El precio debe ser un número mayor o igual a 0' });
       }
   

@@ -41,7 +41,7 @@ function validateField(name, { donadorSeleccionado, monto, concepto, nuevoTipo, 
     case "nuevoNombre":
       return nuevoNombre.trim() ? "" : "Ingrese el nombre.";
     case "monto": {
-      const n = parseFloat(monto);
+      const n = Number.parseFloat(monto);
       if (!monto.trim()) return "Ingrese el monto de la donación.";
       if (Number.isNaN(n) || n <= 0) return "El monto debe ser mayor a cero.";
       return "";
@@ -199,7 +199,7 @@ export default function Donaciones() {
     setGuardando(true);
     try {
       await registrarAbono({
-        monto: parseFloat(monto),
+        monto: Number.parseFloat(monto),
         id_donador: Number(donadorSeleccionado),
         concepto: concepto.trim(),
       });

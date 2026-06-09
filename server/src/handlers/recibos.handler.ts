@@ -10,7 +10,7 @@ function fechaHoy(): string {
 
 /* Valida que un string sea una fecha con formato YYYY-MM-DD */
 function esFechaValida(s: string): boolean {
-  return /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(Date.parse(s));
+  return /^\d{4}-\d{2}-\d{2}$/.test(s) && !Number.isNaN(Date.parse(s));
 }
 
 /* Valida que un string sea un mes con formato YYYY-MM */
@@ -77,7 +77,7 @@ export async function listarRecibosRango(req: Request, res: Response): Promise<v
 export async function obtenerRecibo(req: Request, res: Response): Promise<void> {
   const id = Number(req.params.id);
 
-  if (isNaN(id)) {
+  if (Number.isNaN(id)) {
     res.status(400).json({ message: "ID de recibo inválido." });
     return;
   }

@@ -51,7 +51,7 @@ export const updateCita = async (
   req: Request, res: Response, next: NextFunction
 ) => {
   const id = Number(req.params.id);
-  if (isNaN(id)) {
+  if (Number.isNaN(id)) {
     res.status(400).json({ message: "ID de cita inválido." });
     return;
   }

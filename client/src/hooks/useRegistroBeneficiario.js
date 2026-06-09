@@ -121,7 +121,7 @@ export function useRegistroBeneficiario(navigate) {
 
   const handleTipoEspinasChange = (e) => {
   const { value, checked } = e.target;
-  const id = parseInt(value);
+  const id = Number.parseInt(value);
 
   setFormData(prev => ({
     ...prev,
