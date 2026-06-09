@@ -13,8 +13,9 @@ function StepMembresia({
 
       <div className="row">
         <div className="field-group">
-          <label>Meses de vigencia</label>
+          <label htmlFor="meses-membresia">Meses de vigencia</label>
           <input
+            id="meses-membresia"
             type="text"
             name="meses_membresia"
             value={12}
@@ -24,8 +25,9 @@ function StepMembresia({
         </div>
 
         <div className="field-group">
-          <label>Costo total</label>
+          <label htmlFor="costo-total">Costo total</label>
           <input
+            id="costo-total"
             type="text"
             value="$150.00"
             readOnly
@@ -35,8 +37,9 @@ function StepMembresia({
       </div>
 
       <div className="field-group">
-        <label>Método de pago</label>
+        <label htmlFor="metodo-pago">Método de pago</label>
         <select
+          id="metodo-pago"
           name="metodo_pago"
           value={formData.metodo_pago ?? 'efectivo'}
           onChange={handleInputChange}
@@ -52,9 +55,10 @@ function StepMembresia({
 
         <div className="row">
           <div className="field-group">
-            <label>Fecha de inicio de membresía</label>
+            <label htmlFor="fecha-inicio-membresia">Fecha de inicio de membresía</label>
             <div className="input-with-icon">
               <input
+                id="fecha-inicio-membresia"
                 ref={fechaMembresiaRef}
                 type="date"
                 name="fecha_inicio_membresia"
@@ -69,8 +73,9 @@ function StepMembresia({
           </div>
 
           <div className="field-group">
-            <label>Fecha de vigencia</label>
+            <label htmlFor="fecha-vigencia">Fecha de vigencia</label>
             <input
+              id="fecha-vigencia"
               type="date"
               value={calculateFechaVigencia()}
               readOnly

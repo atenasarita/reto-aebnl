@@ -8,6 +8,48 @@ import { API_URL } from '../../../../utils/config'
 
 const ITEMS_PER_PAGE = 8
 
+async function handleDownloadPdf(id) {
+  try {
+    const token = localStorage.getItem('token')
+
+    const res = await fetch(`${API_URL}/api/beneficiarios/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+
+    if (!res.ok) {
+      throw new Error('No se pudo obtener la información del beneficiario.')
+    }
+
+    const beneficiario = await res.json()
+
+    const resPadres = await fetch(`${API_URL}/api/beneficiarios/${id}/padres`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+
+    if (resPadres.ok) {
+      beneficiario.padres = await resPadres.json()
+    }
+
+    downloadBeneficiarioPdf(beneficiario, id)
+  } catch (error) {
+    console.error('Error al descargar el PDF:', error)
+    alert('Error al descargar el archivo PDF.')
+  }
+}
+
+async function fetchBeneficiarioById(id) {
+  const token = localStorage.getItem('token')
+  const res = await fetch(`${API_URL}/api/beneficiarios/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+
+  if (!res.ok) {
+    throw new Error('No se pudo obtener la información del beneficiario.')
+  }
+
+  return await res.json()
+}
+
 function BeneficiarioGrid({
   data,
   loading,
@@ -22,36 +64,22 @@ function BeneficiarioGrid({
   const openedCreatedBeneficiario = useRef(false)
   const animatedIds = useRef(new Set())
 
-
   useEffect(() => {
     setCurrentPage(1)
   }, [data])
 
   useEffect(() => {
-    if(!beneficiarioCreadoId || openedCreatedBeneficiario.current || loading) return;
+    if (!beneficiarioCreadoId || openedCreatedBeneficiario.current || loading) return
 
     const existenEnData = data.some(
       b => b.id_beneficiario === beneficiarioCreadoId
-    );
+    )
 
-    if(!existenEnData) return;
+    if (!existenEnData) return
 
-    openedCreatedBeneficiario.current = true;
-    handleView(beneficiarioCreadoId);
+    openedCreatedBeneficiario.current = true
+    handleView(beneficiarioCreadoId)
   }, [beneficiarioCreadoId, data, loading])
-
-  async function fetchBeneficiarioById(id) {
-    const token = localStorage.getItem('token')
-    const res = await fetch(`${API_URL}/api/beneficiarios/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-
-    if (!res.ok) {
-      throw new Error('No se pudo obtener la información del beneficiario.')
-    }
-
-    return await res.json()
-  }
 
   async function handleView(id) {
     try {
@@ -85,46 +113,24 @@ function BeneficiarioGrid({
     }
   }, [beneficiarioEditId, loading])
 
-  async function handleDownloadPdf(id) {
-    try {
-      const token = localStorage.getItem('token')
-
-      const res = await fetch(`${API_URL}/api/beneficiarios/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-
-      if (!res.ok) {
-        throw new Error('No se pudo obtener la información del beneficiario.')
-      }
-
-      const beneficiario = await res.json()
-
-      const resPadres = await fetch(`${API_URL}/api/beneficiarios/${id}/padres`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-
-      if (resPadres.ok) {
-        beneficiario.padres = await resPadres.json()
-      }
-
-      downloadBeneficiarioPdf(beneficiario, id)
-    } catch (error) {
-      console.error('Error al descargar el PDF:', error)
-      alert('Error al descargar el archivo PDF.')
-    }
-  }
-
   const normalized = data.map((b) => {
+    const primerDiagnostico = b.tipo_espina && b.tipo_espina.length > 0
+      ? b.tipo_espina[0]
+      : null
+
     const diagnosticoTexto =
-      b.tipo_espina && b.tipo_espina.length > 0
-        ? b.tipo_espina.map((tipo) => tipo.nombre).join(', ')
-        : 'Sin diagnóstico'
+      primerDiagnostico?.id_espina === 9 && b.datos_medicos?.diagnostico_otro
+        ? b.datos_medicos.diagnostico_otro
+        : b.tipo_espina && b.tipo_espina.length > 0
+          ? b.tipo_espina.map((tipo) => tipo.nombre).join(', ')
+          : 'Sin diagnóstico'
 
     return {
       id_beneficiario: b.id_beneficiario,
       folio: b.folio,
       nombre: `${b.identificadores.nombres} ${b.identificadores.apellido_paterno} ${b.identificadores.apellido_materno ?? ''}`.trim(),
       diagnostico: diagnosticoTexto,
+      diagnostico_otro: b.datos_medicos?.diagnostico_otro || '',
       estatus: b.estado === 'activo' ? 'Activo' : 'Inactivo',
       dias_para_vencer: b.dias_para_vencer,
     }
@@ -155,26 +161,26 @@ function BeneficiarioGrid({
     <>
       <div className={styles.grid}>
         {paginated.map((b, index) => {
+          const isNew = !animatedIds.current.has(b.id_beneficiario)
 
-        const isNew = !animatedIds.current.has(b.id_beneficiario)
+          if (isNew) {
+            animatedIds.current.add(b.id_beneficiario)
+          }
 
-        if(isNew){
-          animatedIds.current.add(b.id_beneficiario)
-        }
-        return (
-          <div
-            key={b.id_beneficiario}
-            className={styles.cardEntrance}
-            style={{ animationDelay: `${index * 0.06}s` }}
-          >
-            <BeneficiarioCard
-              beneficiario={b}
-              onView={() => handleView(b.id_beneficiario)}
-              onEdit={() => handleEdit(b.id_beneficiario)}
-              onCard={() => console.log('credencial', b.id_beneficiario)}
-              onDownloadPdf={() => handleDownloadPdf(b.id_beneficiario)}
-            />
-          </div>
+          return (
+            <div
+              key={b.id_beneficiario}
+              className={styles.cardEntrance}
+              style={{ animationDelay: `${index * 0.06}s` }}
+            >
+              <BeneficiarioCard
+                beneficiario={b}
+                onView={() => handleView(b.id_beneficiario)}
+                onEdit={() => handleEdit(b.id_beneficiario)}
+                onCard={() => console.log('credencial', b.id_beneficiario)}
+                onDownloadPdf={() => handleDownloadPdf(b.id_beneficiario)}
+              />
+            </div>
           )
         })}
       </div>

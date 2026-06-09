@@ -1,10 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { CheckCircle2, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import Dropdown from "../../components/ui/Dropdown";
 import useFondoDonaciones from "../../hooks/useFondoDonaciones";
 import "../styles/Recibos.css";
 import "../styles/OperationalPage.css";
-import "../styles/RegistroServicio.css";
 import "../styles/Donaciones.css";
 import {
   fmtMontoFondo as fmt,
@@ -90,8 +89,6 @@ export default function Donaciones() {
   const [concepto, setConcepto] = useState("");
   const [nuevoTipo, setNuevoTipo] = useState("");
   const [nuevoNombre, setNuevoNombre] = useState("");
-  const [guardado, setGuardado] = useState(false);
-  const [donadorCreado, setDonadorCreado] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [crearErrors, setCrearErrors] = useState({});
   const [guardando, setGuardando] = useState(false);
@@ -123,12 +120,6 @@ export default function Donaciones() {
     ],
     [donadores]
   );
-
-  const stats = useMemo(() => {
-    const abonos = movimientos.filter((m) => m.tipo_movimiento === "abono");
-    const egresos = movimientos.filter((m) => m.tipo_movimiento === "egreso");
-    return { abonos: abonos.length, egresos: egresos.length };
-  }, [movimientos]);
 
   useEffect(() => {
     fetchMovimientos().catch(() => {});
@@ -170,8 +161,6 @@ export default function Donaciones() {
 
   const handleSubmitCrear = async (e) => {
     e.preventDefault();
-    setDonadorCreado(false);
-
     const errors = validateCrearDonador(crearValues);
     if (Object.values(errors).some(Boolean)) {
       setCrearErrors(errors);
@@ -184,7 +173,6 @@ export default function Donaciones() {
         tipo_origen: nuevoTipo,
         nombre: nuevoNombre.trim(),
       });
-      setDonadorCreado(true);
       setNuevoTipo("");
       setNuevoNombre("");
       setCrearErrors({});
@@ -202,8 +190,6 @@ export default function Donaciones() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setGuardado(false);
-
     const errors = validateAbono(abonoValues);
     if (Object.values(errors).some(Boolean)) {
       setFieldErrors(errors);
@@ -217,7 +203,6 @@ export default function Donaciones() {
         id_donador: Number(donadorSeleccionado),
         concepto: concepto.trim(),
       });
-      setGuardado(true);
       setDonadorSeleccionado("");
       setMonto("");
       setConcepto("");
@@ -246,22 +231,24 @@ export default function Donaciones() {
 
   return (
     <main className="recibos-page donaciones-page" aria-labelledby="donaciones-page-title">
-      <header className="recibos-header page-header donaciones-header">
+      <header className="recibos-header page-header">
         <div className="recibos-heading">
           <h1 id="donaciones-page-title" className="page-header-title">
             Fondo de Donaciones
           </h1>
-          <p className="page-header-subtitle">
-            Cree marcas o familias, registre abonos y consulte movimientos por fondo.
+          <p className="page-header-subtitle" aria-live="polite">
+            {saldoLoading ? (
+              "Cargando saldo consolidado…"
+            ) : (
+              <>
+                Saldo consolidado{" "}
+                <span className="donaciones-subtitle-saldo">{fmt(saldo?.saldo)}</span>
+                {" · "}
+                {donadores.length}{" "}
+                {donadores.length === 1 ? "fondo registrado" : "fondos registrados"}.
+              </>
+            )}
           </p>
-        </div>
-        <div className="donaciones-saldo" aria-live="polite">
-          <span className="donaciones-saldo-label">Saldo total</span>
-          {saldoLoading ? (
-            <div className="donaciones-skeleton-value" aria-hidden="true" />
-          ) : (
-            <span className="donaciones-saldo-value">{fmt(saldo?.saldo)}</span>
-          )}
         </div>
       </header>
 
@@ -271,7 +258,7 @@ export default function Donaciones() {
             <h2 id="donaciones-fondos-title" className="section-title">
               Marcas y familias
             </h2>
-            <p className="section-sub">Cada una tiene su propio fondo de donación.</p>
+            <p className="section-sub">Un fondo independiente por marca o familia.</p>
           </div>
           <button
             type="button"
@@ -286,7 +273,7 @@ export default function Donaciones() {
         {mostrarCrearDonador && (
           <form
             onSubmit={handleSubmitCrear}
-            className="donaciones-form donaciones-form-panel"
+            className="donaciones-form"
             noValidate
           >
             <div className="field">
@@ -352,20 +339,13 @@ export default function Donaciones() {
               </div>
             )}
 
-            {donadorCreado && (
-              <div className="donaciones-exito" role="status">
-                <CheckCircle2 size={18} aria-hidden="true" />
-                <span>Marca o familia creada correctamente.</span>
-              </div>
-            )}
-
             <button type="submit" className="btnPrimary" disabled={creando}>
               {creando ? "Creando..." : "Crear fondo"}
             </button>
           </form>
         )}
 
-        <div className="recibos-card" style={{ marginBottom: 24 }}>
+        <div className="recibos-card">
           {donadores.length === 0 ? (
             <div className="estado-msg">
               No hay marcas ni familias. Cree una antes de registrar donaciones.
@@ -401,17 +381,7 @@ export default function Donaciones() {
             <h2 id="donaciones-historial-title" className="section-title">
               Historial de donaciones
             </h2>
-            <p className="section-sub">
-              Abonos y egresos de todos los fondos
-              {!loading && movimientos.length > 0 && (
-                <>
-                  {" "}
-                  · {stats.abonos} {stats.abonos === 1 ? "abono" : "abonos"} · {stats.egresos}{" "}
-                  {stats.egresos === 1 ? "egreso" : "egresos"}
-                </>
-              )}
-              .
-            </p>
+            <p className="section-sub">Abonos y egresos de todos los fondos.</p>
           </div>
           <div className="donaciones-actions">
             <button
@@ -445,7 +415,7 @@ export default function Donaciones() {
           <form
             id="donaciones-registro-form"
             onSubmit={handleSubmit}
-            className="donaciones-form donaciones-form-panel"
+            className="donaciones-form"
             noValidate
           >
             <div className="field">
@@ -500,7 +470,7 @@ export default function Donaciones() {
               <textarea
                 id="concepto-donacion"
                 className={`donaciones-textarea ${fieldErrors.concepto ? "is-invalid" : ""}`}
-                placeholder="Propósito de la donación, campaña o acuerdo..."
+                placeholder="Ej. Donación anual, campaña de recaudación"
                 value={concepto}
                 onChange={(e) => {
                   setConcepto(e.target.value);
@@ -528,13 +498,6 @@ export default function Donaciones() {
             {error && !fieldErrors.form && (
               <div className="estado-msg estado-error" role="alert">
                 {error}
-              </div>
-            )}
-
-            {guardado && (
-              <div className="donaciones-exito" role="status">
-                <CheckCircle2 size={18} aria-hidden="true" />
-                <span>Donación registrada. El saldo del fondo se actualizó.</span>
               </div>
             )}
 
