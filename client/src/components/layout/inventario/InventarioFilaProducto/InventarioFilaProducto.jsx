@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import styles from './InventarioFilaProducto.module.css'
 
 function InventarioFilaProducto({ categoria, nombre, clave, cantidad, precio, acciones }) {
@@ -23,6 +24,15 @@ function InventarioFilaProducto({ categoria, nombre, clave, cantidad, precio, ac
       </div>
     </div>
   )
+}
+
+InventarioFilaProducto.propTypes = {
+  categoria: PropTypes.string,
+  nombre: PropTypes.string,
+  clave: PropTypes.string,
+  cantidad: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  precio: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  acciones: PropTypes.node,
 }
 
 export default InventarioFilaProducto

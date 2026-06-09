@@ -1,8 +1,9 @@
+import PropTypes from 'prop-types';
 import "./detalleCita.css"
 import { useState } from "react";
 import CitasPop from "../../ui/CitasPop";
 
-export default function DetalleCita({cita, onClose, onRefresh}){
+function DetalleCita({cita, onClose, onRefresh}){
     const [popupAbierto, setPopupAbierto] = useState(false);
     if (!cita) return null;
 
@@ -53,3 +54,21 @@ export default function DetalleCita({cita, onClose, onRefresh}){
         </>
     );
 }
+
+DetalleCita.propTypes = {
+  cita: PropTypes.shape({
+    title: PropTypes.string,
+    start: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string]),
+    extendedProps: PropTypes.shape({
+      beneficiario: PropTypes.string,
+      especialista: PropTypes.string,
+      servicio: PropTypes.string,
+      estatus: PropTypes.string,
+      notas: PropTypes.string,
+    }),
+  }),
+  onClose: PropTypes.func,
+  onRefresh: PropTypes.func,
+};
+
+export default DetalleCita;

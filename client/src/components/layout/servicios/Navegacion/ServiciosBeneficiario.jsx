@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { useState, useMemo } from 'react'
 import { FiSearch, FiX, FiDownload } from 'react-icons/fi'
 import jsPDF from 'jspdf'
@@ -9,7 +10,7 @@ function fmt(num) {
   return `$${Number(num).toFixed(2)}`
 }
 
-export default function ServiciosBeneficiario({ historial = [], onVerDetalle }) {
+function ServiciosBeneficiario({ historial = [], onVerDetalle }) {
   const [query, setQuery]               = useState('')
   const [seleccionado, setSeleccionado] = useState(null)
 
@@ -176,3 +177,18 @@ export default function ServiciosBeneficiario({ historial = [], onVerDetalle }) 
     </section>
   )
 }
+
+ServiciosBeneficiario.propTypes = {
+  historial: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    beneficiario: PropTypes.string,
+    nombre: PropTypes.string,
+    categoria: PropTypes.string,
+    cuotaTotal: PropTypes.number,
+    montoPagado: PropTypes.number,
+    yaAporto: PropTypes.bool,
+  })),
+  onVerDetalle: PropTypes.func,
+};
+
+export default ServiciosBeneficiario;

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { Pencil, Trash2 } from 'lucide-react'
 import styles from './InventarioAccionesFila.module.css'
 
@@ -26,6 +27,12 @@ function InventarioAccionesFila({ onEditar, onBorrar, deshabilitado = false }) {
       </button>
     </div>
   )
+}
+
+InventarioAccionesFila.propTypes = {
+  onEditar: PropTypes.func.isRequired,
+  onBorrar: PropTypes.func.isRequired,
+  deshabilitado: PropTypes.bool,
 }
 
 export default InventarioAccionesFila

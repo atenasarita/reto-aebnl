@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import { registroSteps } from '../../../../utils/beneficiarioConstants';
 
@@ -58,5 +59,11 @@ function RegistroSidebar({
     </aside>
   );
 }
+
+RegistroSidebar.propTypes = {
+  currentStep: PropTypes.number.isRequired,
+  touchedSteps: PropTypes.arrayOf(PropTypes.number).isRequired,
+  validateStep: PropTypes.func.isRequired,
+};
 
 export default RegistroSidebar;
