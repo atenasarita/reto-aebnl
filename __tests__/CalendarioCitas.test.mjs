@@ -134,7 +134,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-  global.fetch = jest.fn(() =>
+  globalThis.fetch = jest.fn(() =>
     Promise.resolve({ json: () => Promise.resolve(citasMock) })
   );
 });
@@ -190,7 +190,7 @@ describe('CalendarioCitas', () => {
     test('llama a fetch con la URL correcta al montar', async () => {
       await mount();
 
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:3000/api/citas');
+      expect(globalThis.fetch).toHaveBeenCalledWith('http://localhost:3000/api/citas');
     });
 
     test('pasa los eventos cargados al calendario', async () => {
@@ -210,7 +210,7 @@ describe('CalendarioCitas', () => {
     });
 
     test('maneja errores de fetch sin crashear y registra el error', async () => {
-      global.fetch = jest.fn(() => Promise.reject(new Error('Network error')));
+      globalThis.fetch = jest.fn(() => Promise.reject(new Error('Network error')));
 
       await mount();
 
@@ -257,7 +257,7 @@ describe('CalendarioCitas', () => {
         await Promise.resolve();
       });
 
-      expect(global.fetch).toHaveBeenCalledTimes(2);
+      expect(globalThis.fetch).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -302,7 +302,7 @@ describe('CalendarioCitas', () => {
       });
 
       expect(container.querySelector('[data-testid="citas-pop"]')).toBeNull();
-      expect(global.fetch).toHaveBeenCalledTimes(2);
+      expect(globalThis.fetch).toHaveBeenCalledTimes(2);
     });
   });
 });

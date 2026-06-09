@@ -59,6 +59,7 @@ testMatch: [
   '^.*\\/utils\\/validator(\\.js)?$': '<rootDir>/__mocks__/validatorMock.js',
   '^jspdf$': '<rootDir>/__mocks__/jspdfMock.js',
   '^jspdf-autotable$': '<rootDir>/__mocks__/jspdfAutotableMock.js',
+  '^.*/utils/auth(\\.js)?$': '<rootDir>/__mocks__/authMock.js',
 },
    coverageReporters: ['lcov', 'text'],
     coverageDirectory: 'coverage',
