@@ -259,7 +259,10 @@ function PreregistroCard({ preregistroItems, onAceptar, onRechazar }) {
               >
                 <div
                   className="preregistro-item"
+                  role="button"
+                  tabIndex={0}
                   onClick={() => toggleItem(item.id_preregistro)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleItem(item.id_preregistro); } }}
                 >
                   <div className="preregistro-left">
                     <div className="preregistro-avatar">
@@ -272,15 +275,12 @@ function PreregistroCard({ preregistroItems, onAceptar, onRechazar }) {
                     </div>
                   </div>
 
-                  <div
-                    className="preregistro-actions"
-                    onClick={(e) => e.stopPropagation()}
-                  >
+                  <div className="preregistro-actions">
                     <button
                       type="button"
                       className="icon-btn accept"
                       aria-label="Aceptar preregistro"
-                      onClick={() => onAceptar(item)}
+                      onClick={(e) => { e.stopPropagation(); onAceptar(item); }}
                     >
                       <Check />
                     </button>
@@ -289,7 +289,7 @@ function PreregistroCard({ preregistroItems, onAceptar, onRechazar }) {
                       type="button"
                       className="icon-btn reject"
                       aria-label="Rechazar preregistro"
-                      onClick={() => onRechazar(item.id_preregistro)}
+                      onClick={(e) => { e.stopPropagation(); onRechazar(item.id_preregistro); }}
                     >
                       <X />
                     </button>
@@ -298,7 +298,7 @@ function PreregistroCard({ preregistroItems, onAceptar, onRechazar }) {
                       type="button"
                       className={`icon-btn expand ${isOpen ? "open" : ""}`}
                       aria-label="Expandir detalles"
-                      onClick={() => toggleItem(item.id_preregistro)}
+                      onClick={(e) => { e.stopPropagation(); toggleItem(item.id_preregistro); }}
                     >
                       <ChevronDown />
                     </button>
@@ -325,8 +325,15 @@ function PerfilIncompletoModal({ open, onClose, onEditarAhora, nombre }) {
   if (!open) return null;
 
   return (
-    <div className="custom-modal-overlay" onClick={onClose}>
-      <div className="custom-modal-card" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="custom-modal-overlay"
+      role="button"
+      tabIndex={0}
+      aria-label="Cerrar modal"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClose(); } }}
+    >
+      <div className="custom-modal-card">
         <h3>Perfil incompleto</h3>
         <p>
           {nombre

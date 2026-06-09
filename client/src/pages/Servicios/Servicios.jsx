@@ -162,6 +162,7 @@ export default function Servicios() {
         <div
           className="recibos-tabs recibos-tabs--three"
           role="tablist"
+          tabIndex={0}
           aria-describedby={tabsHintId}
           onKeyDown={onTabsKeyDown}
         >

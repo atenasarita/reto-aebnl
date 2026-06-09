@@ -80,7 +80,14 @@ function ReciboDetalle({ recibo, onClose }) {
   const totalInv = recibo.items_inventario?.reduce((s, i) => s + Number(i.subtotal), 0) ?? 0;
 
   return (
-    <div className="detalle-overlay" onClick={onClose}>
+    <div
+      className="detalle-overlay"
+      role="button"
+      tabIndex={0}
+      aria-label="Cerrar detalle"
+      onClick={onClose}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClose(); } }}
+    >
       <div
         className="detalle-panel"
         role="dialog"
@@ -455,6 +462,7 @@ export default function Recibos() {
         <div
           className="recibos-tabs"
           role="tablist"
+          tabIndex={0}
           aria-label="Vistas de recibos"
           aria-describedby={tabsHintId}
           onKeyDown={onTabsKeyDown}
@@ -643,16 +651,18 @@ export default function Recibos() {
           </div>
 
           <div className="fecha-wrap" style={{ marginBottom: 16 }}>
-            <label className="fecha-label">Desde</label>
+            <label htmlFor="recibos-fecha-desde" className="fecha-label">Desde</label>
             <input
+              id="recibos-fecha-desde"
               className="fecha-input"
               type="date"
               value={fechaDesde}
               max={fechaHasta}
               onChange={(e) => setFechaDesde(e.target.value)}
             />
-            <label className="fecha-label">Hasta</label>
+            <label htmlFor="recibos-fecha-hasta" className="fecha-label">Hasta</label>
             <input
+              id="recibos-fecha-hasta"
               className="fecha-input"
               type="date"
               value={fechaHasta}

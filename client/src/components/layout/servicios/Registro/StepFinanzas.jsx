@@ -10,7 +10,7 @@ const METODOS_PAGO = [
   { label: "Cheque", value: "cheque" },
 ];
 
-export default function StepFinanzas({
+function StepFinanzas({
   total,
   totalConDescuento,
   saldo,
@@ -221,3 +221,30 @@ export default function StepFinanzas({
     </div>
   );
 }
+
+StepFinanzas.propTypes = {
+  total: PropTypes.number.isRequired,
+  totalConDescuento: PropTypes.number.isRequired,
+  saldo: PropTypes.number.isRequired,
+  saldoGlobal: PropTypes.number,
+  donadores: PropTypes.arrayOf(PropTypes.shape({
+    id_fondo: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    nombre: PropTypes.string,
+    saldo: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    tipo_origen: PropTypes.string,
+  })),
+  fondoSeleccionado: PropTypes.string,
+  setFondoSeleccionado: PropTypes.func.isRequired,
+  metodoPago: PropTypes.string,
+  setMetodoPago: PropTypes.func.isRequired,
+  montoPagado: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  setMontoPagado: PropTypes.func.isRequired,
+  montoDonacion: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  setMontoDonacion: PropTypes.func.isRequired,
+  descuento: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  setDescuento: PropTypes.func.isRequired,
+  yaAporto: PropTypes.bool.isRequired,
+  setYaAporto: PropTypes.func.isRequired,
+};
+
+export default StepFinanzas;
