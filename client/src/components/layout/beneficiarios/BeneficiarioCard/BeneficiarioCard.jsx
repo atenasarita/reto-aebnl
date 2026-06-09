@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import styles from './BeneficiarioCard.module.css'
 import { FiEdit, FiEye, FiDownload } from "react-icons/fi";
 
@@ -80,6 +81,19 @@ function BeneficiarioCard({ beneficiario, onView, onEdit, onCard, onDownloadPdf 
       </div>
     </div>
   )
+}
+
+BeneficiarioCard.propTypes = {
+  beneficiario: PropTypes.shape({
+    nombre: PropTypes.string.isRequired,
+    folio: PropTypes.string,
+    diagnostico: PropTypes.string,
+    estatus: PropTypes.string,
+    dias_para_vencer: PropTypes.number,
+  }).isRequired,
+  onView: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onDownloadPdf: PropTypes.func.isRequired,
 }
 
 export default BeneficiarioCard
