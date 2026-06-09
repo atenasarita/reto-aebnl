@@ -279,6 +279,15 @@ export default function ReporteDonaciones() {
               />
             </div>
 
+            {!donadorId ? (
+              <div className="reporte-donaciones-idle reporte-donaciones-idle--hint">
+                <p className="reporte-donaciones-idle-title">Elija un fondo</p>
+                <p className="reporte-donaciones-idle-text">
+                  Los indicadores y el historial aparecerán al seleccionar una marca o familia.
+                </p>
+              </div>
+            ) : null}
+
             {donadorActivo ? (
               <div
                 className="reporte-donaciones-fondo-resumen"
