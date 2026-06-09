@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('https://aebnl.netlify.app/login');
+  await page.goto('http://localhost:5173/login');
   await page.getByRole('textbox', { name: 'Usuario' }).click();
   await page.getByRole('textbox', { name: 'Usuario' }).fill('prueba1');
   await page.getByRole('textbox', { name: 'Contraseña' }).click();
