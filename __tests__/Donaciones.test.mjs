@@ -175,7 +175,7 @@ describe('Donaciones', () => {
   test('muestra el saldo total', async () => {
     await mount();
 
-    expect(container.textContent).toContain('Saldo total');
+    expect(container.textContent).toContain('Saldo consolidado');
   });
 
   test('muestra botón Registrar donación', async () => {
