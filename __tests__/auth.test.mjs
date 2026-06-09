@@ -132,11 +132,11 @@ describe('auth.js', () => {
   });
 
   describe('logout', () => {
-    test('limpia la sesión sin redirigir', () => {
+    test('limpia la sesión sin redirigir', async () => {
       localStorage.setItem('token', 'abc');
       localStorage.setItem('user', JSON.stringify({ id: 1 }));
 
-      logout({ redirect: false });
+      await logout({ redirect: false });
 
       expect(localStorage.getItem('token')).toBeNull();
       expect(localStorage.getItem('user')).toBeNull();
