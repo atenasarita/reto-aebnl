@@ -133,13 +133,12 @@ function HistorialAsociado({ beneficiario }) {
                 
                 <div className={styles.radioGroup}>
                   <label>
-                    <input 
+                    <input
                       type="radio"
                       name={`control-urologico-${idBeneficiario}`}
                       checked={controlUrologico === true}
                       onChange={() => setControlUrologico(true)}
-                    />
-                    Si
+                    /><span>Si</span>
                   </label>
 
                   <label>
@@ -148,8 +147,7 @@ function HistorialAsociado({ beneficiario }) {
                       name={`control-urologico-${idBeneficiario}`}
                       checked={controlUrologico === false}
                       onChange={() => setControlUrologico(false)}
-                    />
-                    No
+                    /><span>No</span>
                   </label>
                 </div>
               </div>
