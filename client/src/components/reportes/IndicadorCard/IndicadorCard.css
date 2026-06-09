@@ -1,89 +1,50 @@
-.reporte-general-kpi-bento.shadcn-card {
-  border-radius: 1rem;
+.reporte-general-kpi-stat.shadcn-card {
+  border-radius: var(--radius-card, 14px);
   border-color: var(--color-border);
   background: var(--color-surface-card);
-  box-shadow: var(--shadow-card);
+  box-shadow: none;
 }
 
-.reporte-general-kpi-bento-inner.shadcn-card-content {
-  padding: 1.25rem 1.35rem;
+.reporte-general-kpi-stat-inner.shadcn-card-content {
+  padding: 1rem 1.15rem;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  min-height: 5.5rem;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-height: 4.75rem;
 }
 
-.reporte-general-kpi-bento-copy {
-  min-width: 0;
-  flex: 1;
-}
-
-.reporte-general-kpi-eyebrow {
-  margin: 0 0 0.35rem;
-  font-family: var(--font-sans);
-  font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-.reporte-general-kpi-number {
+.reporte-general-kpi-stat-label {
   margin: 0;
   font-family: var(--font-sans);
-  font-size: 1.65rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  line-height: 1.35;
+}
+
+.reporte-general-kpi-stat-value {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.15;
   letter-spacing: -0.02em;
-  color: var(--color-brand);
-}
-
-.reporte-general-kpi-icon-wrap {
-  flex-shrink: 0;
-  width: 2.9rem;
-  height: 2.9rem;
-  border-radius: 0.85rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.reporte-general-kpi-icon-wrap--primary {
-  background: var(--color-brand-soft);
-  color: var(--color-brand);
-}
-
-.reporte-general-kpi-icon-wrap--secondary {
-  background: #e8ecf8;
-  color: var(--color-text-secondary);
-}
-
-.reporte-general-kpi-icon-wrap--success {
-  background: #dcfce7;
-  color: var(--color-success, #1f9d55);
-}
-
-.reporte-general-kpi-icon-wrap--danger {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
-.reporte-general-kpi-number--currency {
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  color: var(--color-text-primary);
   font-variant-numeric: tabular-nums;
-  font-size: 1.35rem;
 }
 
-.reporte-general-kpi-number--success {
+.reporte-general-kpi-stat-value--currency {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 1.25rem;
+  color: var(--color-brand);
+}
+
+.reporte-general-kpi-stat-value--success {
   color: var(--color-success, #1f9d55);
 }
 
-.reporte-general-kpi-number--danger {
+.reporte-general-kpi-stat-value--danger {
   color: #b91c1c;
-}
-
-.reporte-general-kpi-icon {
-  width: 1.35rem;
-  height: 1.35rem;
 }

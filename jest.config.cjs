@@ -57,6 +57,8 @@ testMatch: [
   '^.*\\/utils\\/espinaBifidaTypes(\\.js)?$': '<rootDir>/__mocks__/espinaBifidaMock.js',
   '^framer-motion$': '<rootDir>/__mocks__/framerMotionMock.js',
   '^.*\\/utils\\/validator(\\.js)?$': '<rootDir>/__mocks__/validatorMock.js',
+  '^jspdf$': '<rootDir>/__mocks__/jspdfMock.js',
+  '^jspdf-autotable$': '<rootDir>/__mocks__/jspdfAutotableMock.js',
 },
    coverageReporters: ['lcov', 'text'],
     coverageDirectory: 'coverage',

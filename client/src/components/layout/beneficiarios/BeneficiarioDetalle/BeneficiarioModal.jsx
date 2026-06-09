@@ -18,15 +18,33 @@ function BeneficiarioModal({
     setActiveTab('datos_generales')
   }, [beneficiario])
 
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+    <div className={styles.overlay}>
+      <button
+        type="button"
+        className={styles.backdrop}
+        aria-label="Cerrar ventana"
+        onClick={onClose}
+      />
+      <div
+        className={styles.modal}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Detalle de beneficiario"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className={styles.modalHeader}>
           <TabsNavegacion
             activeTab={activeTab}
             setActiveTab={setActiveTab}
           />
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
+          <button type="button" className={styles.closeBtn} onClick={onClose}>✕</button>
         </div>
 
         {activeTab === 'datos_generales' && (
