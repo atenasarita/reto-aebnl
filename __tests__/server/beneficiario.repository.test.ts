@@ -688,4 +688,300 @@ describe("OracleBeneficiarioRepository", () => {
     expect(mockGenerateNextBeneficiarioFolio).toHaveBeenCalledWith(connection);
     expect(connection.close).toHaveBeenCalledTimes(1);
   });
+
+  test("getBeneficiarioById debe regresar un beneficiario cuando existe", async () => {
+  connection.execute
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({
+      rows: [baseBeneficiarioRow({ ID_BENEFICIARIO: 25 })],
+    })
+    .mockResolvedValueOnce({
+      rows: [
+        {
+          ID_BENEFICIARIO: 25,
+          ID_ESPINA: 4,
+          NOMBRE: "Espina bífida",
+        },
+      ],
+    });
+
+  const result = await repository.getBeneficiarioById(25);
+
+  expect(result.id_beneficiario).toBe(25);
+  expect(result.tipo_espina).toEqual([
+    {
+      id_espina: 4,
+      nombre: "Espina bífida",
+    },
+  ]);
+  expect(connection.close).toHaveBeenCalledTimes(1);
+});
+
+test("getBeneficiarioByFolio debe lanzar NotFoundError cuando no encuentra registros", async () => {
+  connection.execute
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({ rows: [] });
+
+  await expect(repository.getBeneficiarioByFolio("BEN-NO-EXISTE")).rejects.toThrow(
+    "Beneficiario no encontrado."
+  );
+
+  expect(connection.commit).toHaveBeenCalledTimes(1);
+  expect(connection.close).toHaveBeenCalledTimes(1);
+});
+
+test("getBeneficiarios debe regresar arreglo vacío cuando no hay beneficiarios", async () => {
+  connection.execute
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({ rows: [] });
+
+  const result = await repository.getBeneficiarios();
+
+  expect(result).toEqual([]);
+  expect(connection.execute).toHaveBeenCalledTimes(3);
+  expect(connection.close).toHaveBeenCalledTimes(1);
+});
+
+test("updateBeneficiario debe actualizar diagnóstico cuando diagnostico_id es mayor a 0", async () => {
+  connection.execute
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({});
+
+  await repository.updateBeneficiario(1, {
+    nombres: "Ana",
+    apellido_paterno: "López",
+    apellido_materno: "García",
+    CURP: "CURP123",
+    fecha_nacimiento: "2010-01-15",
+    estado_nacimiento: "Nuevo León",
+    telefono: "8111111111",
+    email: "ana@test.com",
+    genero: "femenino",
+    contacto_nombre: "Mamá Ana",
+    contacto_telefono: "8122222222",
+    contacto_parentesco: "Madre",
+    tipo_sanguineo: "O+",
+    valvula: true,
+    hospital: "Hospital Central",
+    diagnostico_id: 3,
+    domicilio_calle: "Calle 1",
+    domicilio_ciudad: "Monterrey",
+    domicilio_estado: "Nuevo León",
+    domicilio_cp: "64000",
+  });
+
+  expect(connection.execute).toHaveBeenCalledTimes(6);
+  expect(connection.execute.mock.calls[4][0]).toContain("DELETE FROM BENEFICIARIO_ESPINA");
+  expect(connection.execute.mock.calls[5][0]).toContain("INSERT INTO BENEFICIARIO_ESPINA");
+  expect(connection.execute.mock.calls[5][1]).toMatchObject({
+    id_beneficiario: 1,
+    id_espina: 3,
+  });
+  expect(connection.commit).toHaveBeenCalledTimes(1);
+  expect(connection.close).toHaveBeenCalledTimes(1);
+});
+
+test("updateBeneficiario debe actualizar membresía cuando recibe fecha_inicio y fecha_fin", async () => {
+  connection.execute
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({});
+
+  await repository.updateBeneficiario(1, {
+    nombres: "Ana",
+    apellido_paterno: "López",
+    apellido_materno: "García",
+    CURP: "CURP123",
+    fecha_nacimiento: "2010-01-15",
+    estado_nacimiento: "Nuevo León",
+    telefono: "8111111111",
+    email: "ana@test.com",
+    genero: "femenino",
+    contacto_nombre: "Mamá Ana",
+    contacto_telefono: "8122222222",
+    contacto_parentesco: "Madre",
+    tipo_sanguineo: "O+",
+    valvula: false,
+    hospital: "Hospital Central",
+    domicilio_calle: "Calle 1",
+    domicilio_ciudad: "Monterrey",
+    domicilio_estado: "Nuevo León",
+    domicilio_cp: "64000",
+    fecha_inicio: "2026-06-01",
+    fecha_fin: "2026-12-01",
+  });
+
+  expect(connection.execute).toHaveBeenCalledTimes(5);
+  expect(connection.execute.mock.calls[4][0]).toContain("UPDATE MEMBRESIAS");
+  expect(connection.execute.mock.calls[4][1]).toMatchObject({
+    fecha_inicio: "2026-06-01",
+    fecha_fin: "2026-12-01",
+    id_beneficiario: 1,
+  });
+  expect(connection.commit).toHaveBeenCalledTimes(1);
+  expect(connection.close).toHaveBeenCalledTimes(1);
+});
+
+test("updateBeneficiario debe guardar diagnostico_otro cuando diagnostico_id es 9", async () => {
+  connection.execute
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({});
+
+  await repository.updateBeneficiario(1, {
+    nombres: "Ana",
+    apellido_paterno: "López",
+    apellido_materno: "García",
+    CURP: "CURP123",
+    fecha_nacimiento: "2010-01-15",
+    estado_nacimiento: "Nuevo León",
+    telefono: "8111111111",
+    email: "ana@test.com",
+    genero: "femenino",
+    contacto_nombre: "Mamá Ana",
+    contacto_telefono: "8122222222",
+    contacto_parentesco: "Madre",
+    tipo_sanguineo: "O+",
+    valvula: true,
+    hospital: "Hospital Central",
+    diagnostico_id: 9,
+    diagnostico_otro: "Otro diagnóstico",
+    domicilio_calle: "Calle 1",
+    domicilio_ciudad: "Monterrey",
+    domicilio_estado: "Nuevo León",
+    domicilio_cp: "64000",
+  });
+
+  expect(connection.execute.mock.calls[2][1]).toMatchObject({
+    diagnostico_otro: "Otro diagnóstico",
+  });
+  expect(connection.commit).toHaveBeenCalledTimes(1);
+  expect(connection.close).toHaveBeenCalledTimes(1);
+});
+
+test("updateMembresia debe actualizar membresía existente y estado del beneficiario", async () => {
+  connection.execute
+    .mockResolvedValueOnce({
+      rows: [{ ID_MEMBRESIA: 10 }],
+    })
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({});
+
+  await repository.updateMembresia(1, {
+    estado: "activa",
+    metodo_pago: "efectivo",
+    fecha_inicio: "2026-06-01",
+    fecha_fin: "2026-12-01",
+    precio: 1200,
+  });
+
+  expect(connection.execute).toHaveBeenCalledTimes(3);
+  expect(connection.execute.mock.calls[1][0]).toContain("UPDATE MEMBRESIAS");
+  expect(connection.execute.mock.calls[1][1]).toMatchObject({
+    estado: "activa",
+    metodo_pago: "efectivo",
+    fecha_inicio: "2026-06-01",
+    fecha_fin: "2026-12-01",
+    precio: 1200,
+    id_beneficiario: 1,
+  });
+  expect(connection.execute.mock.calls[2][0]).toContain("UPDATE BENEFICIARIO");
+  expect(connection.execute.mock.calls[2][1]).toMatchObject({
+    estado_beneficiario: "activo",
+    id_beneficiario: 1,
+  });
+  expect(connection.commit).toHaveBeenCalledTimes(1);
+  expect(connection.close).toHaveBeenCalledTimes(1);
+});
+
+test("updateMembresia debe insertar membresía cuando no existe", async () => {
+  connection.execute
+    .mockResolvedValueOnce({
+      rows: [],
+    })
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({});
+
+  await repository.updateMembresia(1, {
+    estado: "activa",
+    metodo_pago: "tarjeta",
+    fecha_inicio: "2026-06-01",
+    fecha_fin: "2026-12-01",
+    precio: 1500,
+  });
+
+  expect(connection.execute).toHaveBeenCalledTimes(3);
+  expect(connection.execute.mock.calls[1][0]).toContain("INSERT INTO MEMBRESIAS");
+  expect(connection.execute.mock.calls[1][1]).toMatchObject({
+    id_beneficiario: 1,
+    precio: 1500,
+    fecha_inicio: "2026-06-01",
+    fecha_fin: "2026-12-01",
+    estado: "activa",
+    metodo_pago: "tarjeta",
+  });
+  expect(connection.execute.mock.calls[2][1]).toMatchObject({
+    estado_beneficiario: "activo",
+    id_beneficiario: 1,
+  });
+  expect(connection.commit).toHaveBeenCalledTimes(1);
+  expect(connection.close).toHaveBeenCalledTimes(1);
+});
+
+test("updateMembresia debe poner beneficiario inactivo cuando la membresía no está activa", async () => {
+  connection.execute
+    .mockResolvedValueOnce({
+      rows: [{ ID_MEMBRESIA: 10 }],
+    })
+    .mockResolvedValueOnce({})
+    .mockResolvedValueOnce({});
+
+  await repository.updateMembresia(1, {
+    estado: "vencida",
+    metodo_pago: "efectivo",
+    fecha_inicio: "2026-01-01",
+    fecha_fin: "2026-02-01",
+    precio: 300,
+  });
+
+  expect(connection.execute.mock.calls[2][1]).toMatchObject({
+    estado_beneficiario: "inactivo",
+    id_beneficiario: 1,
+  });
+  expect(connection.commit).toHaveBeenCalledTimes(1);
+  expect(connection.close).toHaveBeenCalledTimes(1);
+});
+
+test("updateMembresia debe hacer rollback si ocurre un error", async () => {
+  const error = new Error("Error al actualizar membresía");
+
+  jest.spyOn(console, "error").mockImplementation(() => {});
+
+  connection.execute.mockRejectedValueOnce(error);
+
+  await expect(
+    repository.updateMembresia(1, {
+      estado: "activa",
+      metodo_pago: "efectivo",
+      fecha_inicio: "2026-06-01",
+      fecha_fin: "2026-12-01",
+      precio: 1200,
+    })
+  ).rejects.toThrow("Error al actualizar membresía");
+
+  expect(connection.rollback).toHaveBeenCalledTimes(1);
+  expect(connection.close).toHaveBeenCalledTimes(1);
+});
 });
