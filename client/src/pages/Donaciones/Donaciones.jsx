@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { RefreshCw } from "lucide-react";
 import Dropdown from "../../components/ui/Dropdown";
@@ -13,15 +14,21 @@ import {
   SaldoCell,
 } from "../../components/fondo/FondoMovimientosDisplay";
 
+const SKELETON_IDS = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"];
+
 function Skeleton({ rows = 4 }) {
   return (
     <div className="skeleton-wrap" role="status" aria-live="polite" aria-label="Cargando movimientos">
-      {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="skeleton-row" />
+      {SKELETON_IDS.slice(0, rows).map((id) => (
+        <div key={id} className="skeleton-row" />
       ))}
     </div>
   );
 }
+
+Skeleton.propTypes = {
+  rows: PropTypes.number,
+};
 
 function FieldError({ id, message }) {
   if (!message) return null;
@@ -31,6 +38,11 @@ function FieldError({ id, message }) {
     </p>
   );
 }
+
+FieldError.propTypes = {
+  id: PropTypes.string,
+  message: PropTypes.string,
+};
 
 function validateField(name, { donadorSeleccionado, monto, concepto, nuevoTipo, nuevoNombre }) {
   switch (name) {
@@ -68,6 +80,67 @@ function sanitizeMonto(value) {
   const parts = cleaned.split(".");
   if (parts.length <= 1) return cleaned;
   return `${parts[0]}.${parts.slice(1).join("")}`;
+}
+
+async function submitCrearDonador(crearValues, actions) {
+  const {
+    crearDonador, setNuevoTipo, setNuevoNombre, setCrearErrors,
+    setCreando, setMostrarCrearDonador, fetchDonadores, setDonadorSeleccionado,
+  } = actions;
+  const errors = validateCrearDonador(crearValues);
+  if (Object.values(errors).some(Boolean)) {
+    setCrearErrors(errors);
+    return;
+  }
+  setCreando(true);
+  try {
+    const res = await crearDonador({
+      tipo_origen: crearValues.nuevoTipo,
+      nombre: crearValues.nuevoNombre.trim(),
+    });
+    setNuevoTipo("");
+    setNuevoNombre("");
+    setCrearErrors({});
+    setMostrarCrearDonador(false);
+    await fetchDonadores();
+    if (res?.data?.id_donador) {
+      setDonadorSeleccionado(String(res.data.id_donador));
+    }
+  } catch (err) {
+    setCrearErrors({ form: err.message || "Error al crear marca o familia." });
+  } finally {
+    setCreando(false);
+  }
+}
+
+async function submitAbono(abonoValues, actions) {
+  const {
+    registrarAbono, setGuardando, setFieldErrors, setDonadorSeleccionado,
+    setMonto, setConcepto, setMostrarFormulario, fetchSaldo, fetchDonadores, fetchMovimientos,
+  } = actions;
+  const errors = validateAbono(abonoValues);
+  if (Object.values(errors).some(Boolean)) {
+    setFieldErrors(errors);
+    return;
+  }
+  setGuardando(true);
+  try {
+    await registrarAbono({
+      monto: Number.parseFloat(abonoValues.monto),
+      id_donador: Number(abonoValues.donadorSeleccionado),
+      concepto: abonoValues.concepto.trim(),
+    });
+    setDonadorSeleccionado("");
+    setMonto("");
+    setConcepto("");
+    setFieldErrors({});
+    setMostrarFormulario(false);
+    await Promise.all([fetchSaldo(), fetchDonadores(), fetchMovimientos()]);
+  } catch (err) {
+    setFieldErrors({ form: err.message || "Error al registrar la donación." });
+  } finally {
+    setGuardando(false);
+  }
 }
 
 export default function Donaciones() {
@@ -161,61 +234,18 @@ export default function Donaciones() {
 
   const handleSubmitCrear = async (e) => {
     e.preventDefault();
-    const errors = validateCrearDonador(crearValues);
-    if (Object.values(errors).some(Boolean)) {
-      setCrearErrors(errors);
-      return;
-    }
-
-    setCreando(true);
-    try {
-      const res = await crearDonador({
-        tipo_origen: nuevoTipo,
-        nombre: nuevoNombre.trim(),
-      });
-      setNuevoTipo("");
-      setNuevoNombre("");
-      setCrearErrors({});
-      setMostrarCrearDonador(false);
-      await fetchDonadores();
-      if (res?.data?.id_donador) {
-        setDonadorSeleccionado(String(res.data.id_donador));
-      }
-    } catch (err) {
-      setCrearErrors({ form: err.message || "Error al crear marca o familia." });
-    } finally {
-      setCreando(false);
-    }
+    await submitCrearDonador(crearValues, {
+      crearDonador, setNuevoTipo, setNuevoNombre, setCrearErrors, setCreando,
+      setMostrarCrearDonador, fetchDonadores, setDonadorSeleccionado,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const errors = validateAbono(abonoValues);
-    if (Object.values(errors).some(Boolean)) {
-      setFieldErrors(errors);
-      return;
-    }
-
-    setGuardando(true);
-    try {
-      await registrarAbono({
-        monto: Number.parseFloat(monto),
-        id_donador: Number(donadorSeleccionado),
-        concepto: concepto.trim(),
-      });
-      setDonadorSeleccionado("");
-      setMonto("");
-      setConcepto("");
-      setFieldErrors({});
-      setMostrarFormulario(false);
-      await Promise.all([fetchSaldo(), fetchDonadores(), fetchMovimientos()]);
-    } catch (err) {
-      setFieldErrors({
-        form: err.message || "Error al registrar la donación.",
-      });
-    } finally {
-      setGuardando(false);
-    }
+    await submitAbono(abonoValues, {
+      registrarAbono, setGuardando, setFieldErrors, setDonadorSeleccionado,
+      setMonto, setConcepto, setMostrarFormulario, fetchSaldo, fetchDonadores, fetchMovimientos,
+    });
   };
 
   const cargarHistorial = async () => {
@@ -225,6 +255,65 @@ export default function Donaciones() {
     } finally {
       setCargandoHistorial(false);
     }
+  };
+
+  const renderHistorialContent = () => {
+    if (loading && movimientos.length === 0) return <Skeleton rows={5} />;
+    if (movimientos.length === 0) {
+      return (
+        <div className="estado-msg">
+          Sin movimientos registrados. Usa &quot;Registrar donación&quot; para agregar el primero.
+        </div>
+      );
+    }
+    return (
+      <div className="table-wrap">
+        <table className="recibos-table">
+          <caption className="sr-only">
+            Historial de movimientos del fondo de donaciones
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Fecha</th>
+              <th scope="col">Tipo</th>
+              <th scope="col">Origen</th>
+              <th scope="col">Concepto</th>
+              <th className="text-right" scope="col">Monto</th>
+              <th className="text-right" scope="col">Saldo</th>
+            </tr>
+          </thead>
+          <tbody>
+            {movimientos.map((m) => {
+              const conceptoTexto = formatConcepto(m);
+              return (
+                <tr key={m.id_movimiento} className="recibo-row">
+                  <td className="text-muted">{m.fecha}</td>
+                  <td>
+                    <span
+                      className={`badge ${
+                        m.tipo_movimiento === "abono"
+                          ? "badge-donacion badge-donacion--abono"
+                          : "badge-egreso badge-egreso--egreso"
+                      }`}
+                    >
+                      {m.tipo_movimiento === "abono" ? "Abono" : "Egreso"}
+                    </span>
+                  </td>
+                  <td>{formatOrigen(m)}</td>
+                  <td className="donaciones-col-concepto">
+                    <span className="donaciones-concepto-text" title={conceptoTexto}>
+                      {conceptoTexto}
+                    </span>
+                  </td>
+                  <MontoCell tipo={m.tipo_movimiento} monto={m.monto} />
+                  <SaldoCell value={m.saldo_nuevo} />
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
   };
 
   const saldoLoading = loading && !saldo;
@@ -509,64 +598,7 @@ export default function Donaciones() {
         )}
 
         <div className="recibos-card">
-          {loading && movimientos.length === 0 ? (
-            <Skeleton rows={5} />
-          ) : movimientos.length === 0 ? (
-            <div className="estado-msg">
-              Sin movimientos registrados. Usa “Registrar donación” para agregar el primero.
-            </div>
-          ) : (
-            <div className="table-wrap">
-              <table className="recibos-table">
-                <caption className="sr-only">
-                  Historial de movimientos del fondo de donaciones
-                </caption>
-                <thead>
-                  <tr>
-                    <th scope="col">Fecha</th>
-                    <th scope="col">Tipo</th>
-                    <th scope="col">Origen</th>
-                    <th scope="col">Concepto</th>
-                    <th className="text-right" scope="col">
-                      Monto
-                    </th>
-                    <th className="text-right" scope="col">
-                      Saldo
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {movimientos.map((m) => {
-                    const conceptoTexto = formatConcepto(m);
-                    return (
-                      <tr key={m.id_movimiento} className="recibo-row">
-                        <td className="text-muted">{m.fecha}</td>
-                        <td>
-                          <span
-                            className={`badge ${
-                              m.tipo_movimiento === "abono"
-                                ? "badge-donacion badge-donacion--abono"
-                                : "badge-egreso badge-egreso--egreso"
-                            }`}
-                          >
-                            {m.tipo_movimiento === "abono" ? "Abono" : "Egreso"}
-                          </span>
-                        </td>
-                        <td>{formatOrigen(m)}</td>
-                        <td className="donaciones-col-concepto">
-                          <span className="donaciones-concepto-text" title={conceptoTexto}>
-                            {conceptoTexto}
-                          </span>
-                        </td>
-                        <MontoCell tipo={m.tipo_movimiento} monto={m.monto} />
-                        <SaldoCell value={m.saldo_nuevo} />
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
+          {renderHistorialContent()}
         </div>
       </section>
     </main>

@@ -1,9 +1,10 @@
+import PropTypes from "prop-types";
 import { Activity, UserPlus, Users } from "lucide-react";
 import IndicadorCard from "../../IndicadorCard/IndicadorCard";
 import { METRICA_DEMOGRAFICOS, METRICA_NUEVOS, METRICA_SERVICIOS } from "../reportePersonalizadoConstants";
 import "./PersonalizadoKpiSection.css";
 
-export default function PersonalizadoKpiSection({ metricas, data }) {
+function PersonalizadoKpiSection({ metricas, data }) {
   const showServiciosDem =
     metricas.has(METRICA_DEMOGRAFICOS) &&
     !metricas.has(METRICA_SERVICIOS) &&
@@ -38,3 +39,14 @@ export default function PersonalizadoKpiSection({ metricas, data }) {
     </div>
   );
 }
+
+PersonalizadoKpiSection.propTypes = {
+  metricas: PropTypes.instanceOf(Set).isRequired,
+  data: PropTypes.shape({
+    nuevosBeneficiarios: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    serviciosPeriodo: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    beneficiariosAtendidos: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  }),
+};
+
+export default PersonalizadoKpiSection;

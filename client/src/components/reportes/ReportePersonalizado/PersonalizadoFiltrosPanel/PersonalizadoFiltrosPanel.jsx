@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useEffect, useId } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
@@ -6,7 +7,7 @@ import PersonalizadoMetricasBar from "../PersonalizadoMetricasBar/PersonalizadoM
 import "../ReportePersonalizadoShell/ReportePersonalizadoShell.css";
 import "./PersonalizadoFiltrosPanel.css";
 
-export default function PersonalizadoFiltrosPanel({
+function PersonalizadoFiltrosPanel({
   open,
   onOpenChange,
   muestraDemografia,
@@ -33,15 +34,15 @@ export default function PersonalizadoFiltrosPanel({
       }
     };
 
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    globalThis.addEventListener("keydown", onKeyDown);
+    return () => globalThis.removeEventListener("keydown", onKeyDown);
   }, [open, onOpenChange]);
 
   useEffect(() => {
     if (!open) return undefined;
 
     const prevOverflow = document.body.style.overflow;
-    if (window.matchMedia("(max-width: 959px)").matches) {
+    if (globalThis.matchMedia("(max-width: 959px)").matches) {
       document.body.style.overflow = "hidden";
     }
 
@@ -56,12 +57,12 @@ export default function PersonalizadoFiltrosPanel({
 
   return createPortal(
     <>
-      <div
+      <button
+        type="button"
         className={`reporte-personalizado-filtros-scrim${open ? " is-visible" : ""}`}
         aria-hidden={!open}
+        aria-label="Cerrar filtros"
         onClick={() => onOpenChange(false)}
-        onKeyDown={(e) => e.key === "Escape" && onOpenChange(false)}
-        role="presentation"
       />
 
       <aside
@@ -120,3 +121,24 @@ export default function PersonalizadoFiltrosPanel({
     document.body,
   );
 }
+
+PersonalizadoFiltrosPanel.propTypes = {
+  open: PropTypes.bool,
+  onOpenChange: PropTypes.func,
+  muestraDemografia: PropTypes.bool,
+  metricas: PropTypes.instanceOf(Set).isRequired,
+  onToggleMetrica: PropTypes.func,
+  hayDatos: PropTypes.bool,
+  distribucionEstado: PropTypes.arrayOf(PropTypes.shape({
+    key: PropTypes.string,
+    label: PropTypes.string,
+  })),
+  generosEfectivos: PropTypes.instanceOf(Set),
+  etapasEfectivas: PropTypes.instanceOf(Set),
+  estadosEfectivos: PropTypes.instanceOf(Set),
+  onToggleGenero: PropTypes.func,
+  onToggleEtapa: PropTypes.func,
+  onToggleEstado: PropTypes.func,
+};
+
+export default PersonalizadoFiltrosPanel;
