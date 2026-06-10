@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useState, useEffect, useCallback, useId, useRef } from "react";
 import { X, AlertTriangle } from "lucide-react";
 import { useSearchParams } from 'react-router-dom'
@@ -26,16 +27,45 @@ const fmtMes = (iso) => {
 
 const hoy = () => todayDate();
 
+const SKELETON_IDS = ["a", "b", "c", "d", "e", "f", "g", "h"];
+
+const reciboShape = PropTypes.shape({
+  id_servicio_otorgado: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  beneficiario: PropTypes.string,
+  servicio: PropTypes.string,
+  fecha: PropTypes.string,
+  hora: PropTypes.string,
+  items_inventario: PropTypes.arrayOf(PropTypes.shape({
+    id_venta_inventario: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    nombre_articulo: PropTypes.string,
+    cantidad: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    precio_unitario: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    subtotal: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  })),
+  financiero: PropTypes.shape({
+    monto_servicio: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    descuento: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    cuota_total: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    monto_pagado: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    monto_donacion: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    metodo_pago: PropTypes.string,
+  }),
+});
+
 // Loader
 function Skeleton({ rows = 4 }) {
   return (
     <div className="skeleton-wrap" role="status" aria-live="polite" aria-label="Cargando recibos">
-      {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="skeleton-row" style={{ animationDelay: `${i * 0.07}s` }} />
+      {SKELETON_IDS.slice(0, rows).map((id, idx) => (
+        <div key={id} className="skeleton-row" style={{ animationDelay: `${idx * 0.07}s` }} />
       ))}
     </div>
   );
 }
+
+Skeleton.propTypes = {
+  rows: PropTypes.number,
+};
 
 // Método de pago
 function PagoBadge({ metodo }) {
@@ -47,6 +77,10 @@ function PagoBadge({ metodo }) {
   const { label, cls } = map[metodo] ?? { label: metodo, cls: "" };
   return <span className={`badge ${cls}`}>{label}</span>;
 }
+
+PagoBadge.propTypes = {
+  metodo: PropTypes.string,
+};
 
 // Detalles
 function ReciboDetalle({ recibo, onClose }) {
@@ -68,9 +102,9 @@ function ReciboDetalle({ recibo, onClose }) {
       }
     };
 
-    window.addEventListener("keydown", onKeyDown);
+    globalThis.addEventListener("keydown", onKeyDown);
     return () => {
-      window.removeEventListener("keydown", onKeyDown);
+      globalThis.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = prevOverflow;
     };
   }, [recibo, onClose]);
@@ -187,6 +221,11 @@ function ReciboDetalle({ recibo, onClose }) {
   );
 }
 
+ReciboDetalle.propTypes = {
+  recibo: reciboShape,
+  onClose: PropTypes.func.isRequired,
+};
+
 // Tabla de recibos
 function ReciboRow({ recibo, onVerDetalle, mostrarFecha = false, index = 0 }) {
   return (
@@ -223,6 +262,13 @@ function ReciboRow({ recibo, onVerDetalle, mostrarFecha = false, index = 0 }) {
   );
 }
 
+ReciboRow.propTypes = {
+  recibo: reciboShape.isRequired,
+  onVerDetalle: PropTypes.func.isRequired,
+  mostrarFecha: PropTypes.bool,
+  index: PropTypes.number,
+};
+
 // Resumen
 function ResumenCard({ label, value, sub, index = 0 }) {
   return (
@@ -235,6 +281,13 @@ function ResumenCard({ label, value, sub, index = 0 }) {
     </div>
   );
 }
+
+ResumenCard.propTypes = {
+  label: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  sub: PropTypes.string,
+  index: PropTypes.number,
+};
 
 // Tabla de recibos
 function TablaRecibos({
@@ -284,6 +337,17 @@ function TablaRecibos({
     </div>
   );
 }
+
+TablaRecibos.propTypes = {
+  recibos: PropTypes.arrayOf(reciboShape).isRequired,
+  loading: PropTypes.bool,
+  error: PropTypes.string,
+  onVerDetalle: PropTypes.func.isRequired,
+  mostrarFecha: PropTypes.bool,
+  emptyMsg: PropTypes.string,
+  caption: PropTypes.string,
+  animationKey: PropTypes.string,
+};
 
 // Página principal
 export default function Recibos() {
