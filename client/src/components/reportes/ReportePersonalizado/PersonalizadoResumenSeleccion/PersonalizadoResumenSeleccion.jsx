@@ -1,6 +1,7 @@
+import PropTypes from "prop-types";
 import "./PersonalizadoResumenSeleccion.css";
 
-export default function PersonalizadoResumenSeleccion({
+function PersonalizadoResumenSeleccion({
   rangoTemporal,
   filtrosActivos,
   regionAnalisis,
@@ -46,3 +47,13 @@ export default function PersonalizadoResumenSeleccion({
     </section>
   );
 }
+
+PersonalizadoResumenSeleccion.propTypes = {
+  rangoTemporal: PropTypes.node,
+  filtrosActivos: PropTypes.node,
+  regionAnalisis: PropTypes.node,
+  mostrarConfigFiltros: PropTypes.bool,
+  onGenerarReporte: PropTypes.func,
+};
+
+export default PersonalizadoResumenSeleccion;

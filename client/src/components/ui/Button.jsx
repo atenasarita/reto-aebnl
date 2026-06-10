@@ -1,4 +1,4 @@
-import React from 'react'
+import PropTypes from 'prop-types'
 import './styles/Button.css'
 
 function Button({
@@ -22,6 +22,16 @@ function Button({
       {iconRight && <span className="simple-btn__icon simple-btn__icon--right">{iconRight}</span>}
     </button>
   )
+}
+
+Button.propTypes = {
+  children: PropTypes.node,
+  onClick: PropTypes.func,
+  className: PropTypes.string,
+  type: PropTypes.string,
+  disabled: PropTypes.bool,
+  iconLeft: PropTypes.node,
+  iconRight: PropTypes.node,
 }
 
 export default Button

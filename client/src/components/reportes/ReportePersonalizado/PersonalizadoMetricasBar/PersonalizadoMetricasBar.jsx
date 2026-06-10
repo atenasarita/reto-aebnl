@@ -1,7 +1,8 @@
+import PropTypes from "prop-types";
 import { METRICA_OPTIONS } from "../reportePersonalizadoConstants";
 import "./PersonalizadoMetricasBar.css";
 
-export default function PersonalizadoMetricasBar({ metricas, onToggleMetrica, className = "" }) {
+function PersonalizadoMetricasBar({ metricas, onToggleMetrica, className = "" }) {
   return (
     <div
       className={`reporte-personalizado-metrics-bar ${className}`.trim()}
@@ -26,3 +27,11 @@ export default function PersonalizadoMetricasBar({ metricas, onToggleMetrica, cl
     </div>
   );
 }
+
+PersonalizadoMetricasBar.propTypes = {
+  metricas: PropTypes.instanceOf(Set).isRequired,
+  onToggleMetrica: PropTypes.func.isRequired,
+  className: PropTypes.string,
+};
+
+export default PersonalizadoMetricasBar;
