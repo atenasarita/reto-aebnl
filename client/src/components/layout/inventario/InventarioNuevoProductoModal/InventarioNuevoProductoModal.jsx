@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { useEffect, useMemo, useState } from 'react'
 import InventarioModalShell from '../InventarioModalShell/InventarioModalShell'
 import {
@@ -16,7 +17,7 @@ const initialForm = {
   cantidad: '0',
 }
 
-export default function InventarioNuevoProductoModal({
+function InventarioNuevoProductoModal({
   open,
   onClose,
   onExito,
@@ -213,3 +214,12 @@ export default function InventarioNuevoProductoModal({
     </InventarioModalShell>
   )
 }
+
+InventarioNuevoProductoModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onExito: PropTypes.func,
+  itemsInventario: PropTypes.array,
+}
+
+export default InventarioNuevoProductoModal

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { useEffect, useState, useRef } from 'react'
 import InventarioModalShell from '../../inventario/InventarioModalShell/InventarioModalShell.jsx'
 
@@ -34,7 +35,7 @@ function esSimilar(a, b) {
   return levenshtein(al, bl) <= 2
 }
 
-export default function ServiciosNuevoServicioModal({
+function ServiciosNuevoServicioModal({
   open,
   onClose,
   onExito,
@@ -195,8 +196,7 @@ export default function ServiciosNuevoServicioModal({
                   }}
                 >
                   {sugerenciaNombre}
-                </button>
-                ?
+                </button>{'?'}
               </p>
             )}
           </label>
@@ -259,8 +259,7 @@ export default function ServiciosNuevoServicioModal({
                   }}
                 >
                   {sugerenciaNuevaCat}
-                </button>
-                ?
+                </button>{'?'}
               </p>
             )}
 
@@ -308,3 +307,16 @@ export default function ServiciosNuevoServicioModal({
     </InventarioModalShell>
   )
 }
+
+ServiciosNuevoServicioModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onExito: PropTypes.func,
+  serviciosExistentes: PropTypes.arrayOf(PropTypes.shape({
+    nombre: PropTypes.string,
+  })),
+  categorias: PropTypes.arrayOf(PropTypes.string),
+  onNuevaCategoria: PropTypes.func,
+}
+
+export default ServiciosNuevoServicioModal

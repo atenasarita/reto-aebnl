@@ -282,6 +282,7 @@ export default function Donaciones() {
                 <div
                   className="recibos-tabs recibos-tabs--two"
                   role="tablist"
+                  tabIndex={0}
                   onKeyDown={handleTabKeyDown}
                 >
                   <button

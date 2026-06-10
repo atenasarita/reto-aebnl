@@ -67,8 +67,11 @@ export default function StepBusqueda({
                 return (
                   <div
                     key={b.folio}
+                    role="button"
+                    tabIndex={0}
                     className={`resultRow ${activo ? "resultRowActive" : ""}`}
                     onClick={() => { setBeneficiarioSeleccionado(b.folio); setCitaSeleccionada(null); }}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setBeneficiarioSeleccionado(b.folio); setCitaSeleccionada(null); } }}
                   >
                     <div className='avatarCircle'>
                       <User size={16} color="#1e3b8a" />
@@ -98,7 +101,10 @@ export default function StepBusqueda({
             CITAS_HOY.map((cita) => (
             <div
               key={cita.id}
+              role="button"
+              tabIndex={0}
               onClick={() => setCitaSeleccionada(cita.id)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setCitaSeleccionada(cita.id); } }}
               className={`resultRow ${citaSeleccionada === cita.id ? "resultRowActive" : ""}`}
             >
               <div className='avatarCircle' style={{ background: "#fef3c7" }}>

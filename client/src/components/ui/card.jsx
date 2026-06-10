@@ -9,8 +9,8 @@ export function CardHeader({ className, ...props }) {
   return <header className={cn("shadcn-card-header", className)} {...props} />;
 }
 
-export function CardTitle({ className, ...props }) {
-  return <h3 className={cn("shadcn-card-title", className)} {...props} />;
+export function CardTitle({ className, children, ...props }) {
+  return <h3 className={cn("shadcn-card-title", className)} {...props}>{children}</h3>;
 }
 
 export function CardDescription({ className, ...props }) {

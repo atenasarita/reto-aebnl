@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import styles from './InventarioPaginacion.module.css'
 
@@ -67,6 +68,13 @@ function InventarioPaginacion({
       </div>
     </footer>
   )
+}
+
+InventarioPaginacion.propTypes = {
+  paginaActual: PropTypes.number.isRequired,
+  totalItems: PropTypes.number.isRequired,
+  itemsPorPagina: PropTypes.number.isRequired,
+  onCambiarPagina: PropTypes.func.isRequired,
 }
 
 export default InventarioPaginacion

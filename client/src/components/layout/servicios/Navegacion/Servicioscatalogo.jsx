@@ -17,7 +17,7 @@ CategoriaChip.propTypes = {
   categoria: PropTypes.string,
 }
 
-export default function ServiciosCatalogo({ tipos = [], loading, onNuevoServicio }) {
+function ServiciosCatalogo({ tipos = [], loading, onNuevoServicio }) {
   const [busqueda, setBusqueda] = useState('')
   const [categoriaFiltro, setCategoriaFiltro] = useState('')
 
@@ -117,3 +117,16 @@ export default function ServiciosCatalogo({ tipos = [], loading, onNuevoServicio
     </div>
   )
 }
+
+ServiciosCatalogo.propTypes = {
+  tipos: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    nombre: PropTypes.string,
+    categoria: PropTypes.string,
+    precio: PropTypes.number,
+  })),
+  loading: PropTypes.bool,
+  onNuevoServicio: PropTypes.func,
+}
+
+export default ServiciosCatalogo
