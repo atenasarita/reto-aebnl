@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useState, useEffect, useCallback } from "react";
 import {
   User, Phone, Mail, Clock, ClipboardList,
@@ -47,6 +48,13 @@ function Field({ label, required, hint, children }) {
   );
 }
 
+Field.propTypes = {
+  label: PropTypes.string,
+  required: PropTypes.bool,
+  hint: PropTypes.string,
+  children: PropTypes.node,
+};
+
 function InfoChip({ icon, label, value }) {
   return (
     <div className="cp-chip">
@@ -58,6 +66,12 @@ function InfoChip({ icon, label, value }) {
     </div>
   );
 }
+
+InfoChip.propTypes = {
+  icon: PropTypes.node,
+  label: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
 
 // Buscador de beneficiario
 function BuscadorBeneficiario({ value, onChange }) {
@@ -130,15 +144,17 @@ function BuscadorBeneficiario({ value, onChange }) {
       {abierto && (
         <ul className="cp-dropdown">
           {resultados.map((b) => (
-            <li
-              key={b.id_beneficiario}
-              className="cp-dropdown-item"
-              onClick={() => seleccionar(b)}
-            >
-              <div className="cp-dropdown-nombre">
-                {b.nombres} {b.apellido_paterno}
-              </div>
-              <div className="cp-dropdown-folio">{b.folio}</div>
+            <li key={b.id_beneficiario}>
+              <button
+                type="button"
+                className="cp-dropdown-item"
+                onClick={() => seleccionar(b)}
+              >
+                <div className="cp-dropdown-nombre">
+                  {b.nombres} {b.apellido_paterno}
+                </div>
+                <div className="cp-dropdown-folio">{b.folio}</div>
+              </button>
             </li>
           ))}
         </ul>
@@ -146,6 +162,18 @@ function BuscadorBeneficiario({ value, onChange }) {
     </div>
   );
 }
+
+BuscadorBeneficiario.propTypes = {
+  value: PropTypes.shape({
+    id_beneficiario: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    nombres: PropTypes.string,
+    apellido_paterno: PropTypes.string,
+    folio: PropTypes.string,
+    telefono: PropTypes.string,
+    email: PropTypes.string,
+  }),
+  onChange: PropTypes.func.isRequired,
+};
 
 // Estado
 function EstadoPicker({ value, onChange }) {
@@ -164,6 +192,29 @@ function EstadoPicker({ value, onChange }) {
     </div>
   );
 }
+
+EstadoPicker.propTypes = {
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+};
+
+const citaShape = PropTypes.shape({
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  startStr: PropTypes.string,
+  start: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
+  title: PropTypes.string,
+  extendedProps: PropTypes.shape({
+    id_especialista: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    idServicio: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    estatus: PropTypes.string,
+    notas: PropTypes.string,
+    idBeneficiario: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    beneficiario: PropTypes.string,
+    apellidoPaterno: PropTypes.string,
+    telefonoBeneficiario: PropTypes.string,
+    emailBeneficiario: PropTypes.string,
+  }),
+});
 
 // Formulario
 function CitasForm({ onClose, onSuccess, cita, modo }) {
@@ -457,8 +508,15 @@ function CitasForm({ onClose, onSuccess, cita, modo }) {
   );
 }
 
+CitasForm.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  onSuccess: PropTypes.func,
+  cita: citaShape,
+  modo: PropTypes.string,
+};
+
 // Componente principal del popup
-export default function CitasPop({ open, onClose, onSuccess, cita = null, modo = "crear" }) {
+function CitasPop({ open, onClose, onSuccess, cita = null, modo = "crear" }) {
   useEffect(() => {
     if (!open) return;
     const handler = (e) => { if (e.key === "Escape") onClose(); };
@@ -504,3 +562,13 @@ export default function CitasPop({ open, onClose, onSuccess, cita = null, modo =
     </div>
   );
 }
+
+CitasPop.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSuccess: PropTypes.func,
+  cita: citaShape,
+  modo: PropTypes.string,
+};
+
+export default CitasPop;
