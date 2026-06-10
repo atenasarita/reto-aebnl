@@ -1,10 +1,11 @@
+import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 import InventarioModalShell from '../InventarioModalShell/InventarioModalShell'
 import { registrarMovimientoInventario } from '../../../../services/inventarioService'
 import { propsFormularioValidacionEs } from '../../../../utils/validacionFormularioEs'
 import '../../../../pages/styles/Inventario.css'
 
-export default function InventarioMovimientoModal({
+function InventarioMovimientoModal({
   open,
   onClose,
   onExito,
@@ -79,9 +80,9 @@ export default function InventarioMovimientoModal({
       subtitle="Entrada o salida de mercancía; el stock se actualiza al guardar."
     >
       {loading && (
-        <p className="inventario-estado" role="status">
+        <output className="inventario-estado">
           Cargando productos…
-        </p>
+        </output>
       )}
       {loadError && !loading && (
         <p className="inventario-estado inventario-estado--error" role="alert">
@@ -180,3 +181,20 @@ export default function InventarioMovimientoModal({
     </InventarioModalShell>
   )
 }
+
+InventarioMovimientoModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onExito: PropTypes.func,
+  items: PropTypes.arrayOf(PropTypes.shape({
+    ID_INVENTARIO: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    CLAVE: PropTypes.string,
+    NOMBRE: PropTypes.string,
+    CANTIDAD: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    UNIDAD_MEDIDA: PropTypes.string,
+  })).isRequired,
+  loading: PropTypes.bool,
+  loadError: PropTypes.string,
+}
+
+export default InventarioMovimientoModal

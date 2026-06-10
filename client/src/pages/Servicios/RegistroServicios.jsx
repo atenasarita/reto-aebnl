@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -24,6 +25,12 @@ import StepBusqueda from "../../components/layout/servicios/Registro/StepBusqued
 import StepDetalles from "../../components/layout/servicios/Registro/StepDetalles.jsx";
 import StepInsumos from "../../components/layout/servicios/Registro/StepInsumos.jsx";
 import StepFinanzas from "../../components/layout/servicios/Registro/StepFinanzas.jsx";
+
+const getSaldoLabel = (saldo) => {
+  if (saldo > 0) return "Saldo pendiente:";
+  if (saldo < 0) return "Cambio:";
+  return "Saldo:";
+};
 
 function PantallaExito({ offline, onNuevo, onHistorial }) {
   return (
@@ -65,6 +72,12 @@ function PantallaExito({ offline, onNuevo, onHistorial }) {
     </div>
   );
 }
+
+PantallaExito.propTypes = {
+  offline: PropTypes.bool,
+  onNuevo: PropTypes.func.isRequired,
+  onHistorial: PropTypes.func.isRequired,
+};
 
 const PASOS = [
   { id: 1, tab: "Búsqueda", Icon: Search },
@@ -527,13 +540,7 @@ export default function RegistroServicios() {
               </div>
 
               <div className='totalesRow'>
-                <span>
-                  {saldoRestante > 0
-                    ? "Saldo pendiente:"
-                    : saldoRestante < 0
-                    ? "Cambio:"
-                    : "Saldo:"}
-                </span>
+                <span>{getSaldoLabel(saldoRestante)}</span>
 
                 <strong
                   className='totalesSaldo'

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 import InventarioModalShell from '../InventarioModalShell/InventarioModalShell'
 import {
@@ -20,13 +21,13 @@ function formDesdeProducto(producto) {
   return {
     clave: producto.CLAVE ?? '',
     nombre: producto.NOMBRE ?? '',
-    id_categoria: producto.ID_CATEGORIA != null ? String(producto.ID_CATEGORIA) : '',
+    id_categoria: String(producto.ID_CATEGORIA ?? ''),
     unidad_medida: producto.UNIDAD_MEDIDA ?? '',
-    precio: producto.PRECIO != null ? String(producto.PRECIO) : '',
+    precio: String(producto.PRECIO ?? ''),
   }
 }
 
-export default function InventarioEditarProductoModal({
+function InventarioEditarProductoModal({
   open,
   producto,
   onClose,
@@ -214,3 +215,20 @@ export default function InventarioEditarProductoModal({
     </InventarioModalShell>
   )
 }
+
+InventarioEditarProductoModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  producto: PropTypes.shape({
+    ID_INVENTARIO: PropTypes.number,
+    CLAVE: PropTypes.string,
+    NOMBRE: PropTypes.string,
+    ID_CATEGORIA: PropTypes.number,
+    UNIDAD_MEDIDA: PropTypes.string,
+    PRECIO: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    CANTIDAD: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  }),
+  onClose: PropTypes.func.isRequired,
+  onExito: PropTypes.func,
+}
+
+export default InventarioEditarProductoModal

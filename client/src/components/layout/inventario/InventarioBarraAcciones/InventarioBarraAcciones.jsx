@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { FiPlus, FiSearch } from 'react-icons/fi'
 import SearchBar from '../../../ui/SearchBar'
 import Dropdown from '../../../ui/Dropdown'
@@ -64,6 +65,20 @@ function InventarioBarraAcciones({
       </div>
     </div>
   )
+}
+
+InventarioBarraAcciones.propTypes = {
+  onBusqueda: PropTypes.func,
+  categoria: PropTypes.string,
+  opcionesCategoria: PropTypes.arrayOf(PropTypes.shape({
+    value: PropTypes.string,
+    label: PropTypes.string,
+  })),
+  onCategoriaChange: PropTypes.func,
+  ordenCantidad: PropTypes.string,
+  onOrdenCantidadChange: PropTypes.func,
+  onNuevoProducto: PropTypes.func,
+  onRegistrarMovimiento: PropTypes.func,
 }
 
 export default InventarioBarraAcciones
