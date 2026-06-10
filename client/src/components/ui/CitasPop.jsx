@@ -474,10 +474,16 @@ export default function CitasPop({ open, onClose, onSuccess, cita = null, modo =
   if (!open) return null;
 
   return (
-    <div className="cp-overlay" onClick={onClose}>
+    <div
+      className="cp-overlay"
+      role="button"
+      tabIndex={0}
+      aria-label="Cerrar modal"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClose(); } }}
+    >
       <div
         className="cp-modal"
-        onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-label="Nueva cita"
