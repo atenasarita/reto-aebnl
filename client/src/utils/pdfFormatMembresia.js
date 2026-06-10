@@ -42,7 +42,7 @@ export const downloadBeneficiarioPdf = (data, id) => {
   const nombreCompleto = `${nombres || ''} ${apellido_paterno || ''} ${apellido_materno || ''}`.trim();
   let direccionCompleta = `${domicilio_calle || ''}, ${domicilio_ciudad || ''}, ${domicilio_estado || ''}`;
   if (domicilio_cp) direccionCompleta += `, CP ${domicilio_cp}`;
-  direccionCompleta = direccionCompleta.replace(/^[,\s]+|[,\s]+$/g, '').replace(/,\s*,/g, ',');
+  direccionCompleta = direccionCompleta.replace(/^[,\s]+/, '').replace(/[,\s]+$/, '').replace(/,\s*,/g, ',');
 
   const diagnostico = tipo_espina && tipo_espina.length > 0 ? tipo_espina.map(e => e.nombre).join(', ') : '';
   const valvulaTexto = (valvula === 1 || valvula === '1' || valvula === true) ? 'SI' : (valvula === 0 || valvula === '0' || valvula === false) ? 'NO' : '';
