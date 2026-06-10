@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Send } from "lucide-react";
 import "../styles/Preregistro.css";
@@ -45,10 +44,6 @@ function StepIndicator({ currentStep }) {
   );
 }
 
-StepIndicator.propTypes = {
-  currentStep: PropTypes.number.isRequired,
-};
-
 function Field({ label, required, children, className = "" }) {
   return (
     <div className={`preregistro-field ${className}`.trim()}>
@@ -61,13 +56,6 @@ function Field({ label, required, children, className = "" }) {
   );
 }
 
-Field.propTypes = {
-  label: PropTypes.node,
-  required: PropTypes.bool,
-  children: PropTypes.node,
-  className: PropTypes.string,
-};
-
 function StepIntro({ title, subtitle }) {
   return (
     <div className="preregistro-form-intro">
@@ -76,11 +64,6 @@ function StepIntro({ title, subtitle }) {
     </div>
   );
 }
-
-StepIntro.propTypes = {
-  title: PropTypes.string,
-  subtitle: PropTypes.string,
-};
 
 function StepIdentidad({ savedData, onComplete }) {
   const d = savedData || {};
@@ -182,16 +165,6 @@ function StepIdentidad({ savedData, onComplete }) {
   );
 }
 
-StepIdentidad.propTypes = {
-  savedData: PropTypes.shape({
-    nombre: PropTypes.string,
-    segundoNombre: PropTypes.string,
-    paterno: PropTypes.string,
-    materno: PropTypes.string,
-  }),
-  onComplete: PropTypes.func.isRequired,
-};
-
 function StepDemografia({ savedData, onComplete, onBack }) {
   const d = savedData || {};
   const [fecha, setFecha] = useState(d.fecha || "");
@@ -271,16 +244,6 @@ function StepDemografia({ savedData, onComplete, onBack }) {
     </form>
   );
 }
-
-StepDemografia.propTypes = {
-  savedData: PropTypes.shape({
-    fecha: PropTypes.string,
-    genero: PropTypes.string,
-    curp: PropTypes.string,
-  }),
-  onComplete: PropTypes.func.isRequired,
-  onBack: PropTypes.func.isRequired,
-};
 
 function StepDiagnostico({ savedData, onComplete, onBack, isSubmitting, submitError }) {
   const d = savedData || {};
@@ -392,17 +355,6 @@ function StepDiagnostico({ savedData, onComplete, onBack, isSubmitting, submitEr
   );
 }
 
-StepDiagnostico.propTypes = {
-  savedData: PropTypes.shape({
-    espinaBifida: PropTypes.arrayOf(PropTypes.number),
-    otrosTexto: PropTypes.string,
-  }),
-  onComplete: PropTypes.func.isRequired,
-  onBack: PropTypes.func.isRequired,
-  isSubmitting: PropTypes.bool,
-  submitError: PropTypes.string,
-};
-
 function SuccessScreen({ data, onReset }) {
   const nombreCompleto = [
     data.identidad?.nombre,
@@ -439,20 +391,9 @@ function SuccessScreen({ data, onReset }) {
   );
 }
 
-SuccessScreen.propTypes = {
-  data: PropTypes.shape({
-    identidad: PropTypes.shape({
-      nombre: PropTypes.string,
-      segundoNombre: PropTypes.string,
-      paterno: PropTypes.string,
-      materno: PropTypes.string,
-    }),
-  }),
-  onReset: PropTypes.func.isRequired,
-};
-
 export default function Preregistro() {
   const [step, setStep] = useState(0);
+  const [completed, setCompleted] = useState([]);
   const [formData, setFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -460,6 +401,7 @@ export default function Preregistro() {
 
   const advance = (stepData, key) => {
     setFormData((prev) => ({ ...prev, [key]: stepData }));
+    setCompleted((prev) => [...new Set([...prev, step])]);
     setStep((s) => s + 1);
   };
 
@@ -510,6 +452,7 @@ export default function Preregistro() {
         throw new Error(err.message || `Error ${res.status}`);
       }
 
+      setCompleted((prev) => [...new Set([...prev, 2])]);
       setIsDone(true);
     } catch (err) {
       setSubmitError(
@@ -520,37 +463,32 @@ export default function Preregistro() {
     }
   };
 
-  const renderStep = () => {
-    if (isDone) return <SuccessScreen data={formData} onReset={resetForm} />;
-    if (step === 0) return (
-      <StepIdentidad
-        savedData={formData.identidad}
-        onComplete={(d) => advance(d, "identidad")}
-      />
-    );
-    if (step === 1) return (
-      <StepDemografia
-        savedData={formData.demografia}
-        onComplete={(d) => advance(d, "demografia")}
-        onBack={back}
-      />
-    );
-    return (
-      <StepDiagnostico
-        savedData={formData.diagnostico}
-        onComplete={handleFinalSubmit}
-        onBack={back}
-        isSubmitting={isSubmitting}
-        submitError={submitError}
-      />
-    );
-  };
-
   const formBody = (
     <>
       {!isDone && <StepIndicator currentStep={step} />}
       <div className="preregistro-form">
-        {renderStep()}
+        {isDone ? (
+          <SuccessScreen data={formData} onReset={resetForm} />
+        ) : step === 0 ? (
+          <StepIdentidad
+            savedData={formData.identidad}
+            onComplete={(d) => advance(d, "identidad")}
+          />
+        ) : step === 1 ? (
+          <StepDemografia
+            savedData={formData.demografia}
+            onComplete={(d) => advance(d, "demografia")}
+            onBack={back}
+          />
+        ) : (
+          <StepDiagnostico
+            savedData={formData.diagnostico}
+            onComplete={handleFinalSubmit}
+            onBack={back}
+            isSubmitting={isSubmitting}
+            submitError={submitError}
+          />
+        )}
       </div>
     </>
   );
