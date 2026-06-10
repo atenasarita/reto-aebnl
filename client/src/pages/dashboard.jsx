@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../utils/config";
@@ -90,6 +91,15 @@ function ActionCard({ title, subtitle, icon, variant, fullRow, to }) {
     </button>
   );
 }
+
+ActionCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string,
+  icon: PropTypes.elementType.isRequired,
+  variant: PropTypes.string,
+  fullRow: PropTypes.bool,
+  to: PropTypes.string,
+};
 
 function formatHora12(hora) {
   if (!hora) return "";
@@ -226,6 +236,24 @@ function AgendaCard({ agendaItems, onEditCita }) {
   );
 }
 
+AgendaCard.propTypes = {
+  agendaItems: PropTypes.arrayOf(PropTypes.shape({
+    id_cita: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    fecha: PropTypes.string,
+    hora: PropTypes.string,
+    fotografia: PropTypes.string,
+    nombre_completo: PropTypes.string,
+    servicio_nombre: PropTypes.string,
+    especialista_nombre: PropTypes.string,
+    folio: PropTypes.string,
+    estatus: PropTypes.string,
+    motivo: PropTypes.string,
+    notas: PropTypes.string,
+  })).isRequired,
+  onEditCita: PropTypes.func.isRequired,
+};
+
 function PreregistroCard({ preregistroItems, onAceptar, onRechazar }) {
   const [openId, setOpenId] = useState(null);
 
@@ -321,6 +349,19 @@ function PreregistroCard({ preregistroItems, onAceptar, onRechazar }) {
   );
 }
 
+PreregistroCard.propTypes = {
+  preregistroItems: PropTypes.arrayOf(PropTypes.shape({
+    id_preregistro: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    nombre_completo: PropTypes.string,
+    estado: PropTypes.string,
+    curp: PropTypes.string,
+    genero: PropTypes.string,
+    fecha_nacimiento: PropTypes.string,
+  })).isRequired,
+  onAceptar: PropTypes.func.isRequired,
+  onRechazar: PropTypes.func.isRequired,
+};
+
 function PerfilIncompletoModal({ open, onClose, onEditarAhora, nombre }) {
   if (!open) return null;
 
@@ -356,6 +397,13 @@ function PerfilIncompletoModal({ open, onClose, onEditarAhora, nombre }) {
     </div>
   );
 }
+
+PerfilIncompletoModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onEditarAhora: PropTypes.func.isRequired,
+  nombre: PropTypes.string,
+};
 
 export default function Dashboard() {
   const navigate = useNavigate();
