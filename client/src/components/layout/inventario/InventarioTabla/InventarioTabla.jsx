@@ -26,7 +26,15 @@ function InventarioTabla({
   return (
     <section className={styles.envoltorio} aria-label="Tabla de inventario">
       <div className={styles.marco}>
-        <table>
+        <table className={styles.tabla}>
+          <colgroup>
+            <col className={styles.colCategoria} />
+            <col className={styles.colNombre} />
+            <col className={styles.colClave} />
+            <col className={styles.colCantidad} />
+            <col className={styles.colPrecio} />
+            <col className={styles.colAcciones} />
+          </colgroup>
           <thead className={styles.cabecera}>
             <tr className={styles.filaCabecera}>
               {COLUMNAS.map((col) => (
