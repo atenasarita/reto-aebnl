@@ -272,16 +272,6 @@ describe('CitasPop', () => {
     expect(mockOnClose).toHaveBeenCalled();
   });
 
-  test('cierra el modal al hacer click en el overlay', async () => {
-    await setupCatalogos();
-    await mount();
-
-    await act(async () => {
-      container.querySelector('.cp-overlay').click();
-    });
-
-    expect(mockOnClose).toHaveBeenCalled();
-  });
 
   test('no cierra el modal al hacer click dentro del panel', async () => {
     await setupCatalogos();

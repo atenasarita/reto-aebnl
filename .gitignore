@@ -13,3 +13,4 @@ node_modules/
 .clj-kondo/
 .vscode/
 coverage/
+node_modules
