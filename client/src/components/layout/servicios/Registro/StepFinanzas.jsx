@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import Dropdown from '../../../ui/Dropdown'
-import SearchBar from '../../../ui/SearchBar' 
+import SearchBar from '../../../ui/SearchBar'
 import "./RegistroSteps.css";
 
 const METODOS_PAGO = [
@@ -9,7 +10,7 @@ const METODOS_PAGO = [
   { label: "Cheque", value: "cheque" },
 ];
 
-export default function StepFinanzas({
+function StepFinanzas({
   total,
   totalConDescuento,
   saldo,
@@ -33,6 +34,18 @@ export default function StepFinanzas({
   const pagadoNum = Number(montoPagado) || 0;
   const donacionNum = Number(montoDonacion) || 0;
   const saldoGlobalNum = Number(saldoGlobal) || 0;
+
+  const saldoResumenClass = saldo > 0
+    ? 'finanzasSaldoPendiente'
+    : saldo < 0
+    ? 'finanzasSaldoFavor'
+    : 'finanzasSaldoCero';
+
+  const saldoResumenLabel = saldo > 0
+    ? 'Saldo pendiente'
+    : saldo < 0
+    ? 'Cambio'
+    : 'Saldo';
 
   const fondoActivo = (donadores ?? []).find(
     (d) => String(d.id_fondo) === String(fondoSeleccionado)
@@ -61,7 +74,7 @@ export default function StepFinanzas({
     <div className='panel'>
 
       <div className='field' style={{ marginBottom: 20, padding: '12px 16px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
-        <label className='fieldLabel' style={{ marginBottom: 4 }}>Saldo total en fondos de donación</label>
+        <p className='fieldLabel' style={{ marginBottom: 4 }}>Saldo total en fondos de donación</p>
         <span style={{ fontSize: 20, fontWeight: 700, color: '#166534' }}>
           ${saldoGlobalNum.toFixed(2)}
         </span>
@@ -70,8 +83,9 @@ export default function StepFinanzas({
       <div className='field' style={{ marginBottom: 20 }}>
 
         <div className='field' style={{ maxWidth: 220, marginBottom: 20 }}>
-          <label className='fieldLabel'>Aporte de la Asociación</label>
+          <label htmlFor="fin-descuento" className='fieldLabel'>Aporte de la Asociación</label>
           <SearchBar
+            id="fin-descuento"
             placeholder="0.00"
             value={String(descuento ?? '')}
             onChange={(val) => setDescuento(val)}
@@ -80,9 +94,10 @@ export default function StepFinanzas({
           />
         </div>
 
-      <label className='fieldLabel'>Aportación de la familia</label>
+      <label htmlFor="fin-monto-pagado" className='fieldLabel'>Aportación de la familia</label>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <SearchBar
+            id="fin-monto-pagado"
             placeholder="0.00"
             value={String(montoPagado ?? '')}
             onChange={(val) => setMontoPagado(val)}
@@ -103,8 +118,9 @@ export default function StepFinanzas({
       </div>
 
       <div className='field' style={{ marginBottom: 20 }}>
-        <label className='fieldLabel'>Fondo de donación a utilizar</label>
+        <label htmlFor="fin-fondo" className='fieldLabel'>Fondo de donación a utilizar</label>
         <Dropdown
+          id="fin-fondo"
           options={fondoOptions}
           value={fondoSeleccionado}
           onChange={setFondoSeleccionado}
@@ -118,8 +134,9 @@ export default function StepFinanzas({
       </div>
 
       <div className='field' style={{ marginBottom: 20 }}>
-        <label className='fieldLabel'>Monto cubierto con donación</label>
+        <label htmlFor="fin-monto-donacion" className='fieldLabel'>Monto cubierto con donación</label>
         <SearchBar
+          id="fin-monto-donacion"
           placeholder="0.00"
           value={String(montoDonacion ?? '')}
           onChange={(val) => setMontoDonacion(val)}
@@ -140,8 +157,9 @@ export default function StepFinanzas({
       </div>
 
       <div className='field' style={{ maxWidth: 220, marginBottom: 20 }}>
-        <label className='fieldLabel'>Método de pago (aportación familiar)</label>
+        <label htmlFor="fin-metodo-pago" className='fieldLabel'>Método de pago (aportación familiar)</label>
         <Dropdown
+          id="fin-metodo-pago"
           options={metodoOptions}
           value={metodoPago}
           onChange={setMetodoPago}
@@ -192,22 +210,8 @@ export default function StepFinanzas({
             </span>
           </div>
 
-          <div
-            className={`finanzasResumenRow ${
-              saldo > 0
-                ? 'finanzasSaldoPendiente'
-                : saldo < 0
-                ? 'finanzasSaldoFavor'
-                : 'finanzasSaldoCero'
-            }`}
-          >
-            <span>
-              {saldo > 0
-                ? "Saldo pendiente"
-                : saldo < 0
-                ? "Cambio"
-                : "Saldo"}
-            </span>
+          <div className={`finanzasResumenRow ${saldoResumenClass}`}>
+            <span>{saldoResumenLabel}</span>
 
             <span>${Math.abs(saldo).toFixed(2)}</span>
           </div>
@@ -217,3 +221,30 @@ export default function StepFinanzas({
     </div>
   );
 }
+
+StepFinanzas.propTypes = {
+  total: PropTypes.number.isRequired,
+  totalConDescuento: PropTypes.number.isRequired,
+  saldo: PropTypes.number.isRequired,
+  saldoGlobal: PropTypes.number,
+  donadores: PropTypes.arrayOf(PropTypes.shape({
+    id_fondo: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    nombre: PropTypes.string,
+    saldo: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    tipo_origen: PropTypes.string,
+  })),
+  fondoSeleccionado: PropTypes.string,
+  setFondoSeleccionado: PropTypes.func.isRequired,
+  metodoPago: PropTypes.string,
+  setMetodoPago: PropTypes.func.isRequired,
+  montoPagado: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  setMontoPagado: PropTypes.func.isRequired,
+  montoDonacion: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  setMontoDonacion: PropTypes.func.isRequired,
+  descuento: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  setDescuento: PropTypes.func.isRequired,
+  yaAporto: PropTypes.bool.isRequired,
+  setYaAporto: PropTypes.func.isRequired,
+};
+
+export default StepFinanzas;

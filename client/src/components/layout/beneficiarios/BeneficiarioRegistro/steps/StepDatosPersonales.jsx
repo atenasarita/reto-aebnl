@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { FaCalendar } from 'react-icons/fa';
 import { estadosMexico } from '../../../../../utils/beneficiarioConstants';
 import { todayDate } from '../../../../../utils/dateTime';
@@ -21,8 +22,9 @@ function StepDatosPersonales({
 
         <div className="row">
           <div className="field-group full">
-            <label>Correo Electronico</label>
+            <label htmlFor="dp-email">Correo Electronico</label>
             <input
+              id="dp-email"
               type="email"
               name="email"
               value={formData.email}
@@ -32,8 +34,9 @@ function StepDatosPersonales({
           </div>
 
           <div className="field-group">
-            <label>Numero de Télefono</label>
+            <label htmlFor="dp-telefono">Numero de Télefono</label>
             <input
+              id="dp-telefono"
               type="text"
               name="telefono"
               value={formData.telefono}
@@ -47,8 +50,9 @@ function StepDatosPersonales({
         </div>
 
           <div className="field-group full">
-            <label>Nombres</label>
+            <label htmlFor="dp-nombres">Nombres</label>
             <input
+              id="dp-nombres"
               type="text"
               name="nombres"
               value={formData.nombres}
@@ -60,8 +64,9 @@ function StepDatosPersonales({
 
         <div className="row">
           <div className="field-group">
-            <label>Apellido Paterno</label>
+            <label htmlFor="dp-apellido-paterno">Apellido Paterno</label>
             <input
+              id="dp-apellido-paterno"
               type="text"
               name="apellido_paterno"
               value={formData.apellido_paterno}
@@ -73,8 +78,9 @@ function StepDatosPersonales({
           </div>
 
           <div className="field-group">
-            <label>Apellido Materno</label>
+            <label htmlFor="dp-apellido-materno">Apellido Materno</label>
             <input
+              id="dp-apellido-materno"
               type="text"
               name="apellido_materno"
               value={formData.apellido_materno}
@@ -92,9 +98,10 @@ function StepDatosPersonales({
 
         <div className="row">
           <div className="field-group">
-            <label>Fecha de Nacimiento</label>
+            <label htmlFor="dp-fecha-nacimiento">Fecha de Nacimiento</label>
             <div className="input-with-icon">
               <input
+                id="dp-fecha-nacimiento"
                 ref={fechaNacimientoRef}
                 type="date"
                 name="fecha_nacimiento"
@@ -115,8 +122,9 @@ function StepDatosPersonales({
           </div>
 
           <div className="field-group">
-            <label>CURP</label>
+            <label htmlFor="dp-curp">CURP</label>
             <input
+              id="dp-curp"
               type="text"
               name="CURP"
               value={formData.CURP}
@@ -131,8 +139,8 @@ function StepDatosPersonales({
 
         <div className="row">
           <div className="field-group">
-            <label>Género</label>
-            <select name="genero" value={formData.genero} onChange={handleInputChange}>
+            <label htmlFor="dp-genero">Género</label>
+            <select id="dp-genero" name="genero" value={formData.genero} onChange={handleInputChange}>
               <option value="">Seleccionar género...</option>
               <option value="masculino">Masculino</option>
               <option value="femenino">Femenino</option>
@@ -144,8 +152,9 @@ function StepDatosPersonales({
           </div>
 
           <div className="field-group">
-            <label>Lugar de Nacimiento</label>
+            <label htmlFor="dp-estado-nacimiento">Lugar de Nacimiento</label>
             <select
+              id="dp-estado-nacimiento"
               name="estado_nacimiento"
               value={formData.estado_nacimiento}
               onChange={handleInputChange}
@@ -166,5 +175,35 @@ function StepDatosPersonales({
     </>
   );
 }
+
+StepDatosPersonales.propTypes = {
+  formData: PropTypes.shape({
+    email: PropTypes.string,
+    telefono: PropTypes.string,
+    nombres: PropTypes.string,
+    apellido_paterno: PropTypes.string,
+    apellido_materno: PropTypes.string,
+    CURP: PropTypes.string,
+    genero: PropTypes.string,
+    estado_nacimiento: PropTypes.string,
+  }).isRequired,
+  fieldErrors: PropTypes.shape({
+    email: PropTypes.string,
+    telefono: PropTypes.string,
+    nombres: PropTypes.string,
+    apellido_paterno: PropTypes.string,
+    apellido_materno: PropTypes.string,
+    CURP: PropTypes.string,
+    genero: PropTypes.string,
+    estado_nacimiento: PropTypes.string,
+    fecha_nacimiento: PropTypes.string,
+  }).isRequired,
+  fechaNacimiento: PropTypes.string.isRequired,
+  fechaNacimientoRef: PropTypes.shape({ current: PropTypes.any }).isRequired,
+  setFechaNacimiento: PropTypes.func.isRequired,
+  handleInputChange: PropTypes.func.isRequired,
+  handleFechaNacimientoChange: PropTypes.func.isRequired,
+  handleBlur: PropTypes.func.isRequired,
+};
 
 export default StepDatosPersonales;

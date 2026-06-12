@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { espinaBifidaOptions } from '../../../../../utils/espinaBifidaTypes';
 
 function StepInformacionMedica({
@@ -8,7 +9,7 @@ function StepInformacionMedica({
   handleTipoEspinasChange
 }) {
   return (
-    
+
     <div className="section-block">
       <h2>Información Médica</h2>
 
@@ -18,8 +19,8 @@ function StepInformacionMedica({
         </h3>
       </div>
 
-      <div className="field-group full">
-        <label>Tipo de Espina Bífida</label>
+      <fieldset className="field-group full">
+        <legend>Tipo de Espina Bífida</legend>
         <div className="checkbox-group">
           {espinaBifidaOptions.map(type => (
             <label
@@ -39,12 +40,13 @@ function StepInformacionMedica({
               <small className="field-error">{fieldErrors.tipo_espinas}</small>
             )}
         </div>
-      </div>
+      </fieldset>
 
       <div className="row">
         <div className="field-group full">
-          <label>Válvula</label>
+          <label htmlFor="im-valvula">Válvula</label>
           <select
+            id="im-valvula"
             name="valvula"
             value={String(formData.valvula)}
             onChange={handleInputChange}
@@ -55,8 +57,9 @@ function StepInformacionMedica({
         </div>
 
           <div className="field-group">
-          <label>Tipo Sanguíneo</label>
+          <label htmlFor="im-tipo-sanguineo">Tipo Sanguíneo</label>
           <select
+            id="im-tipo-sanguineo"
             name="tipo_sanguineo"
             value={formData.tipo_sanguineo}
             onChange={handleInputChange}
@@ -78,8 +81,9 @@ function StepInformacionMedica({
       </div>
 
        <div className="field-group full">
-          <label>Hospital</label>
+          <label htmlFor="im-hospital">Hospital</label>
           <input
+            id="im-hospital"
             type="text"
             name="hospital"
             value={formData.hospital}
@@ -91,16 +95,15 @@ function StepInformacionMedica({
         </div>
 
       <div className="field-group full">
-        <label>Alergias</label>
+        <label htmlFor="im-alergias">Alergias</label>
         <textarea
+          id="im-alergias"
           name="alergias"
           placeholder='Atopia, Rinitis alérgica, etc.'
           value={formData.alergias}
           onChange={handleInputChange}
         />
       </div>
-
-           
 
         <div style={{ marginTop: '2rem', marginBottom: '1rem' }}>
         <h3 style={{ fontSize: '1.1rem', color: '#1a3b5c', borderBottom: '1px solid #e0e0e0', paddingBottom: '0.5rem' }}>
@@ -110,8 +113,9 @@ function StepInformacionMedica({
 
       <div className="row">
         <div className="field-group">
-          <label>Nombre de Contacto de Emergencia</label>
+          <label htmlFor="im-contacto-nombre">Nombre de Contacto de Emergencia</label>
           <input
+            id="im-contacto-nombre"
             type="text"
             name="contacto_nombre"
             value={formData.contacto_nombre}
@@ -122,11 +126,10 @@ function StepInformacionMedica({
           )}
         </div>
 
-  
-
         <div className="field-group">
-          <label>Teléfono de Contacto de Emergencia</label>
+          <label htmlFor="im-contacto-telefono">Teléfono de Contacto de Emergencia</label>
           <input
+            id="im-contacto-telefono"
             type="text"
             name="contacto_telefono"
             value={formData.contacto_telefono}
@@ -142,8 +145,9 @@ function StepInformacionMedica({
 
       <div className="row">
         <div className="field-group">
-          <label>Parentesco</label>
+          <label htmlFor="im-contacto-parentesco">Parentesco</label>
           <input
+            id="im-contacto-parentesco"
             type="text"
             name="contacto_parentesco"
             value={formData.contacto_parentesco}
@@ -153,23 +157,22 @@ function StepInformacionMedica({
               <small className="field-error">{fieldErrors.contacto_parentesco}</small>
             )}
         </div>
-
-
       </div>
 
-     
+
       <div style={{ marginTop: '2rem', marginBottom: '1rem' }}>
         <h3 style={{ fontSize: '1.1rem', color: '#1a3b5c', borderBottom: '1px solid #e0e0e0', paddingBottom: '0.5rem' }}>
           Información de los Padres (Opcional)
         </h3>
       </div>
-      
+
       {/* Datos del Padre */}
       <h4 style={{ fontSize: '1rem', color: '#666', marginBottom: '0.5rem' }}>Datos del Padre</h4>
       <div className="row">
         <div className="field-group">
-          <label>Nombre del Padre</label>
+          <label htmlFor="im-padre-nombre">Nombre del Padre</label>
           <input
+            id="im-padre-nombre"
             type="text"
             name="padre_nombre"
             value={formData.padre_nombre}
@@ -177,8 +180,9 @@ function StepInformacionMedica({
           />
         </div>
         <div className="field-group">
-          <label>Fecha de Nacimiento</label>
+          <label htmlFor="im-padre-fecha-nacimiento">Fecha de Nacimiento</label>
           <input
+            id="im-padre-fecha-nacimiento"
             type="date"
             name="padre_fecha_nacimiento"
             value={formData.padre_fecha_nacimiento}
@@ -188,8 +192,9 @@ function StepInformacionMedica({
       </div>
       <div className="row">
         <div className="field-group">
-          <label>Email</label>
+          <label htmlFor="im-padre-email">Email</label>
           <input
+            id="im-padre-email"
             type="email"
             name="padre_email"
             value={formData.padre_email}
@@ -197,8 +202,9 @@ function StepInformacionMedica({
           />
         </div>
         <div className="field-group">
-          <label>Teléfono (Móvil)</label>
+          <label htmlFor="im-padre-telefono">Teléfono (Móvil)</label>
           <input
+            id="im-padre-telefono"
             type="text"
             name="padre_telefono"
             maxLength={10}
@@ -209,8 +215,9 @@ function StepInformacionMedica({
       </div>
       <div className="row">
         <div className="field-group">
-          <label>Teléfono (Casa)</label>
+          <label htmlFor="im-padre-telefono-casa">Teléfono (Casa)</label>
           <input
+            id="im-padre-telefono-casa"
             type="text"
             name="padre_telefono_casa"
             maxLength={10}
@@ -219,8 +226,9 @@ function StepInformacionMedica({
           />
         </div>
         <div className="field-group">
-          <label>Teléfono (Trabajo)</label>
+          <label htmlFor="im-padre-telefono-trabajo">Teléfono (Trabajo)</label>
           <input
+            id="im-padre-telefono-trabajo"
             type="text"
             name="padre_telefono_trabajo"
             maxLength={10}
@@ -234,8 +242,9 @@ function StepInformacionMedica({
       <h4 style={{ fontSize: '1rem', color: '#666', marginBottom: '0.5rem', marginTop: '1.5rem' }}>Datos de la Madre</h4>
       <div className="row">
         <div className="field-group">
-          <label>Nombre de la Madre</label>
+          <label htmlFor="im-madre-nombre">Nombre de la Madre</label>
           <input
+            id="im-madre-nombre"
             type="text"
             name="madre_nombre"
             value={formData.madre_nombre}
@@ -243,8 +252,9 @@ function StepInformacionMedica({
           />
         </div>
         <div className="field-group">
-          <label>Fecha de Nacimiento</label>
+          <label htmlFor="im-madre-fecha-nacimiento">Fecha de Nacimiento</label>
           <input
+            id="im-madre-fecha-nacimiento"
             type="date"
             name="madre_fecha_nacimiento"
             value={formData.madre_fecha_nacimiento}
@@ -254,8 +264,9 @@ function StepInformacionMedica({
       </div>
       <div className="row">
         <div className="field-group">
-          <label>Email</label>
+          <label htmlFor="im-madre-email">Email</label>
           <input
+            id="im-madre-email"
             type="email"
             name="madre_email"
             value={formData.madre_email}
@@ -263,8 +274,9 @@ function StepInformacionMedica({
           />
         </div>
         <div className="field-group">
-          <label>Teléfono (Móvil)</label>
+          <label htmlFor="im-madre-telefono">Teléfono (Móvil)</label>
           <input
+            id="im-madre-telefono"
             type="text"
             name="madre_telefono"
             maxLength={10}
@@ -275,8 +287,9 @@ function StepInformacionMedica({
       </div>
       <div className="row">
         <div className="field-group">
-          <label>Teléfono (Casa)</label>
+          <label htmlFor="im-madre-telefono-casa">Teléfono (Casa)</label>
           <input
+            id="im-madre-telefono-casa"
             type="text"
             name="madre_telefono_casa"
             maxLength={10}
@@ -285,8 +298,9 @@ function StepInformacionMedica({
           />
         </div>
         <div className="field-group">
-          <label>Teléfono (Trabajo)</label>
+          <label htmlFor="im-madre-telefono-trabajo">Teléfono (Trabajo)</label>
           <input
+            id="im-madre-telefono-trabajo"
             type="text"
             name="madre_telefono_trabajo"
             maxLength={10}
@@ -295,9 +309,45 @@ function StepInformacionMedica({
           />
         </div>
       </div>
-      
+
     </div>
   );
 }
+
+StepInformacionMedica.propTypes = {
+  formData: PropTypes.shape({
+    tipo_espinas: PropTypes.arrayOf(PropTypes.string).isRequired,
+    valvula: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+    tipo_sanguineo: PropTypes.string,
+    hospital: PropTypes.string,
+    alergias: PropTypes.string,
+    contacto_nombre: PropTypes.string,
+    contacto_telefono: PropTypes.string,
+    contacto_parentesco: PropTypes.string,
+    padre_nombre: PropTypes.string,
+    padre_fecha_nacimiento: PropTypes.string,
+    padre_email: PropTypes.string,
+    padre_telefono: PropTypes.string,
+    padre_telefono_casa: PropTypes.string,
+    padre_telefono_trabajo: PropTypes.string,
+    madre_nombre: PropTypes.string,
+    madre_fecha_nacimiento: PropTypes.string,
+    madre_email: PropTypes.string,
+    madre_telefono: PropTypes.string,
+    madre_telefono_casa: PropTypes.string,
+    madre_telefono_trabajo: PropTypes.string,
+  }).isRequired,
+  fieldErrors: PropTypes.shape({
+    tipo_espinas: PropTypes.string,
+    tipo_sanguineo: PropTypes.string,
+    hospital: PropTypes.string,
+    contacto_nombre: PropTypes.string,
+    contacto_telefono: PropTypes.string,
+    contacto_parentesco: PropTypes.string,
+  }).isRequired,
+  handleInputChange: PropTypes.func.isRequired,
+  handleBlur: PropTypes.func.isRequired,
+  handleTipoEspinasChange: PropTypes.func.isRequired,
+};
 
 export default StepInformacionMedica;

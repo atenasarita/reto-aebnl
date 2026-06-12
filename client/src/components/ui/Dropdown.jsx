@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './styles/Dropdown.css'
 
-function Dropdown({ options = [], value, onChange, className = '' }) {
+function Dropdown({ options = [], value, onChange, className = '', id }) {
   // local fallback state in case parent doesn't control it
   const [localValue, setLocalValue] = useState(value ?? '')
 
@@ -15,7 +15,7 @@ function Dropdown({ options = [], value, onChange, className = '' }) {
 
   return (
     <div className={`dropdown-wrapper ${className}`}>
-      <select className="dropdown-select" value={selected} onChange={handleChange}>
+      <select id={id} className="dropdown-select" value={selected} onChange={handleChange}>
         {options.map(opt => (
           <option key={opt.value} value={opt.value}>{opt.label}</option>
         ))}

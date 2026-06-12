@@ -34,11 +34,7 @@ export default function PersonalizadoServiciosChartRow({
   const nMeses = esMes ? serieServiciosVista.length : 0;
 
   const xAxisInterval =
-    esSemana || (esMes && nMeses <= 18)
-      ? 0
-      : esDia
-        ? "preserveStartEnd"
-        : "preserveStartEnd";
+    esSemana || (esMes && nMeses <= 18) ? 0 : "preserveStartEnd";
 
   const chartCommon = (
     <>

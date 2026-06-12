@@ -1,8 +1,9 @@
+import PropTypes from "prop-types";
 import { Activity, MapPinned, ScanSearch } from "lucide-react";
 import { ETAPA_FILTROS, GENERO_FILTROS } from "../reportePersonalizadoConstants";
 import "./PersonalizadoFiltrosDemograficos.css";
 
-export default function PersonalizadoFiltrosDemograficos({
+function PersonalizadoFiltrosDemograficos({
   layout = "grid",
   variant = "default",
   hayDatos,
@@ -16,6 +17,35 @@ export default function PersonalizadoFiltrosDemograficos({
 }) {
   const layoutClass = layout === "stacked" ? " reporte-personalizado-dem-columns--stacked" : "";
   const variantClass = variant === "panel" ? " reporte-personalizado-dem-columns--panel" : "";
+
+  const renderDistribucionEstado = () => {
+    if (!hayDatos) {
+      return (
+        <div className="reporte-personalizado-dem-hint-panel">
+          <p className="reporte-personalizado-dem-hint-text">
+            Habilite un periodo de tiempo arriba para filtrar por región.
+          </p>
+        </div>
+      );
+    }
+    if (distribucionEstado.length === 0) {
+      return <p className="reporte-mxmap-hint reporte-personalizado-dem-empty">Sin estados en este periodo.</p>;
+    }
+    return (
+      <div className="reporte-personalizado-dem-estados-scroll">
+        {distribucionEstado.map((row) => (
+          <label key={row.key} className="reporte-personalizado-dem-check">
+            <input
+              type="checkbox"
+              checked={estadosEfectivos.has(row.key)}
+              onChange={() => onToggleEstado(row.key)}
+            />
+            <span>{row.label}</span>
+          </label>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className={`reporte-personalizado-dem-columns${layoutClass}${variantClass}`}>
@@ -65,30 +95,27 @@ export default function PersonalizadoFiltrosDemograficos({
           <h3 className="reporte-personalizado-dem-col-title">Ubicación</h3>
         </div>
         <div className="reporte-personalizado-dem-col-body reporte-personalizado-dem-col-body--grow">
-          {!hayDatos ? (
-            <div className="reporte-personalizado-dem-hint-panel">
-              <p className="reporte-personalizado-dem-hint-text">
-                Habilite un periodo de tiempo arriba para filtrar por región.
-              </p>
-            </div>
-          ) : distribucionEstado.length === 0 ? (
-            <p className="reporte-mxmap-hint reporte-personalizado-dem-empty">Sin estados en este periodo.</p>
-          ) : (
-            <div className="reporte-personalizado-dem-estados-scroll">
-              {distribucionEstado.map((row) => (
-                <label key={row.key} className="reporte-personalizado-dem-check">
-                  <input
-                    type="checkbox"
-                    checked={estadosEfectivos.has(row.key)}
-                    onChange={() => onToggleEstado(row.key)}
-                  />
-                  <span>{row.label}</span>
-                </label>
-              ))}
-            </div>
-          )}
+          {renderDistribucionEstado()}
         </div>
       </div>
     </div>
   );
 }
+
+PersonalizadoFiltrosDemograficos.propTypes = {
+  layout: PropTypes.string,
+  variant: PropTypes.string,
+  hayDatos: PropTypes.bool,
+  distribucionEstado: PropTypes.arrayOf(PropTypes.shape({
+    key: PropTypes.string,
+    label: PropTypes.string,
+  })),
+  generosEfectivos: PropTypes.instanceOf(Set),
+  etapasEfectivas: PropTypes.instanceOf(Set),
+  estadosEfectivos: PropTypes.instanceOf(Set),
+  onToggleGenero: PropTypes.func,
+  onToggleEtapa: PropTypes.func,
+  onToggleEstado: PropTypes.func,
+};
+
+export default PersonalizadoFiltrosDemograficos;

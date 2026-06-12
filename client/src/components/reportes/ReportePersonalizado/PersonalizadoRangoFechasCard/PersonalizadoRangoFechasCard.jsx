@@ -1,8 +1,9 @@
+import PropTypes from "prop-types";
 import { CalendarDays, SlidersHorizontal } from "lucide-react";
 import "../reportePersonalizado.ledger.chrome.css";
 import "./PersonalizadoRangoFechasCard.css";
 
-export default function PersonalizadoRangoFechasCard({
+function PersonalizadoRangoFechasCard({
   desdeDraft,
   hastaDraft,
   onDesdeChange,
@@ -94,3 +95,17 @@ export default function PersonalizadoRangoFechasCard({
     </section>
   );
 }
+
+PersonalizadoRangoFechasCard.propTypes = {
+  desdeDraft: PropTypes.string,
+  hastaDraft: PropTypes.string,
+  onDesdeChange: PropTypes.func,
+  onHastaChange: PropTypes.func,
+  errorRango: PropTypes.string,
+  onGenerarReporte: PropTypes.func,
+  onAbrirFiltros: PropTypes.func,
+  filtrosAbiertos: PropTypes.bool,
+  hayReporte: PropTypes.bool,
+};
+
+export default PersonalizadoRangoFechasCard;

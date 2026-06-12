@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import { AlertTriangle } from "lucide-react";
 import './ServiciosComponents.css'
 
@@ -15,6 +16,19 @@ function Skeleton({ rows = 4 }) {
     </div>
   )
 }
+
+Skeleton.propTypes = {
+  rows: PropTypes.number,
+};
+
+const servicioShape = PropTypes.shape({
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  beneficiario: PropTypes.string,
+  nombre: PropTypes.string,
+  categoria: PropTypes.string,
+  cuotaTotal: PropTypes.number,
+  yaAporto: PropTypes.bool,
+});
 
 function ServicioRow({ servicio, onVerDetalle, onVerRecibo }) {
   return (
@@ -48,7 +62,13 @@ function ServicioRow({ servicio, onVerDetalle, onVerRecibo }) {
   )
 }
 
-export default function ServiciosTabla({
+ServicioRow.propTypes = {
+  servicio: servicioShape.isRequired,
+  onVerDetalle: PropTypes.func,
+  onVerRecibo: PropTypes.func,
+};
+
+function ServiciosTabla({
   filas,
   loading,
   error,
@@ -95,3 +115,14 @@ export default function ServiciosTabla({
     </>
   )
 }
+
+ServiciosTabla.propTypes = {
+  filas: PropTypes.arrayOf(servicioShape),
+  loading: PropTypes.bool,
+  error: PropTypes.string,
+  onVerDetalle: PropTypes.func,
+  onVerRecibo: PropTypes.func,
+  mostrarFecha: PropTypes.bool,
+};
+
+export default ServiciosTabla;

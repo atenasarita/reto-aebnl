@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from "react";
 import { FaUpload } from 'react-icons/fa'
 
@@ -73,5 +74,14 @@ function FotoPerfilInput({
         </div>
     );
 }
+
+FotoPerfilInput.propTypes = {
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.shape({ preview: PropTypes.string, file: PropTypes.object }),
+  ]),
+  onChange: PropTypes.func,
+  onError: PropTypes.func,
+};
 
 export default FotoPerfilInput;

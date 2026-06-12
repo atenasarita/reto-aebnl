@@ -428,7 +428,6 @@ export default function ReporteDonaciones() {
               {showTabla ? (
                 <div
                   className="reporte-donaciones-tabla-wrap table-wrap"
-                  tabIndex={0}
                   role="region"
                   aria-labelledby="reporte-donaciones-historial-titulo reporte-donaciones-historial-meta"
                 >

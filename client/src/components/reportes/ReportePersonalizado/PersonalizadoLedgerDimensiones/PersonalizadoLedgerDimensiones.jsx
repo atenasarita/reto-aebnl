@@ -1,9 +1,10 @@
+import PropTypes from "prop-types";
 import { BarChart3 } from "lucide-react";
 import PersonalizadoMetricasBar from "../PersonalizadoMetricasBar/PersonalizadoMetricasBar";
 import "../reportePersonalizado.ledger.chrome.css";
 import "./PersonalizadoLedgerDimensiones.css";
 
-export default function PersonalizadoLedgerDimensiones({
+function PersonalizadoLedgerDimensiones({
   variant = "inline",
   muestraDemografia,
   metricas,
@@ -40,3 +41,13 @@ export default function PersonalizadoLedgerDimensiones({
     </section>
   );
 }
+
+PersonalizadoLedgerDimensiones.propTypes = {
+  variant: PropTypes.string,
+  muestraDemografia: PropTypes.bool,
+  metricas: PropTypes.instanceOf(Set).isRequired,
+  onToggleMetrica: PropTypes.func.isRequired,
+  children: PropTypes.node,
+};
+
+export default PersonalizadoLedgerDimensiones;

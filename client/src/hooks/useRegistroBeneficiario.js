@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { limpiarSoloLetras, telefonoValido  } from '../utils/validator';
+import { limpiarSoloLetras  } from '../utils/validator';
 import { initialFormData, registroSteps } from '../utils/beneficiarioConstants';
 import { validateField, validateStep, validateStepFields } from '../utils/beneficiarioValidation';
 import { buildBeneficiarioPayload } from '../utils/beneficiarioPayload';
@@ -121,7 +121,7 @@ export function useRegistroBeneficiario(navigate) {
 
   const handleTipoEspinasChange = (e) => {
   const { value, checked } = e.target;
-  const id = parseInt(value);
+  const id = Number.parseInt(value);
 
   setFormData(prev => ({
     ...prev,
@@ -246,10 +246,7 @@ export function useRegistroBeneficiario(navigate) {
         fechaNacimiento
       );
 
- 
-
-      // await createBeneficiario(payload, token);
-      const beneficiarioCreado = await createBeneficiario(payload, token);
+       const beneficiarioCreado = await createBeneficiario(payload, token);
       setBeneficiarioCreado(beneficiarioCreado);
       setFormData(prev => ({
         ...prev,

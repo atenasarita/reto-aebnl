@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 import "./ReportesTabsNav.css";
 
@@ -21,7 +22,11 @@ function ReporteTabIcon({ kind }) {
   );
 }
 
-export default function ReportesTabsNav({ items }) {
+ReporteTabIcon.propTypes = {
+  kind: PropTypes.string.isRequired,
+};
+
+function ReportesTabsNav({ items }) {
   return (
     <nav className="reportes-tabs-nav" aria-label="Secciones de reportes">
       {items.map((item) => (
@@ -40,3 +45,13 @@ export default function ReportesTabsNav({ items }) {
     </nav>
   );
 }
+
+ReportesTabsNav.propTypes = {
+  items: PropTypes.arrayOf(PropTypes.shape({
+    to: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+    icon: PropTypes.string,
+  })).isRequired,
+};
+
+export default ReportesTabsNav;

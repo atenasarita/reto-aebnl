@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import styles from './RegistroPopUps.module.css';
 
 export default function Modal({
@@ -32,3 +33,13 @@ export default function Modal({
     </div>
   );
 }
+
+Modal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  title: PropTypes.string.isRequired,
+  message: PropTypes.string.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onConfirm: PropTypes.func.isRequired,
+  confirmText: PropTypes.string,
+  cancelText: PropTypes.string,
+};

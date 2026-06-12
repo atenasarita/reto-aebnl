@@ -1,8 +1,9 @@
+import PropTypes from 'prop-types'
 import { useEffect, useId } from 'react'
 import { createPortal } from 'react-dom'
 import styles from './InventarioModalShell.module.css'
 
-export default function InventarioModalShell({
+function InventarioModalShell({
   open,
   onClose,
   title,
@@ -44,7 +45,6 @@ export default function InventarioModalShell({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        onClick={(e) => e.stopPropagation()}
       >
         <div className={styles.panelHead}>
           <div>
@@ -68,3 +68,13 @@ export default function InventarioModalShell({
     document.body
   )
 }
+
+InventarioModalShell.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string,
+  children: PropTypes.node,
+};
+
+export default InventarioModalShell;

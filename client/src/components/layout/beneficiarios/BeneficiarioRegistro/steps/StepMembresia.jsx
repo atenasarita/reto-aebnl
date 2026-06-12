@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { FaCalendar } from 'react-icons/fa';
 
 function StepMembresia({
@@ -86,5 +87,15 @@ function StepMembresia({
     </div>
   );
 }
+
+StepMembresia.propTypes = {
+  formData: PropTypes.shape({
+    metodo_pago: PropTypes.string,
+    fecha_inicio_membresia: PropTypes.string,
+  }).isRequired,
+  fechaMembresiaRef: PropTypes.shape({ current: PropTypes.any }).isRequired,
+  handleInputChange: PropTypes.func.isRequired,
+  calculateFechaVigencia: PropTypes.func.isRequired,
+};
 
 export default StepMembresia;

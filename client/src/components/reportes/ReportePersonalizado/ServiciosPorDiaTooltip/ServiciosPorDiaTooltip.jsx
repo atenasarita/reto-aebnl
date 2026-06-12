@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { formatNumber, GRANULARIDAD_SERVICIOS } from "../reportePersonalizado.utils";
 import "./ServiciosPorDiaTooltip.css";
 
@@ -28,7 +29,7 @@ function textoPeriodoTooltip(row) {
   return formatFechaLarga(ref);
 }
 
-export default function ServiciosPorDiaTooltip({ active, payload }) {
+function ServiciosPorDiaTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
   const row = payload[0]?.payload;
   const value = payload[0]?.value ?? 0;
@@ -46,3 +47,13 @@ export default function ServiciosPorDiaTooltip({ active, payload }) {
     </div>
   );
 }
+
+ServiciosPorDiaTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(PropTypes.shape({
+    payload: PropTypes.object,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  })),
+};
+
+export default ServiciosPorDiaTooltip;

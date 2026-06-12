@@ -110,7 +110,7 @@ export default function Inventario() {
     const fila = productosUi.find((p) => p.id === String(id))
     const etiqueta = fila?.nombre || fila?.clave || 'este producto'
     if (
-      !window.confirm(
+      !globalThis.confirm(
         `¿Eliminar «${etiqueta}» del inventario?\n\nEl producto se desactivará y dejará de aparecer en el listado.`
       )
     ) {
@@ -122,7 +122,7 @@ export default function Inventario() {
       await deleteProductoInventario(Number(id))
       void fetchInventario()
     } catch (err) {
-      window.alert(
+      globalThis.alert(
         err instanceof Error ? err.message : 'No se pudo eliminar el producto.'
       )
     } finally {

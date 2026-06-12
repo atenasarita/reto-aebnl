@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -24,6 +25,12 @@ import StepBusqueda from "../../components/layout/servicios/Registro/StepBusqued
 import StepDetalles from "../../components/layout/servicios/Registro/StepDetalles.jsx";
 import StepInsumos from "../../components/layout/servicios/Registro/StepInsumos.jsx";
 import StepFinanzas from "../../components/layout/servicios/Registro/StepFinanzas.jsx";
+
+const getSaldoLabel = (saldo) => {
+  if (saldo > 0) return "Saldo pendiente:";
+  if (saldo < 0) return "Cambio:";
+  return "Saldo:";
+};
 
 function PantallaExito({ offline, onNuevo, onHistorial }) {
   return (
@@ -65,6 +72,12 @@ function PantallaExito({ offline, onNuevo, onHistorial }) {
     </div>
   );
 }
+
+PantallaExito.propTypes = {
+  offline: PropTypes.bool,
+  onNuevo: PropTypes.func.isRequired,
+  onHistorial: PropTypes.func.isRequired,
+};
 
 const PASOS = [
   { id: 1, tab: "Búsqueda", Icon: Search },
@@ -110,8 +123,8 @@ export default function RegistroServicios() {
   const { registrar, loading: guardando } = useRegistrarServicio();
   const { saldo: saldoFondo, donadores, fetchSaldo, fetchDonadores } = useFondoDonaciones();
 
-  const donacionNum = Math.max(0, parseFloat(montoDonacion) || 0);
-  const pagadoNum = Math.max(0, parseFloat(montoPagado) || 0);
+  const donacionNum = Math.max(0, Number.parseFloat(montoDonacion) || 0);
+  const pagadoNum = Math.max(0, Number.parseFloat(montoPagado) || 0);
   const fondoActivo = donadores.find((d) => String(d.id_fondo) === String(fondoSeleccionado));
   const saldoFondoSel = fondoActivo ? Number(fondoActivo.saldo) : 0;
 
@@ -153,7 +166,7 @@ export default function RegistroServicios() {
   const totalServicio = precioServicio;
 
   const subtotal = totalServicio + subtotalInsumos;
-  const descuentoNum = Math.max(0, parseFloat(descuento) || 0);
+  const descuentoNum = Math.max(0, Number.parseFloat(descuento) || 0);
   const totalConDescuento = Math.max(0, subtotal - descuentoNum);
   const saldoRestante = totalConDescuento - pagadoNum - donacionNum;
 
@@ -234,7 +247,7 @@ export default function RegistroServicios() {
 
       monto_servicio: totalServicio,
       monto_inventario: subtotalInsumos,
-      descuento: parseFloat(descuento) || 0,
+      descuento: Number.parseFloat(descuento) || 0,
       cuota_total: totalConDescuento,
       monto_pagado: pagadoNum,
       monto_donacion: donacionNum,
@@ -259,8 +272,8 @@ export default function RegistroServicios() {
   };
 
   const validarPasoFinanzas = () => {
-    const pagado = parseFloat(montoPagado) || 0;
-    const donacion = parseFloat(montoDonacion) || 0;
+    const pagado = Number.parseFloat(montoPagado) || 0;
+    const donacion = Number.parseFloat(montoDonacion) || 0;
     if (pagado + donacion > totalConDescuento + 0.001) return false;
     if (donacion > 0 && !fondoSeleccionado) return false;
     if (donacion > saldoFondoSel + 0.001) return false;
@@ -527,13 +540,7 @@ export default function RegistroServicios() {
               </div>
 
               <div className='totalesRow'>
-                <span>
-                  {saldoRestante > 0
-                    ? "Saldo pendiente:"
-                    : saldoRestante < 0
-                    ? "Cambio:"
-                    : "Saldo:"}
-                </span>
+                <span>{getSaldoLabel(saldoRestante)}</span>
 
                 <strong
                   className='totalesSaldo'

@@ -10,28 +10,62 @@
   overflow: hidden;
 }
 
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.colCategoria {
+  width: 18%;
+}
+
+.colNombre {
+  width: 22%;
+}
+
+.colClave {
+  width: 14%;
+}
+
+.colCantidad {
+  width: 16%;
+}
+
+.colPrecio {
+  width: 14%;
+}
+
+.colAcciones {
+  width: 16%;
+}
+
 .cabecera {
   background: #f8fafc;
   border-bottom: 1px solid var(--color-border);
 }
 
 .filaCabecera {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.05fr) minmax(0, 0.75fr) minmax(0, 0.7fr) minmax(0, 0.65fr) minmax(96px, 0.85fr);
-  align-items: center;
-  column-gap: 16px;
-  padding: 18px 20px;
+  /* fila de tabla nativa; sin grid */
 }
 
 .celdaCabecera {
-  font-size: 14px;
-  font-weight: 600;
+  padding: 18px 16px;
+  font-size: 12px;
+  font-weight: 700;
   color: #64748b;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.celdaCabecera:first-child {
+  padding-left: 20px;
 }
 
 .celdaCabecera:last-child {
+  padding-right: 20px;
   text-align: center;
 }
 

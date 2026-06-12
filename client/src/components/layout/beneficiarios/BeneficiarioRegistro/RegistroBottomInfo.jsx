@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { registroSteps } from '../../../../utils/beneficiarioConstants';
 
 function RegistroBottom({
@@ -40,5 +41,15 @@ function RegistroBottom({
     </div>
   );
 }
+
+RegistroBottom.propTypes = {
+  currentStep: PropTypes.number.isRequired,
+  loading: PropTypes.bool.isRequired,
+  areAllStepsComplete: PropTypes.bool.isRequired,
+  onNext: PropTypes.func.isRequired,
+  onPrev: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+};
 
 export default RegistroBottom;

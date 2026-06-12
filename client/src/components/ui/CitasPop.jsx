@@ -474,26 +474,42 @@ export default function CitasPop({ open, onClose, onSuccess, cita = null, modo =
   if (!open) return null;
 
   return (
-    <div className="cp-overlay" onClick={onClose}>
+    <div
+      className="cp-overlay"
+      aria-label="Cerrar modal"
+    >
       <div
         className="cp-modal"
-        onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-label="Nueva cita"
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
       >
         <div className="cp-header">
           <div className="cp-header-left">
             <div className="cp-header-icon"><Calendar size={20} /></div>
             <h2 className="cp-title">
-              {modo === "editar"
-                ? "Modificar cita"
-                : "Nueva cita"}
+              {modo === "editar" ? "Modificar cita" : "Nueva cita"}
             </h2>
           </div>
-          <button className="cp-header-close" onClick={onClose} aria-label="Cerrar"><X size={18} /></button>
+
+          <button
+            className="cp-header-close"
+            onClick={onClose}
+            aria-label="Cerrar"
+            type="button"
+          >
+            <X size={18} />
+          </button>
         </div>
-        <CitasForm onClose={onClose} onSuccess={onSuccess} cita={cita} modo={modo} />
+
+        <CitasForm
+          onClose={onClose}
+          onSuccess={onSuccess}
+          cita={cita}
+          modo={modo}
+        />
       </div>
     </div>
   );

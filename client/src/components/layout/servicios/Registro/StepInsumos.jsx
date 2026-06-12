@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
+import PropTypes from "prop-types";
 
 import { useProductos } from "../../../../hooks/useProductos";
 
@@ -20,14 +21,14 @@ export default function StepInsumos({ insumos, setInsumos }) {
 
     if (!productoSelec) return;
 
-    const cantidadNum = parseInt(cantidad, 10);
+    const cantidadNum = Number.parseInt(cantidad, 10);
 
     if (!cantidadNum || cantidadNum < 1) {
       return;
     }
 
     const prod = productos.find(
-      (p) => p.id === parseInt(productoSelec)
+      (p) => p.id === Number.parseInt(productoSelec)
     );
 
     if (!prod) return;
@@ -74,7 +75,7 @@ export default function StepInsumos({ insumos, setInsumos }) {
   const actualizarCantidad = (id, nuevaCantidad) => {
     setErrorStock("");
 
-    const cantidadNum = parseInt(nuevaCantidad, 10);
+    const cantidadNum = Number.parseInt(nuevaCantidad, 10);
 
     if (!cantidadNum || cantidadNum < 1) {
       return;
@@ -115,8 +116,9 @@ export default function StepInsumos({ insumos, setInsumos }) {
     <div className="panel">
       <div className="insumoAddRow">
         <div className="field" style={{ flex: 2 }}>
-          <label className="fieldLabel">Producto</label>
+          <label htmlFor="ins-producto" className="fieldLabel">Producto</label>
           <Dropdown
+            id="ins-producto"
             className="dropdown-servicios"
             options={[
               { label: "Seleccionar...", value: "" },
@@ -131,16 +133,17 @@ export default function StepInsumos({ insumos, setInsumos }) {
         </div>
 
         <div className="field" style={{ flex: 1 }}>
-          <label className="fieldLabel">Cantidad</label>
+          <label htmlFor="ins-cantidad" className="fieldLabel">Cantidad</label>
 
           <input
+            id="ins-cantidad"
             type="number"
             className="input"
             min={1}
             max={
               productoSelec
                 ? productos.find(
-                    (p) => p.id === parseInt(productoSelec)
+                    (p) => p.id === Number.parseInt(productoSelec)
                   )?.stock
                 : undefined
             }
@@ -158,11 +161,12 @@ export default function StepInsumos({ insumos, setInsumos }) {
         </div>
 
         <div className="field" style={{ flex: 1 }}>
-          <label className="fieldLabel">
+          <label htmlFor="ins-precio" className="fieldLabel">
             Precio unitario
           </label>
 
           <input
+            id="ins-precio"
             type="text"
             className="input"
             readOnly
@@ -170,7 +174,7 @@ export default function StepInsumos({ insumos, setInsumos }) {
               productoSelec
                 ? `$${
                     productos.find(
-                      (p) => p.id === parseInt(productoSelec)
+                      (p) => p.id === Number.parseInt(productoSelec)
                     )?.precio ?? ""
                   }`
                 : ""
@@ -312,3 +316,15 @@ export default function StepInsumos({ insumos, setInsumos }) {
     </div>
   );
 }
+
+StepInsumos.propTypes = {
+  insumos: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      nombre: PropTypes.string,
+      precio: PropTypes.number,
+      cantidad: PropTypes.number,
+    })
+  ).isRequired,
+  setInsumos: PropTypes.func.isRequired,
+};
